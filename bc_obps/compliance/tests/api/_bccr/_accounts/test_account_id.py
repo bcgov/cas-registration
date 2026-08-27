@@ -126,4 +126,5 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
             response,
             status_code=400,
             message=message,
+            error_key="user_error",
         )

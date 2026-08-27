@@ -278,6 +278,38 @@ describe("actionHandler function", () => {
     );
   });
 
+  it("should not capture user_error responses in Sentry", async () => {
+    const userErrorResponse = {
+      message: "Your business BCeID does not have access to this operator.",
+      errors: [
+        {
+          key: "user_error",
+          error: {
+            severity: "Error",
+            message:
+              "Your business BCeID does not have access to this operator.",
+          },
+        },
+      ],
+    };
+
+    fetch.mockResponses(
+      // getToken fetch
+      [JSON.stringify(responseToken), { status: 200 }],
+      // actionHandler fetch
+      [JSON.stringify(userErrorResponse), { status: 400 }],
+    );
+
+    const result = await actionHandler("/endpoint", "POST");
+
+    expect(result).toEqual({
+      error: "Your business BCeID does not have access to this operator.",
+      validation: userErrorResponse,
+    });
+
+    expect(captureExceptionMock).not.toHaveBeenCalled();
+  });
+
   it("should return validation errors for form PUT 4xx responses", async () => {
     const validationResponse = {
       message: "Update failed",

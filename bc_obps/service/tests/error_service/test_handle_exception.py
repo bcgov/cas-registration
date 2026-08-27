@@ -201,6 +201,7 @@ class TestExceptionHandler:
 
         assert response.status_code == 400
         assert body["message"] == "User error"
+        assert body["errors"][0]["key"] == "user_error"
 
     def test_handle_permission_error(self, mock_request):
         exc = PermissionError("No permission")
