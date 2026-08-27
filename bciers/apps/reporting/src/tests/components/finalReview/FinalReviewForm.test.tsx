@@ -2,7 +2,6 @@ import { useRouter } from "@bciers/testConfig/mocks";
 import { render, screen, waitFor } from "@testing-library/react";
 import { FinalReviewForm } from "@reporting/src/app/components/finalReview/FinalReviewForm";
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
-import { vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 import {
   HeaderStep,
@@ -222,5 +221,25 @@ describe("The FinalReviewForm component", () => {
     expect(aprDecInput).toBeTruthy();
     expect(aprDecInput.value).toBe("2.1");
     expect(aprDecContainer).toHaveTextContent(/tonnes/i);
+  });
+
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    (getFinalReviewData as any).mockRejectedValueOnce(new Error(errorMessage));
+    render(
+      <FinalReviewForm
+        navigationInformation={mockNavigationInformation}
+        version_id={1}
+        flow={ReportingFlow.SFO}
+      />,
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(getFinalReviewData).toHaveBeenCalledTimes(1);
+    expect(getFinalReviewData).toHaveBeenCalledWith(1);
+    expect(
+      screen.queryByRole("button", {
+        name: /save as pdf|print/i,
+      }),
+    ).not.toBeInTheDocument();
   });
 });

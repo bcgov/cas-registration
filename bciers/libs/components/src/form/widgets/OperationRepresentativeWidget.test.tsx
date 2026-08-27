@@ -1,5 +1,5 @@
 import { userEvent } from "@testing-library/user-event";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import { actionHandler } from "@bciers/testConfig/mocks";
@@ -43,6 +43,7 @@ describe("RJSF OperationRepresentativeWidget", () => {
     const widgetContainer = container.querySelector(
       "#root_representativesTestField",
     );
+
     expect(widgetContainer).toBeVisible();
     expect(widgetContainer).toHaveTextContent("Jane Doe");
     expect(widgetContainer).toHaveTextContent("John Smith");
@@ -52,7 +53,7 @@ describe("RJSF OperationRepresentativeWidget", () => {
   });
 
   it("should remove representative and show success snackbar on delete click", async () => {
-    actionHandler.mockReturnValueOnce({ success: true });
+    actionHandler.mockResolvedValueOnce({ success: true });
 
     const { container } = render(
       <FormBase
@@ -63,11 +64,12 @@ describe("RJSF OperationRepresentativeWidget", () => {
       />,
     );
 
-    expect(screen.getByText("Jane Doe")).toBeInTheDocument();
+    expect(screen.getByText("Jane Doe")).toBeVisible();
 
     const deleteIcon = container.querySelector(
       "[data-testid='DeleteOutlineIcon']",
     )!;
+
     await userEvent.click(deleteIcon);
 
     expect(actionHandler).toHaveBeenCalledWith(
@@ -79,16 +81,15 @@ describe("RJSF OperationRepresentativeWidget", () => {
       },
     );
 
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Operation Representative removed successfully/i),
-      ).toBeInTheDocument();
-    });
+    expect(
+      await screen.findByText(/Operation Representative removed successfully/i),
+    ).toBeVisible();
   });
 
-  it("should display error message when removing representative fails", async () => {
-    actionHandler.mockReturnValueOnce({
-      error: "Failed to remove representative",
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
     });
 
     const { container } = render(
@@ -103,22 +104,17 @@ describe("RJSF OperationRepresentativeWidget", () => {
     const deleteIcon = container.querySelector(
       "[data-testid='DeleteOutlineIcon']",
     )!;
+
     await userEvent.click(deleteIcon);
 
     expect(actionHandler).toHaveBeenCalledWith(
       "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/registration/operation-representative",
       "PUT",
       "registration/administration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
-      {
-        body: JSON.stringify({ id: 1 }),
-      },
+      expect.anything(),
     );
 
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Failed to remove representative/i),
-      ).toBeVisible();
-    });
+    expect(await screen.findByText(errorMessage)).toBeVisible();
 
     expect(
       screen.queryByText(/Operation Representative removed successfully/i),

@@ -1,6 +1,7 @@
 import BccrHoldingAccountWidget from "@/compliance/src/app/widgets/BccrHoldingAcountWidget";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { WidgetProps } from "@rjsf/utils";
+import { vi } from "vitest";
 
 const mockValidateBccrAccount = vi.fn();
 const mockOnChange = vi.fn();
@@ -145,6 +146,31 @@ describe("BccrHoldingAccountWidget", () => {
           name: /ghgregulator@gov\.bc\.ca/i,
         }),
       ).toHaveAttribute("href", "mailto:GHGRegulator@gov.bc.ca");
+      expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
+    });
+  });
+
+  it("shows error message for wrong account type when returned the response.error", async () => {
+    const wrongAccountTypeError =
+      "Account exists but does not match the required account type";
+
+    mockValidateBccrAccount.mockResolvedValueOnce({
+      error: wrongAccountTypeError,
+      bccr_trading_name: null,
+    });
+
+    render(<BccrHoldingAccountWidget {...defaultProps} />);
+    const input = screen.getByRole("textbox");
+
+    fireEvent.change(input, { target: { value: "123456789012345" } });
+
+    await waitFor(() => {
+      expect(input).toHaveAttribute("aria-invalid", "true");
+      expect(
+        screen.getByText(
+          /please enter a bccr account id with the account type 'operator of regulated operation', or contact/i,
+        ),
+      ).toBeVisible();
       expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
     });
   });

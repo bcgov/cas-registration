@@ -25,8 +25,8 @@ import { Dict } from "@bciers/types/dictionary";
 import useKey from "@bciers/utils/src/useKey";
 import { getActivitySchema } from "@reporting/src/app/utils/getActivitySchema";
 import {
+  setClientError,
   useValidationErrors,
-  createGenericValidationError,
 } from "@bciers/components/validationErrors";
 
 const CUSTOM_FIELDS = {
@@ -135,7 +135,8 @@ export default function ActivityForm({
     if (!arrayEquals(selectedSourceTypes, selectedSourceTypeIds)) {
       const schemaData = await fetchSchemaData(selectedSourceTypes);
       if (schemaData.error) {
-        setErrors([createGenericValidationError(schemaData.error)]);
+        const message = schemaData.error;
+        setClientError(message, setErrors);
         return;
       }
       setJsonSchema(safeJsonParse(schemaData).schema);
@@ -184,11 +185,10 @@ export default function ActivityForm({
 
     // Validate that at least one source type is selected
     if (selectedSourceTypeDataFiltered.length === 0) {
-      setErrors([
-        createGenericValidationError(
-          "At least one source type must be selected to report for that activity.",
-        ),
-      ]);
+      const message =
+        "At least one source type must be selected to report for that activity.";
+      setClientError(message, setErrors);
+
       return false;
     }
 
@@ -214,7 +214,8 @@ export default function ActivityForm({
     });
 
     if (response.error) {
-      setErrors([createGenericValidationError(response.error)]);
+      const message = response.error;
+      setClientError(message, setErrors);
       return false;
     }
     if (response) {
