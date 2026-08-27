@@ -16,6 +16,7 @@ import { ReportDownloadPdfButton } from "./templates/ReportDownloadPdfButton";
 import {
   useValidationErrors,
   handleApiResponse,
+  setClientError,
 } from "@bciers/components/validationErrors";
 
 interface Props {
@@ -40,8 +41,8 @@ export const FinalReviewForm: React.FC<Props> = ({
         if (handleApiResponse(finalReviewData, setErrors)) {
           setData(finalReviewData);
         }
-      } catch (error) {
-        handleApiResponse({ error }, setErrors);
+      } catch (error: any) {
+        setClientError(error, setErrors);
       } finally {
         setLoading(false);
       }

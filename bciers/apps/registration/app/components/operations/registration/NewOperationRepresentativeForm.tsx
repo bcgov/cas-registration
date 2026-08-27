@@ -22,6 +22,7 @@ import useKey from "@bciers/utils/src/useKey";
 import {
   useValidationErrors,
   handleApiResponse,
+  setClientError,
 } from "@bciers/components/validationErrors";
 
 interface NewOperationRepresentativeFormProps extends Omit<
@@ -78,7 +79,8 @@ const NewOperationRepresentativeForm: FC<
       });
       resetKey(); // force re-render to handle blank fields in the new selected contact data
     } catch (_err) {
-      handleApiResponse({ error: "Failed to fetch contact data!" }, setErrors);
+      const message = "Failed to fetch contact data!";
+      setClientError(message, setErrors);
     }
   };
 

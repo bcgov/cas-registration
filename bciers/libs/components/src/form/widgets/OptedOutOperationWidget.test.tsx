@@ -128,9 +128,10 @@ describe("OptedOutOperationWidget", () => {
     expect(baseProps.onChange).toHaveBeenCalledWith(2025);
   });
 
-  it("shows error when save fails", async () => {
-    vi.mocked(actionHandler).mockResolvedValue({
-      error: "Something went wrong",
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    vi.mocked(actionHandler).mockResolvedValueOnce({
+      error: errorMessage,
     });
 
     renderWidget({
@@ -141,7 +142,7 @@ describe("OptedOutOperationWidget", () => {
 
     fireEvent.click(screen.getByText("select-year"));
 
-    const widgetAlert = await screen.findByText("Something went wrong", {
+    const widgetAlert = await screen.findByText(errorMessage, {
       selector: "span",
     });
     expect(widgetAlert).toBeVisible();

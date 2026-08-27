@@ -14,7 +14,7 @@ import SnackBar from "@bciers/components/form/components/SnackBar";
 import {
   useValidationErrors,
   handleApiResponse,
-  createGenericValidationError,
+  setClientError,
 } from "@bciers/components/validationErrors";
 
 interface Props {
@@ -39,12 +39,12 @@ interface Facility {
   is_selected: boolean;
 }
 
-export default function LFOFacilitiesForm({
+export default function ReviewFacilitiesForm({
   initialData,
   version_id,
   navigationInformation,
   isSyncAllowed = true,
-}: Props) {
+}: Readonly<Props>) {
   const [formData, setFormData] = useState(() => ({ ...initialData }));
   const [facilitiesData, setFacilitiesData] = useState(() => ({
     ...initialData,
@@ -134,7 +134,8 @@ export default function LFOFacilitiesForm({
     const anyFacilitySelected = isAnyFacilitySelected(e.formData);
 
     if (!anyFacilitySelected) {
-      setErrors([createGenericValidationError("No facilities selected.")]);
+      const message = "No facilities selected.";
+      setClientError(message, setErrors);
       setSubmittingDisabled(true);
       return;
     }
@@ -155,9 +156,9 @@ export default function LFOFacilitiesForm({
       },
     );
 
-    const isValid = handleApiResponse(response, setErrors);
+    const isSuccess = handleApiResponse(response, setErrors);
 
-    if (!isValid) {
+    if (!isSuccess) {
       return false;
     }
 
@@ -180,7 +181,7 @@ export default function LFOFacilitiesForm({
 
   const handleModalConfirm = async () => {
     setModalOpen(false);
-    submit(formData);
+    return submit(formData);
   };
 
   const handleSubmit = async (data: any, navigateAfterSubmit: boolean) => {

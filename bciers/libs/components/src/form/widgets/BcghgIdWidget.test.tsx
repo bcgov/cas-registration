@@ -353,4 +353,39 @@ describe("RJSF bcghgIdWidget", () => {
       screen.getByRole("button", { name: `＋ Issue BCGHG ID` }),
     ).toBeVisible();
   });
+
+  it("displays an error if clearing the BCGHG ID fails", async () => {
+    const errorMessage = "Unable to clear BCGHG ID";
+
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    render(
+      <FormBase
+        schema={bcghgIdWidgetSchema}
+        uiSchema={bcghgIdWidgetUiSchema}
+        formContext={defaultFacilityFormContext}
+        formData={{ bcghgIdTestField: bcghgIdValue }}
+      />,
+    );
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: "Clear BCGHG ID",
+      }),
+    );
+
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(screen.getByRole("alert")).toBeVisible();
+
+    expect(
+      screen.getByRole("button", {
+        name: "Clear BCGHG ID",
+      }),
+    ).toBeVisible();
+
+    expect(screen.getByText(bcghgIdValue)).toBeVisible();
+  });
 });
