@@ -99,7 +99,10 @@ function renderValidationMessage(
   const config = validationUIConfig[key];
   const label = config?.resolveLabel(error);
   const href = config?.resolveHref(error);
-  const message = config?.resolveFormattedMessage(error, key) || key;
+  // Keys without a UI config (e.g. generic API errors like user_error) still
+  // carry a backend message, so fall back to it before showing the raw key
+  const message =
+    config?.resolveFormattedMessage(error, key) || error.message || key;
 
   switch (config?.renderMode) {
     case "inline_link":

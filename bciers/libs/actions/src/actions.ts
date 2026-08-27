@@ -16,6 +16,7 @@ import { revalidatePath } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
 import { captureException } from "@bciers/sentryConfig/sentry";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
+import isNonReportableError from "@bciers/utils/src/nonReportableErrors";
 
 const FORM_METHODS = ["POST", "PUT", "PATCH"] as const;
 
@@ -176,7 +177,7 @@ export async function actionHandler(
           });
 
           if (shouldReturnError(method, response.status, res)) {
-            captureException(error, userGuid);
+            if (!isNonReportableError(res)) captureException(error, userGuid);
             return parseHandlerError(res, response.status);
           }
 

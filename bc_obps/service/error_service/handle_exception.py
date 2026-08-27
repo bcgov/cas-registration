@@ -41,7 +41,9 @@ class ExceptionHandler:
             400,
             "compliance_invoice_error",
         ),
-        (UserError,): ExceptionResponse(lambda exc: str(exc), 400),
+        # `user_error` is listed in the frontend's NON_REPORTABLE_ERROR_KEYS, so these
+        # are shown to the user without being reported to Sentry
+        (UserError,): ExceptionResponse(lambda exc: str(exc), 400, key="user_error"),
         (ObjectDoesNotExist,): ExceptionResponse("Not Found", 404),
         (ValidationError,): ExceptionResponse(lambda exc: generate_useful_error(exc), 422),
         (PermissionError,): ExceptionResponse(
