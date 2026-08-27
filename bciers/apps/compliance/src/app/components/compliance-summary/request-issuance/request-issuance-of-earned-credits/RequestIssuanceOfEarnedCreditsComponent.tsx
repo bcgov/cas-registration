@@ -20,6 +20,7 @@ import { IssuanceStatus } from "@bciers/utils/src/enums";
 import {
   useValidationErrors,
   handleApiResponse,
+  setClientError,
 } from "@bciers/components/validationErrors";
 
 interface Props {
@@ -115,27 +116,23 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
       formContext={{
         complianceReportVersionId,
         validateBccrAccount: getBccrAccountDetails,
-        onValidAccountResolved: (response?: BccrAccountDetailsResponse) =>
+        onValidAccountResolved: (response?: BccrAccountDetailsResponse) => {
+          setErrors(undefined);
           setFormData(
             (prev: Partial<RequestIssuanceOfEarnedCreditsFormData>) => ({
               ...prev,
               ...response,
             }),
-          ),
-        onError: (err: any) =>
-          handleApiResponse(
-            {
-              error:
-                err instanceof Error
-                  ? err.message
-                  : typeof err === "string"
-                    ? err
-                    : err?.message ||
-                      err?.error ||
-                      "An unexpected error occurred.",
-            },
-            setErrors,
-          ),
+          );
+        },
+        onError: (err: any) => {
+          if (err) {
+            const formattedError = Array.isArray(err) ? err[0] : err;
+            setClientError(formattedError, setErrors);
+          } else {
+            setErrors(undefined);
+          }
+        },
       }}
       className="w-full min-h-[62vh] flex flex-col justify-between"
     >

@@ -27,8 +27,8 @@ import {
 import {
   useValidationErrors,
   handleApiResponse,
-  createGenericValidationError,
   ValidationItem,
+  setClientError,
 } from "@bciers/components/validationErrors";
 import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
@@ -71,8 +71,6 @@ export default function OperationReviewForm({
       key: "missing_operation_representative",
       error: {
         severity: "Error",
-        message:
-          "Before you can continue, you must add an operation representative for this operation then return to this report.",
         context: {
           operation_id: formData.operation_id,
           operation_name: formData.operation_name,
@@ -80,13 +78,10 @@ export default function OperationReviewForm({
       },
     };
 
-  const { setErrors, renderedErrors } =
-    useValidationErrors<ValidationMessageKey>({
-      config: validationUIConfig,
-      initialErrors: hasReps
-        ? undefined
-        : [missingOperationRepresentativeError],
-    });
+  const { setErrors, renderedErrors } = useValidationErrors({
+    config: validationUIConfig,
+    initialErrors: hasReps ? undefined : [missingOperationRepresentativeError],
+  });
 
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
@@ -121,9 +116,11 @@ export default function OperationReviewForm({
   const handleSync = async () => {
     const newData = await getUpdatedReportOperationDetails(version_id);
     if (newData.error) {
-      setErrors([createGenericValidationError(newData.error)]);
+      const message = newData.error;
+      setClientError(message, setErrors);
       return;
     }
+
     setPageSchema(
       buildOperationReviewSchema(
         newData,
@@ -138,6 +135,7 @@ export default function OperationReviewForm({
         isSyncAllowed,
       ),
     );
+
     setNavigationInfo(
       await getNavigationInformation(
         HeaderStep.OperationInformation,
@@ -149,8 +147,10 @@ export default function OperationReviewForm({
     setFormDataState(newData.report_operation);
 
     const reps = newData.all_representatives || [];
-    setHasReps(reps.length > 0);
-    if (reps.length === 0) {
+    const hasUpdatedReps = reps.length > 0;
+    setHasReps(hasUpdatedReps);
+
+    if (!hasUpdatedReps) {
       setErrors([missingOperationRepresentativeError]);
     } else {
       setErrors(undefined);

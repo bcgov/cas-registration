@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import MultiStepWrapperWithTaskList from "./MultiStepWrapperWithTaskList";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bciers/testConfig/mocks";
 
 // Mock data for taskListElements
 const taskListElements: TaskListElement[] = [
@@ -19,21 +19,15 @@ const taskListElements: TaskListElement[] = [
 
 const mockOnSubmit = vi.fn(async () => {});
 
-vi.mock("next/navigation", () => ({
-  useRouter: vi.fn(),
-}));
-
 describe("MultiStepFormWithTaskList", () => {
   const mockPush = vi.fn();
 
   beforeEach(() => {
-    (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
+    vi.clearAllMocks();
+
+    useRouter.mockReturnValue({
       push: mockPush,
     });
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
   });
 
   it("renders children with task list and submit button", () => {

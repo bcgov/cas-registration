@@ -9,6 +9,7 @@ import { allOperationRegistrationSteps } from "@/registration/app/components/ope
 import { UUID } from "crypto";
 import OptedInOperationForm from "@/registration/app/components/operations/registration/OptedInOperationForm";
 import { optedInOperationSchema } from "@/registration/app/data/jsonSchema/operationRegistration/optedInOperation";
+import userEvent from "@testing-library/user-event";
 
 useSessionRole.mockReturnValue("industry_user");
 
@@ -237,5 +238,37 @@ describe("the OptedInOperationForm component", () => {
         }),
       },
     );
+  });
+
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(<OptedInOperationForm {...defaultProps} />);
+    const allYesRadioButtons: HTMLInputElement[] = screen.getAllByRole(
+      "radio",
+      {
+        name: /yes/i,
+      },
+    );
+    for (const radioBtn of allYesRadioButtons) {
+      await userEvent.click(radioBtn);
+    }
+    const saveAndContinueBtn = screen.getByRole("button", {
+      name: /save and continue/i,
+    });
+    expect(saveAndContinueBtn).toBeEnabled();
+    await userEvent.click(saveAndContinueBtn);
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/operations/${defaultProps.operation}/registration/opted-in-operation-detail`,
+      "PUT",
+      `/register-an-operation/${defaultProps.operation}`,
+      expect.anything(),
+    );
+
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(mockPush).not.toHaveBeenCalled();
   });
 });
