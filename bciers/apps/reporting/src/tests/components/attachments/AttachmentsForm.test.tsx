@@ -1,10 +1,9 @@
 import AttachmentElement from "@reporting/src/app/components/attachments/AttachmentElement";
 import AttachmentsForm from "@reporting/src/app/components/attachments/AttachmentsForm";
 import postAttachments from "@reporting/src/app/utils/postAttachments";
-
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { useRouter } from "next/navigation";
-import { dummyNavigationInformation } from "../taskList/utils";
+import { useRouter } from "@bciers/testConfig/mocks";
+import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
 import { OperationTypes } from "@bciers/utils/src/enums";
 
 vi.mock("@reporting/src/app/components/attachments/AttachmentElement", () => ({
@@ -15,20 +14,22 @@ vi.mock("@reporting/src/app/utils/postAttachments", () => ({
   default: vi.fn(),
 }));
 
-vi.mock("next/navigation", () => ({
-  useRouter: vi.fn().mockReturnValue({
-    push: vi.fn(),
-  }),
-}));
-
 const mockAttachmentElement = AttachmentElement as ReturnType<typeof vi.fn>;
 const mockPostAttachments = postAttachments as ReturnType<typeof vi.fn>;
+const mockPush = vi.fn();
 
 describe("The attachments form", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
 
+    useRouter.mockReturnValue({
+      push: mockPush,
+      replace: vi.fn(),
+      prefetch: vi.fn(),
+      back: vi.fn(),
+      refresh: vi.fn(),
+    });
+  });
   it("renders the appropriate text", () => {
     render(
       <AttachmentsForm
@@ -443,5 +444,45 @@ describe("The attachments form", () => {
       />,
     );
     expect(screen.getByText("Attachments")).toBeVisible();
+  });
+
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    mockPostAttachments.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(
+      <AttachmentsForm
+        navigationInformation={dummyNavigationInformation}
+        version_id={1346}
+        initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={true}
+        isSupplementaryReport={false}
+      />,
+    );
+    const onChangeVerificationStatement =
+      mockAttachmentElement.mock.calls[0][0].onFileChange;
+    const file = new File(["test content"], "testFile.pdf", {
+      type: "application/pdf",
+    });
+    await act(async () => {
+      onChangeVerificationStatement(file);
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByText("Save & Continue"));
+    });
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(mockPostAttachments).toHaveBeenCalledTimes(1);
+    const sentVersionId = mockPostAttachments.mock.calls[0][0];
+    const sentFormDataKeys = Array.from(
+      mockPostAttachments.mock.calls[0][1].keys(),
+    );
+    const sentFormDataValues = Array.from(
+      mockPostAttachments.mock.calls[0][1].values(),
+    );
+    expect(sentVersionId).toEqual(1346);
+    expect(sentFormDataKeys).toEqual(["files", "file_types"]);
+    expect(sentFormDataValues).toEqual([file, "verification_statement"]);
+    expect(useRouter().push).not.toHaveBeenCalled();
   });
 });

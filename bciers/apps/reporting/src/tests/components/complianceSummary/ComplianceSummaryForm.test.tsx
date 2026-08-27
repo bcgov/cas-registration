@@ -1,19 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import ComplianceSummaryForm from "@reporting/src/app/components/complianceSummary/ComplianceSummaryForm";
-import { vi, Mock } from "vitest";
-
-import { actionHandler } from "@bciers/actions";
-import { useRouter } from "next/navigation";
+import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
 import { createComplianceSummarySchema } from "@reporting/src/data/jsonSchema/complianceSummary";
-
-vi.mock("@bciers/actions", () => ({
-  actionHandler: vi.fn(),
-}));
-
-vi.mock("next/navigation", () => ({
-  useRouter: vi.fn(),
-}));
 
 const mockSummaryData = {
   emissions_attributable_for_reporting: "1000.5",
@@ -64,14 +53,13 @@ describe("ComplianceSummaryForm", () => {
   const mockPush = vi.fn();
 
   beforeEach(() => {
-    (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
+    vi.clearAllMocks();
+
+    useRouter.mockReturnValue({
       push: mockPush,
     });
-    (actionHandler as Mock).mockClear();
-  });
 
-  afterEach(() => {
-    vi.clearAllMocks();
+    actionHandler.mockReset();
   });
 
   it("should render the calculation summary data", async () => {

@@ -45,6 +45,17 @@ const REMOTE_BCCR_ISSUE_MESSAGE = (
   </span>
 );
 
+const WRONG_ACCOUNT_TYPE_ERROR =
+  "Account exists but does not match the required account type";
+
+const isWrongAccountTypeError = (error?: unknown) =>
+  typeof error === "string" && error.includes(WRONG_ACCOUNT_TYPE_ERROR);
+
+const getAccountErrorMessage = (error?: unknown) =>
+  isWrongAccountTypeError(error)
+    ? WRONG_ACCOUNT_TYPE_MESSAGE
+    : INVALID_ACCOUNT_MESSAGE;
+
 const BccrHoldingAccountWidget = (props: WidgetProps) => {
   const { id, value, disabled, readonly, onChange, registry } = props;
   const { formContext } = registry;
@@ -81,10 +92,10 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
         setShowError(true);
         setErrorMessage(REMOTE_BCCR_ISSUE_MESSAGE);
         onValidAccountResolved?.(undefined);
-      } else if (response?.bccr_trading_name === null) {
+      } else if (response?.bccr_trading_name === null || response?.error) {
         setIsValid(false);
         setShowError(true);
-        setErrorMessage(INVALID_ACCOUNT_MESSAGE);
+        setErrorMessage(getAccountErrorMessage(response?.error));
         onValidAccountResolved?.(undefined);
       } else {
         setIsValid(true);
@@ -95,13 +106,10 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
     } catch (error) {
       setIsValid(false);
       const errorMessageText = (error as Error).message;
-      if (
-        errorMessageText.includes(
-          "Account exists but does not match the required account type",
-        )
-      ) {
+
+      if (isWrongAccountTypeError(errorMessageText)) {
         setShowError(true);
-        setErrorMessage(WRONG_ACCOUNT_TYPE_MESSAGE);
+        setErrorMessage(getAccountErrorMessage(errorMessageText));
       } else {
         setShowError(false);
         onError?.([errorMessageText]);

@@ -21,7 +21,7 @@ import SubmitButton from "@bciers/components/button/SubmitButton";
 import {
   useValidationErrors,
   handleApiResponse,
-  createGenericValidationError,
+  setClientError,
 } from "@bciers/components/validationErrors";
 
 interface Props {
@@ -67,11 +67,8 @@ const InternalReviewByDirectorComponent = ({
 
   const handleSubmit = async (decision: "Approved" | "Declined") => {
     if (!isCasDirector) {
-      setErrors([
-        createGenericValidationError(
-          "You are not authorized to submit this request.",
-        ),
-      ]);
+      const message = "You are not authorized to submit this request.";
+      setClientError(message, setErrors);
       return;
     }
     if (isSubmitting) {
