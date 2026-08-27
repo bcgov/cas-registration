@@ -2566,7 +2566,7 @@ __metadata:
     "@nx-tools/nx-container": "npm:^7.2.0"
     "@nx/devkit": "npm:23.1.1"
     "@nx/eslint": "npm:23.1.1"
-    "@nx/eslint-plugin": "npm:22.7.8"
+    "@nx/eslint-plugin": "npm:23.1.1"
     "@nx/js": "npm:22.7.8"
     "@nx/next": "npm:22.7.8"
     "@nx/playwright": "npm:22.7.8"
@@ -4765,28 +4765,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nx/eslint-plugin@npm:22.7.8":
-  version: 22.7.8
-  resolution: "@nx/eslint-plugin@npm:22.7.8"
+"@nx/eslint-plugin@npm:23.1.1":
+  version: 23.1.1
+  resolution: "@nx/eslint-plugin@npm:23.1.1"
   dependencies:
-    "@nx/devkit": "npm:22.7.8"
-    "@nx/js": "npm:22.7.8"
+    "@nx/devkit": "npm:23.1.1"
+    "@nx/js": "npm:23.1.1"
     "@phenomnomnominal/tsquery": "npm:~6.2.0"
     "@typescript-eslint/type-utils": "npm:^8.0.0"
     "@typescript-eslint/utils": "npm:^8.0.0"
-    chalk: "npm:^4.1.0"
     confusing-browser-globals: "npm:^1.0.9"
     globals: "npm:^17.0.0"
     jsonc-eslint-parser: "npm:^2.1.0"
+    picocolors: "npm:^1.1.0"
     semver: "npm:^7.6.3"
     tslib: "npm:^2.3.0"
   peerDependencies:
-    "@typescript-eslint/parser": ^6.13.2 || ^7.0.0 || ^8.0.0
+    "@typescript-eslint/parser": ^8.0.0
     eslint-config-prettier: ^10.0.0
   peerDependenciesMeta:
+    "@typescript-eslint/parser":
+      optional: true
     eslint-config-prettier:
       optional: true
-  checksum: 10c0/f3333f0b514459f9fc880c9589d9228a85d49d56d37734649f9f08b3f9e8f1bb9f0cbb27f7ec681ae3dd0e1e4d3a3cabe29caa9906cefeaeae4d9ae46c231f87
+  checksum: 10c0/6100bca79f2a8188c48b2076e6331a8128ee3bf091e4d38c6a332c840d01eed6da2ae2f500c8893a316d22a954f37e43a7363fd83d29e1e2199a19a134dd00c2
   languageName: node
   linkType: hard
 
