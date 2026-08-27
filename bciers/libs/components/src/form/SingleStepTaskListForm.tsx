@@ -15,7 +15,6 @@ import { FormMode, FrontendMessages } from "@bciers/utils/src/enums";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 import { BC_GOV_SEMANTICS_RED } from "@bciers/styles";
-import FormAlerts from "@bciers/components/form/FormAlerts";
 
 interface SingleStepTaskListFormProps {
   disabled?: boolean;
@@ -136,7 +135,7 @@ const SingleStepTaskListForm = ({
           omitExtraData={true}
         >
           {inlineMessage && <div className="mt-10 mb-5">{inlineMessage}</div>}
-          <FormAlerts key="alerts" errors={errors} />
+          {errors}
           <div className="w-full flex justify-between items-center mt-8">
             {customButtonSection || (
               <div className="flex items-center">

@@ -221,4 +221,35 @@ describe("ComplianceSummaryReviewComponent", () => {
       expect(screen.getByText("$0.00")).toBeVisible();
     });
   });
+
+  it("displays an error message when the request fails", async () => {
+    const user = userEvent.setup();
+    const errorMessage = "Unable to complete the request.";
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        headers: new Headers({ "Content-Type": "application/json" }),
+        json: async () => ({
+          message: errorMessage,
+        }),
+      }),
+    );
+    setupComponent(999);
+    await user.click(getGenerateButton());
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledWith(
+      "/compliance/api/invoice/999/obligation",
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(mockWindowOpen).toHaveBeenCalledWith("", "_blank");
+    expect(fakeTab.close).toHaveBeenCalled();
+    expect(fakeTab.location.href).toBe("");
+    expect(getGenerateButton()).toBeEnabled();
+  });
 });

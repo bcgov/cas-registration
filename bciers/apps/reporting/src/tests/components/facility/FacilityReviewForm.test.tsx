@@ -1,12 +1,11 @@
-import { render, act, waitFor } from "@testing-library/react";
+import { render, act, waitFor, screen } from "@testing-library/react";
 import { actionHandler } from "@bciers/actions";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { vi } from "vitest";
 import {
   FacilityReview,
   FacilityReviewFormData,
 } from "@reporting/src/app/components/facility/FacilityReviewForm";
-import { dummyNavigationInformation } from "../taskList/utils";
+import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
 import { buildFacilitySchema } from "@reporting/src/data/jsonSchema/facilities";
 
 // Mocks for external dependencies
@@ -43,11 +42,13 @@ const mockActivitiesData: {
   id: number;
   applicable_to: string;
 }[] = [{ name: "Activity 1", id: 1, applicable_to: "abc" }];
+
 const mockOtherActivities: {
   name: string;
   id: number;
   applicable_to: string;
 }[] = [{ name: "Activity 2", id: 2, applicable_to: "abc" }];
+
 const mockSchema = { testSchema: true };
 
 const mockFormData: FacilityReviewFormData = {
@@ -84,6 +85,7 @@ const mockFormDataWithoutActivities: FacilityReviewFormData = {
   other_activities: [],
   facility: "abcd",
 };
+
 const renderFacilityReviewWithoutActivities = (
   formData: FacilityReviewFormData = mockFormDataWithoutActivities,
 ) => (
@@ -110,6 +112,7 @@ describe("The FacilityReview component", () => {
     render(renderFacilityReview());
 
     const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+
     await act(() => calledProps.onSubmit());
 
     expect(mockActionHandler).toHaveBeenCalledWith(
@@ -156,30 +159,43 @@ describe("The FacilityReview component", () => {
     });
   });
 
-  it("handles form errors correctly", async () => {
-    mockActionHandler.mockResolvedValue({ error: "Some error occurred" });
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
 
-    const { getByText } = render(renderFacilityReview());
+    mockActionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    render(renderFacilityReview());
 
     const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
-    await act(() => calledProps.onSubmit());
 
-    expect(mockActionHandler).toHaveBeenCalled();
-
-    await waitFor(() => {
-      expect(getByText("Some error occurred")).toBeVisible();
+    await act(async () => {
+      await calledProps.onSubmit();
     });
+
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+
+    expect(mockActionHandler).toHaveBeenCalledTimes(1);
+    expect(mockActionHandler).toHaveBeenCalledWith(
+      "reporting/report-version/1000/facility-report/abcd",
+      "POST",
+      "reporting/reports/1000/facilities/abcd/review-facility-information",
+      expect.anything(),
+    );
   });
 
   it("shows error on submit when there are no activities", async () => {
     const { getByText } = render(renderFacilityReviewWithoutActivities());
 
     const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+
     await act(() => calledProps.onSubmit());
 
     await waitFor(() => {
       expect(getByText("You must select at least one activity.")).toBeVisible();
     });
+
     expect(mockActionHandler).not.toHaveBeenCalled();
   });
 

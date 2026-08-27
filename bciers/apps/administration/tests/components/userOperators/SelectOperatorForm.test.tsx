@@ -10,7 +10,6 @@ import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import userEvent from "@testing-library/user-event";
 import SelectOperatorForm from "apps/administration/app/components/userOperators/SelectOperatorForm";
 import { expectLink } from "@bciers/testConfig/helpers/expectLink";
-
 import { id, operatorLegalName } from "./constants";
 
 const operatorCRA = "123456789";
@@ -40,7 +39,7 @@ async function clickSubmitButton(text: string) {
   expect(submitButton).toHaveAttribute("type", "submit");
   expect(submitButton).toBeEnabled();
   await act(async () => {
-    await userEvent.click(submitButton);
+    userEvent.click(submitButton);
   });
 }
 // ⛏️ Helper function to click radio button search by...
@@ -97,15 +96,18 @@ describe("Select Operator Form", () => {
     // Get the search field for entering the operator's legal name
     const searchField = screen.getByPlaceholderText(placeHolderLegalName);
     // Enter text into the search by input field - legal_name
-    await userEvent.type(searchField, operatorLegalName);
+    userEvent.type(searchField, operatorLegalName);
     // Mock the response of the action handler to return the search response array
     actionHandler.mockResolvedValueOnce([responseLegalName]);
     // Wait for the operator's legal name to appear in the dropdown options
     await waitFor(async () => {
-      expect(searchField).toHaveValue(operatorLegalName);
+      expect(searchField).toHaveValue("Operator");
     });
     await waitFor(async () => {
       expect(screen.getByText(operatorLegalName)).toBeVisible();
+    });
+    await waitFor(async () => {
+      expect(screen.getByText("Operator 1")).toBeVisible();
     });
     // Select the operator from the dropdown
     const operator1 = screen.getByText(operatorLegalName);
@@ -118,7 +120,7 @@ describe("Select Operator Form", () => {
     // Mock the actionHandler to return an operator on submit
     actionHandler.mockResolvedValueOnce(responseLegalName);
     // Submit the form
-    await clickSubmitButton(buttonLegalName);
+    clickSubmitButton(buttonLegalName);
 
     // Verify navigation to confirm operator page
     await waitFor(() => {
@@ -127,7 +129,7 @@ describe("Select Operator Form", () => {
   });
   it("selects operator by cra number, submits form, and navigates on success", async () => {
     // Select Search Operator by CRA number...
-    await selectSearchByCRANumber();
+    selectSearchByCRANumber();
     // Get the search field for entering the operator's cra number
     const searchField = screen.getByPlaceholderText(craNumberDefaultText);
     // Enter text into the search by input field - cra_business_number
@@ -137,7 +139,7 @@ describe("Select Operator Form", () => {
     // Mock the actionHandler to return an operator on submit
     actionHandler.mockResolvedValueOnce(responseLegalName);
     // Submit the form
-    await clickSubmitButton(buttonCRANumber);
+    clickSubmitButton(buttonCRANumber);
     // Verify the required field alert is not trigered
     const requiredFieldError = screen.queryByText(requiredCRANumber);
     expect(requiredFieldError).not.toBeInTheDocument();
@@ -158,30 +160,66 @@ describe("Select Operator Form", () => {
     // Initially, the form should render without any error messages
     await verifyNoRequiredField();
     // Select Search Operator by CRA number...
-    await selectSearchByCRANumber();
+    selectSearchByCRANumber();
     // Attempt to submit the form without entering a cra number
     await clickSubmitButton(buttonCRANumber);
     // Verify the "Required field" error message to appear and form is not submited
     await verifyRequiredOperator(requiredCRANumber);
   });
-  it("displays validation error alert when search fails or returns no results", async () => {
-    await selectSearchByCRANumber();
+
+  it("displays an error message when the search response has an unexpected format", async () => {
+    selectSearchByCRANumber();
     const searchField = screen.getByPlaceholderText(craNumberDefaultText);
     await userEvent.type(searchField, operatorCRA);
-
-    actionHandler.mockResolvedValueOnce({
-      error: "No operator found matching the provided criteria.",
-    });
-
+    actionHandler.mockResolvedValueOnce([]);
     await clickSubmitButton(buttonCRANumber);
+    expect(
+      await screen.findByText("Unexpected response format from server."),
+    ).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/operators/search?cra_business_number=${operatorCRA}`,
+      "GET",
+      "/select-operator",
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+  });
 
-    await waitFor(() => {
-      expect(screen.getByRole("alert")).toBeVisible();
-      expect(
-        screen.getByText(/no operator found matching the provided criteria/i),
-      ).toBeVisible();
+  it("displays an error message when the search request fails", async () => {
+    const errorMessage = "No operator found with this CRA Business Number.";
+    selectSearchByCRANumber();
+    const searchField = screen.getByPlaceholderText(craNumberDefaultText);
+    await userEvent.type(searchField, operatorCRA);
+    // actionHandler GET resolves normally
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
     });
+    await clickSubmitButton(buttonCRANumber);
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/operators/search?cra_business_number=${operatorCRA}`,
+      "GET",
+      "/select-operator",
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+  });
 
+  it("displays an error message when the search request throws", async () => {
+    const errorMessage = "Internal Server Error";
+    selectSearchByCRANumber();
+    const searchField = screen.getByPlaceholderText(craNumberDefaultText);
+    await userEvent.type(searchField, operatorCRA);
+    // actionHandler GET throws
+    actionHandler.mockRejectedValueOnce(new Error(errorMessage));
+    await clickSubmitButton(buttonCRANumber);
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/operators/search?cra_business_number=${operatorCRA}`,
+      "GET",
+      "/select-operator",
+    );
     expect(mockPush).not.toHaveBeenCalled();
   });
 });

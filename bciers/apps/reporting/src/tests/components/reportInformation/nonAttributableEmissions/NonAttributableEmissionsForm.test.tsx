@@ -1,19 +1,8 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { useRouter } from "next/navigation";
-import { actionHandler } from "@bciers/actions";
-import { vi } from "vitest";
+import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import NonAttributableEmissionsForm from "@reporting/src/app/components/reportInformation/nonAttributableEmissions/NonAttributableEmissionsForm";
 import { UUID } from "crypto";
 import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
-
-// Mock next/navigation and action handler
-vi.mock("next/navigation", () => ({
-  useRouter: vi.fn(),
-}));
-
-vi.mock("@bciers/actions", () => ({
-  actionHandler: vi.fn(),
-}));
 
 describe("NonAttributableEmissionsForm Component", () => {
   const versionId = 1;
@@ -36,7 +25,10 @@ describe("NonAttributableEmissionsForm Component", () => {
   const mockPush = vi.fn();
 
   beforeEach(() => {
-    (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
+    vi.clearAllMocks();
+    vi.mocked(actionHandler).mockReset();
+
+    useRouter.mockReturnValue({
       push: mockPush,
       replace: vi.fn(),
       prefetch: vi.fn(),
@@ -44,13 +36,9 @@ describe("NonAttributableEmissionsForm Component", () => {
       refresh: vi.fn(),
     });
 
-    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValue({
+    vi.mocked(actionHandler).mockResolvedValue({
       success: true,
     });
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
   });
 
   it("renders the initial question field", async () => {
@@ -150,15 +138,18 @@ describe("NonAttributableEmissionsForm Component", () => {
       await screen.findByRole("button", { name: /Save & Continue/i }),
     );
 
-    await waitFor(() => expect(actionHandler).toHaveBeenCalled());
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalled();
+    });
+
     expect(mockPush).toHaveBeenCalledWith("continue");
   });
 
-  it("displays error message on submission failure", async () => {
-    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      error: "Something went wrong",
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    vi.mocked(actionHandler).mockResolvedValueOnce({
+      error: errorMessage,
     });
-
     render(
       <NonAttributableEmissionsForm
         versionId={versionId}
@@ -169,13 +160,17 @@ describe("NonAttributableEmissionsForm Component", () => {
         navigationInformation={dummyNavigationInformation}
       />,
     );
-
     fireEvent.click(
       await screen.findByRole("button", { name: /Save & Continue/i }),
     );
-
-    await waitFor(() =>
-      expect(screen.getByText("Something went wrong")).toBeVisible(),
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `reporting/report-version/${versionId}/facilities/${facilityId}/non-attributable`,
+      "POST",
+      `reporting/reports/${versionId}/facilities/${facilityId}/non-attributable`,
+      expect.anything(),
     );
+    expect(mockPush).not.toHaveBeenCalled();
   });
 });

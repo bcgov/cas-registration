@@ -1,5 +1,8 @@
+import { ValidationMessageKey as SharedKey } from "@bciers/components/validationErrors";
+
 /**
- * Administration error keys
+ * Application specific validation message keys, combined wit shared system keys
  */
-export type ValidationKey =
-  "no_bceid_access" | "operation_rep_required" | "operator_not_found";
+export type ValidationMessageKey = SharedKey<
+  "no_bceid_access" | "operation_rep_required" | "operator_not_found"
+>;
