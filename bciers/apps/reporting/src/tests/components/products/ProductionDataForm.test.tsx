@@ -552,7 +552,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
-        facilityType={"Large Facility"}
+        facilityType={"Single Facility"}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
         reportingYear={2024}
@@ -569,7 +569,8 @@ describe("The ProductionDataForm component", () => {
         production_data: [],
       },
     };
-    // Act: Submit with empty payload; SFO keeps products preselected in form state.
+    // Act: Submit with an empty payload; the component's internal SFO state
+    // stays preselected (all allowedProducts), so no validation error fires.
     await act(async () => {
       await calledProps.onSubmit(formData);
     });
@@ -586,7 +587,7 @@ describe("The ProductionDataForm component", () => {
         production_data: [{ product_id: 1, product_name: "Other Product" }],
       },
     };
-    // Act: Trigger onChange and ensure no validation error appears.
+    // Act: Trigger onChange with a payload that tries to deselect a product.
     await act(async () => {
       await updatedProps.onChange(newFormData);
     });
@@ -596,6 +597,12 @@ describe("The ProductionDataForm component", () => {
         mockMultiStepFormWithTaskList.mock.calls.length - 1
       ][0];
 
+    // For SFO, onChange re-pins product_selection to all allowedProducts,
+    // so the attempted deselection has no effect and no error appears.
+    expect(finalProps.formData.product_selection).toStrictEqual([
+      "Pulp and paper: chemical pulp",
+      "Other Product",
+    ]);
     expect(finalProps.errors).toBeUndefined();
   });
 
