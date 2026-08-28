@@ -51,7 +51,7 @@ const defaultGetProductionDataMock = {
   report_data: {
     reporting_year: 2020,
   },
-  facility_data: { facility_type: "SFO" },
+  facility_data: { facility_type: "Large Facility" },
   payload: {
     allowed_products: [],
     report_products: [],
