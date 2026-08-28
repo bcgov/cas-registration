@@ -43,9 +43,30 @@ const ProductionDataForm: React.FC<Props> = ({
   overlappingIndustrialProcessEmissions,
   isOptedOut = false,
 }) => {
+  const isLfoFacility = [
+    "Small Aggregate",
+    "Medium Facility",
+    "Large Facility",
+  ].includes(facilityType);
+  const sfoSelectedProducts = allowedProducts.map(
+    (product) => product.product_name,
+  );
+
+  const selectedProducts = isLfoFacility
+    ? initialData.map((item) => item.product_name)
+    : sfoSelectedProducts;
+  const selectedProductionData = isLfoFacility
+    ? initialData
+    : allowedProducts.map(
+        (product) =>
+          initialData.find(
+            (item) => item.product_name === product.product_name,
+          ) ?? product,
+      );
+
   const initialFormData = {
-    product_selection: initialData.map((i) => i.product_name),
-    production_data: initialData,
+    product_selection: selectedProducts,
+    production_data: selectedProductionData,
   };
 
   const noRegulatedProductSchema: RJSFSchema = {
@@ -93,11 +114,7 @@ const ProductionDataForm: React.FC<Props> = ({
   // No regulated product short circuits
   if (allowedProducts.length < 1) {
     // Short circuit to allow LFO facilities to continue past this form without a regulated product to select
-    if (
-      ["Small Aggregate", "Medium Facility", "Large Facility"].includes(
-        facilityType,
-      )
-    ) {
+    if (isLfoFacility) {
       return (
         <MultiStepFormWithTaskList
           taskListElements={navigationInformation.taskList}
@@ -140,17 +157,20 @@ const ProductionDataForm: React.FC<Props> = ({
     product_selection: string[];
     production_data: ProductData[];
   }) => {
-    const updatedSelection = newFormData.product_selection.map(
+    const productSelection = isLfoFacility
+      ? newFormData.product_selection
+      : sfoSelectedProducts;
+    const updatedSelection = productSelection.map(
       (product_name) =>
         newFormData.production_data.find(
           (item) => item.product_name === product_name,
         ) ?? allowedProducts.find((p) => p.product_name === product_name),
     );
-    if (newFormData.product_selection.length > 0) {
+    if (productSelection.length > 0) {
       setErrors(undefined);
     }
     setFormData({
-      product_selection: newFormData.product_selection,
+      product_selection: productSelection,
       production_data: updatedSelection,
     });
   };
@@ -171,12 +191,7 @@ const ProductionDataForm: React.FC<Props> = ({
         return false;
       }
     }
-    if (
-      !["Small Aggregate", "Medium Facility", "Large Facility"].includes(
-        facilityType,
-      ) &&
-      formData.product_selection.length < 1
-    ) {
+    if (!isLfoFacility && formData.product_selection.length < 1) {
       setErrors([
         createGenericReportValidationError("A product must be selected."),
       ]);
@@ -191,6 +206,12 @@ const ProductionDataForm: React.FC<Props> = ({
     return handleApiResponse(response, setErrors);
   };
 
+  const uiSchema = buildProductionDataUiSchema(reportingYear, isOptedOut);
+  if (!isLfoFacility) {
+    uiSchema.product_selection_title = { "ui:widget": "hidden" };
+    uiSchema.product_selection = { "ui:widget": "hidden" };
+  }
+
   return (
     <MultiStepFormWithTaskList
       key={formData?.product_selection?.length || 999}
@@ -198,7 +219,7 @@ const ProductionDataForm: React.FC<Props> = ({
       steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
       schema={schema}
-      uiSchema={buildProductionDataUiSchema(reportingYear, isOptedOut)}
+      uiSchema={uiSchema}
       formData={formData}
       formContext={createFormContext(formData)}
       baseUrl={"#"}

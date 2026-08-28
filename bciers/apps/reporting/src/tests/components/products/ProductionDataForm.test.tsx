@@ -197,7 +197,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
-        facilityType={""}
+        facilityType={"Single Facility"}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
         reportingYear={2024}
@@ -257,7 +257,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
-        facilityType={""}
+        facilityType={"Large Facility"}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
         reportingYear={2024}
@@ -308,7 +308,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
-        facilityType={""}
+        facilityType={"Large Facility"}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
         reportingYear={2025}
@@ -333,7 +333,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
-        facilityType={""}
+        facilityType={"Large Facility"}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
         reportingYear={2025}
@@ -361,7 +361,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
-        facilityType={""}
+        facilityType={"Large Facility"}
         isPulpAndPaper={true}
         overlappingIndustrialProcessEmissions={100}
         reportingYear={2024}
@@ -409,7 +409,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
-        facilityType={""}
+        facilityType={"Large Facility"}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={100}
         reportingYear={2024}
@@ -455,7 +455,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
-        facilityType={""}
+        facilityType={"Large Facility"}
         isPulpAndPaper={true}
         overlappingIndustrialProcessEmissions={0}
         reportingYear={2024}
@@ -503,7 +503,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
-        facilityType={""}
+        facilityType={"Large Facility"}
         isPulpAndPaper={true}
         overlappingIndustrialProcessEmissions={100}
         reportingYear={2024}
@@ -540,7 +540,7 @@ describe("The ProductionDataForm component", () => {
     expect(result).toBe(true);
     expect(mockReportValidationSummary).not.toHaveBeenCalled();
   });
-  it("clears the no product selected error when a product is selected", async () => {
+  it("does not show no-product-selected error for SFO because products are preselected", async () => {
     render(
       <ProductionDataForm
         allowedProducts={[
@@ -552,7 +552,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
-        facilityType={""}
+        facilityType={"Large Facility"}
         isPulpAndPaper={false}
         overlappingIndustrialProcessEmissions={0}
         reportingYear={2024}
@@ -569,7 +569,7 @@ describe("The ProductionDataForm component", () => {
         production_data: [],
       },
     };
-    // Act: Trigger submit with no products selected to generate the error
+    // Act: Submit with empty payload; SFO keeps products preselected in form state.
     await act(async () => {
       await calledProps.onSubmit(formData);
     });
@@ -578,11 +578,7 @@ describe("The ProductionDataForm component", () => {
       mockMultiStepFormWithTaskList.mock.calls[
         mockMultiStepFormWithTaskList.mock.calls.length - 1
       ][0];
-    // Assert: Verify that the missing selection error is present
-    expect(updatedProps.errors).toHaveLength(1);
-    expect(updatedProps.errors[0].props.errors).toEqual([
-      createGenericReportValidationError("A product must be selected."),
-    ]);
+    expect(updatedProps.errors).toBeUndefined();
 
     const newFormData = {
       formData: {
@@ -590,7 +586,7 @@ describe("The ProductionDataForm component", () => {
         production_data: [{ product_id: 1, product_name: "Other Product" }],
       },
     };
-    // Act: Trigger onChange with a product selected to clear the error
+    // Act: Trigger onChange and ensure no validation error appears.
     await act(async () => {
       await updatedProps.onChange(newFormData);
     });
@@ -600,7 +596,44 @@ describe("The ProductionDataForm component", () => {
         mockMultiStepFormWithTaskList.mock.calls.length - 1
       ][0];
 
-    // Assert: Verify that the error is cleared when a product is selected
     expect(finalProps.errors).toBeUndefined();
+  });
+
+  it("preselects all products and hides product selection fields for SFO facilities", async () => {
+    render(
+      <ProductionDataForm
+        allowedProducts={[
+          { product_id: 16, product_name: "Product A" },
+          { product_id: 17, product_name: "Product B" },
+        ]}
+        initialData={[]}
+        facility_id="abcd"
+        report_version_id={1000}
+        schema={{ testSchema: true }}
+        navigationInformation={dummyNavigationInformation}
+        facilityType={"Single Facility"}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        reportingYear={2024}
+        isOptedOut={false}
+      />,
+    );
+
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+
+    expect(calledProps.formData).toStrictEqual({
+      product_selection: ["Product A", "Product B"],
+      production_data: [
+        { product_id: 16, product_name: "Product A" },
+        { product_id: 17, product_name: "Product B" },
+      ],
+    });
+    expect(calledProps.uiSchema.product_selection).toStrictEqual({
+      "ui:widget": "hidden",
+    });
+    expect(calledProps.uiSchema.product_selection_title).toStrictEqual({
+      "ui:widget": "hidden",
+    });
+    expect(calledProps.submitButtonDisabled).toBe(false);
   });
 });
