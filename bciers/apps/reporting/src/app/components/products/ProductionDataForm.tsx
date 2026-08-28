@@ -48,13 +48,8 @@ const ProductionDataForm: React.FC<Props> = ({
     "Medium Facility",
     "Large Facility",
   ].includes(facilityType);
-  const sfoSelectedProducts = allowedProducts.map(
-    (product) => product.product_name,
-  );
 
-  const selectedProducts = isLfoFacility
-    ? initialData.map((item) => item.product_name)
-    : sfoSelectedProducts;
+  // Only LFOs are allowed to select or not certain products
   const selectedProductionData = isLfoFacility
     ? initialData
     : allowedProducts.map(
@@ -65,7 +60,7 @@ const ProductionDataForm: React.FC<Props> = ({
       );
 
   const initialFormData = {
-    product_selection: selectedProducts,
+    product_selection: selectedProductionData.map((i) => i.product_name),
     production_data: selectedProductionData,
   };
 
@@ -159,7 +154,7 @@ const ProductionDataForm: React.FC<Props> = ({
   }) => {
     const productSelection = isLfoFacility
       ? newFormData.product_selection
-      : sfoSelectedProducts;
+      : initialFormData.product_selection;
     const updatedSelection = productSelection.map(
       (product_name) =>
         newFormData.production_data.find(
