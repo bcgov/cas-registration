@@ -10,6 +10,26 @@ describe("ReportValidationSummary", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
+  it("renders the backend message for keys without a UI config", () => {
+    const errors: ReportValidationErrors = [
+      {
+        // Generic API error keys (e.g. user_error) have no reporting UI config
+        key: "user_error" as ReportValidationErrors[number]["key"],
+        error: {
+          severity: "Error",
+          message: "Your business BCeID does not have access to this operator.",
+        },
+      },
+    ];
+
+    render(<ReportValidationSummary errors={errors} />);
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Your business BCeID does not have access to this operator.",
+    );
+    expect(screen.queryByText("user_error")).not.toBeInTheDocument();
+  });
+
   it("sorts validation entries by severity with errors before warnings", () => {
     const errors: ReportValidationErrors = [
       {
