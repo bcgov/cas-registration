@@ -9,6 +9,7 @@ import {
   ArrayFieldTemplate,
   ArrayFieldItemTemplate,
 } from "@bciers/components/form/fields/ArrayFieldTemplate";
+import { CheckboxGroupWidget } from "@bciers/components/form/widgets";
 
 export const buildProductionDataSchema2024 = (
   compliance_period_start: string,
@@ -130,7 +131,7 @@ export const productionDataUiSchema2024 = (): UiSchema => {
       "ui:classNames": "mt-2 mb-5 emission-array-header",
     },
     product_selection: {
-      "ui:widget": "checkboxes",
+      "ui:widget": CheckboxGroupWidget,
       "ui:options": {
         label: false,
       },

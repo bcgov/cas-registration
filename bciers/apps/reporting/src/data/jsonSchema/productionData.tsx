@@ -17,6 +17,7 @@ import {
   ArrayFieldTemplate,
   ArrayFieldItemTemplate,
 } from "@bciers/components/form/fields/ArrayFieldTemplate";
+import { CheckboxGroupWidget } from "@bciers/components/form/widgets";
 
 const buildProductionDataSchemaDefault = (
   compliance_period_start: string,
@@ -164,7 +165,7 @@ const productionDataUiSchemaDefault = (): UiSchema => ({
     "ui:classNames": "mt-2 mb-5 emission-array-header",
   },
   product_selection: {
-    "ui:widget": "checkboxes",
+    "ui:widget": CheckboxGroupWidget,
     "ui:options": {
       label: false,
     },
