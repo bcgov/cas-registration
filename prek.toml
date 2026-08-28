@@ -14,7 +14,9 @@ repo = "local"
 id = "ensure-models-have-database-comments"
 name = "ensure models have database comments"
 language = "system"
-files = '^bc_obps/[^/]+/models/.*\.py$'
+# NOTE: in prek globs, `*` crosses `/`, so `bc_obps/*/models/` also matches `bc_obps/*/tests/models/`.
+files = { glob = "bc_obps/*/models/**/*.py" }
+exclude = { glob = "bc_obps/*/tests/**/*.py" }
 entry = """
 cd bc_obps && poetry run python manage.py ensure_models_have_database_comments
 """
