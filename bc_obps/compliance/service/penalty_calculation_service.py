@@ -91,12 +91,16 @@ class PenaltyCalculationService:
         """
         compliance_period = obligation.compliance_report_version.compliance_report.compliance_period
         compliance_deadline = compliance_period.compliance_deadline
-        submission_date = obligation.created_at.date()  # type: ignore[union-attr]
-        has_late_submission = submission_date > compliance_deadline
+        submission_date = obligation.created_at.date() if obligation.created_at else None
+        has_late_submission = submission_date is not None and submission_date > compliance_deadline
 
         effective_deadline = compliance_deadline
-        if obligation.compliance_report_version.is_supplementary and has_late_submission:
-            effective_deadline = obligation.elicensing_invoice.due_date  # type: ignore[union-attr]
+        if (
+            obligation.compliance_report_version.is_supplementary
+            and has_late_submission
+            and obligation.elicensing_invoice
+        ):
+            effective_deadline = obligation.elicensing_invoice.due_date
 
         return PenaltyAccrualContext(
             compliance_deadline=compliance_deadline,

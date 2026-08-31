@@ -125,7 +125,7 @@ def _build_calculated_penalty_response(
 )
 def get_calculated_penalty_for_obligation(
     request: HttpRequest, compliance_report_version_id: int, requested_penalty_type: str, end_date: str
-) -> Tuple[Literal[200], CalculatedPenaltyOut] | Tuple[Literal[422], Message]:
+) -> Tuple[Literal[200], CalculatedPenaltyOut] | Tuple[Literal[422], dict[str, str]]:
     date_format_string = "%Y-%m-%d"
     formatted_end_date = datetime.strptime(end_date, date_format_string).date()
     obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
@@ -140,9 +140,7 @@ def get_calculated_penalty_for_obligation(
     requested_penalty_type = _normalize_penalty_type(requested_penalty_type)
 
     if requested_penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION and not report_version.is_supplementary:
-        return 422, Message(
-            message="GGEAPAR interest only applies to obligations for supplementary compliance reports."
-        )
+        return 422, {"message": "GGEAPAR interest only applies to obligations for supplementary compliance reports."}
 
     calculated_penalty = _calculate_penalty_for_type(
         obligation=obligation,
