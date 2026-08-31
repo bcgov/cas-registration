@@ -92,6 +92,9 @@ def test_get_calculated_penalty_for_obligation_late_submission_success(
     mock_get_late_submission_penalty_data,
 ):
     obligation = _make_obligation()
+    report_version = obligation.compliance_report_version
+    report_version.is_supplementary = True
+    report_version.save(update_fields=["is_supplementary"])
     mock_get_automatic_overdue_penalty_data.return_value = {"penalty_type": "Automatic Overdue"}
     mock_get_late_submission_penalty_data.return_value = {"penalty_type": "Late Submission"}
     mock_calculate_late_submission_penalty.return_value = SimpleNamespace(
@@ -148,6 +151,20 @@ def test_get_calculated_penalty_for_obligation_invalid_penalty_type_raises_http_
         )
 
 
+def test_get_calculated_penalty_for_obligation_ggeapar_returns_422_for_non_supplementary():
+    obligation = _make_obligation()
+    # Default recipe has is_supplementary=False; GGEAPAR is not applicable here
+    status, response = get_calculated_penalty_for_obligation(
+        HttpRequest(),
+        obligation.compliance_report_version_id,
+        "ggeapar",
+        "2025-01-10",
+    )
+
+    assert status == 422
+    assert response["message"] == "GGEAPAR interest only applies to obligations for supplementary compliance reports."
+
+
 @patch(
     "compliance.api._compliance_report_versions._compliance_report_version_id._obligation.calculate_penalty.PenaltyCalculationService.get_penalty_accrual_context"
 )
@@ -192,10 +209,10 @@ def test_get_calculated_penalty_for_obligation_sets_accruing_statuses_for_late_s
     "compliance.api._compliance_report_versions._compliance_report_version_id._obligation.calculate_penalty.PenaltyCalculationService.get_penalty_accrual_context"
 )
 @patch(
-    "compliance.api._compliance_report_versions._compliance_report_version_id._obligation.calculate_penalty.PenaltyCalculationService.calculate_late_submission_penalty"
+    "compliance.api._compliance_report_versions._compliance_report_version_id._obligation.calculate_penalty.PenaltyCalculationService.calculate_penalty"
 )
 def test_get_calculated_penalty_for_obligation_sets_none_statuses_when_not_accruing(
-    mock_calculate_late_submission_penalty,
+    mock_calculate_penalty,
     mock_get_penalty_accrual_context,
 ):
     obligation = _make_obligation()
@@ -207,8 +224,8 @@ def test_get_calculated_penalty_for_obligation_sets_none_statuses_when_not_accru
         effective_deadline=date.today(),
         has_late_submission=False,
     )
-    mock_calculate_late_submission_penalty.return_value = SimpleNamespace(
-        penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
+    mock_calculate_penalty.return_value = SimpleNamespace(
+        penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
         days_late=0,
         total_penalty=Decimal("0.00"),
         daily_accumulated_list=[],
@@ -217,7 +234,7 @@ def test_get_calculated_penalty_for_obligation_sets_none_statuses_when_not_accru
     status, response = get_calculated_penalty_for_obligation(
         HttpRequest(),
         obligation.compliance_report_version_id,
-        "late_submission",
+        "automatic_overdue",
         "2025-01-10",
     )
 

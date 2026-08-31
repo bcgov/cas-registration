@@ -3,6 +3,7 @@
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import { FormBase } from "@bciers/components/form";
 import { IChangeEvent } from "@rjsf/core";
+import Alert from "@mui/material/Alert";
 import { useMemo, useRef, useState } from "react";
 import {
   penaltyCalculatorSchema,
@@ -133,6 +134,7 @@ export default function PenaltyCalculatorComponent({
 
   const [formData, setFormData] =
     useState<PenaltyCalculatorFormData>(initialFormData);
+  const [warningMessage, setWarningMessage] = useState<string | null>(null);
   const lastRequestIdRef = useRef(0);
 
   const handleChange = async (e: IChangeEvent<PenaltyCalculatorFormData>) => {
@@ -177,6 +179,12 @@ export default function PenaltyCalculatorComponent({
       return;
     }
 
+    if (refreshedPenaltyData?.error) {
+      setWarningMessage(refreshedPenaltyData.error);
+      return;
+    }
+
+    setWarningMessage(null);
     setFormData(
       mapApiDataToFormData(
         refreshedPenaltyData,
@@ -187,14 +195,21 @@ export default function PenaltyCalculatorComponent({
   };
 
   return (
-    <FormBase
-      schema={penaltyCalculatorSchema}
-      uiSchema={penaltyCalculatorUiSchema}
-      formData={formData}
-      onChange={handleChange}
-      className="w-full"
-    >
-      <ComplianceStepButtons backUrl={backUrl} />
-    </FormBase>
+    <>
+      {warningMessage && (
+        <Alert severity="warning" className="mb-4">
+          {warningMessage}
+        </Alert>
+      )}
+      <FormBase
+        schema={penaltyCalculatorSchema}
+        uiSchema={penaltyCalculatorUiSchema}
+        formData={formData}
+        onChange={handleChange}
+        className="w-full"
+      >
+        <ComplianceStepButtons backUrl={backUrl} />
+      </FormBase>
+    </>
   );
 }

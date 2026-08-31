@@ -60,14 +60,19 @@ export const getPenaltyAccrualCalculationData = async (
 
   const queryParams = buildQueryParams(mappedParams);
 
-  const data = await actionHandler(
-    `compliance/compliance-report-versions/${complianceReportVersionId}/obligation/calculate-penalty${queryParams}`,
-    "GET",
-    "",
-  );
+  let data;
+  try {
+    data = await actionHandler(
+      `compliance/compliance-report-versions/${complianceReportVersionId}/obligation/calculate-penalty${queryParams}`,
+      "GET",
+      "",
+    );
+  } catch (err: any) {
+    return { error: err?.message ?? "Failed to fetch penalty accrual data" };
+  }
 
   if (!data || data.error) {
-    throw new Error(`Failed to fetch penalty accrual data`);
+    return { error: data?.error ?? "Failed to fetch penalty accrual data" };
   }
 
   return data;
