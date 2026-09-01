@@ -35,7 +35,7 @@ export const generateReviewObligationPenaltyTaskList: (
     },
   ];
 
-  if (penaltyStatus != PenaltyStatus.PAID) {
+  if (penaltyStatus !== PenaltyStatus.PAID) {
     elements.push({
       type: "Page" as const,
       title: "Penalty calculator",
