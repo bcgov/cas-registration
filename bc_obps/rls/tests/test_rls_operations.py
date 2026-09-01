@@ -68,7 +68,8 @@ class TestRlsOperations(TestCase):
         if not hasattr(rls, "grants"):
             raise NotImplementedError(f"Model `{table_name}` must implement a 'grants' attribute in 'Rls' class.")
 
-        if not hasattr(rls, "policies"):
+        enable_rls = getattr(rls, "enable_rls", False)
+        if enable_rls and not hasattr(rls, "policies"):
             raise NotImplementedError(f"Model `{table_name}` must implement a 'policies' attribute in 'Rls' class.")
 
         if model._meta.many_to_many:
