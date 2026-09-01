@@ -383,16 +383,14 @@ class PenaltyCalculationService:
         obligation: ComplianceObligation,
         accrual_start_date: date,
         final_accrual_date: date | None = None,
-        penalty_type: CompliancePenalty.PenaltyType = CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
     ) -> CalculatedPenaltyData:
         """
-        Calculate penalty for an obligation by retrieving data from eLicensing.
+        Calculate automatic overdue penalty for an obligation by retrieving data from eLicensing.
 
         Args:
             obligation: The compliance obligation
             accrual_start_date: The first day that the penalty begins accruing
             final_accrual_date: The last day that the penalty accrued, default None which means today
-            penalty_type: The type of penalty, default Automatic Overdue
 
         Returns:
             CalculatedPenaltyData Dataclass
