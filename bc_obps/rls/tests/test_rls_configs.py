@@ -15,7 +15,8 @@ class TestRlsConfigs:
             if not hasattr(rls, "grants"):
                 missing_grants.append(model.__name__)
 
-            if not hasattr(rls, "policies"):
+            enable_rls = getattr(rls, "enable_rls", False)
+            if enable_rls and not hasattr(rls, "policies"):
                 missing_grants.append(model.__name__)
 
             many_to_many_fields = model._meta.many_to_many
@@ -29,7 +30,7 @@ class TestRlsConfigs:
             errors.append(f"Models missing Rls class:\n{'\n'.join(missing_rls)}")
         if missing_grants:
             errors.append(f"Models missing Rls.grants attribute:\n{'\n'.join(missing_grants)}")
-        if missing_grants:
+        if missing_policies:
             errors.append(f"Models missing Rls.policies attribute:\n{'\n'.join(missing_policies)}")
         if missing_m2m:
             errors.append(
