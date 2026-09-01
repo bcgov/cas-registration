@@ -43,22 +43,19 @@ class Rls:
     }
 
     facility_report_activities_using_statement = """
-        facilityreport_id IN (
-            SELECT fr.id
-            FROM erc.facility_report fr
-            JOIN erc.report_version rv ON fr.report_version_id = rv.id
-            JOIN erc.report r ON rv.report_id = r.id
-            WHERE r.operator_id IN (
-                SELECT uo.operator_id
-                FROM erc.user_operator uo
-                WHERE uo.user_id = current_setting('my.guid', true)::uuid
-                AND uo.status = 'Approved'
-            )
+        exists (
+            select 1 from erc.facility_report fr where fr.id = facilityreport_id
         )
     """
-    facility_report_activities_delete_using_statement = RlsPolicy.add_draft_check_to_report_using_statement(
-        facility_report_activities_using_statement
-    )
+    facility_report_activities_delete_using_statement = """
+        exists (
+            select 1 from erc.facility_report fr
+            join erc.report_version rv
+                on fr.report_version_id = rv.id
+                and rv.status = 'Draft'
+                and fr.id = facilityreport_id
+        )
+    """
 
     m2m_models_policy_mapping = {
         ReportingTableNames.FACILITY_REPORT_ACTIVITIES: M2MPolicyStatements(
