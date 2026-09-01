@@ -21,16 +21,24 @@ export const PenaltyTypeButtonGroupWidget = ({
   onChange,
   disabled,
   readonly,
+  options: uiOptions,
 }: WidgetProps) => {
   const selectedValue = (value as string) || DEFAULT_VALUE;
+  const showLabel = (uiOptions as any)?.label !== false;
+  // set default label if none is specified
+  const ariaLabel =
+    typeof label === "string" && label.trim().length > 0
+      ? label
+      : "Select penalty type";
 
   return (
     <div className="w-full">
       <p className="mb-2">{label}</p>
+      {showLabel && label ? <p className="mb-2">{label}</p> : null}
       <div
         className="flex flex-nowrap gap-0"
         role="radiogroup"
-        aria-label={label}
+        aria-label={ariaLabel}
       >
         {options.map((option) => {
           const isSelected = selectedValue === option.value;
