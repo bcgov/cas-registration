@@ -49,15 +49,18 @@ const ProductionDataForm: React.FC<Props> = ({
     "Large Facility",
   ].includes(facilityType);
 
-  // Only LFOs are allowed to select or not certain products
-  const selectedProductionData = isLfoFacility
-    ? initialData
-    : allowedProducts.map(
-        (product) =>
-          initialData.find(
-            (item) => item.product_name === product.product_name,
-          ) ?? product,
-      );
+  // We select all products:
+  // - either if the facility is not an LFO
+  // - or if the facility is an LFO but nothing has been selected before (assuming first visit)
+  const selectedProductionData =
+    isLfoFacility && initialData.length > 0
+      ? initialData
+      : allowedProducts.map(
+          (product) =>
+            initialData.find(
+              (item) => item.product_name === product.product_name,
+            ) ?? product,
+        );
 
   const initialFormData = {
     product_selection: selectedProductionData.map((i) => i.product_name),
@@ -225,7 +228,9 @@ const ProductionDataForm: React.FC<Props> = ({
       }
       onChange={(data: any) => onChange((data as any).formData)}
       continueUrl={navigationInformation.continueUrl}
-      submitButtonDisabled={formData.product_selection.length <= 0}
+      submitButtonDisabled={
+        formData.product_selection.length <= 0 && !isLfoFacility
+      }
       errors={renderedErrors}
     />
   );
