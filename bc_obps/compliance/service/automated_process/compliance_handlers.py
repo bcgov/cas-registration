@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 from decimal import Decimal
 from typing import Protocol
 from django.utils import timezone
@@ -6,7 +7,7 @@ from compliance.models.elicensing_invoice import ElicensingInvoice
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.models.compliance_penalty import CompliancePenalty
-from compliance.service.penalty_calculation_service import PenaltyCalculationService
+from compliance.service.penalty_calculation_service import CalculatedPenaltyData, PenaltyCalculationService
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from django.db import transaction
 
@@ -20,6 +21,13 @@ def _is_penalty_invoice(invoice: ElicensingInvoice) -> bool:
     Check whether this invoice is itself a penalty's own invoice (as opposed to an obligation's invoice)
     """
     return bool(hasattr(invoice, 'compliance_penalty') and getattr(invoice, 'compliance_penalty', None))
+
+
+def _has_automatic_overdue_penalty(obligation: ComplianceObligation) -> bool:
+    """
+    Check whether an automatic overdue penalty has already been created for this obligation
+    """
+    return obligation.compliance_penalties.filter(penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE).exists()
 
 
 class ComplianceUpdateHandler(Protocol):
@@ -91,6 +99,11 @@ class PenaltyAccruingHandler(ComplianceUpdateHandler):
         obligation = invoice.compliance_obligation
         compliance_period = obligation.compliance_report_version.compliance_report.compliance_period
         compliance_deadline = compliance_period.compliance_deadline
+
+        # Once the penalty has maxed out at 3x the obligation, it has been invoiced and is no longer
+        # accruing, so it must not be flipped back to ACCRUING while the obligation stays unpaid
+        if _has_automatic_overdue_penalty(obligation):
+            return False
 
         return (
             invoice.compliance_obligation.compliance_report_version.status
@@ -165,13 +178,77 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
             logger.info(f"Created penalties for obligation {obligation.obligation_id}")
 
         # If we are past the deadline & the last transaction that brought the obligation to zero was also received past the deadline, create an automatic overdue penalty
-        if effective_deadline < timezone.now().date() and final_transaction_date > effective_deadline:  # type: ignore [operator]
+        # A penalty that already maxed out at 3x the obligation was invoiced while the obligation was still outstanding, so there is nothing left to create here
+        if (
+            effective_deadline < timezone.now().date()
+            and final_transaction_date > effective_deadline  # type: ignore [operator]
+            and not _has_automatic_overdue_penalty(obligation)
+        ):
             retryable_create_penalty.execute(
                 obligation_id=obligation.id,
                 penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
                 effective_deadline=effective_deadline,
             )
             logger.info(f"Created penalties for obligation {obligation.obligation_id}")
+
+
+class MaxPenaltyHandler(ComplianceUpdateHandler):
+    """
+    Handler for obligations whose automatic overdue penalty has reached its maximum of 3x the
+    obligation. The penalty stops accruing at that point and becomes payable immediately, so the
+    penalty and its invoice are generated even though the obligation itself is still outstanding
+    """
+
+    def __init__(self) -> None:
+        self._penalty_data: CalculatedPenaltyData | None = None
+
+    def can_handle(self, invoice: ElicensingInvoice) -> bool:
+        """Check if the obligation's accruing penalty has reached 3x the obligation"""
+
+        # Only run for obligation invoices; skip penalty invoices
+        if _is_penalty_invoice(invoice):
+            return False
+
+        obligation = invoice.compliance_obligation
+
+        # Cheap checks first, so the penalty calculation below only runs for the obligations that
+        # could plausibly have maxed out
+        if (
+            obligation.compliance_report_version.status != ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+            or obligation.penalty_status != ComplianceObligation.PenaltyStatus.ACCRUING
+            or invoice.invoice_fee_balance <= ZERO_DECIMAL  # type: ignore[operator]
+            or _has_automatic_overdue_penalty(obligation)
+        ):
+            return False
+
+        penalty_accrual_context = PenaltyCalculationService.get_penalty_accrual_context(obligation)
+        if penalty_accrual_context.effective_deadline >= timezone.now().date():
+            return False
+
+        self._penalty_data = PenaltyCalculationService.calculate_penalty(
+            obligation=obligation,
+            accrual_start_date=penalty_accrual_context.effective_deadline + timedelta(days=1),
+        )
+        return self._penalty_data.cap_reached_date is not None
+
+    def handle(self, invoice: ElicensingInvoice) -> None:
+        """Create the maxed out automatic overdue penalty and its invoice, due 30 days from now"""
+        from compliance.tasks import retryable_create_penalty
+
+        obligation = invoice.compliance_obligation
+        cap_reached_date = self._penalty_data.cap_reached_date  # type: ignore[union-attr]
+        effective_deadline = PenaltyCalculationService.get_penalty_accrual_context(obligation).effective_deadline
+
+        retryable_create_penalty.execute(
+            obligation_id=obligation.id,
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+            effective_deadline=effective_deadline,
+            final_accrual_date=cap_reached_date,
+        )
+        logger.info(
+            f"Automatic overdue penalty reached the maximum of 3x the obligation on {cap_reached_date}; "
+            f"created penalty for obligation {obligation.obligation_id}"
+        )
 
 
 class InterestPaidHandler(ComplianceUpdateHandler):
@@ -207,6 +284,9 @@ class ComplianceHandlerManager:
         self.handlers: list[ComplianceUpdateHandler] = [
             PenaltyPaidHandler(),
             PenaltyAccruingHandler(),
+            # Runs after PenaltyAccruingHandler, which is what moves an obligation into the ACCRUING
+            # state this handler acts on
+            MaxPenaltyHandler(),
             ObligationPaidHandler(),
             InterestPaidHandler(),
         ]

@@ -58,6 +58,7 @@ export function ComplianceSummaryReviewComponent({
         data.reporting_year,
         Number(data.automatic_overdue_penalty_amount) > 0,
         Number(data.ggeapar_interest_amount) > 0,
+        data.is_maximum_penalty_reached,
       )}
       uiSchema={complianceSummaryReviewUiSchema}
       formData={data}

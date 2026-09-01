@@ -179,6 +179,7 @@ export interface AccruingPenalties {
   faa_interest: string;
   automatic_overdue_penalty_amount: string;
   ggeapar_interest_amount: string;
+  is_maximum_penalty_reached: boolean;
 }
 
 export interface ComplianceSummaryReviewPageData

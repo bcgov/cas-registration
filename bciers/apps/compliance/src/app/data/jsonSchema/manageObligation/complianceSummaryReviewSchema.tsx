@@ -15,6 +15,7 @@ export const createComplianceSummaryReviewSchema = (
   reportingYear: number,
   hasAccruingAutomaticOverduePenalty: boolean = false,
   hasAccruingGgeaparInterest: boolean = false,
+  isMaximumPenaltyReached: boolean = false,
 ): RJSFSchema => ({
   type: "object",
   title: `Review ${reportingYear} Compliance Obligation Report`,
@@ -43,13 +44,16 @@ export const createComplianceSummaryReviewSchema = (
       "Equivalent Value (Not including interest):",
     ),
     faa_interest: readOnlyStringField("FAA interest as of today:"),
-    // Penalty sections are only shown while a penalty is actually accruing
+    // Penalty sections are only shown while a penalty is accruing, or once the automatic overdue
+    // penalty has stopped accruing because it reached its maximum of 3x the obligation
     ...(hasAccruingAutomaticOverduePenalty && {
       automatic_overdue_penalty_header: readOnlyObjectField(
         "Automatic Overdue Penalty",
       ),
       automatic_overdue_penalty_amount: readOnlyStringField(
-        "Amount as of today:",
+        isMaximumPenaltyReached
+          ? "Amount as of today (maxed out):"
+          : "Amount as of today:",
       ),
     }),
     ...(hasAccruingGgeaparInterest && {
