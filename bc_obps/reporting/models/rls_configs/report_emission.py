@@ -9,6 +9,7 @@ from rls.utils.helpers import (
 from rls.utils.m2m import M2MPolicyStatements
 from rls.utils.policy import RlsPolicy
 
+
 class Rls:
     enable_rls = True
     schema = 'erc'
@@ -28,22 +29,19 @@ class Rls:
     grants = generate_rls_grants(role_grants_mapping, table)
     # M2M relationships
     report_emission_emission_categories_using_statement = """
-            reportemission_id IN (
-                SELECT re.id
-                FROM erc.report_emission re
-                JOIN erc.report_version rv ON re.report_version_id = rv.id
-                JOIN erc.report r ON rv.report_id = r.id
-                WHERE r.operator_id IN (
-                    SELECT uo.operator_id
-                    FROM erc.user_operator uo
-                    WHERE uo.user_id = current_setting('my.guid', true)::uuid
-                    AND uo.status = 'Approved'
-                )
-            )
-        """
-    report_emission_emission_categories_delete_using_statement = RlsPolicy.add_draft_check_to_report_using_statement(
-        report_emission_emission_categories_using_statement
-    )
+        exists (
+            select 1 from erc.report_emission re where re.id = reportemission_id
+        )
+    """
+    report_emission_emission_categories_delete_using_statement = """
+        exists (
+            select 1 from erc.report_emission re
+            join erc.report_version rv
+                on re.report_version_id = rv.id
+                and rv.status = 'Draft'
+                and re.id = reportemission_id
+        )
+    """
 
     m2m_models_grants_mapping = {
         ReportingTableNames.REPORT_EMISSION_EMISSION_CATEGORIES: {

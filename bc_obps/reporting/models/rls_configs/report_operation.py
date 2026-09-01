@@ -55,22 +55,19 @@ class Rls:
         },
     }
     report_operation_m2m_using_statement = """
-        reportoperation_id IN (
-            SELECT ro.id
-            FROM erc.report_operation ro
-            JOIN erc.report_version rv ON ro.report_version_id = rv.id
-            JOIN erc.report r ON rv.report_id = r.id
-            WHERE r.operator_id IN (
-                SELECT uo.operator_id
-                FROM erc.user_operator uo
-                WHERE uo.user_id = current_setting('my.guid', true)::uuid
-                AND uo.status = 'Approved'
-            )
+        exists (
+            select 1 from erc.report_operation ro where ro.id = reportoperation_id
         )
     """
-    report_operation_m2m_delete_using_statement = RlsPolicy.add_draft_check_to_report_using_statement(
-        report_operation_m2m_using_statement
-    )
+    report_operation_m2m_delete_using_statement = """
+        exists (
+            select 1 from erc.report_operation ro
+            join erc.report_version rv
+            on ro.report_version_id = rv.id
+            and rv.status = 'Draft'
+            and ro.id = reportoperation_id
+        )
+    """
     m2m_models_policy_mapping = {
         ReportingTableNames.REPORT_OPERATION_ACTIVITIES: M2MPolicyStatements(
             using_statement=report_operation_m2m_using_statement,
