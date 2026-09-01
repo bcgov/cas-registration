@@ -2569,7 +2569,7 @@ __metadata:
     "@nx/eslint-plugin": "npm:22.7.8"
     "@nx/js": "npm:22.7.8"
     "@nx/next": "npm:23.1.1"
-    "@nx/playwright": "npm:22.7.8"
+    "@nx/playwright": "npm:23.1.1"
     "@nx/react": "npm:22.7.8"
     "@nx/vite": "npm:22.7.8"
     "@nx/vitest": "npm:22.7.8"
@@ -4873,21 +4873,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nx/playwright@npm:22.7.8":
-  version: 22.7.8
-  resolution: "@nx/playwright@npm:22.7.8"
+"@nx/playwright@npm:23.1.1":
+  version: 23.1.1
+  resolution: "@nx/playwright@npm:23.1.1"
   dependencies:
-    "@nx/devkit": "npm:22.7.8"
-    "@nx/eslint": "npm:22.7.8"
-    "@nx/js": "npm:22.7.8"
+    "@nx/devkit": "npm:23.1.1"
+    "@nx/eslint": "npm:23.1.1"
+    "@nx/js": "npm:23.1.1"
     minimatch: "npm:10.2.5"
+    semver: "npm:^7.6.3"
     tslib: "npm:^2.3.0"
   peerDependencies:
     "@playwright/test": ^1.36.0
   peerDependenciesMeta:
     "@playwright/test":
       optional: true
-  checksum: 10c0/282dedcc0abcc9b7597c54aed6d6b8f6eff34aa9477b6c65b611febb3ce008d8f044eda29e204b5b3eb129d9b94be8b5a121e038ba49fe64bf2721db287f4801
+  checksum: 10c0/18fd11d9ee8fbea773d3c0678ea44c722d333cac0511877023db9365b92a1716173155d7df1941e48adac29783f27cac0e8814fbc6e277292d4185d7aa47e582
   languageName: node
   linkType: hard
 
