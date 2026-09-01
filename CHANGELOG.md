@@ -1,5 +1,19 @@
 # Changelog
 
+# [5.20.0](https://github.com/bcgov/cas-registration/compare/v5.19.1...v5.20.0) (2026-09-01)
+
+### Bug Fixes
+
+- **deps:** update dependency eslint-config-next to v16.3.2 ([4ead7d6](https://github.com/bcgov/cas-registration/commit/4ead7d68b948085a98471bda72f89f46ea7b060f))
+- **deps:** update dependency next to v16.3.2 ([7e849c4](https://github.com/bcgov/cas-registration/commit/7e849c45c50a254db59b1176653226853d64387f))
+- **deps:** update node dependencies ([1018f1d](https://github.com/bcgov/cas-registration/commit/1018f1d1ed87dac1339e041967eac5fdd7c73364))
+- limit lime error validation message based on year and valid_from/to ([76588f2](https://github.com/bcgov/cas-registration/commit/76588f257fb676fc8cbe3d912dd1c8c9f4c600fb))
+
+### Features
+
+- add compliance units applied section to internal user view ([2f9862d](https://github.com/bcgov/cas-registration/commit/2f9862d34d3ee828b232e44741d98816fb466a44))
+- display remote BCCR endpoint error and update endpoint to match ([f907ccf](https://github.com/bcgov/cas-registration/commit/f907ccf8f8f90faeb699aa9242c0eec53241356d))
+
 ## [5.19.1](https://github.com/bcgov/cas-registration/compare/v5.19.0...v5.19.1) (2026-08-25)
 
 ### Bug Fixes
