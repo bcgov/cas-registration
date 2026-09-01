@@ -105,6 +105,49 @@ describe("The ProductionDataForm component", () => {
     expect(calledProps.saveButtonDisabled).toBe(true);
   });
 
+  it("Enables the submit button when an LFO facility has selected no products", async () => {
+    render(
+      <ProductionDataForm
+        allowedProducts={[{ product_id: 2024, product_name: "test" }]}
+        initialData={[
+          {
+            product_id: 2024,
+            product_name: "test",
+            production_methodology: "a",
+            unit: "unit",
+          },
+        ]}
+        facility_id="abcd"
+        report_version_id={1000}
+        schema={{ testSchema: true }}
+        navigationInformation={dummyNavigationInformation}
+        facilityType={"Large Facility"}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        reportingYear={2024}
+        isOptedOut={false}
+      />,
+    );
+
+    const changeHandlerUnderTest =
+      mockMultiStepFormWithTaskList.mock.calls[0][0].onChange;
+    await act(() =>
+      changeHandlerUnderTest({
+        formData: {
+          product_selection: [],
+          production_data: [],
+        },
+      }),
+    );
+
+    const calledProps = mockMultiStepFormWithTaskList.mock.lastCall![0];
+    expect(calledProps.formData).toStrictEqual({
+      product_selection: [],
+      production_data: [],
+    });
+    expect(calledProps.submitButtonDisabled).toBe(false);
+  });
+
   it("Blocks an SFO facility and shows an error banner + message when no regulated products are available to be selected", async () => {
     const mockPush = vi.fn();
     mockRouter.mockReturnValue({ push: mockPush });
