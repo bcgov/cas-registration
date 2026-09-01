@@ -22,7 +22,7 @@ class ReportFuelModelTest(BaseTestCase):
             ("report_source_type", "report source type", None, None),
             ("report_unit", "report unit", None, None),
             ("fuel_type", "fuel type", None, None),
-            ("ReportFuel_records", "report emission", None, 0),
+            ("reportemission_records", "report emission", None, 0),
         ]
 
     def test_immutable_after_report_version_submitted(self):
