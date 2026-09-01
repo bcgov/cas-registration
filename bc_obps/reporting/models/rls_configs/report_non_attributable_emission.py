@@ -9,6 +9,7 @@ from rls.utils.helpers import (
 from rls.utils.m2m import M2MPolicyStatements
 from rls.utils.policy import RlsPolicy
 
+
 class Rls:
     enable_rls = True
     schema = 'erc'
@@ -42,22 +43,19 @@ class Rls:
         }
     }
     report_non_attributable_emissions_gas_type_using_statement = """
-        reportnonattributableemissions_id IN (
-            SELECT rnae.id
-            FROM erc.report_non_attributable_emissions rnae
-            JOIN erc.report_version rv ON rnae.report_version_id = rv.id
-            JOIN erc.report r ON rv.report_id = r.id
-            WHERE r.operator_id IN (
-                SELECT uo.operator_id
-                FROM erc.user_operator uo
-                WHERE uo.user_id = current_setting('my.guid', true)::uuid
-                AND uo.status = 'Approved'
-            )
+        exists (
+            select 1 from erc.report_non_attributable_emissions rnae where rnae.id = reportnonattributableemissions_id
         )
     """
-    report_non_attributable_emissions_gas_type_delete_using_statement = RlsPolicy.add_draft_check_to_report_using_statement(
-        report_non_attributable_emissions_gas_type_using_statement
-    )
+    report_non_attributable_emissions_gas_type_delete_using_statement = """
+        exists (
+            select 1 from erc.report_non_attributable_emissions rnae
+            join erc.report_version rv
+                on rnae.report_version_id = rv.id
+                and rv.status = 'Draft'
+                and rnae.id = reportnonattributableemissions_id
+        )
+    """
     m2m_models_policy_mapping = {
         ReportingTableNames.REPORT_NON_ATTRIBUTABLE_EMISSIONS_GAS_TYPE: M2MPolicyStatements(
             using_statement=report_non_attributable_emissions_gas_type_using_statement,
