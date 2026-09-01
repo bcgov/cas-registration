@@ -30,6 +30,7 @@ class Rls:
             )
             select 1 from erc.operation_designated_operator_timeline tline
             join approved_operator ao on ao.operator_id = tline.operator_id
+            and report.operator_id = tline.operator_id
             and tline.operation_id = report.operation_id
             and (start_date <= concat(report.reporting_year_id::text, '-12-31')::date and (end_date is null or end_date >= concat(report.reporting_year_id::text, '-12-31')::date))
         )"""
