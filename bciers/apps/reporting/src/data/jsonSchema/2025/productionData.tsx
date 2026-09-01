@@ -1,6 +1,7 @@
 import {
   FieldTemplate,
   InlineFieldTemplate,
+  SectionFieldTemplate,
   TitleOnlyFieldTemplate,
 } from "@bciers/components/form/fields";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
@@ -142,9 +143,12 @@ export const productionDataUiSchema2025 = (isOptedOut: boolean): UiSchema => ({
     "ui:classNames": "mt-2 mb-5 emission-array-header",
   },
   product_selection: {
+    "ui:FieldTemplate": SectionFieldTemplate,
     "ui:widget": "CheckboxGroupWidget",
     "ui:options": {
       label: false,
+      columns: 1,
+      sectionMarginTop: "mt-0",
     },
   },
   production_data: {
