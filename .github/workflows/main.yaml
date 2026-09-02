@@ -8,11 +8,14 @@ on:
   pull_request:
     branches: [develop, main]
     types: [opened, synchronize, reopened, labeled]
+  pull_request_review:
+    # Any pull request review submitted (including comments, and change requests) triggers this workflow. See `jobs.check-nx-affected.if` for an example guard.
+    types: [submitted]
   workflow_dispatch:
   merge_group:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: true
 
 env:
@@ -20,6 +23,8 @@ env:
 
 jobs:
   check-nx-affected:
+    # We guard this workflow to only run on non-pull request review events or only when the review state is 'approved'.
+    if: github.event_name != 'pull_request_review' || github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
@@ -44,34 +49,43 @@ jobs:
         working-directory: ./bciers
         shell: bash
   check-backend-changes:
+    if: github.event_name != 'pull_request_review' || github.event.review.state == 'approved'
     uses: ./.github/workflows/check-backend-changes.yaml
   check-frontend-changes:
+    if: github.event_name != 'pull_request_review' || github.event.review.state == 'approved'
     uses: ./.github/workflows/check-frontend-changes.yaml
   build-administration:
+    if: github.event_name != 'pull_request_review' || github.event.review.state == 'approved'
     uses: ./.github/workflows/build-administration.yaml
   build-backend:
+    if: github.event_name != 'pull_request_review' || github.event.review.state == 'approved'
     uses: ./.github/workflows/build-backend.yaml
   build-compliance:
+    if: github.event_name != 'pull_request_review' || github.event.review.state == 'approved'
     uses: ./.github/workflows/build-compliance.yaml
   build-dashboard:
+    if: github.event_name != 'pull_request_review' || github.event.review.state == 'approved'
     uses: ./.github/workflows/build-dashboard.yaml
   build-dashboard-e2e:
+    if: github.event_name != 'pull_request_review' || github.event.review.state == 'approved'
     uses: ./.github/workflows/build-dashboard-e2e.yaml
   build-registration:
+    if: github.event_name != 'pull_request_review' || github.event.review.state == 'approved'
     uses: ./.github/workflows/build-registration.yaml
   build-reporting:
+    if: github.event_name != 'pull_request_review' || github.event.review.state == 'approved'
     uses: ./.github/workflows/build-reporting.yaml
   test-code:
     needs: [check-nx-affected, check-backend-changes, check-frontend-changes]
     uses: ./.github/workflows/test-code.yaml
     with:
-      backend_has_changes: ${{ (needs.check-backend-changes.outputs.has_changes || contains(github.event.pull_request.labels.*.name, 'run-all-ci')) && 'true' || 'false' }}
-      frontend_has_changes: ${{ (needs.check-frontend-changes.outputs.has_changes || contains(github.event.pull_request.labels.*.name, 'run-all-ci')) && 'true' || 'false' }}
+      backend_has_changes: ${{ (needs.check-backend-changes.outputs.has_changes || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || github.event.review.state == 'approved')) && 'true' || 'false' }}
+      frontend_has_changes: ${{ (needs.check-frontend-changes.outputs.has_changes || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || github.event.review.state == 'approved')) && 'true' || 'false' }}
   test-backend:
     needs: [check-backend-changes]
     uses: ./.github/workflows/test-backend.yaml
     with:
-      backend_has_changes: ${{ (needs.check-backend-changes.outputs.has_changes || contains(github.event.pull_request.labels.*.name, 'run-all-ci')) && 'true' || 'false' }}
+      backend_has_changes: ${{ (needs.check-backend-changes.outputs.has_changes || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || github.event.review.state == 'approved')) && 'true' || 'false' }}
     secrets: inherit
   test-administration-e2e:
     needs:
@@ -85,7 +99,7 @@ jobs:
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       compose_profiles: "administration"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'administration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'administration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || github.event.review.state == 'approved') }}
       nx_project: administration
     secrets: inherit
   test-registration-e2e:
@@ -100,7 +114,7 @@ jobs:
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       compose_profiles: "registration"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || github.event.review.state == 'approved') }}
       nx_project: registration
     secrets: inherit
   test-dashboard-e2e:
@@ -119,7 +133,7 @@ jobs:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       # dashboard e2e clicks through to every app tile, so every app has to be up
       compose_profiles: "administration,compliance,registration,reporting"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || github.event.review.state == 'approved') }}
       nx_project: dashboard
     secrets: inherit
   test-compliance-e2e:
@@ -137,7 +151,7 @@ jobs:
       # compliance e2e drives the reporting UI directly to seed its data
       # (its specs import @/reporting-e2e POMs), so reporting has to be up too
       compose_profiles: "compliance,reporting"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || github.event.review.state == 'approved') }}
       nx_project: compliance
     secrets: inherit
   test-reporting-e2e:
@@ -147,10 +161,12 @@ jobs:
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       compose_profiles: "reporting"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || github.event.review.state == 'approved') }}
       nx_project: reporting
     secrets: inherit
   trivy:
+    if: github.event_name != 'pull_request_review' || github.event.review.state == 'approved'
     uses: ./.github/workflows/trivy.yaml
   codeql:
+    if: github.event_name != 'pull_request_review' || github.event.review.state == 'approved'
     uses: ./.github/workflows/codeql.yaml
