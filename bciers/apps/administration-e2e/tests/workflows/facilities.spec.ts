@@ -14,6 +14,7 @@ import {
 import {
   assertSuccessfulSnackbar,
   checkAlertMessage,
+  checkBreadcrumbText,
   clickButton,
   fillComboxboxWidget,
   fillInputValueByLabel,
@@ -202,5 +203,44 @@ test.describe("Add/edit facility", () => {
       page,
       "This form can't be saved yet. Please fix the errors above.",
     );
+  });
+
+  test("LFO — Add Facility happy path creates a new facility", async ({
+    page,
+  }) => {
+    const facilityPage = new FacilityPOM(page);
+    await facilityPage.route();
+
+    // 🛸 Locate Banana LFO via the Operations grid, then its Facilities grid
+    await facilityPage.goToOperationFacilities(
+      FacilityE2EValue.LFO_OPERATION_WITH_FACILITIES,
+      /view facilities/i,
+    );
+
+    await facilityPage.clickAddFacility();
+
+    await fillInputValueByLabel(
+      page,
+      FacilityFormField.NAME,
+      FacilityE2EValue.NEW_FACILITY_NAME,
+    );
+    await fillComboxboxWidget(page, FacilityFormField.TYPE, FacilityType.LARGE);
+    await fillInputValueByLabel(
+      page,
+      FacilityFormField.LATITUDE,
+      FacilityE2EValue.NEW_LATITUDE,
+    );
+    await fillInputValueByLabel(
+      page,
+      FacilityFormField.LONGITUDE,
+      FacilityE2EValue.NEW_LONGITUDE,
+    );
+    await clickButton(page, /save/i);
+
+    await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);
+    await expect(page).not.toHaveURL(/add-facility/);
+
+    // The breadcrumb updates to show the new facility's name once created
+    await checkBreadcrumbText(page, FacilityE2EValue.NEW_FACILITY_NAME);
   });
 });
