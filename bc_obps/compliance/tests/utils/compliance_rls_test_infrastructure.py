@@ -78,8 +78,8 @@ class ComplianceReportRlsTestSetup:
         self.compliance_report_2013 = make_recipe(
             'compliance.tests.utils.compliance_report', report=report_2013, compliance_period=compliance_period_2013
         )
-        self.compliance_report_version_2010 = make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=self.compliance_report_2010
+        self.compliance_report_version_2013 = make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=self.compliance_report_2013
         )
         # 2012 report - non-matching user operator
         self.report_2012 = make_recipe(
