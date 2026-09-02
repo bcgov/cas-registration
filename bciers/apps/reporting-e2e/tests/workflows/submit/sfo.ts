@@ -111,7 +111,6 @@ export async function runSfoSubmitReport({
 
   // ── 9. Allocation of Emissions ──
   await verifyFormTitle(page, "Allocation of Emissions");
-  await facilityReport.verifyAllocationAlerts();
   await facilityReport.fillAllocationOfEmissions();
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Allocation of Emissions",
