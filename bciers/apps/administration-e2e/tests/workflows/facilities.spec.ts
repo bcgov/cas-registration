@@ -249,7 +249,6 @@ test.describe("Add/edit facility", () => {
 
     await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);
     await expect(page).not.toHaveURL(/add-facility/);
-    await clickButton(page, /save/i);
 
     // The breadcrumb updates to show the new facility's name once created
     await checkBreadcrumbText(page, FacilityE2EValue.NEW_FACILITY_NAME);
