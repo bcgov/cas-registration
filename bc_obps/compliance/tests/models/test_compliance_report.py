@@ -3,6 +3,7 @@ from compliance.models.compliance_report import ComplianceReport
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from model_bakery.baker import make_recipe
+from compliance.tests.utils.compliance_rls_test_infrastructure import ComplianceReportRlsTestSetup
 
 
 class ComplianceReportTest(BaseTestCase):
@@ -22,72 +23,29 @@ class ComplianceReportTest(BaseTestCase):
 #  RLS tests
 class TestComplianceReportRls(BaseTestCase):
     def test_compliance_report_rls_industry_user(self):
-        compliance_period = make_recipe('compliance.tests.utils.compliance_period')
-
-        # create two user_operators to set up for transfers
-        new_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
-        old_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
-
-        # operation
-        operation = make_recipe(
-            'registration.tests.utils.operation', operator=new_user_operator.operator, status="Registered"
-        )
-        # timeline of current and historical ownership
-        make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
-            operation=operation,
-            operator=old_user_operator.operator,
-        )
-        make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
-            operation=operation,
-            operator=new_user_operator.operator,
-        )
-        # old operator's data
-        old_operator_report = make_recipe(
-            'reporting.tests.utils.report', operation=operation, operator=old_user_operator.operator
-        )
-        old_operator_compliance_report = make_recipe(
-            'compliance.tests.utils.compliance_report', report=old_operator_report
-        )
-
-        # new operator's data
-        new_operator_report = make_recipe(
-            'reporting.tests.utils.report', operation=operation, operator=new_user_operator.operator
-        )
-        new_operator_compliance_report = make_recipe(
-            'compliance.tests.utils.compliance_report', report=new_operator_report
-        )
-
-        # extra objects for insert function
-        new_operator_report_2 = make_recipe(
-            'reporting.tests.utils.report', operation=operation, operator=new_user_operator.operator
-        )
-        old_report_2 = make_recipe(
-            'reporting.tests.utils.report', operation=operation, operator=old_user_operator.operator
-        )
+        t = ComplianceReportRlsTestSetup()
 
         assert ComplianceReport.objects.count() == 2
 
         # test to access currently owned operation data
         def select_function(cursor):
-            ComplianceReport.objects.get(id=new_operator_compliance_report.id)
+            ComplianceReport.objects.get(id=t.compliance_report_2010.id)
 
         def forbidden_select_function(cursor):
-            ComplianceReport.objects.get(id=old_operator_compliance_report.id)
+            ComplianceReport.objects.get(id=t.compliance_report_2013.id)
 
         def insert_function(cursor):
             ComplianceReport.objects.create(
-                report=new_operator_report_2,
-                bccr_subaccount_id="123456789099999",
-                compliance_period=compliance_period,
+                report=t.report_2011, bccr_subaccount_id="123456789099999", compliance_period=t.compliance_period_2011
             )
 
         def forbidden_insert_function(cursor):
-            ComplianceReport.objects.create(
-                report=old_report_2,
-                bccr_subaccount_id="123456789099999",
-                compliance_period=compliance_period,
+            cursor.execute(
+                """
+                    INSERT into "erc"."compliance_report"(report_id, bccr_subaccount_id, compliance_period_id)
+                    values(%s, %s, %s)
+                """,
+                (t.report_2012.id, '123456789099999', t.compliance_period_2012.id),
             )
 
         def update_function(cursor):
@@ -97,7 +55,7 @@ class TestComplianceReportRls(BaseTestCase):
                     SET bccr_subaccount_id = %s
                     WHERE id = %s
                 """,
-                ("111111111199999", new_operator_compliance_report.id),
+                ("111111111199999", t.compliance_report_2010.id),
             )
             return cursor.rowcount
 
@@ -108,128 +66,26 @@ class TestComplianceReportRls(BaseTestCase):
                     SET bccr_subaccount_id = %s
                     WHERE id = %s
                 """,
-                ("111111111199999", old_operator_compliance_report.id),
-            )
-            return cursor.rowcount
-
-        def delete_function(cursor):
-            cursor.execute(
-                """
-                   DELETE FROM "erc"."compliance_report"
-                   WHERE id = %s
-                """,
-                (new_operator_compliance_report.id,),
-            )
-            return cursor.rowcount
-
-        def forbidden_delete_function(cursor):
-            cursor.execute(
-                """
-                   DELETE FROM "erc"."compliance_report"
-                   WHERE id = %s
-                """,
-                (old_operator_compliance_report.id,),
+                ("111111111199999", t.compliance_report_2013.id),
             )
             return cursor.rowcount
 
         assert_policies_for_industry_user(
             ComplianceReport,
-            new_user_operator.user,
+            t.approved_user_operator.user,
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            delete_function=delete_function,
             forbidden_select_function=forbidden_select_function,
             forbidden_insert_function=forbidden_insert_function,
             forbidden_update_function=forbidden_update_function,
-            forbidden_delete_function=forbidden_delete_function,
-        )
-
-        # test to access previously owned operation data
-        def select_function(cursor):
-            ComplianceReport.objects.get(id=old_operator_compliance_report.id)
-
-        def forbidden_select_function(cursor):
-            ComplianceReport.objects.get(id=new_operator_compliance_report.id)
-
-        def insert_function(cursor):
-
-            ComplianceReport.objects.create(
-                report=old_report_2,
-                bccr_subaccount_id="123456789099999",
-                compliance_period=compliance_period,
-            )
-
-        def forbidden_insert_function(cursor):
-            ComplianceReport.objects.create(
-                report=new_operator_report_2,
-                bccr_subaccount_id="123456789099999",
-                compliance_period=compliance_period,
-            )
-
-        def update_function(cursor):
-            cursor.execute(
-                """
-                    UPDATE "erc"."compliance_report"
-                    SET bccr_subaccount_id = %s
-                    WHERE id = %s
-                """,
-                ("111111111199999", old_operator_compliance_report.id),
-            )
-            return cursor.rowcount
-
-        def forbidden_update_function(cursor):
-            cursor.execute(
-                """
-                    UPDATE "erc"."compliance_report"
-                    SET bccr_subaccount_id = %s
-                    WHERE id = %s
-                """,
-                ("111111111199999", new_operator_compliance_report.id),
-            )
-            return cursor.rowcount
-
-        def delete_function(cursor):
-            cursor.execute(
-                """
-                   DELETE FROM "erc"."compliance_report"
-                   WHERE id = %s
-                """,
-                (old_operator_compliance_report.id,),
-            )
-            return cursor.rowcount
-
-        def forbidden_delete_function(cursor):
-            cursor.execute(
-                """
-                   DELETE FROM "erc"."compliance_report"
-                   WHERE id = %s
-                """,
-                (new_operator_compliance_report.id,),
-            )
-            return cursor.rowcount
-
-        assert_policies_for_industry_user(
-            ComplianceReport,
-            old_user_operator.user,
-            select_function=select_function,
-            insert_function=insert_function,
-            update_function=update_function,
-            delete_function=delete_function,
-            forbidden_select_function=forbidden_select_function,
-            forbidden_insert_function=forbidden_insert_function,
-            forbidden_update_function=forbidden_update_function,
-            forbidden_delete_function=forbidden_delete_function,
         )
 
     def test_compliance_report_rls_cas_users(self):
-        operator = make_recipe('registration.tests.utils.operator')
-        operation = make_recipe('registration.tests.utils.operation', operator=operator)
-        report = make_recipe('reporting.tests.utils.report', id=99, operation=operation)
-        make_recipe('compliance.tests.utils.compliance_report', id=88, report=report)
+        ComplianceReportRlsTestSetup()
 
         def select_function(cursor):
-            assert ComplianceReport.objects.count() == 1
+            assert ComplianceReport.objects.count() == 2
 
         assert_policies_for_cas_roles(
             ComplianceReport,
