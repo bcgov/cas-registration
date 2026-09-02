@@ -16,7 +16,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name != 'pull_request_review' || github.event.review.state == 'approved' }}
 
 env:
   PGUSER: postgres
