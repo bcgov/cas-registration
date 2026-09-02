@@ -247,3 +247,42 @@ export const ReportingOperationFields: ReadonlyArray<OperationFields> = [
   OperationFields.BOUNDARY_MAP,
   OperationFields.REPORTING_ACTIVITIES,
 ];
+
+// 🔘 Facility button text
+export enum FacilityButtonText {
+  ADD_FACILITY = "Add Facility",
+}
+
+// Facility Form fields selectors
+export enum FacilityFormField {
+  TYPE = "Facility Type*",
+  MUNICIPALITY = "Municipality",
+  LATITUDE = "latitude_of_largest_emissions",
+  LONGITUDE = "longitude_of_largest_emissions",
+}
+
+export enum FacilityType {
+  LARGE = "Large Facility",
+  SMALL_AGGREGATE = "Small Aggregate",
+  SFO = "Single Facility",
+}
+
+export const FacilityE2EValue = {
+  LFO_OPERATION_WITH_FACILITIES: "Banana LFO - Registered",
+  LFO_EDIT_FACILITY_NAME: "Facility 3",
+  LFO_EDIT_FACILITY_BCGHG_ID: "13219990007",
+  SFO_OPERATION_WITH_FACILITY: "Bugle SFO - Registered",
+  SFO_FACILITY_NAME: "Facility 22",
+  TEMP_MUNICIPALITY: "Temp Town",
+};
+
+export const PageLocators = {
+  facilityName: "root_section1_name",
+  facilityType: "root_section1_type",
+  streetAddress: "root_section1_street_address",
+  municipality: "root_section1_municipality",
+  province: "root_section1_province",
+  postalCode: "root_section1_postal_code",
+  latitude: "root_section1_latitude_of_largest_emissions",
+  longitude: "root_section1_longitude_of_largest_emissions",
+};
