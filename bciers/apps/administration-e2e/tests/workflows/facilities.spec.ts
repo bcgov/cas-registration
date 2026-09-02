@@ -8,7 +8,8 @@ import {
   FacilityE2EValue,
   FacilityFormField,
   FacilityType,
-  PageLocators,
+  LfoPageLocators,
+  SfoPageLocators,
 } from "@/administration-e2e/utils/enums";
 import {
   assertSuccessfulSnackbar,
@@ -49,18 +50,28 @@ test.describe("Add/edit facility", () => {
     ).toBeHidden();
     await expect(page.getByRole("button", { name: /edit/i })).toBeVisible();
 
-    // Edit: Facility name & type stays as read-only widget
+    for (const id of Object.values(SfoPageLocators)) {
+      await expect(page.locator(`#${id}`)).toBeVisible();
+      await expect(page.locator(`#${id}`)).toHaveClass(/read-only/i);
+    }
+
+    // Edit: Facility name, type, and province stays as read-only widget
     await clickButton(page, /edit/i);
 
-    // eslint-disable-next-line playwright/no-unused-locators
-    const facilityName = await page.locator(`#${PageLocators.facilityName}`);
-    await expect(facilityName).toHaveClass(/read-only/i);
-    await expect(facilityName).toHaveText(FacilityE2EValue.SFO_FACILITY_NAME);
+    const {
+      name: nameId,
+      type: typeId,
+      province: provinceId,
+      ...editableFieldIds
+    } = SfoPageLocators;
+    for (const id of Object.values(editableFieldIds)) {
+      await expect(page.locator(`#${id}`)).toBeVisible();
+      await expect(page.locator(`#${id}`)).not.toHaveClass(/read-only/i);
+    }
 
-    // eslint-disable-next-line playwright/no-unused-locators
-    const facilityType = await page.locator(`#${PageLocators.facilityType}`);
-    await expect(facilityType).toHaveClass(/read-only/i);
-    await expect(facilityType).toHaveText(FacilityType.SFO);
+    await expect(page.locator(`#${nameId}`)).toHaveClass(/read-only/i);
+    await expect(page.locator(`#${typeId}`)).toHaveClass(/read-only/i);
+    await expect(page.locator(`#${provinceId}`)).toHaveClass(/read-only/i);
 
     await fillInputValueByLabel(
       page,
@@ -163,14 +174,15 @@ test.describe("Add/edit facility", () => {
       FacilityE2EValue.LFO_EDIT_FACILITY_NAME,
     );
 
-    for (const id of Object.values(PageLocators)) {
+    for (const id of Object.values(LfoPageLocators)) {
       await expect(page.locator(`#${id}`)).toBeVisible();
+      await expect(page.locator(`#${id}`)).toHaveClass(/read-only/i);
     }
 
     await clickButton(page, /edit/i);
-    const { province: provinceId, ...editableFieldIds } = PageLocators;
+    const { province: provinceId, ...editableFieldIds } = LfoPageLocators;
     for (const id of Object.values(editableFieldIds)) {
-      await expect(page.locator(`#${id}`)).toBeEnabled();
+      await expect(page.locator(`#${id}`)).toBeVisible();
       await expect(page.locator(`#${id}`)).not.toHaveClass(/read-only/i);
     }
     await expect(page.locator(`#${provinceId}`)).toHaveClass(/read-only/i);
