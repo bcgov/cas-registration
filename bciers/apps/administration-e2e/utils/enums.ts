@@ -274,15 +274,34 @@ export const FacilityE2EValue = {
   SFO_OPERATION_WITH_FACILITY: "Bugle SFO - Registered",
   SFO_FACILITY_NAME: "Facility 22",
   TEMP_MUNICIPALITY: "Temp Town",
+} as const;
+
+// name/type live in section1 for both LFO and SFO
+const FACILITY_NAME_TYPE_LOCATORS = {
+  name: "root_section1_name",
+  type: "root_section1_type",
 };
 
-export const PageLocators = {
-  facilityName: "root_section1_name",
-  facilityType: "root_section1_type",
+// LFO merges the address fields into section1 via schema dependencies, so
+// every field on the form lives under the same section
+export const LfoPageLocators = {
+  ...FACILITY_NAME_TYPE_LOCATORS,
   streetAddress: "root_section1_street_address",
   municipality: "root_section1_municipality",
   province: "root_section1_province",
   postalCode: "root_section1_postal_code",
   latitude: "root_section1_latitude_of_largest_emissions",
   longitude: "root_section1_longitude_of_largest_emissions",
+};
+
+// SFO keeps name/type in section1, but the address fields are a separate
+// section2 — the prefix differs per field, unlike the LFO form
+export const SfoPageLocators = {
+  ...FACILITY_NAME_TYPE_LOCATORS,
+  streetAddress: "root_section2_street_address",
+  municipality: "root_section2_municipality",
+  province: "root_section2_province",
+  postalCode: "root_section2_postal_code",
+  latitude: "root_section2_latitude_of_largest_emissions",
+  longitude: "root_section2_longitude_of_largest_emissions",
 };
