@@ -12,12 +12,14 @@ import {
   SfoPageLocators,
 } from "@/administration-e2e/utils/enums";
 import {
+  analyzeAccessibility,
   assertSuccessfulSnackbar,
   checkAlertMessage,
   checkBreadcrumbText,
   clickButton,
   fillComboxboxWidget,
   fillInputValueByLabel,
+  takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
 
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
@@ -207,6 +209,7 @@ test.describe("Add/edit facility", () => {
 
   test("LFO — Add Facility happy path creates a new facility", async ({
     page,
+    happoScreenshot,
   }) => {
     const facilityPage = new FacilityPOM(page);
     await facilityPage.route();
@@ -235,10 +238,18 @@ test.describe("Add/edit facility", () => {
       FacilityFormField.LONGITUDE,
       FacilityE2EValue.NEW_LONGITUDE,
     );
+
+    const componentName = "Add Facility form - edit mode";
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: componentName,
+      variant: "filled",
+    });
+    await analyzeAccessibility(page, componentName);
     await clickButton(page, /save/i);
 
     await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);
     await expect(page).not.toHaveURL(/add-facility/);
+    await clickButton(page, /save/i);
 
     // The breadcrumb updates to show the new facility's name once created
     await checkBreadcrumbText(page, FacilityE2EValue.NEW_FACILITY_NAME);
