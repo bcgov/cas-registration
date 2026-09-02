@@ -230,7 +230,7 @@ test.describe("Add/edit facility", () => {
       FacilityE2EValue.NEW_LONGITUDE,
     );
 
-    const componentName = "Add Facility form - edit mode";
+    let componentName = "Add Facility form - large facility";
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: componentName,
       variant: "filled",
@@ -256,6 +256,11 @@ test.describe("Add/edit facility", () => {
     await expect(page.getByLabel(FacilityFormField.LATITUDE)).toHaveCount(0);
     await expect(page.getByLabel(FacilityFormField.LONGITUDE)).toHaveCount(0);
 
+    componentName = "Add Facility form - small aggregate";
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: componentName,
+      variant: "filled",
+    });
     await clickButton(page, /save/i);
     await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);
     await checkBreadcrumbText(
