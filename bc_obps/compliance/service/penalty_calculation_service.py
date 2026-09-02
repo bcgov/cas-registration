@@ -33,9 +33,6 @@ from dataclasses import dataclass
 
 elicensing_api_client = ELicensingAPIClient()
 
-# The automatic overdue penalty stops accruing once it reaches this multiple of the obligation
-MAXIMUM_PENALTY_MULTIPLIER = Decimal('3.00')
-
 
 @dataclass
 class CalculatedPenaltyAccrualData:
@@ -138,14 +135,17 @@ class PenaltyCalculationService:
         # been invoiced, which takes the obligation out of the ACCRUING status while the obligation
         # itself is still outstanding. Its invoiced amount must still be reported, and GGEAPAR
         # interest is unaffected by the cap and keeps accruing
-        maximum_penalty = (
-            CompliancePenalty.objects.filter(
-                compliance_obligation=obligation, penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
-            ).first()
-            if obligation.compliance_report_version.status
-            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
-            else None
-        )
+        maximum_penalty: CompliancePenalty | None = None
+
+        if obligation.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET:
+            try:
+                maximum_penalty = CompliancePenalty.objects.get(
+                    compliance_obligation=obligation,
+                    penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+                )
+            except CompliancePenalty.DoesNotExist:
+                # No penalty has been created yet, so there is no maximum to report
+                pass
 
         if obligation.penalty_status != ComplianceObligation.PenaltyStatus.ACCRUING and not maximum_penalty:
             return result
@@ -357,6 +357,24 @@ class PenaltyCalculationService:
 
         return None
 
+    @staticmethod
+    def get_maximum_penalty(obligation: ComplianceObligation) -> Decimal | None:
+        """
+        Get the maximum an automatic overdue penalty can accrue to, which is 3x the compliance
+        obligation as per the Greenhouse Gas Emission Administrative Penalties and Appeals Regulation
+        https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/248_2015#section2
+
+        Args:
+            obligation: The compliance obligation
+
+        Returns:
+            The maximum penalty amount, or None when the obligation has nothing to cap
+        """
+        maximum_penalty_multiplier = Decimal("3.00")
+        base: Decimal = obligation.fee_amount_dollars  # type: ignore[assignment]
+
+        return base * maximum_penalty_multiplier if base > 0 else None
+
     @classmethod
     def calculate_penalty(
         cls,
@@ -395,7 +413,7 @@ class PenaltyCalculationService:
 
         # The penalty stops accruing once it reaches 3x the obligation, at which point the penalty
         # becomes payable even if the obligation itself is still outstanding
-        maximum_penalty = base * MAXIMUM_PENALTY_MULTIPLIER if base > 0 else None
+        maximum_penalty = cls.get_maximum_penalty(obligation)
         cap_reached_date: date | None = None
 
         accumulated_penalty_list = []
