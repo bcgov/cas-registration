@@ -255,6 +255,7 @@ export enum FacilityButtonText {
 
 // Facility Form fields selectors
 export enum FacilityFormField {
+  NAME = "Facility Name*",
   TYPE = "Facility Type*",
   MUNICIPALITY = "Municipality",
   LATITUDE = "latitude_of_largest_emissions",
@@ -274,7 +275,10 @@ export const FacilityE2EValue = {
   SFO_OPERATION_WITH_FACILITY: "Bugle SFO - Registered",
   SFO_FACILITY_NAME: "Facility 22",
   TEMP_MUNICIPALITY: "Temp Town",
-} as const;
+  NEW_FACILITY_NAME: "E2E Test Facility",
+  NEW_LATITUDE: "50.1234",
+  NEW_LONGITUDE: "-120.5678",
+};
 
 // name/type live in section1 for both LFO and SFO
 const FACILITY_NAME_TYPE_LOCATORS = {
