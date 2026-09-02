@@ -1,4 +1,4 @@
-import { PenaltySummaryField } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltySummaryWidget";
+import { PenaltySummaryField } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltySummaryField";
 import { render, screen } from "@testing-library/react";
 
 describe("PenaltySummaryField", () => {

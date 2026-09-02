@@ -1,5 +1,7 @@
 "use client";
 
+import { formatMonetaryValue } from "@/compliance/src/app/utils/formatting";
+
 type PenaltySummaryValue = {
   total_penalty_amount?: string | number | null;
   days_late?: string | number | null;
@@ -12,24 +14,6 @@ const getDisplayValue = (value: string | number | null | undefined): string => {
   return String(value);
 };
 
-const getFormattedPenaltyAmount = (
-  value: string | number | null | undefined,
-): string => {
-  if (value === null || value === undefined || value === "") {
-    return "-";
-  }
-
-  const numericValue = Number(String(value).replace(/,/g, ""));
-  if (Number.isNaN(numericValue)) {
-    return String(value);
-  }
-
-  return numericValue.toLocaleString("en-CA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-};
-
 type PenaltySummaryFieldProps = {
   formData?: PenaltySummaryValue;
   label?: string;
@@ -40,9 +24,10 @@ export const PenaltySummaryField = ({
   label,
 }: PenaltySummaryFieldProps) => {
   const summary = (formData ?? {}) as PenaltySummaryValue;
-  const totalPenaltyAmount = getFormattedPenaltyAmount(
-    summary.total_penalty_amount,
-  );
+  const totalPenaltyAmount =
+    typeof summary.total_penalty_amount === typeof Number
+      ? formatMonetaryValue(Number(summary.total_penalty_amount))
+      : getDisplayValue(summary.total_penalty_amount);
   const daysLate = getDisplayValue(summary.days_late);
 
   return (
