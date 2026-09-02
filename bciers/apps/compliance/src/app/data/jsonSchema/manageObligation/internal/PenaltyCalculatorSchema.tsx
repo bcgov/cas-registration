@@ -6,8 +6,8 @@ import {
   readOnlyStringField,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { TableField } from "@/compliance/src/app/widgets/TableWidget";
-import { PenaltyTypeButtonGroupWidget } from "../../../../components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltyTypeButtonGroupWidget";
-import { PenaltySummaryField } from "../../../../components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltySummaryWidget";
+import { PenaltyTypeButtonGroupWidget } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltyTypeButtonGroupWidget";
+import { PenaltySummaryField } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltySummaryField";
 
 export const penaltyCalculatorSchema: RJSFSchema = {
   type: "object",

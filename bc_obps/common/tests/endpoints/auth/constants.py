@@ -440,10 +440,6 @@ ENDPOINTS = {
             "kwargs": {
                 "compliance_report_version_id": MOCK_INT,
             },
-            "query_params": {
-                "requested_penalty_type": "automatic-overdue",
-                "end_date": "2025-01-10",
-            },
         },
     ],
     "approved_authorized_roles": [
