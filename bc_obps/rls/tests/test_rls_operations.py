@@ -142,6 +142,13 @@ class TestRlsOperations(TestCase):
         for table_name, role_grants_mapping in rls.m2m_models_grants_mapping.items():
             user_grants = role_grants_mapping.get(role, [])
             through_model = self._get_through_model(model, table_name.value)
+            through_model_name = self._get_table_name(through_model)
+            if hasattr(model, 'Rls'):
+                with connection.cursor() as cursor:
+                    cursor.execute("set role postgres")
+                with connection.cursor() as cursor:
+                    cursor.execute(f'ALTER TABLE erc.{through_model_name} DISABLE ROW LEVEL SECURITY')
+            self._set_role(self.users[role])
             self._check_permissions(through_model, user_grants, table_name.value)
 
     def test_all_user_roles_grants(self):
