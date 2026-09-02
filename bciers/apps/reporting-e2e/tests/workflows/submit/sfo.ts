@@ -12,6 +12,7 @@ import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
 import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 import { WorkflowRunnerArgs } from "@bciers/e2e/utils/types";
+import { PRODUCTION_DATA } from "@/reporting-e2e/poms/production-data";
 
 export async function runSfoSubmitReport({
   page,
@@ -97,7 +98,7 @@ export async function runSfoSubmitReport({
 
   // ── 8. Production Data — select Cement equivalent, fill annual production ──
   await verifyFormTitle(page, "Production Data");
-  await facilityReport.fillProductionData();
+  await facilityReport.fillProductionData([...PRODUCTION_DATA.ALL_PRODUCTS]);
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Production Data",
     variant: "SFO",
