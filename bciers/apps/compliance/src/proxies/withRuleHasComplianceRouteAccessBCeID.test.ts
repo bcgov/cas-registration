@@ -293,6 +293,23 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
     });
 
     it.each(moPenaltyPaths)(
+      "allows penalty route '%s' when the penalty maxed out while the obligation is still outstanding",
+      async (path) => {
+        // A penalty that reaches 3x the obligation is invoiced immediately, so its routes have to be
+        // reachable even though the obligation itself has not been paid off
+        mockComplianceStatus(ComplianceSummaryStatus.OBLIGATION_NOT_MET);
+        mockComplianceSummary({
+          outstanding_balance_tco2e: 100,
+          penalty_status: PenaltyStatus.NOT_PAID,
+        });
+
+        const { next, res } = await runProxy(pathForSeg(path));
+        expect(next).toHaveBeenCalledOnce();
+        expect(res!.status).toBe(200);
+      },
+    );
+
+    it.each(moPenaltyPaths)(
       "redirects penalty routes to summaries when penalty_status is something else (%s)",
       async (path) => {
         mockComplianceStatus(ComplianceSummaryStatus.OBLIGATION_NOT_MET);

@@ -65,6 +65,7 @@ const mockData: ComplianceSummaryReviewPageData = {
   faa_interest: "0.00",
   automatic_overdue_penalty_amount: "0.00",
   ggeapar_interest_amount: "0.00",
+  is_maximum_penalty_reached: false,
 };
 
 const setupComponent = (id = 123, data = mockData) =>

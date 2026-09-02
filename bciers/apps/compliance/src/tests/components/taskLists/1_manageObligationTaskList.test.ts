@@ -42,6 +42,10 @@ describe("generateManageObligationTaskList", () => {
     reportingYear: 2024,
   };
 
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("generates task list with correct structure when not in Apply Units page", () => {
     const taskList = generateManageObligationTaskList(
       mockComplianceReportVersionId,
@@ -173,7 +177,7 @@ describe("generateManageObligationTaskList", () => {
     expect(taskItems?.[2].title).toBe("Pay Obligation and Track Payment(s)");
   });
 
-  it("does not add automatic penalty section when outstanding balance is > 0", () => {
+  it("does not add automatic penalty section when no penalty has been created", () => {
     const dataWithBalance = {
       reportingYear: 2024,
       outstandingBalance: 6,
@@ -250,6 +254,47 @@ describe("generateManageObligationTaskList", () => {
       );
     },
   );
+
+  it("does not add automatic penalty section when no penalty exists, even once the obligation is paid off", () => {
+    const dataWithNoPenalty = {
+      reportingYear: 2024,
+      outstandingBalance: 0,
+      penaltyStatus: PenaltyStatus.NOT_PAID,
+      hasOverduePenalty: false,
+    };
+
+    const taskList = generateManageObligationTaskList(
+      mockComplianceReportVersionId,
+      dataWithNoPenalty,
+    );
+
+    expect(taskList).toHaveLength(1);
+    expect(taskList[0].title).toBe("2024 Compliance Summary");
+    expect(generateAutomaticOverduePenaltyTaskList).not.toHaveBeenCalled();
+  });
+
+  it("adds automatic penalty section when the penalty maxed out while the obligation is still outstanding", () => {
+    // A penalty that reaches 3x the obligation is invoiced immediately, so it has to be reviewable
+    // and payable even though the obligation itself has not been paid off
+    const dataWithMaxedOutPenalty = {
+      reportingYear: 2024,
+      outstandingBalance: 6,
+      penaltyStatus: PenaltyStatus.NOT_PAID,
+      hasOverduePenalty: true,
+    };
+
+    const taskList = generateManageObligationTaskList(
+      mockComplianceReportVersionId,
+      dataWithMaxedOutPenalty,
+    );
+
+    expect(taskList).toHaveLength(2);
+    expect(taskList[1].title).toBe("Automatic Overdue Penalty");
+    expect(generateAutomaticOverduePenaltyTaskList).toHaveBeenCalledWith(
+      mockComplianceReportVersionId,
+      ActivePage.ReviewComplianceSummary,
+    );
+  });
 
   it("sets active page correctly for each page type", () => {
     // Test Review Summary page
