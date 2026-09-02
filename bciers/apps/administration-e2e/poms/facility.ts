@@ -5,9 +5,15 @@
  */
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
-import { AppRoute, FacilityButtonText } from "@/administration-e2e/utils/enums";
+import {
+  AppRoute,
+  FacilityButtonText,
+  FacilityFormField,
+} from "@/administration-e2e/utils/enums";
 import {
   clickButton,
+  fillComboxboxWidget,
+  fillInputValueByLabel,
   searchGridByUniqueValue,
   stabilizeGrid,
   waitForGridReady,
@@ -53,6 +59,30 @@ export class FacilityPOM {
     await clickButton(this.page, FacilityButtonText.ADD_FACILITY, {
       waitForUrl: /add-facility/,
     });
+  }
+
+  async fillAddFacilityForm(
+    name: string,
+    type: string,
+    latitude?: string,
+    longitude?: string,
+  ) {
+    await fillInputValueByLabel(this.page, FacilityFormField.NAME, name);
+    await fillComboxboxWidget(this.page, FacilityFormField.TYPE, type);
+    if (latitude !== undefined) {
+      await fillInputValueByLabel(
+        this.page,
+        FacilityFormField.LATITUDE,
+        latitude,
+      );
+    }
+    if (longitude !== undefined) {
+      await fillInputValueByLabel(
+        this.page,
+        FacilityFormField.LONGITUDE,
+        longitude,
+      );
+    }
   }
 
   // Open an existing facility's view/edit page from a row on the Facilities grid
