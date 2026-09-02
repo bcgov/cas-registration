@@ -207,7 +207,7 @@ test.describe("Add/edit facility", () => {
     );
   });
 
-  test("LFO — Add Facility happy path creates a new facility", async ({
+  test("LFO — Add Facility happy path creates Large and Small Aggregate facilities", async ({
     page,
     happoScreenshot,
   }) => {
@@ -222,20 +222,11 @@ test.describe("Add/edit facility", () => {
 
     await facilityPage.clickAddFacility();
 
-    await fillInputValueByLabel(
-      page,
-      FacilityFormField.NAME,
+    // Fill out for large facility
+    await facilityPage.fillAddFacilityForm(
       FacilityE2EValue.NEW_FACILITY_NAME,
-    );
-    await fillComboxboxWidget(page, FacilityFormField.TYPE, FacilityType.LARGE);
-    await fillInputValueByLabel(
-      page,
-      FacilityFormField.LATITUDE,
+      FacilityType.LARGE,
       FacilityE2EValue.NEW_LATITUDE,
-    );
-    await fillInputValueByLabel(
-      page,
-      FacilityFormField.LONGITUDE,
       FacilityE2EValue.NEW_LONGITUDE,
     );
 
@@ -252,5 +243,24 @@ test.describe("Add/edit facility", () => {
 
     // The breadcrumb updates to show the new facility's name once created
     await checkBreadcrumbText(page, FacilityE2EValue.NEW_FACILITY_NAME);
+
+    // Fill out for small aggregate
+    await clickButton(page, /back/i);
+    await page.waitForLoadState();
+    await facilityPage.clickAddFacility();
+
+    await facilityPage.fillAddFacilityForm(
+      FacilityE2EValue.NEW_SMALL_AGGREGATE_FACILITY_NAME,
+      FacilityType.SMALL_AGGREGATE,
+    );
+    await expect(page.getByLabel(FacilityFormField.LATITUDE)).toHaveCount(0);
+    await expect(page.getByLabel(FacilityFormField.LONGITUDE)).toHaveCount(0);
+
+    await clickButton(page, /save/i);
+    await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);
+    await checkBreadcrumbText(
+      page,
+      FacilityE2EValue.NEW_SMALL_AGGREGATE_FACILITY_NAME,
+    );
   });
 });

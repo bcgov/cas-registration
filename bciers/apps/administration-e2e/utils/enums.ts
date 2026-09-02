@@ -278,6 +278,7 @@ export const FacilityE2EValue = {
   NEW_FACILITY_NAME: "E2E Test Facility",
   NEW_LATITUDE: "50.1234",
   NEW_LONGITUDE: "-120.5678",
+  NEW_SMALL_AGGREGATE_FACILITY_NAME: "E2E Test Small Aggregate Facility",
 };
 
 // name/type live in section1 for both LFO and SFO
@@ -286,8 +287,6 @@ const FACILITY_NAME_TYPE_LOCATORS = {
   type: "root_section1_type",
 };
 
-// LFO merges the address fields into section1 via schema dependencies, so
-// every field on the form lives under the same section
 export const LfoPageLocators = {
   ...FACILITY_NAME_TYPE_LOCATORS,
   streetAddress: "root_section1_street_address",
@@ -298,8 +297,6 @@ export const LfoPageLocators = {
   longitude: "root_section1_longitude_of_largest_emissions",
 };
 
-// SFO keeps name/type in section1, but the address fields are a separate
-// section2 — the prefix differs per field, unlike the LFO form
 export const SfoPageLocators = {
   ...FACILITY_NAME_TYPE_LOCATORS,
   streetAddress: "root_section2_street_address",
