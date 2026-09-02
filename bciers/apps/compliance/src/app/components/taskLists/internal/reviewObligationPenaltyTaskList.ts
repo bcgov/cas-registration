@@ -44,7 +44,6 @@ export const generateReviewObligationPenaltyTaskList: (
   }
   const showPenalty =
     hasOverduePenalty &&
-    isObligationFullyPaid &&
     [PenaltyStatus.NOT_PAID, PenaltyStatus.PAID].includes(
       penaltyStatus as PenaltyStatus,
     );
