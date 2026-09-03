@@ -8,28 +8,17 @@ class Rls:
     schema = "erc"
     table = ComplianceTableNames.COMPLIANCE_OBLIGATION
     using_statement = """
-compliance_report_version_id IN (
-    SELECT crv.id
-    FROM erc.compliance_report_version crv
-    JOIN erc.compliance_report cr ON crv.compliance_report_id = cr.id
-    JOIN erc.report r ON cr.report_id = r.id
-    JOIN erc.user_operator uo ON uo.operator_id = r.operator_id
-    WHERE uo.user_id = current_setting('my.guid', true)::uuid
-      AND uo.status = 'Approved'
-)
-"""
+        exists (
+            select 1 from erc.compliance_report_version crv
+            where crv.id = compliance_report_version_id
+        )
+    """
 
     delete_using_statement = """
-        compliance_report_version_id IN (
-            SELECT crv.id
-            FROM erc.compliance_report_version crv
-            JOIN erc.compliance_report cr ON crv.compliance_report_id = cr.id
-            JOIN erc.report r ON cr.report_id = r.id
-            JOIN erc.operation o ON r.operation_id = o.id
-            JOIN erc.user_operator uo ON o.operator_id = uo.operator_id
-            AND uo.user_id = current_setting('my.guid', true)::uuid
-            AND uo.status = 'Approved'
-            AND crv.status='Superceded'
+        exists (
+            select 1 from erc.compliance_report_version crv
+            where crv.id = compliance_report_version_id
+            and crv.status='Superceded'
         )
     """
 
