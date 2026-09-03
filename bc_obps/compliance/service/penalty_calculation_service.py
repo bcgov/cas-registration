@@ -128,7 +128,6 @@ class PenaltyCalculationService:
             "faa_interest": refresh_result.invoice.invoice_interest_balance,
             "automatic_overdue_penalty_amount": Decimal('0.00'),
             "ggeapar_interest_amount": Decimal('0.00'),
-            "is_maximum_penalty_reached": False,
         }
 
         # An automatic overdue penalty that maxed out at 3x the obligation has stopped accruing and
@@ -154,7 +153,6 @@ class PenaltyCalculationService:
 
         if maximum_penalty:
             result["automatic_overdue_penalty_amount"] = maximum_penalty.penalty_amount
-            result["is_maximum_penalty_reached"] = True
         elif penalty_accrual_context.effective_deadline < timezone.now().date():
             overdue_penalty = cls.calculate_penalty(
                 obligation=obligation,

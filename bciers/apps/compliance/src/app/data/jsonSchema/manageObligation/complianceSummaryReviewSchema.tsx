@@ -15,7 +15,6 @@ export const createComplianceSummaryReviewSchema = (
   reportingYear: number,
   hasAccruingAutomaticOverduePenalty: boolean = false,
   hasAccruingGgeaparInterest: boolean = false,
-  isMaximumPenaltyReached: boolean = false,
 ): RJSFSchema => ({
   type: "object",
   title: `Review ${reportingYear} Compliance Obligation Report`,
@@ -51,9 +50,7 @@ export const createComplianceSummaryReviewSchema = (
         "Automatic Overdue Penalty",
       ),
       automatic_overdue_penalty_amount: readOnlyStringField(
-        isMaximumPenaltyReached
-          ? "Amount as of today (maxed out):"
-          : "Amount as of today:",
+        "Amount as of today:",
       ),
     }),
     ...(hasAccruingGgeaparInterest && {
