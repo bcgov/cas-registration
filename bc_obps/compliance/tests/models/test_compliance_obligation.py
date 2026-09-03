@@ -1,10 +1,12 @@
 from decimal import Decimal
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user, run_with_rollback
 from compliance.models.compliance_obligation import ComplianceObligation
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from model_bakery.baker import make_recipe
 from compliance.tests.utils.compliance_rls_test_infrastructure import ComplianceReportRlsTestSetup
+from django.db import connection
+from rls.middleware.rls import RlsMiddleware
 
 
 class ComplianceObligationTest(BaseTestCase):
@@ -104,6 +106,28 @@ class TestComplianceObligationRls(BaseTestCase):
                 (Decimal('8888'), obligation_2013.id),
             )
             return cursor.rowcount
+
+        # Extra assert for forbidden delete unless crv is superceded
+        # Ensure status is not 'Superceded' to prevent delete
+        t.compliance_report_version_2010.status = 'Obligation not met'
+        t.compliance_report_version_2010.save()
+
+        def forbidden_delete_unless_superceded(cursor):
+            cursor.execute(
+                """
+                   DELETE FROM "erc"."compliance_obligation"
+                   WHERE id = %s
+                """,
+                (obligation_2010.id,),
+            )
+            return cursor.rowcount
+
+        with connection.cursor() as cursor:
+            RlsMiddleware._set_user_guid_and_role(cursor, t.approved_user_operator.user)
+            forbidden_deleted_records_count = run_with_rollback(cursor, forbidden_delete_unless_superceded)
+            assert (
+                forbidden_deleted_records_count == 0
+            ), f"Expected 0 deleted records when status is not 'Superceded', but got {forbidden_deleted_records_count} (did you remember to return in the delete function?)"
 
         # Update status to 'Superceded' to allow for delete
         t.compliance_report_version_2010.status = 'Superceded'
