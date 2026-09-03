@@ -166,13 +166,13 @@ def assert_policies_for_industry_user(
                 forbidden_updated_records_count = run_with_rollback(cursor, forbidden_function)
                 assert (
                     forbidden_updated_records_count == 0
-                ), f"Expected 0 updated records, but got {permitted_updated_records_count} (did you remember to return in the update function?)"
+                ), f"Expected 0 updated records, but got {forbidden_updated_records_count} (did you remember to return in the update function?)"
             elif operation == RlsOperations.DELETE:
                 permitted_deleted_records_count = run_with_rollback(cursor, function)
                 assert (
                     permitted_deleted_records_count == 1
-                ), f"Expected 1 updated record, but got {permitted_deleted_records_count} (did you remember to return in the delete function?)"
+                ), f"Expected 1 deleted record, but got {permitted_deleted_records_count} (did you remember to return in the delete function?)"
                 forbidden_deleted_records_count = run_with_rollback(cursor, forbidden_function)
                 assert (
                     forbidden_deleted_records_count == 0
-                ), f"Expected 0 updated records, but got {permitted_deleted_records_count} (did you remember to return in the delete function?)"
+                ), f"Expected 0 deleted records, but got {forbidden_deleted_records_count} (did you remember to return in the delete function?)"
