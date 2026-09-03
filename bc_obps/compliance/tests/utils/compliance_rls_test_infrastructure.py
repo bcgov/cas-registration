@@ -55,11 +55,20 @@ class ComplianceReportRlsTestSetup:
             operator=self.approved_user_operator.operator,
             reporting_year=reporting_year_2010,
         )
+        report_version_2010 = make_recipe('reporting.tests.utils.report_version', report=report_2010)
+        report_compliance_summary_2010 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            report_version=report_version_2010,
+            excess_emissions=0,
+            credited_emissions=0,
+        )
         self.compliance_report_2010 = make_recipe(
             'compliance.tests.utils.compliance_report', report=report_2010, compliance_period=compliance_period_2010
         )
         self.compliance_report_version_2010 = make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=self.compliance_report_2010
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=self.compliance_report_2010,
+            report_compliance_summary=report_compliance_summary_2010,
         )
         self.report_2011 = make_recipe(
             'reporting.tests.utils.report',
@@ -75,11 +84,20 @@ class ComplianceReportRlsTestSetup:
             operator=self.approved_user_operator.operator,
             reporting_year=reporting_year_2013,
         )
+        report_version_2013 = make_recipe('reporting.tests.utils.report_version', report=report_2013)
+        report_compliance_summary_2013 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            report_version=report_version_2013,
+            excess_emissions=0,
+            credited_emissions=0,
+        )
         self.compliance_report_2013 = make_recipe(
             'compliance.tests.utils.compliance_report', report=report_2013, compliance_period=compliance_period_2013
         )
         self.compliance_report_version_2013 = make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=self.compliance_report_2013
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=self.compliance_report_2013,
+            report_compliance_summary=report_compliance_summary_2013,
         )
         # 2012 report - non-matching user operator
         self.report_2012 = make_recipe(
