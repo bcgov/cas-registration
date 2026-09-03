@@ -260,7 +260,7 @@ def test_get_calculated_penalty_for_obligation_automatic_overdue_uses_invoice_du
 
     compliance_deadline = report_version.compliance_report.compliance_period.compliance_deadline
     # obligation's created_at is set to be 2 days after the compliance_deadline
-    created_at = timezone.make_aware(datetime.combine(compliance_deadline + timedelta(days=2), datetime.min.time()))
+    created_at = compliance_deadline + timedelta(days=2)
     # invoice due_date is set to be 30 days after the compliance_deadline
     invoice = baker.make_recipe(
         "compliance.tests.utils.elicensing_invoice",
@@ -271,7 +271,7 @@ def test_get_calculated_penalty_for_obligation_automatic_overdue_uses_invoice_du
     obligation.save(update_fields=["created_at", "elicensing_invoice"])
 
     mock_get_penalty_accrual_context.return_value = SimpleNamespace(
-        effective_deadline=compliance_deadline,
+        effective_deadline=invoice.due_date,
         has_late_submission=True,
     )
     mock_calculate_penalty.return_value = SimpleNamespace(

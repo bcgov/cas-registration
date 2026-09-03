@@ -20,6 +20,7 @@ from compliance.models import (
     ElicensingClientOperator,
     ElicensingInterestRate,
 )
+from compliance.schema.calculated_penalty import PenaltyTypeStatusEnum
 import uuid
 from compliance.service.elicensing.elicensing_api_client import (
     ELicensingAPIClient,
@@ -30,6 +31,7 @@ from compliance.service.elicensing.schema import FeeCreationItem
 from compliance.enums import ComplianceInvoiceTypes
 from django.db import transaction
 from dataclasses import dataclass
+from ninja.errors import HttpError
 
 elicensing_api_client = ELicensingAPIClient()
 
@@ -63,6 +65,13 @@ class CalculatedPenaltyData:
     total_amount: Decimal
     daily_accumulated_list: list[CalculatedPenaltyAccrualData]
     cap_reached_date: date | None = None
+
+
+@dataclass
+class CalculatedPenaltyPreviewData:
+    calculated_penalty: CalculatedPenaltyData
+    automatic_overdue_penalty_status: PenaltyTypeStatusEnum
+    ggeapar_interest_status: PenaltyTypeStatusEnum
 
 
 class PenaltyCalculationService:
@@ -106,6 +115,104 @@ class PenaltyCalculationService:
             compliance_deadline=compliance_deadline,
             effective_deadline=effective_deadline,
             has_late_submission=has_late_submission,
+        )
+
+    @staticmethod
+    def normalize_penalty_type(penalty_type: str) -> str:
+        normalized = penalty_type.strip().lower().replace('-', '_').replace(' ', '_')
+
+        if normalized in {'automatic_overdue', 'automaticoverdue'}:
+            return CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
+        if normalized in {'late_submission', 'latesubmission', 'ggeapar'}:
+            return CompliancePenalty.PenaltyType.LATE_SUBMISSION
+
+        return penalty_type
+
+    @classmethod
+    def _get_penalty_statuses(
+        cls,
+        obligation: ComplianceObligation,
+        penalty_accrual_context: PenaltyAccrualContext,
+    ) -> tuple[PenaltyTypeStatusEnum, PenaltyTypeStatusEnum]:
+        automatic_overdue_penalty_status = PenaltyTypeStatusEnum.NONE
+        ggeapar_interest_status = PenaltyTypeStatusEnum.NONE
+
+        if penalty_accrual_context.effective_deadline < date.today():
+            automatic_overdue_penalty_status = PenaltyTypeStatusEnum.ACCRUING
+
+        if obligation.compliance_report_version.is_supplementary and penalty_accrual_context.has_late_submission:
+            ggeapar_interest_status = PenaltyTypeStatusEnum.ACCRUING
+
+        return automatic_overdue_penalty_status, ggeapar_interest_status
+
+    @classmethod
+    def _calculate_penalty_for_type(
+        cls,
+        obligation: ComplianceObligation,
+        requested_penalty_type: str,
+        compliance_deadline: date,
+        final_accrual_date: date,
+        penalty_accrual_context: PenaltyAccrualContext,
+    ) -> CalculatedPenaltyData:
+        default_start_date = compliance_deadline + timedelta(days=1)
+
+        if requested_penalty_type == CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE:
+            # Automatic Overdue Penalty begins accruing 1 day after the compliance deadline unless it is a
+            # supplementary report that came in after the deadline. In that case, it begins accruing 1 day
+            # after the invoice due date.
+            start_date = penalty_accrual_context.effective_deadline + timedelta(days=1)
+            return cls.calculate_penalty(
+                obligation=obligation,
+                accrual_start_date=start_date,
+                final_accrual_date=final_accrual_date,
+            )
+
+        if requested_penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION:
+            return cls.calculate_late_submission_penalty(
+                obligation=obligation,
+                accrual_start_date=default_start_date,
+                final_accrual_date=final_accrual_date,
+            )
+
+        raise HttpError(
+            400,
+            f"Invalid penalty_type '{requested_penalty_type}'. Expected '{CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE}' or '{CompliancePenalty.PenaltyType.LATE_SUBMISSION}'.",
+        )
+
+    @classmethod
+    def get_calculated_penalty_preview_data(
+        cls,
+        obligation: ComplianceObligation,
+        requested_penalty_type: str,
+        final_accrual_date: date,
+    ) -> CalculatedPenaltyPreviewData:
+        penalty_accrual_context = cls.get_penalty_accrual_context(obligation=obligation)
+
+        automatic_overdue_penalty_status, ggeapar_interest_status = cls._get_penalty_statuses(
+            obligation,
+            penalty_accrual_context,
+        )
+
+        requested_penalty_type = cls.normalize_penalty_type(requested_penalty_type)
+
+        if (
+            requested_penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION
+            and not obligation.compliance_report_version.is_supplementary
+        ):
+            raise HttpError(422, 'GGEAPAR interest only applies to obligations for supplementary compliance reports.')
+
+        calculated_penalty = cls._calculate_penalty_for_type(
+            obligation=obligation,
+            requested_penalty_type=requested_penalty_type,
+            compliance_deadline=obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline,
+            final_accrual_date=final_accrual_date,
+            penalty_accrual_context=penalty_accrual_context,
+        )
+
+        return CalculatedPenaltyPreviewData(
+            calculated_penalty=calculated_penalty,
+            automatic_overdue_penalty_status=automatic_overdue_penalty_status,
+            ggeapar_interest_status=ggeapar_interest_status,
         )
 
     @classmethod
