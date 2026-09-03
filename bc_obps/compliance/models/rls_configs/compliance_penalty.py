@@ -7,18 +7,16 @@ class Rls:
     enable_rls = True
     schema = "erc"
     table = ComplianceTableNames.COMPLIANCE_PENALTY
+
     using_statement = """
-compliance_obligation_id IN (
-    SELECT co.id
-    FROM erc.compliance_obligation co
-    JOIN erc.compliance_report_version crv ON co.compliance_report_version_id = crv.id
-    JOIN erc.compliance_report cr ON crv.compliance_report_id = cr.id
-    JOIN erc.report r ON cr.report_id = r.id
-    JOIN erc.user_operator uo ON uo.operator_id = r.operator_id
-    WHERE uo.user_id = current_setting('my.guid', true)::uuid
-      AND uo.status = 'Approved'
-)
-"""
+        exists (
+            select 1 from erc.compliance_obligation co
+            join erc.compliance_report_version crv
+                on crv.id = co.compliance_report_version_id
+            and co.id = compliance_obligation_id
+
+        )
+    """
 
     role_grants_mapping = {
         RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT],
