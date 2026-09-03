@@ -32,12 +32,6 @@ class TestComplianceObligationRls(BaseTestCase):
     def test_compliance_obligation_rls_industry_user(self):
         # test setup
         t = ComplianceReportRlsTestSetup()
-        # mock_report_version = make_recipe(
-        #     'reporting.tests.utils.report_version', report=t.compliance_report_2010.report
-        # )
-        # mock_compliance_report_summary = make_recipe(
-        #     'reporting.tests.utils.report_compliance_summary', report_version=mock_report_version
-        # )
 
         # within access bounds
         obligation_2010 = make_recipe(
@@ -167,7 +161,14 @@ class TestComplianceObligationRls(BaseTestCase):
         )
 
     def test_compliance_obligation_rls_cas_users(self):
-        ComplianceReportRlsTestSetup()
+        t = ComplianceReportRlsTestSetup()
+
+        make_recipe(
+            'compliance.tests.utils.compliance_obligation', compliance_report_version=t.compliance_report_version_2010
+        )
+        make_recipe(
+            'compliance.tests.utils.compliance_obligation', compliance_report_version=t.compliance_report_version_2013
+        )
 
         def select_function(cursor):
             assert ComplianceObligation.objects.count() == 2
