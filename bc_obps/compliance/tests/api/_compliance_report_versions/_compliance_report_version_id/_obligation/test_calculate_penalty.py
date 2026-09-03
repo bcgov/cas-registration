@@ -151,7 +151,7 @@ def test_get_calculated_penalty_for_obligation_invalid_penalty_type_raises_http_
         )
 
 
-def test_get_calculated_penalty_for_obligation_ggeapar_returns_422_for_non_supplementary():
+def test_get_calculated_penalty_for_obligation_ggeapar_returns_message_for_non_supplementary():
     obligation = _make_obligation()
     # Default recipe has is_supplementary=False; GGEAPAR is not applicable here
     status, response = get_calculated_penalty_for_obligation(
@@ -161,8 +161,12 @@ def test_get_calculated_penalty_for_obligation_ggeapar_returns_422_for_non_suppl
         "2025-01-10",
     )
 
-    assert status == 422
-    assert response["message"] == "GGEAPAR interest only applies to obligations for supplementary compliance reports."
+    assert status == 200
+    assert response.message == "GGEAPAR interest only applies to obligations for supplementary compliance reports."
+    assert response.penalty_type is None
+    assert response.days_late is None
+    assert response.total_penalty is None
+    assert response.daily_accumulated_list == []
 
 
 @patch(

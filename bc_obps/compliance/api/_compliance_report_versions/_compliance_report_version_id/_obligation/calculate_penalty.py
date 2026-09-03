@@ -31,18 +31,23 @@ def get_calculated_penalty_for_obligation(
     return 200, CalculatedPenaltyOut(
         automatic_overdue_penalty_status=result.automatic_overdue_penalty_status,
         ggeapar_interest_status=result.ggeapar_interest_status,
-        penalty_type=calculated_penalty.penalty_type,
-        days_late=calculated_penalty.days_late,
-        total_penalty=calculated_penalty.total_penalty,
-        daily_accumulated_list=[
-            PenaltyAccrual(
-                date=accrual.date,
-                interest_rate=accrual.interest_rate,
-                daily_penalty=accrual.daily_penalty,
-                daily_compounded=accrual.daily_compounded,
-                accumulated_penalty=accrual.accumulated_penalty,
-                accumulated_compounded=accrual.accumulated_compounded,
-            )
-            for accrual in calculated_penalty.daily_accumulated_list
-        ],
+        message=result.message,
+        penalty_type=calculated_penalty.penalty_type if calculated_penalty else None,
+        days_late=calculated_penalty.days_late if calculated_penalty else None,
+        total_penalty=calculated_penalty.total_penalty if calculated_penalty else None,
+        daily_accumulated_list=(
+            [
+                PenaltyAccrual(
+                    date=accrual.date,
+                    interest_rate=accrual.interest_rate,
+                    daily_penalty=accrual.daily_penalty,
+                    daily_compounded=accrual.daily_compounded,
+                    accumulated_penalty=accrual.accumulated_penalty,
+                    accumulated_compounded=accrual.accumulated_compounded,
+                )
+                for accrual in calculated_penalty.daily_accumulated_list
+            ]
+            if calculated_penalty
+            else []
+        ),
     )

@@ -70,9 +70,10 @@ class CalculatedPenaltyData:
 
 @dataclass
 class CalculatedPenaltyForObligationData:
-    calculated_penalty: CalculatedPenaltyData
     automatic_overdue_penalty_status: PenaltyTypeStatusEnum
     ggeapar_interest_status: PenaltyTypeStatusEnum
+    calculated_penalty: CalculatedPenaltyData | None = None
+    message: str | None = None
 
 
 class PenaltyCalculationService:
@@ -869,7 +870,12 @@ class PenaltyCalculationService:
             requested_penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION
             and not obligation.compliance_report_version.is_supplementary
         ):
-            raise ValueError("GGEAPAR interest only applies to obligations for supplementary compliance reports.")
+            return CalculatedPenaltyForObligationData(
+                calculated_penalty=None,
+                automatic_overdue_penalty_status=automatic_overdue_penalty_status,
+                ggeapar_interest_status=ggeapar_interest_status,
+                message="GGEAPAR interest only applies to obligations for supplementary compliance reports.",
+            )
 
         calculated_penalty = cls._calculate_penalty_for_type(
             obligation=obligation,

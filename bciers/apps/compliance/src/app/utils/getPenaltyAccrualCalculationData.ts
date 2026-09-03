@@ -75,5 +75,9 @@ export const getPenaltyAccrualCalculationData = async (
     return { error: data?.error ?? "Failed to fetch penalty accrual data" };
   }
 
+  if (data.message) {
+    return { ...data, error: data.message };
+  }
+
   return data;
 };
