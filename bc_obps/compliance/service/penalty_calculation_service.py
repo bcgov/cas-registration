@@ -4,7 +4,7 @@ from datetime import date, datetime
 import calendar
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Dict, Any, Tuple
-from compliance.schema.calculated_penalty import CalculatedPenaltyOut, PenaltyAccrual, PenaltyTypeStatusEnum
+from compliance.schema.calculated_penalty import PenaltyTypeStatusEnum
 from compliance.service.compliance_penalty_rate_service import CompliancePenaltyRateService
 from compliance.service.elicensing.elicensing_data_refresh_service import (
     ElicensingDataRefreshService,
@@ -66,6 +66,13 @@ class CalculatedPenaltyData:
     total_amount: Decimal
     daily_accumulated_list: list[CalculatedPenaltyAccrualData]
     cap_reached_date: date | None = None
+
+
+@dataclass
+class CalculatedPenaltyForObligationData:
+    calculated_penalty: CalculatedPenaltyData
+    automatic_overdue_penalty_status: PenaltyTypeStatusEnum
+    ggeapar_interest_status: PenaltyTypeStatusEnum
 
 
 class PenaltyCalculationService:
@@ -135,32 +142,6 @@ class PenaltyCalculationService:
 
         raise ValueError(
             f"Invalid penalty_type '{requested_penalty_type}'. Expected '{CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE}' or '{CompliancePenalty.PenaltyType.LATE_SUBMISSION}'.",
-        )
-
-    @classmethod
-    def _build_calculated_penalty_response(
-        cls,
-        calculated_penalty: CalculatedPenaltyData,
-        automatic_overdue_penalty_status: PenaltyTypeStatusEnum,
-        ggeapar_interest_status: PenaltyTypeStatusEnum,
-    ) -> CalculatedPenaltyOut:
-        return CalculatedPenaltyOut(
-            automatic_overdue_penalty_status=automatic_overdue_penalty_status,
-            ggeapar_interest_status=ggeapar_interest_status,
-            penalty_type=calculated_penalty.penalty_type,
-            days_late=calculated_penalty.days_late,
-            total_penalty=calculated_penalty.total_penalty,
-            daily_accumulated_list=[
-                PenaltyAccrual(
-                    date=accrual.date,
-                    interest_rate=accrual.interest_rate,
-                    daily_penalty=accrual.daily_penalty,
-                    daily_compounded=accrual.daily_compounded,
-                    accumulated_penalty=accrual.accumulated_penalty,
-                    accumulated_compounded=accrual.accumulated_compounded,
-                )
-                for accrual in calculated_penalty.daily_accumulated_list
-            ],
         )
 
     @classmethod
@@ -867,7 +848,7 @@ class PenaltyCalculationService:
     @classmethod
     def calculate_penalty_for_obligation(
         cls, compliance_report_version_id: int, requested_penalty_type: str, end_date: str
-    ) -> CalculatedPenaltyOut:
+    ) -> CalculatedPenaltyForObligationData:
         date_format_string = "%Y-%m-%d"
         formatted_end_date = datetime.strptime(end_date, date_format_string).date()
         obligation = ComplianceObligation.objects.select_related(
@@ -898,10 +879,8 @@ class PenaltyCalculationService:
             penalty_accrual_context=penalty_accrual_context,
         )
 
-        response = cls._build_calculated_penalty_response(
+        return CalculatedPenaltyForObligationData(
             calculated_penalty=calculated_penalty,
             automatic_overdue_penalty_status=automatic_overdue_penalty_status,
             ggeapar_interest_status=ggeapar_interest_status,
         )
-
-        return response
