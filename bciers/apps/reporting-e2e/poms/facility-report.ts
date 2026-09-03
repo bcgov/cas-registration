@@ -210,11 +210,11 @@ export class SFOFacilityReportPOM {
   }
 
   async fillProductionData(
-    productsToSelect: string[] = ["Cement equivalent"],
-    productsAvailable: string[] | undefined = undefined,
+    productsToFill: string[] = ["Cement equivalent"],
+    withSelectableProducts: string[] | undefined = undefined,
   ): Promise<void> {
     const productionData = new ProductionDataPOM(this.page);
-    await productionData.fillProducts(productsToSelect, productsAvailable);
+    await productionData.fillProducts(productsToFill, withSelectableProducts);
   }
 
   async verifyAnnualProduction(

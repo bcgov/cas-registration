@@ -6,7 +6,7 @@ import {
   fillInputValueByLocator,
 } from "@bciers/e2e/utils/helpers";
 
-const PRODUCTION_DATA = {
+export const PRODUCTION_DATA = {
   // All products linked to Bugle SFO (regulated_products: [2, 6, 7, 8])
   ALL_PRODUCTS: [
     "Limestone for sale",
@@ -93,25 +93,27 @@ export class ProductionDataPOM {
   }
 
   async fillProducts(
-    productsToSelect: string[],
-    productsAvailable: string[] | undefined = undefined,
+    productsToFill: string[],
+    withSelectableProducts: string[] | undefined = undefined,
   ): Promise<void> {
-    // Assert all expected products appear as checkboxes
-    for (const product of productsAvailable ?? PRODUCTION_DATA.ALL_PRODUCTS) {
-      await expect(
-        this.page.getByRole("checkbox", { name: product }),
-      ).toBeVisible();
-    }
+    if (withSelectableProducts !== undefined) {
+      // Assert all expected products appear as checkboxes
+      for (const product of withSelectableProducts) {
+        await expect(
+          this.page.getByRole("checkbox", { name: product }),
+        ).toBeVisible();
+      }
 
-    // Select each requested product
-    for (const product of productsToSelect) {
-      await checkCheckboxByLabel(this.page, product);
+      // Select each requested product
+      for (const product of productsToFill) {
+        await checkCheckboxByLabel(this.page, product);
+      }
     }
 
     // Verify unit text for each selected product (InlineFieldTemplate renders unit as <p>)
     // Use nth(i) to target the unit in the specific product row
     const unitTexts = this.page.locator("p");
-    for (const [i, product] of productsToSelect.entries()) {
+    for (const [i, product] of productsToFill.entries()) {
       const unit = PRODUCT_UNITS[product];
       if (unit) {
         // Find the nth occurrence of the unit text within the product data section
@@ -124,7 +126,7 @@ export class ProductionDataPOM {
     const annualProductionInputs = this.page.getByRole("textbox", {
       name: PRODUCTION_DATA.ANNUAL_PRODUCTION_INPUT_NAME,
     });
-    for (const [i] of productsToSelect.entries()) {
+    for (const [i] of productsToFill.entries()) {
       await fillInputValueByLocator(
         annualProductionInputs.nth(i),
         PRODUCTION_DATA.ANNUAL_PRODUCTION_VALUE,
@@ -135,7 +137,7 @@ export class ProductionDataPOM {
     const methodologyComboboxes = this.page.getByRole("combobox", {
       name: PRODUCTION_DATA.METHODOLOGY_LABEL,
     });
-    for (const [i] of productsToSelect.entries()) {
+    for (const [i] of productsToFill.entries()) {
       await methodologyComboboxes.nth(i).click();
 
       for (const option of PRODUCTION_DATA.METHODOLOGY_OPTIONS) {

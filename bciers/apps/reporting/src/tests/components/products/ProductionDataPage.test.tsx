@@ -51,7 +51,7 @@ const defaultGetProductionDataMock = {
   report_data: {
     reporting_year: 2020,
   },
-  facility_data: { facility_type: "SFO" },
+  facility_data: { facility_type: "Large Facility" },
   payload: {
     allowed_products: [],
     report_products: [],
@@ -88,7 +88,7 @@ describe("The Production Data component", () => {
     expect(getProductionData).toHaveBeenCalledWith(1, "abc");
   });
 
-  it("renders the form with the right checkboxes", async () => {
+  it("LFO: renders the form with the right checkboxes and preselected", async () => {
     getProductionDataMock.mockReturnValue({
       ...defaultGetProductionDataMock,
       report_data: {
@@ -110,8 +110,44 @@ describe("The Production Data component", () => {
       screen.getByText("Select the products that apply to this facility:"),
     ).toBeVisible();
     expect(screen.getAllByRole("checkbox")).toHaveLength(2);
-    expect(screen.getByText(/testProduct/)).toBeVisible();
-    expect(screen.getByText(/otherProduct/)).toBeVisible();
+    expect(screen.getAllByText(/testProduct/)).toHaveLength(2);
+    expect(
+      screen.getByRole("heading", { name: /product: testproduct/i }),
+    ).toBeVisible();
+    expect(screen.getAllByText(/otherProduct/)).toHaveLength(2);
+    expect(
+      screen.getByRole("heading", { name: /product: otherproduct/i }),
+    ).toBeVisible();
+  });
+  it("SFO: renders the form with no checkboxes and all product forms", async () => {
+    getProductionDataMock.mockReturnValue({
+      ...defaultGetProductionDataMock,
+      report_data: {
+        reporting_year: 2020,
+      },
+      facility_data: { facility_type: "Single Facility Operation" },
+      payload: {
+        allowed_products: [
+          { id: 123, name: "testProduct" },
+          { id: 345, name: "otherProduct" },
+        ],
+        report_products: [],
+        is_operation_opted_out: false,
+      },
+    });
+    render(await ProductionDataPage(props));
+
+    expect(screen.getAllByText(/production data/i)).toHaveLength(1);
+    expect(
+      screen.queryByText("Select the products that apply to this facility:"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
+    expect(
+      screen.getByRole("heading", { name: /product: testproduct/i }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("heading", { name: /product: otherproduct/i }),
+    ).toBeVisible();
   });
   it("renders the form with the right form elements except apr-dec production", async () => {
     getProductionDataMock.mockReturnValue({

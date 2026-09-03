@@ -11,11 +11,12 @@ const SectionFieldTemplate = ({
 }: FieldTemplateProps) => {
   const isLabel = uiSchema?.["ui:options"]?.label !== false;
   const customMarginBottom = uiSchema?.["ui:options"]?.marginBottom || "mb-12";
+  const sectionMarginTop = uiSchema?.["ui:options"]?.sectionMarginTop || "mt-8";
 
   return (
     <div
       // scroll-mt-12 is a top scroll margin for the task list anchor smooth scroll
-      className={`section-field w-full first:mt-0 mt-8 scroll-mt-12 ${classNames}`}
+      className={`section-field w-full first:mt-0 ${sectionMarginTop} scroll-mt-12 ${classNames}`}
       id={id}
     >
       {isLabel && label && (
