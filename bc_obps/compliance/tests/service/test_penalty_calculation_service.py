@@ -5,7 +5,12 @@ from django.utils import timezone
 from decimal import Decimal
 from unittest.mock import patch
 from model_bakery import baker
-from compliance.models import CompliancePenalty, CompliancePenaltyAccrual
+from compliance.models import (
+    CompliancePenalty,
+    CompliancePenaltyAccrual,
+    ComplianceReportVersion,
+)
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 from compliance.service.penalty_calculation_service import (
     PenaltyCalculationService,
     CalculatedPenaltyData,
@@ -14,6 +19,11 @@ from compliance.service.penalty_calculation_service import (
 )
 from compliance.dataclass import RefreshWrapperReturn
 
+
+REFRESH_WRAPPER_PATH = (
+    'compliance.service.elicensing.elicensing_data_refresh_service.'
+    'ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -635,3 +645,219 @@ class TestPenaltyCalculationService:
             final_transaction_date=date(2025, 12, 10),
         )
         mock_create_invoice.assert_not_called()
+
+
+class TestMaximumPenaltyCap:
+    """
+    The automatic overdue penalty stops accruing once it reaches 3x the obligation
+    A 5% daily rate is used so the cap is reached on day 29 rather than day 366, keeping the tests fast
+    """
+
+    # The day the penalty first reaches 3x the obligation. It depends on the daily rate, not on
+    # the obligation amount, so changing the amounts below does not move it
+    CAP_DAY = 29
+    ACCRUAL_START = date(2025, 12, 1)
+    # 40 days of accrual are requested so the 11 unused days prove the loop broke early
+    FINAL_ACCRUAL = date(2025, 12, 1) + timedelta(days=39)
+
+    def setup_method(self):
+        self.compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
+        self.obligation = baker.make_recipe(
+            "compliance.tests.utils.compliance_obligation",
+            compliance_report_version=self.compliance_report_version,
+            fee_amount_dollars=Decimal("1000.00"),
+        )
+        self.invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            outstanding_balance=Decimal("1000.00"),
+            invoice_fee_balance=Decimal("1000.00"),
+            invoice_interest_balance=Decimal("0.00"),
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=self.invoice,
+            base_amount=Decimal("1000.00"),
+        )
+        CompliancePenaltyRate.objects.get(is_current_rate=True).delete()
+        self.compliance_penalty_rate = baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty_rate",
+            rate=Decimal("0.05"),
+            is_current_rate=True,
+        )
+
+    def _calculate(self, final_accrual_date=None):
+        return PenaltyCalculationService.calculate_penalty(
+            obligation=self.obligation,
+            accrual_start_date=self.ACCRUAL_START,
+            final_accrual_date=final_accrual_date or self.FINAL_ACCRUAL,
+        )
+
+    @patch(REFRESH_WRAPPER_PATH)
+    def test_penalty_is_capped_at_three_times_the_obligation(self, mock_refresh_data):
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=self.invoice)
+
+        result = self._calculate()
+
+        assert result.total_penalty == Decimal("3000.00")
+        assert result.cap_reached_date == self.ACCRUAL_START + timedelta(days=self.CAP_DAY - 1)
+
+    @patch(REFRESH_WRAPPER_PATH)
+    def test_accrual_stops_on_the_cap_date(self, mock_refresh_data):
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=self.invoice)
+
+        result = self._calculate()
+
+        assert len(result.daily_accumulated_list) == self.CAP_DAY
+        assert result.days_late == self.CAP_DAY
+        assert result.daily_accumulated_list[-1].date == result.cap_reached_date.strftime("%Y-%m-%d")
+
+    @patch(REFRESH_WRAPPER_PATH)
+    def test_accrual_records_reconcile_to_the_capped_penalty(self, mock_refresh_data):
+        """
+        The final day overshoots the cap, so it is trimmed. The audit records must still add up to the
+        penalty amount that gets invoiced, and only the final day may be adjusted
+        """
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=self.invoice)
+
+        result = self._calculate()
+        final_day = result.daily_accumulated_list[-1]
+        day_before_cap = result.daily_accumulated_list[-2]
+
+        assert final_day.accumulated_penalty + final_day.accumulated_compounded == result.total_penalty
+        # The day before the cap must still be under it, otherwise the loop broke a day late
+        assert day_before_cap.accumulated_penalty + day_before_cap.accumulated_compounded < Decimal("3000.00")
+        # The overshoot is absorbed by compounding, so the day's penalty on the obligation is untouched
+        assert final_day.daily_penalty == Decimal("50.00")  # 1000 * 5%
+        assert final_day.daily_compounded < day_before_cap.daily_compounded
+
+    @patch(REFRESH_WRAPPER_PATH)
+    def test_penalty_below_the_cap_is_unaffected(self, mock_refresh_data):
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=self.invoice)
+
+        result = self._calculate(final_accrual_date=self.ACCRUAL_START + timedelta(days=9))  # 10 days
+
+        assert result.cap_reached_date is None
+        assert result.total_penalty < Decimal("3000.00")
+        assert len(result.daily_accumulated_list) == 10
+        assert result.days_late == 10
+
+    @patch(REFRESH_WRAPPER_PATH)
+    def test_zero_obligation_never_caps(self, mock_refresh_data):
+        """A zero obligation has a zero cap, which must not be treated as immediately reached"""
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=self.invoice)
+        self.obligation.fee_amount_dollars = Decimal("0.00")
+        self.obligation.save(update_fields=["fee_amount_dollars"])
+
+        result = self._calculate()
+
+        assert result.cap_reached_date is None
+        assert result.total_penalty == Decimal("0.00")
+        assert len(result.daily_accumulated_list) == 40
+
+    @patch(REFRESH_WRAPPER_PATH)
+    def test_partial_payment_delays_the_cap(self, mock_refresh_data):
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=self.invoice)
+        unpaid = self._calculate()
+
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=self.invoice.elicensing_line_items.first(),
+            amount=Decimal("100.00"),
+            received_date=self.ACCRUAL_START + timedelta(days=4),
+        )
+
+        result = self._calculate()
+
+        assert result.cap_reached_date > unpaid.cap_reached_date
+        assert result.total_penalty == Decimal("3000.00")
+
+
+class TestCreatePenaltyForUnpaidObligation:
+    def setup_method(self):
+        # An unmet obligation with an invoice carrying a fee line item, but no payments and no
+        # adjustments: nothing has been paid off
+        test_data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
+        )
+        self.compliance_report_version = test_data.compliance_report_version
+        self.obligation = test_data.compliance_obligation
+        self.invoice = test_data.invoice
+        self.obligation.fee_amount_dollars = Decimal("1000.00")
+        self.obligation.save(update_fields=["fee_amount_dollars"])
+
+        self.penalty_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            invoice_number='OBI000001',
+        )
+        self.compliance_deadline = (
+            self.compliance_report_version.compliance_report.compliance_period.compliance_deadline
+        )
+        self.cap_date = self.compliance_deadline + timedelta(days=30)
+
+    @patch('compliance.tasks.retryable_notice_of_obligation_met_penalty_due_email')
+    @patch(REFRESH_WRAPPER_PATH)
+    @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice'
+    )
+    @patch("compliance.service.penalty_calculation_service.ElicensingClientOperator.objects.get")
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice")
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty")
+    @patch("compliance.service.penalty_calculation_service.ElicensingInvoice.objects.get")
+    def test_create_penalty_twice_does_not_duplicate_accruals_or_emails(
+        self,
+        mock_get_invoice,
+        mock_calculate,
+        mock_create_invoice,
+        mock_get_client_operator,
+        mock_refresh_by_invoice,
+        mock_refresh_data,
+        mock_email,
+    ):
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=self.invoice)
+        mock_refresh_by_invoice.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=self.penalty_invoice)
+        mock_get_invoice.return_value = self.penalty_invoice
+        mock_get_client_operator.return_value = baker.make_recipe("compliance.tests.utils.elicensing_client_operator")
+        mock_calculate.return_value = CalculatedPenaltyData(
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+            penalty_charge_rate=Decimal('5.00'),
+            days_late=30,
+            accumulated_penalty=Decimal('1500.00'),
+            accumulated_compounding=Decimal('1500.00'),
+            total_penalty=Decimal('3000.00'),
+            faa_interest=Decimal('0.00'),
+            total_amount=Decimal('3000.00'),
+            daily_accumulated_list=[
+                CalculatedPenaltyAccrualData(
+                    date='2025-12-01',
+                    interest_rate=Decimal('0.05'),
+                    daily_penalty=Decimal('50.00'),
+                    daily_compounded=Decimal('10.00'),
+                    accumulated_penalty=Decimal('50.00'),
+                    accumulated_compounded=Decimal('10.00'),
+                ),
+                CalculatedPenaltyAccrualData(
+                    date='2025-12-02',
+                    interest_rate=Decimal('0.05'),
+                    daily_penalty=Decimal('50.00'),
+                    daily_compounded=Decimal('10.00'),
+                    accumulated_penalty=Decimal('100.00'),
+                    accumulated_compounded=Decimal('20.00'),
+                ),
+            ],
+            cap_reached_date=self.cap_date,
+        )
+
+        kwargs = {
+            "obligation_id": self.obligation.id,
+            "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+            "effective_deadline": self.compliance_deadline,
+            "final_accrual_date": self.cap_date,
+        }
+        first = PenaltyCalculationService.create_penalty(**kwargs)
+        second = PenaltyCalculationService.create_penalty(**kwargs)
+
+        assert first.pk == second.pk
+        assert CompliancePenalty.objects.filter(compliance_obligation=self.obligation).count() == 1
+        assert CompliancePenaltyAccrual.objects.filter(compliance_penalty=first).count() == 2
+        mock_email.execute.assert_called_once_with(self.obligation.id)

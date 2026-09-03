@@ -234,7 +234,7 @@ const permissionRules: PermissionRule[] = [
    *   - If the route is MO_APPLY_COMPLIANCE_UNITS (/apply-compliance-units):
    *       • The user must also pass `getComplianceAppliedUnits(id)`.
    *   - If the route is MO_DOWNLOAD_PAYMENT_INSTRUCTIONS (/download-payment-instructions) | MO_PAY_PENALTY_TRACK_PAYMENTS (/pay-obligation-track-payments)
-   *       • The obligation outstanding baliance is zero and penalty_status must be NOT PAID
+   *       • penalty_status must be NOT PAID | PAID
    *
    * Redirect Rules:
    *
@@ -251,12 +251,13 @@ const permissionRules: PermissionRule[] = [
    *        •  MO_DOWNLOAD_PENALTY_PAYMENT_INSTRUCTIONS (/download-penalty-payment-instructions)
    *        •  MO_PAY_PENALTY_TRACK_PAYMENTS (/pay-penalty-track-payments)
    *        •  MO_REVIEW_PENALTY_SUMMARY (/review-penalty-summary)
-   *      AND obligation outstanding balance is:
-   *        • 0
    *      AND penalty_status is:
    *        • != (NOT PAID | PAID)
    *      → Redirect to:
    *        • Redirect to REVIEW_COMPLIANCE_SUMMARIES
+   *
+   *      Note: deliberately not gated on the obligation being fully paid. A penalty that reached its
+   *      maximum of 3x the obligation is invoiced while the obligation is still outstanding.
    *
    * Default Redirect:
    *   - If access is denied → Redirect to REVIEW_COMPLIANCE_SUMMARIES.
@@ -295,18 +296,16 @@ const permissionRules: PermissionRule[] = [
 
         const summaryData = await context!.getComplianceSummaryData(id);
 
-        const outstandingBalance = Number(
-          summaryData?.outstanding_balance_tco2e ?? 0,
-        );
         const penaltyStatus = summaryData?.penalty_status as
           PenaltyStatus | undefined;
 
-        // Redirect if the balance is not 0 OR the penalty status is not one of NOT_PAID or PAID
-        const allowAccess =
-          outstandingBalance === 0 &&
-          [PenaltyStatus.NOT_PAID, PenaltyStatus.PAID].includes(
-            penaltyStatus as PenaltyStatus,
-          );
+        // Redirect if the penalty status is not one of NOT_PAID or PAID. Not gated on the obligation
+        // being fully paid: a penalty that reached its maximum of 3x the obligation is invoiced while
+        // the obligation is still outstanding, and still has to be reviewable and payable
+        const allowAccess = [
+          PenaltyStatus.NOT_PAID,
+          PenaltyStatus.PAID,
+        ].includes(penaltyStatus as PenaltyStatus);
 
         if (!allowAccess) return false;
       }

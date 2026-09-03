@@ -112,7 +112,6 @@ export const generateManageObligationTaskList: (
 
   if (
     hasOverduePenalty &&
-    isObligationFullyPaid &&
     [PenaltyStatus.NOT_PAID, PenaltyStatus.PAID].includes(
       penaltyStatus as PenaltyStatus,
     )

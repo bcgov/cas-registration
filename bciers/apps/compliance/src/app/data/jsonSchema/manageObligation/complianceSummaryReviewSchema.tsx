@@ -43,7 +43,8 @@ export const createComplianceSummaryReviewSchema = (
       "Equivalent Value (Not including interest):",
     ),
     faa_interest: readOnlyStringField("FAA interest as of today:"),
-    // Penalty sections are only shown while a penalty is actually accruing
+    // Penalty sections are only shown while a penalty is accruing, or once the automatic overdue
+    // penalty has stopped accruing because it reached its maximum of 3x the obligation
     ...(hasAccruingAutomaticOverduePenalty && {
       automatic_overdue_penalty_header: readOnlyObjectField(
         "Automatic Overdue Penalty",
