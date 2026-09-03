@@ -26,7 +26,8 @@ class CalculatedPenaltyOut(Schema):
 
     automatic_overdue_penalty_status: PenaltyTypeStatusEnum
     ggeapar_interest_status: PenaltyTypeStatusEnum
-    penalty_type: CompliancePenalty.PenaltyType
-    days_late: int
-    total_penalty: Decimal
-    daily_accumulated_list: list[PenaltyAccrual]
+    penalty_type: CompliancePenalty.PenaltyType | None = None
+    days_late: int | None = None
+    total_penalty: Decimal | None = None
+    daily_accumulated_list: list[PenaltyAccrual] = []
+    message: str | None = None

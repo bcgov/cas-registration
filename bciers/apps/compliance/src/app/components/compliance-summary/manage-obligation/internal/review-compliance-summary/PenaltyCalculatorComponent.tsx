@@ -3,13 +3,13 @@
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import { FormBase } from "@bciers/components/form";
 import { IChangeEvent } from "@rjsf/core";
-import Alert from "@mui/material/Alert";
 import { useMemo, useRef, useState } from "react";
 import {
   penaltyCalculatorSchema,
   penaltyCalculatorUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/internal/PenaltyCalculatorSchema";
 import { getPenaltyAccrualCalculationData } from "@/compliance/src/app/utils/getPenaltyAccrualCalculationData";
+import AlertNote from "@bciers/components/form/components/AlertNote";
 
 type PenaltyAccrualRow = {
   date?: string;
@@ -197,9 +197,7 @@ export default function PenaltyCalculatorComponent({
   return (
     <>
       {warningMessage && (
-        <Alert severity="warning" className="mb-4">
-          {warningMessage}
-        </Alert>
+        <AlertNote alertType="ALERT">{warningMessage}</AlertNote>
       )}
       <FormBase
         schema={penaltyCalculatorSchema}
