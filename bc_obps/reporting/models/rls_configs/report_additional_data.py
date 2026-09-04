@@ -26,7 +26,4 @@ class Rls:
         RlsPolicy.REPORT_USING_STATEMENT,
         RlsPolicy.REPORT_DELETE_USING_STATEMENT,
     )
-    policies = generate_rls_policies(
-        role_policy_mapping,
-        table
-    )
+    policies = generate_rls_policies(role_policy_mapping, table)
