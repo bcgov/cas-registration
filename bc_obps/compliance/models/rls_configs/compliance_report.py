@@ -8,21 +8,16 @@ class Rls:
     schema = "erc"
     table = ComplianceTableNames.COMPLIANCE_REPORT
     using_statement = """
-        report_id IN (
-        SELECT r.id
-    FROM erc.report r
-        JOIN erc.user_operator uo ON uo.operator_id = r.operator_id
-        WHERE uo.user_id = current_setting('my.guid', true)::uuid
-          AND uo.status = 'Approved'
-    )
-"""
+        exists(
+            select 1 from erc.report r where report_id = r.id
+        )
+    """
 
     role_grants_mapping = {
         RlsRoles.INDUSTRY_USER: [
             RlsOperations.SELECT,
             RlsOperations.INSERT,
             RlsOperations.UPDATE,
-            RlsOperations.DELETE,
         ],
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],

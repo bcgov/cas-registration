@@ -48,6 +48,10 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
 
         # Act
         TestUtils.authorize_current_user_as_operator_user(self, operator=approved_user_operator.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=approved_user_operator.operator,
+            operations=[compliance_report_version.compliance_report.report.operation],
+        )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
@@ -98,6 +102,10 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
 
         # Act
         TestUtils.authorize_current_user_as_operator_user(self, operator=approved_user_operator.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=approved_user_operator.operator,
+            operations=[compliance_report_version.compliance_report.report.operation],
+        )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
@@ -142,6 +150,10 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
 
         # Act
         TestUtils.authorize_current_user_as_operator_user(self, operator=approved_user_operator.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=approved_user_operator.operator,
+            operations=[compliance_report_version.compliance_report.report.operation],
+        )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
@@ -195,6 +207,10 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
 
         # Act
         TestUtils.authorize_current_user_as_operator_user(self, operator=approved_user_operator.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=approved_user_operator.operator,
+            operations=[compliance_report_version.compliance_report.report.operation],
+        )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
@@ -218,6 +234,10 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
 
         # Act - Try to access other operator's obligation
         TestUtils.authorize_current_user_as_operator_user(self, operator=current_user_operator.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=current_user_operator.operator,
+            operations=[compliance_report_version.compliance_report.report.operation],
+        )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",

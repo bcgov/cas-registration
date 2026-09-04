@@ -12,6 +12,9 @@ class TestReportAdditionalDataApi(CommonTestSetup):
         self.report_version = baker.make_recipe("reporting.tests.utils.report_version")
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+        )
 
     """Tests for the save_report_additional_data endpoint."""
 

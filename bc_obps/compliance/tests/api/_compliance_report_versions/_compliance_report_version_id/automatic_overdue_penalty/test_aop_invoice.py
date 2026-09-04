@@ -31,6 +31,9 @@ class TestGenerateComplianceReportVersionPenaltyInvoice(CommonTestSetup):
             compliance_report__report__operator=operator,
             compliance_report__report__operation__operator=operator,
         )
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[compliance_report_version.compliance_report.report.operation]
+        )
 
         # Act
         response = TestUtils.mock_get_with_auth_role(
@@ -63,6 +66,9 @@ class TestGenerateComplianceReportVersionPenaltyInvoice(CommonTestSetup):
             "compliance.tests.utils.compliance_report_version",
             compliance_report__report__operator=operator,
             compliance_report__report__operation__operator=operator,
+        )
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[compliance_report_version.compliance_report.report.operation]
         )
 
         # Act

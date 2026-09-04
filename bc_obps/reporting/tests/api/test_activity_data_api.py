@@ -16,6 +16,9 @@ class TestActivityData(CommonTestSetup):
             report_version__report__operator=operator,
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[facility_report.report_version.report.operation]
+        )
 
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -39,6 +42,9 @@ class TestActivityData(CommonTestSetup):
         )
 
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[facility_report.report_version.report.operation]
+        )
 
         response = TestUtils.mock_get_with_auth_role(
             self,

@@ -1,8 +1,8 @@
 from unittest.mock import patch, MagicMock, AsyncMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from reporting.tests.utils.bakers import report_version_baker
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from model_bakery.baker import make_recipe
 
 
 class TestReportFacilityListEndpoint(CommonTestSetup):
@@ -20,8 +20,11 @@ class TestReportFacilityListEndpoint(CommonTestSetup):
         mock_get_facility_list.return_value = {"facilities": facilities}
 
         # Act: Mock the authorization and perform the request
-        report_version = report_version_baker()
+        report_version = make_recipe('reporting.tests.utils.report_version')
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=report_version.report.operator, operations=[report_version.report.operation]
+        )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
