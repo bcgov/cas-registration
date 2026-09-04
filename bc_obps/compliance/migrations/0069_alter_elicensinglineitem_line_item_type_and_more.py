@@ -6,8 +6,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0064_V5_18_1'),
-        ('registration', '0190_V5_18_1'),
+        ('compliance', '0068_V5_20_1'),
+        ('registration', '0194_V5_20_0'),
     ]
 
     operations = [
