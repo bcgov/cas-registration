@@ -1,19 +1,19 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
-from reporting.models.thread import Thread
+from reporting.models.comment_thread import CommentThread
 from reporting.models.rls_configs.comment import (
     Rls as CommentRls,
 )
 
 
 class Comment(TimeStampedModel):
-    thread = models.ForeignKey(
-        Thread,
+    comment_thread = models.ForeignKey(
+        CommentThread,
         on_delete=models.CASCADE,
         related_name="comments",
-        db_comment="The thread this comment belongs to. Foreign key to erc.thread",
+        db_comment="The thread this comment belongs to. Foreign key to erc.comment_thread",
     )
-    report_version_id = models.ForeignKey(
+    report_version = models.ForeignKey(
         "reporting.ReportVersion",
         on_delete=models.SET_NULL,  # Do not delete the comment if the report version is deleted
         null=True,

@@ -4,54 +4,68 @@ import { Box, Button, Paper, Typography } from "@mui/material";
 import { Thread } from "./types";
 import ThreadComponent from "./ThreadComponent";
 import NewThreadComponent from "./NewThreadComponent";
+import { useState } from "react";
+import { getCommentThreads } from "../../utils/getCommentThreads";
 
-const getCommentThreads = (version_id: number): Thread[] => {
-  // Placeholder function to fetch comment threads for a given report version
-  return [
-    {
-      id: 1,
-      version_id: version_id,
-      facility_name: "Dining & Cutlery Pad 15-30-19W7182",
-      comments: [
-        {
-          id: 1,
-          version_id: 5,
-          author: "John Doe",
-          timestamp: "2024-06-01T12:00:00Z",
-          comment: "The allocation of emissions is incorrect",
-        },
-        {
-          id: 2,
-          version_id: 6,
-          author: "Adam C.",
-          timestamp: "2024-06-01T12:00:00Z",
-          comment: "Thank you.",
-        },
-      ],
-    },
-    {
-      id: 2,
-      version_id: 7,
-      comments: [
-        {
-          id: 3,
-          version_id: 8,
-          author: "Pierre B.",
-          timestamp: "2024-06-01T12:00:00Z",
-          comment: "This is just wrong!",
-        },
-      ],
-    },
-  ];
+const getData = async (version_id: number): Promise<Thread[]> => {
+  // Will call the GET api
+
+  return await getCommentThreads(version_id);
+  // [
+  //   {
+  //     id: 1,
+  //     version_id: version_id,
+  //     facility_name: "Dining & Cutlery Pad 15-30-19W7182",
+  //     comments: [
+  //       {
+  //         id: 1,
+  //         version_id: 5,
+  //         author: "John Doe",
+  //         timestamp: "2024-06-01T12:00:00Z",
+  //         comment: "The allocation of emissions is incorrect",
+  //       },
+  //       {
+  //         id: 2,
+  //         version_id: 6,
+  //         author: "Adam C.",
+  //         timestamp: "2024-06-01T12:00:00Z",
+  //         comment: "Thank you.",
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: 2,
+  //     version_id: 7,
+  //     comments: [
+  //       {
+  //         id: 3,
+  //         version_id: 8,
+  //         author: "Pierre B.",
+  //         timestamp: "2024-06-01T12:00:00Z",
+  //         comment: "This is just wrong!",
+  //       },
+  //     ],
+  //   },
+  // ];
 };
 
 interface Props {
   version_id: number;
+  threads: Thread[];
 }
 
-const CommentsSidebar: React.FC<Props> = ({ version_id }) => {
-  const commentThreads = getCommentThreads(version_id);
+const CommentsSidebar: React.FC<Props> = ({ version_id, threads }) => {
   const facilitiesList = ["Facility 1", "Facility 2", "Facility 3"];
+
+  const [isCreating, setIsCreating] = useState(false);
+  const [commentThreads, setCommentThreads] = useState(threads);
+
+  const handleCreate = (thread: Thread) => {
+    // Will call the create thread API
+
+    setCommentThreads((prevThreads) => [thread, ...prevThreads]);
+    setIsCreating(false);
+  };
 
   return (
     <Paper
@@ -71,24 +85,27 @@ const CommentsSidebar: React.FC<Props> = ({ version_id }) => {
         <Typography variant="h6" sx={{ p: 2, pl: 0 }}>
           Comments
         </Typography>
-        <Button variant="contained" color="primary" fullWidth>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          onClick={() => setIsCreating(true)}
+        >
           Add internal Comment
         </Button>
       </Box>
-      <NewThreadComponent
-        facilities={facilitiesList}
-        onCancel={() => {}}
-        onThreadCreated={() => {}}
-        version_id={version_id}
-      />
-      {commentThreads.map((thread) => (
-        <ThreadComponent
-          key={thread.id ?? "thread-pending-submission"}
-          version_id={thread.version_id}
-          facility_name={thread.facility_name}
-          facility_names={facilitiesList}
-          comments={thread.comments}
+      {isCreating && (
+        <NewThreadComponent
+          facilities={facilitiesList}
+          onCancel={() => {
+            setIsCreating(false);
+          }}
+          onThreadCreated={handleCreate}
+          version_id={version_id}
         />
+      )}
+      {commentThreads.map((thread) => (
+        <ThreadComponent key={`thread-${thread.id}`} thread={thread} />
       ))}
     </Paper>
   );
