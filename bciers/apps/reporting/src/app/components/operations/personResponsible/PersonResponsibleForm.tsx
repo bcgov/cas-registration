@@ -18,8 +18,10 @@ import { NavigationInformation } from "@reporting/src/app/components/taskList/ty
 import { AddressErrorWidget } from "@reporting/src/data/jsonSchema/personResponsibleWidgets";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import useKey from "@bciers/utils/src/useKey";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface PersonResponsibleFormData {
   person_responsible: number | undefined;
@@ -53,7 +55,8 @@ const PersonResponsibleForm = ({
 }: Props) => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const { setErrors, renderedErrors } = useFormErrors();
+
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const [componentState, setComponentState] = useState<ComponentState>({
     availableContacts: initialContacts,

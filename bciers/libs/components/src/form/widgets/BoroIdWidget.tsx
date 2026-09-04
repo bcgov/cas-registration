@@ -6,6 +6,10 @@ import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
 import SnackBar from "../components/SnackBar";
 import { OperationStatus } from "@bciers/utils/src/enums";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 async function generateBoroId(id: string) {
   const response = await actionHandler(
@@ -19,7 +23,7 @@ async function generateBoroId(id: string) {
 const BoroIdWidget: React.FC<WidgetProps> = ({ id, value, registry }) => {
   const [boroId, setBoroId] = useState(value);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [error, setError] = useState(undefined);
+  const { setErrors, renderedErrors } = useValidationErrors();
   const { formContext } = registry;
 
   if (!formContext.isRegulatedOperation) {
@@ -36,10 +40,10 @@ const BoroIdWidget: React.FC<WidgetProps> = ({ id, value, registry }) => {
       </div>
     );
   }
-  if (error) {
+  if (renderedErrors) {
     return (
       <div id={id} className="read-only-widget whitespace-pre-line">
-        Error: {error}
+        {renderedErrors}
       </div>
     );
   }
@@ -49,11 +53,10 @@ const BoroIdWidget: React.FC<WidgetProps> = ({ id, value, registry }) => {
       <Button
         variant="outlined"
         onClick={async () => {
+          setErrors(undefined);
           const response = await generateBoroId(formContext?.operationId);
-          if (response?.error) {
-            setError(response.error);
-            return;
-          }
+          const isSuccess = handleApiResponse(response, setErrors);
+          if (!isSuccess) return;
           setIsSnackbarOpen(true);
           setBoroId(response?.id);
         }}

@@ -32,6 +32,9 @@ const defaultFormContext = {
 };
 
 describe("RJSF boroIdWidget", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
   it("should show Not Applicable when Operation is non-regulated", () => {
     const { container } = render(
       <FormBase
@@ -185,5 +188,39 @@ describe("RJSF boroIdWidget", () => {
         screen.queryByText(/BORO ID issued successfully/i),
       ).not.toBeInTheDocument();
     });
+  });
+
+  it("displays an error message when the update request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    render(
+      <FormBase
+        schema={boroIdWidgetSchema}
+        uiSchema={boroIdWidgetUiSchema}
+        formContext={defaultFormContext}
+      />,
+    );
+
+    const issueButton = screen.getByRole("button", {
+      name: `＋ Issue BORO ID`,
+    });
+
+    await userEvent.click(issueButton);
+
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+
+    expect(actionHandler).toHaveBeenCalledWith(
+      "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/boro-id",
+      "PATCH",
+      "registration/administration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
+    );
+
+    expect(
+      screen.queryByText(/BORO ID issued successfully/i),
+    ).not.toBeInTheDocument();
   });
 });

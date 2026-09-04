@@ -223,4 +223,22 @@ describe("PersonResponsibleForm component", () => {
       expect(screen.getByText("Jane Smith")).toBeVisible();
     });
   });
+
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(<PersonResponsibleForm {...defaultProps} />);
+    fireEvent.click(screen.getByText("Save & Continue"));
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      "reporting/report-version/1/report-contact",
+      "POST",
+      "reporting/reports/1/person-responsible",
+      expect.anything(),
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+  });
 });

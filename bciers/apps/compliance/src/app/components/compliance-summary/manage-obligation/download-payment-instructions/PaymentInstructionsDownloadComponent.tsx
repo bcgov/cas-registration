@@ -7,9 +7,12 @@ import {
   createDownloadPaymentInstructionsSchema,
   downloadPaymentInstructionsUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/downloadPaymentInstructionsSchema";
-import FormAlerts from "@bciers/components/form/FormAlerts";
 import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
 import buildQueryParams from "@bciers/utils/src/buildQueryParams";
+import {
+  setClientError,
+  useValidationErrors,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   readonly complianceReportVersionId: number;
@@ -32,7 +35,8 @@ export default function PaymentInstructionsDownloadComponent({
   const saveAndContinueUrl =
     customContinueUrl ??
     `/compliance-administration/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
-  const [errors, setErrors] = useState<string[]>([]);
+
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [isGeneratingDownload, setIsGeneratingDownload] = useState(false);
   const instructionFormData = {
     complianceReportVersionId,
@@ -46,9 +50,13 @@ export default function PaymentInstructionsDownloadComponent({
     bank_address: "1175 DOUGLAS STREET, VICTORIA, BC V8W2E1",
   };
 
+  const setError = (message: string) => {
+    setClientError(message, setErrors);
+  };
+
   // Borrowed logic from complianceSummaryReviewComponent
   const handleDownloadInstructions = async () => {
-    setErrors([]);
+    setErrors(undefined);
     setIsGeneratingDownload(true);
 
     try {
@@ -78,22 +86,22 @@ export default function PaymentInstructionsDownloadComponent({
         }
 
         if (typeof payload.message === "string") {
-          setErrors([payload.message]);
+          setError(payload.message);
           return;
         }
 
         // Generic fallback message
-        setErrors([
+        setError(
           `Failed to generate payment instructions (status ${res.status})`,
-        ]);
+        );
         return;
       }
 
       // Handle non-JSON response errors
       if (!res.ok) {
-        setErrors([
+        setError(
           `Failed to generate payment instructions (status ${res.status})`,
-        ]);
+        );
         return;
       }
 
@@ -106,11 +114,12 @@ export default function PaymentInstructionsDownloadComponent({
       setTimeout(() => URL.revokeObjectURL(objectUrl), 30_000);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      setErrors([msg]);
+      setError(msg);
     } finally {
       setIsGeneratingDownload(false);
     }
   };
+
   return (
     <FormBase
       schema={createDownloadPaymentInstructionsSchema()}
@@ -124,7 +133,7 @@ export default function PaymentInstructionsDownloadComponent({
         ].includes(invoiceType as ComplianceInvoiceTypes),
       }}
     >
-      <FormAlerts key="alerts" errors={errors} />
+      {renderedErrors}
       <ComplianceStepButtons
         key="form-buttons"
         backUrl={backUrl}

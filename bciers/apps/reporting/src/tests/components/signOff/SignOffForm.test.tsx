@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach, type Mock } from "vitest";
 import SignOffForm from "@reporting/src/app/components/signOff/SignOffForm";
-import { dummyNavigationInformation } from "../taskList/utils";
+import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
 import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
 import { buildSignOffSchema } from "@reporting/src/data/jsonSchema/signOff/signOff";
@@ -290,5 +290,24 @@ describe("SignOffForm Component (with actual schema)", () => {
     );
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
     expect(mockRouterPush).not.toHaveBeenCalled();
+  });
+  it("displays an error message when the submission request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    (postSubmitReport as Mock).mockResolvedValue({
+      error: errorMessage,
+    });
+    renderSignOffFormWithSchema({
+      isSupplementary: false,
+      isRegulated: true,
+      flow: ReportingFlow.SFO,
+    });
+    const submitButton = await completeSignOffForm();
+    fireEvent.click(submitButton);
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(postSubmitReport).toHaveBeenCalledTimes(1);
+    expect(mockRouterPush).not.toHaveBeenCalled();
+    expect(
+      screen.getByRole("button", { name: /submit report/i }),
+    ).toBeEnabled();
   });
 });

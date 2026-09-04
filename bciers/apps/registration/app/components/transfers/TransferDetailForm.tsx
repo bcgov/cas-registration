@@ -15,6 +15,10 @@ import { TransferEventStatus } from "@/registration/app/components/transfers/enu
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import useKey from "@bciers/utils/src/useKey";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface TransferDetailFormProps {
   formData: TransferDetailFormData;
@@ -29,7 +33,6 @@ export default function TransferDetailForm({
   schema,
   uiSchema,
 }: Readonly<TransferDetailFormProps>) {
-  // To get the user's role from the session
   const role = useSessionRole();
   const isCasAnalyst = role === FrontEndRoles.CAS_ANALYST;
   const isEditable =
@@ -37,41 +40,51 @@ export default function TransferDetailForm({
 
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
-  const [error, setError] = useState(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [disabled, setDisabled] = useState(true);
   const [key, resetKey] = useKey();
 
+  const { setErrors, renderedErrors } = useValidationErrors();
+
   const handleCancelTransfer = async () => {
     const endpoint = `registration/transfer-events/${transferId}`;
     setIsSubmitting(true);
+    setErrors(undefined);
+
     const response = await actionHandler(endpoint, "DELETE", "/transfers");
-    if (response?.error) {
-      setError(response.error as any);
+    setIsSubmitting(false);
+
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
       setModalOpen(false);
-      setIsSubmitting(false);
       return;
     }
+
     router.push("/transfers");
   };
 
   const submitHandler = async (e: IChangeEvent) => {
-    setError(undefined);
+    setErrors(undefined);
     setIsSubmitting(true);
+
     const endpoint = `registration/transfer-events/${transferId}`;
     const pathToRevalidate = `/transfers/${transferId}`;
+
     const response = await actionHandler(endpoint, "PATCH", pathToRevalidate, {
       body: JSON.stringify({
         ...e.formData,
       }),
     });
+
     setIsSubmitting(false);
-    if (!response || response?.error) {
+
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
       setDisabled(false);
-      setError(response.error as any);
-    } else {
-      setDisabled(true);
+      return response;
     }
+
+    setDisabled(true);
   };
 
   const backButton = (
@@ -104,7 +117,6 @@ export default function TransferDetailForm({
               variant="contained"
               onClick={() => {
                 setDisabled(false);
-                // force re-render to clear the form
                 resetKey();
               }}
             >
@@ -138,7 +150,7 @@ export default function TransferDetailForm({
       <SingleStepTaskListForm
         key={key}
         disabled={disabled}
-        error={error}
+        errors={renderedErrors}
         schema={schema}
         uiSchema={uiSchema}
         formData={formData}

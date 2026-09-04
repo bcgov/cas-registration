@@ -10,9 +10,11 @@ import { RJSFSchema } from "@rjsf/utils";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { getUpdatedFacilityReportDetails } from "@reporting/src/app/utils/getUpdatedFacilityReportDetails";
 import SnackBar from "@bciers/components/form/components/SnackBar";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  setClientError,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   version_id: number;
@@ -48,7 +50,7 @@ export const FacilityReview: React.FC<Props> = ({
   isSyncAllowed = true,
 }) => {
   const [formData, setFormData] = useState<FacilityReviewFormData>(formsData);
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } = useValidationErrors();
   const uiSchema = buildFacilityReviewUiSchema(operationId, facility_id);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const handleSubmit = async () => {
@@ -60,11 +62,8 @@ export const FacilityReview: React.FC<Props> = ({
       ...(formData.other_activities ?? []),
     ];
     if (selectedActivityNames.length === 0) {
-      setErrors([
-        createGenericReportValidationError(
-          "You must select at least one activity.",
-        ),
-      ]);
+      const message = "You must select at least one activity.";
+      setClientError(message, setErrors);
       return false;
     }
 
@@ -93,9 +92,8 @@ export const FacilityReview: React.FC<Props> = ({
     );
 
     if (getUpdatedFacilityData.error) {
-      setErrors([
-        createGenericReportValidationError(getUpdatedFacilityData.error),
-      ]);
+      const message = getUpdatedFacilityData.error;
+      setClientError(message, setErrors);
       return;
     }
 

@@ -13,9 +13,11 @@ import { Checkbox } from "@mui/material";
 import AlertNote from "@bciers/components/form/components/AlertNote";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
 import { OperationTypes } from "@bciers/utils/src/enums";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface Props extends HasReportVersion {
   initialUploadedAttachments: {
@@ -69,7 +71,7 @@ const AttachmentsForm: React.FC<Props> = ({
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
 
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [hasValidationError, setHasValidationError] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{
     [fileType: string]: string;
@@ -109,6 +111,7 @@ const AttachmentsForm: React.FC<Props> = ({
   };
 
   const handleSubmit = async (canContinue: boolean) => {
+    setErrors(undefined);
     if (!validateAttachments()) return;
 
     if (
@@ -138,9 +141,9 @@ const AttachmentsForm: React.FC<Props> = ({
       );
     }
     const response = await postAttachments(version_id, formData);
-    const isValid = handleApiResponse(response, setErrors);
+    const isSuccess = handleApiResponse(response, setErrors);
 
-    if (!isValid) {
+    if (!isSuccess) {
       setIsSaving(false);
       return false;
     }

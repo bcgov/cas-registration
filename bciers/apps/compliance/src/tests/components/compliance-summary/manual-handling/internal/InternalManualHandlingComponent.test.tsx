@@ -1,19 +1,18 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import type { Mock } from "vitest";
-import { useRouter, useSessionRole } from "@bciers/testConfig/mocks";
+import {
+  useRouter,
+  useSessionRole,
+  actionHandler,
+} from "@bciers/testConfig/mocks";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
 import InternalManualHandlingComponent from "@/compliance/src/app/components/compliance-summary/manual-handling/internal/InternalManualHandlingComponent";
 import { ManualHandlingData } from "@/compliance/src/app/types";
-import { actionHandler } from "@bciers/actions";
 import expectRadio from "@bciers/testConfig/helpers/expectRadio";
-
-// Mock actionHandler so submit doesn't actually call the API
-vi.mock("@bciers/actions", () => ({
-  actionHandler: vi.fn(),
-}));
 
 // Router mock for Back navigation
 const mockRouterPush = vi.fn();
+const mockActionHandler = vi.mocked(actionHandler);
+
 useRouter.mockReturnValue({
   query: {},
   push: mockRouterPush,
@@ -34,9 +33,12 @@ const baseFormData: ManualHandlingData = {
 describe("InternalManualHandlingComponent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockActionHandler.mockReset();
+
     useSessionRole.mockReturnValue(FrontEndRoles.CAS_ANALYST);
     mockRouterPush.mockClear();
-    (actionHandler as unknown as Mock).mockResolvedValue({ error: null });
+
+    mockActionHandler.mockResolvedValue({ error: null });
   });
 
   it("renders the internal manual handling form with title and section header", () => {
@@ -162,7 +164,7 @@ describe("InternalManualHandlingComponent", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledWith(
+      expect(mockActionHandler).toHaveBeenCalledWith(
         `compliance/compliance-report-versions/${CRV_ID}/manual-handling`,
         "PUT",
         "/compliance-administration/compliance-summaries",
@@ -174,5 +176,34 @@ describe("InternalManualHandlingComponent", () => {
         },
       );
     });
+    expect(
+      await screen.findByRole("button", { name: "✅ Success" }),
+    ).toBeVisible();
+  });
+
+  it("displays an error message when the update request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    mockActionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(
+      <InternalManualHandlingComponent
+        initialFormData={baseFormData}
+        complianceReportVersionId={CRV_ID}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(mockActionHandler).toHaveBeenCalledTimes(1);
+    expect(mockActionHandler).toHaveBeenCalledWith(
+      `compliance/compliance-report-versions/${CRV_ID}/manual-handling`,
+      "PUT",
+      "/compliance-administration/compliance-summaries",
+      expect.anything(),
+    );
+    expect(
+      screen.queryByRole("button", { name: "✅ Success" }),
+    ).not.toBeInTheDocument();
+    expect(mockRouterPush).not.toHaveBeenCalled();
   });
 });

@@ -1,8 +1,9 @@
 import { actionHandler } from "@bciers/actions";
-import { ReportValidationErrors } from "@reporting/src/app/components/shared/validation/types";
+import { ValidationErrors } from "@bciers/components/validationErrors";
+import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
 
 export type ReportValidationResponse = {
-  errors: ReportValidationErrors;
+  errors: ValidationErrors<ValidationMessageKey>;
 };
 
 export async function getReportValidationData(

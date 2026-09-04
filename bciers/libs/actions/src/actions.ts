@@ -18,7 +18,7 @@ import { captureException } from "@bciers/sentryConfig/sentry";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import isNonReportableError from "@bciers/utils/src/nonReportableErrors";
 
-const FORM_METHODS = ["POST", "PUT", "PATCH"] as const;
+const FORM_METHODS = ["POST", "PUT", "PATCH", "DELETE"] as const;
 
 const shouldReturnError = (method: string, status: number, res: any) => {
   if (

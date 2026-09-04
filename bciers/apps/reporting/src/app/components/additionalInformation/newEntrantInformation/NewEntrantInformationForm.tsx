@@ -7,8 +7,10 @@ import { newEntrantUiSchema } from "@reporting/src/data/jsonSchema/newEntrantInf
 import { newEntrantSchema } from "@reporting/src/data/jsonSchema/newEntrantInformation/newEntrantInformationSchema";
 import { IChangeEvent } from "@rjsf/core";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface NewEntrantInfornationProps {
   version_id: number;
@@ -22,7 +24,7 @@ export default function NewEntrantInformationForm({
   navigationInformation,
 }: NewEntrantInfornationProps) {
   const [formData, setFormData] = useState(initialFormData || {});
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(
     !initialFormData.assertion_statement,
   );

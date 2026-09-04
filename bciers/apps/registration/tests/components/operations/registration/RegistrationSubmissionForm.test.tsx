@@ -6,6 +6,7 @@ import RegistrationSubmissionForm from "apps/registration/app/components/operati
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import { UUID } from "crypto";
 import { OperationStatus } from "@bciers/utils/src/enums";
+import userEvent from "@testing-library/user-event";
 
 useSessionRole.mockReturnValue("industry_user");
 
@@ -141,5 +142,35 @@ describe("the RegistrationSubmissionForm component", () => {
       ).not.toBeInTheDocument();
       expect(screen.getByText(/Before clicking 'Submit'/i)).toBeVisible();
     });
+  });
+
+  it("displays an error message when the submission request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    render(<RegistrationSubmissionForm {...defaultProps} />);
+    for (const checkbox of screen.getAllByRole("checkbox")) {
+      await userEvent.click(checkbox);
+    }
+    const submitButton = screen.getByRole("button", {
+      name: /submit/i,
+    });
+    expect(submitButton).toBeEnabled();
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    await userEvent.click(submitButton);
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/operations/${defaultProps.operation}/registration/submission`,
+      "PATCH",
+      "/administration/operations",
+      expect.anything(),
+    );
+    expect(
+      screen.getByRole("button", {
+        name: /submit/i,
+      }),
+    ).toBeEnabled();
+    expect(screen.queryByText("Registration complete")).not.toBeInTheDocument();
   });
 });

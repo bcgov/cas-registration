@@ -9,6 +9,10 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { BC_GOV_SEMANTICS_RED } from "@bciers/styles";
 import SnackBar from "../components/SnackBar";
 import { IconButton } from "@mui/material";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 async function removeOperationRepresentative(
   operation_id: string,
@@ -34,13 +38,13 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
   uiSchema,
 }) => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [error, setError] = useState(undefined);
+  const { setErrors, renderedErrors } = useValidationErrors();
   const { formContext } = registry;
 
-  if (error) {
+  if (renderedErrors) {
     return (
       <div id={id} className="read-only-widget whitespace-pre-line">
-        Error: {error}
+        {renderedErrors}
       </div>
     );
   }
@@ -60,12 +64,12 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
           key={option.id}
           style={{ color: BC_GOV_SEMANTICS_RED }}
           onClick={async () => {
+            setErrors(undefined);
             const response = await removeOperationRepresentative(
               formContext?.operationId,
               option.id,
             );
-            if (response?.error) {
-              setError(response.error);
+            if (!handleApiResponse(response, setErrors)) {
               return;
             }
             setIsSnackbarOpen(true);
