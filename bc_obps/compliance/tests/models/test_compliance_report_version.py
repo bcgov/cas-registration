@@ -32,11 +32,8 @@ class ComplianceReportVersionTest(BaseTestCase):
 class TestComplianceReportVersionRls(BaseTestCase):
     def test_compliance_report_version_rls_industry_user(self):
         t = ComplianceReportRlsTestSetup()
-        mock_report_version = make_recipe(
-            'reporting.tests.utils.report_version', report=t.compliance_report_2010.report
-        )
         mock_compliance_report_summary = make_recipe(
-            'reporting.tests.utils.report_compliance_summary', report_version=mock_report_version
+            'reporting.tests.utils.report_compliance_summary', report_version=t.report_version_2010
         )
         assert ComplianceReportVersion.objects.count() == 2
 
