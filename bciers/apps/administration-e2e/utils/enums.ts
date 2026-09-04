@@ -247,3 +247,62 @@ export const ReportingOperationFields: ReadonlyArray<OperationFields> = [
   OperationFields.BOUNDARY_MAP,
   OperationFields.REPORTING_ACTIVITIES,
 ];
+
+// 🔘 Facility button text
+export enum FacilityButtonText {
+  ADD_FACILITY = "Add Facility",
+}
+
+// Facility Form fields selectors
+export enum FacilityFormField {
+  NAME = "Facility Name*",
+  TYPE = "Facility Type*",
+  MUNICIPALITY = "Municipality",
+  LATITUDE = "latitude_of_largest_emissions",
+  LONGITUDE = "longitude_of_largest_emissions",
+}
+
+export enum FacilityType {
+  LARGE = "Large Facility",
+  SMALL_AGGREGATE = "Small Aggregate",
+  SFO = "Single Facility",
+}
+
+export const FacilityE2EValue = {
+  LFO_OPERATION_WITH_FACILITIES: "Banana LFO - Registered",
+  LFO_EDIT_FACILITY_NAME: "Facility 3",
+  LFO_EDIT_FACILITY_BCGHG_ID: "13219990007",
+  SFO_OPERATION_WITH_FACILITY: "Bugle SFO - Registered",
+  SFO_FACILITY_NAME: "Facility 22",
+  TEMP_MUNICIPALITY: "Temp Town",
+  NEW_FACILITY_NAME: "E2E Test Facility",
+  NEW_LATITUDE: "50.1234",
+  NEW_LONGITUDE: "-120.5678",
+  NEW_SMALL_AGGREGATE_FACILITY_NAME: "E2E Test Small Aggregate Facility",
+};
+
+// name/type live in section1 for both LFO and SFO
+const FACILITY_NAME_TYPE_LOCATORS = {
+  name: "root_section1_name",
+  type: "root_section1_type",
+};
+
+export const LfoPageLocators = {
+  ...FACILITY_NAME_TYPE_LOCATORS,
+  streetAddress: "root_section1_street_address",
+  municipality: "root_section1_municipality",
+  province: "root_section1_province",
+  postalCode: "root_section1_postal_code",
+  latitude: "root_section1_latitude_of_largest_emissions",
+  longitude: "root_section1_longitude_of_largest_emissions",
+};
+
+export const SfoPageLocators = {
+  ...FACILITY_NAME_TYPE_LOCATORS,
+  streetAddress: "root_section2_street_address",
+  municipality: "root_section2_municipality",
+  province: "root_section2_province",
+  postalCode: "root_section2_postal_code",
+  latitude: "root_section2_latitude_of_largest_emissions",
+  longitude: "root_section2_longitude_of_largest_emissions",
+};
