@@ -22,9 +22,45 @@ env:
   PGUSER: postgres
 
 jobs:
-  check-nx-affected:
-    # We guard this workflow to only run on non-pull request review events or only when the review state is 'approved'.
+  should-run-all-ci:
+    # If the job is a pull request review event but it's not an approval, we skip everything else! If it's an approval, but it already had the label we don't run all CI again!
     if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    runs-on: ubuntu-latest
+    outputs:
+      run_all_ci: ${{ steps.evaluate-conditions.outputs.run_all_ci }}
+    steps:
+      - id: evaluate-conditions
+        env:
+          IS_MAIN_OR_DEV_BRANCH: ${{ github.ref_name == 'main' || github.head_ref == 'main' || github.ref_name == 'develop' || github.head_ref == 'develop' }}
+          EVENT_NAME: ${{ github.event_name }}
+          REVIEW_STATE: ${{ github.event.review.state }}
+          HAS_RUN_ALL_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          RUN_ALL_CI="false"
+
+          # Condition gates
+          # 1. If it's a merge or push to the develop or main branch, run all the CI
+          if [[ "$IS_MAIN_OR_DEV_BRANCH" == "true" ]]; then
+            RUN_ALL_CI="true"
+          fi
+          # 2. If the PR has the 'run-all-ci' label, run all the CI
+          if [[ "$HAS_RUN_ALL_LABEL" == "true" ]]; then
+            RUN_ALL_CI="true"
+          fi
+          # 3. A review approval got submitted
+          if [[ "$REVIEW_STATE" == "approved" ]]; then
+            RUN_ALL_CI="true"
+          fi
+          # 4. PR push/sync after a PR is approved
+          if [[ "$EVENT_NAME" == "pull_request" && "$GITHUB_ACTION" == "sync" ]]; then
+            RUN_ALL_CI="true"
+          fi
+
+          echo "RUN_ALL_CI=$RUN_ALL_CI" >> "$GITHUB_OUTPUT"
+  check-nx-affected:
+    needs: [should-run-all-ci]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
@@ -49,47 +85,48 @@ jobs:
         working-directory: ./bciers
         shell: bash
   check-backend-changes:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [should-run-all-ci]
     uses: ./.github/workflows/check-backend-changes.yaml
   check-frontend-changes:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [should-run-all-ci]
     uses: ./.github/workflows/check-frontend-changes.yaml
   build-administration:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [should-run-all-ci]
     uses: ./.github/workflows/build-administration.yaml
   build-backend:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [should-run-all-ci]
     uses: ./.github/workflows/build-backend.yaml
   build-compliance:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [should-run-all-ci]
     uses: ./.github/workflows/build-compliance.yaml
   build-dashboard:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [should-run-all-ci]
     uses: ./.github/workflows/build-dashboard.yaml
   build-dashboard-e2e:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [should-run-all-ci]
     uses: ./.github/workflows/build-dashboard-e2e.yaml
   build-registration:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [should-run-all-ci]
     uses: ./.github/workflows/build-registration.yaml
   build-reporting:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [should-run-all-ci]
     uses: ./.github/workflows/build-reporting.yaml
   test-code:
-    needs: [check-nx-affected, check-backend-changes, check-frontend-changes]
+    needs: [should-run-all-ci, check-nx-affected, check-backend-changes, check-frontend-changes]
     uses: ./.github/workflows/test-code.yaml
     with:
-      backend_has_changes: ${{ ((needs.check-backend-changes.outputs.has_changes == 'true') || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))) && 'true' || 'false' }}
-      frontend_has_changes: ${{ ((needs.check-frontend-changes.outputs.has_changes == 'true') || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))) && 'true' || 'false' }}
+      backend_has_changes: ${{ ((needs.should-run-all-ci.outputs.run_all_ci == 'true') || (needs.check-backend-changes.outputs.has_changes == 'true')) && 'true' || 'false' }}
+      frontend_has_changes: ${{ ((needs.should-run-all-ci.outputs.run_all_ci == 'true') || (needs.check-frontend-changes.outputs.has_changes == 'true')) && 'true' || 'false' }}
   test-backend:
-    needs: [check-backend-changes]
+    needs: [should-run-all-ci, check-backend-changes]
     uses: ./.github/workflows/test-backend.yaml
     with:
-      backend_has_changes: ${{ ((needs.check-backend-changes.outputs.has_changes == 'true') || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))) && 'true' || 'false' }}
+      backend_has_changes: ${{ ((needs.should-run-all-ci.outputs.run_all_ci == 'true') || (needs.check-backend-changes.outputs.has_changes == 'true')) && 'true' || 'false' }}
     secrets: inherit
   test-administration-e2e:
     needs:
       [
+        should-run-all-ci,
         build-backend,
         build-dashboard-e2e,
         build-administration,
@@ -99,12 +136,13 @@ jobs:
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       compose_profiles: "administration"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'administration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
+      is_nx_affected: ${{ needs.should-run-all-ci.outputs.run_all_ci == 'true' || contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'administration') }}
       nx_project: administration
     secrets: inherit
   test-registration-e2e:
     needs:
       [
+        should-run-all-ci,
         build-backend,
         build-dashboard-e2e,
         build-registration,
@@ -114,12 +152,13 @@ jobs:
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       compose_profiles: "registration"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
+      is_nx_affected: ${{ needs.should-run-all-ci.outputs.run_all_ci == 'true' || contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') }}
       nx_project: registration
     secrets: inherit
   test-dashboard-e2e:
     needs:
       [
+        should-run-all-ci,
         build-administration,
         build-backend,
         build-compliance,
@@ -133,12 +172,13 @@ jobs:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       # dashboard e2e clicks through to every app tile, so every app has to be up
       compose_profiles: "administration,compliance,registration,reporting"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
+      is_nx_affected: ${{ needs.should-run-all-ci.outputs.run_all_ci == 'true' || contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') }}
       nx_project: dashboard
     secrets: inherit
   test-compliance-e2e:
     needs:
       [
+        should-run-all-ci,
         build-backend,
         build-compliance,
         build-dashboard-e2e,
@@ -151,22 +191,22 @@ jobs:
       # compliance e2e drives the reporting UI directly to seed its data
       # (its specs import @/reporting-e2e POMs), so reporting has to be up too
       compose_profiles: "compliance,reporting"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
+      is_nx_affected: ${{ needs.should-run-all-ci.outputs.run_all_ci == 'true' || contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') }}
       nx_project: compliance
     secrets: inherit
   test-reporting-e2e:
     needs:
-      [build-backend, build-dashboard-e2e, build-reporting, check-nx-affected]
+      [should-run-all-ci, build-backend, build-dashboard-e2e, build-reporting, check-nx-affected]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       compose_profiles: "reporting"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
+      is_nx_affected: ${{ needs.should-run-all-ci.outputs.run_all_ci == 'true' || contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') }}
       nx_project: reporting
     secrets: inherit
   trivy:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [should-run-all-ci]
     uses: ./.github/workflows/trivy.yaml
   codeql:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [should-run-all-ci]
     uses: ./.github/workflows/codeql.yaml
