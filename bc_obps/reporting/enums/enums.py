@@ -48,7 +48,7 @@ class ReportingTableNames(Enum):
     REPORTING_YEAR = 'reporting_year'
     SOURCE_TYPE = 'source_type'
     REPORT_ELECTRICITY_IMPORT_DATA = 'report_electricity_import_data'
-    THREAD = 'thread'
+    COMMENT_THREAD = 'comment_thread'
     COMMENT = 'comment'
 
     # M2M tables
