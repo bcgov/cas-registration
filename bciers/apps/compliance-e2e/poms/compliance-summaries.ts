@@ -254,14 +254,49 @@ export class ComplianceSummariesPOM {
   }) {
     const { operationName, linkName, urlPattern } = options;
 
-    const row = await this.getRowByOperationName(operationName);
-    const actionLink = row.getByRole("link", { name: linkName });
+    let rowWithActionIndex = -1;
 
     await expect(async () => {
-      const count = await actionLink.count();
-      expect(count).toBeGreaterThan(0);
-      await expect(actionLink).toBeVisible();
+      await this.waitForGridReady({ timeout: 30_000 });
+
+      const operationRows = this.grid()
+        .getByRole("row")
+        .filter({ hasText: operationName });
+
+      const rowCount = await operationRows.count();
+      expect(rowCount).toBeGreaterThan(0);
+
+      rowWithActionIndex = -1;
+
+      for (let i = 0; i < rowCount; i++) {
+        const row = operationRows.nth(i);
+        const actionLink = row.getByRole("link", { name: linkName });
+
+        if ((await actionLink.count()) === 0) {
+          continue;
+        }
+
+        await expect(actionLink.first()).toBeVisible();
+        rowWithActionIndex = i;
+        break;
+      }
+
+      expect(rowWithActionIndex).toBeGreaterThanOrEqual(0);
     }).toPass({ timeout: 30_000 });
+
+    if (rowWithActionIndex < 0) {
+      throw new Error(
+        `No row found for operation "${operationName}" containing action link "${String(linkName)}"`,
+      );
+    }
+
+    const rowWithAction = this.grid()
+      .getByRole("row")
+      .filter({ hasText: operationName })
+      .nth(rowWithActionIndex);
+
+    const actionLink = rowWithAction.getByRole("link", { name: linkName });
+    await expect(actionLink.first()).toBeVisible();
 
     const href = await actionLink.getAttribute("href");
     const targetUrl = new URL(href ?? "", this.url).toString();
