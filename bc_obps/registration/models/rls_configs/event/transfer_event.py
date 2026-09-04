@@ -3,6 +3,7 @@ from rls.enums import RlsRoles, RlsOperations
 from rls.utils.helpers import generate_rls_grants, generate_m2m_rls
 from rls.utils.m2m import M2MPolicyStatements
 
+
 class Rls:
     role_grants_mapping = {
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE, RlsOperations.DELETE],
