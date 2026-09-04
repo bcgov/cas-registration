@@ -1,6 +1,6 @@
 from model_bakery.baker import make_recipe
 from registration.models.user_operator import UserOperator
-from reporting.models import Report
+from reporting.models import Report, ReportVersion
 from compliance.models import ComplianceReport, ComplianceReportVersion, CompliancePeriod
 
 
@@ -12,6 +12,7 @@ class ComplianceReportRlsTestSetup:
     approved_user_operator: UserOperator
     report_2011: Report
     report_2012: Report
+    report_version_2010: ReportVersion
     compliance_report_2010: ComplianceReport
     compliance_report_2013: ComplianceReport
     compliance_report_version_2010: ComplianceReportVersion
@@ -55,10 +56,10 @@ class ComplianceReportRlsTestSetup:
             operator=self.approved_user_operator.operator,
             reporting_year=reporting_year_2010,
         )
-        report_version_2010 = make_recipe('reporting.tests.utils.report_version', report=report_2010)
+        self.report_version_2010 = make_recipe('reporting.tests.utils.report_version', report=report_2010)
         report_compliance_summary_2010 = make_recipe(
             'reporting.tests.utils.report_compliance_summary',
-            report_version=report_version_2010,
+            report_version=self.report_version_2010,
             excess_emissions=0,
             credited_emissions=0,
         )
