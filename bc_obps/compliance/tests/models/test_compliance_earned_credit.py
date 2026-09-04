@@ -550,14 +550,20 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
         t = ComplianceReportRlsTestSetup()
 
         make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=t.compliance_report_version_2010
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=t.compliance_report_version_2010,
+            bccr_trading_name='asdf',
+            bccr_holding_account_id='asdf',
         )
         ec_2013 = make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=t.compliance_report_version_2013
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=t.compliance_report_version_2013,
+            bccr_trading_name='asdf',
+            bccr_holding_account_id='asdf',
         )
 
         def select_function(cursor):
-            assert ComplianceEarnedCredit.objects.count() == 1
+            assert ComplianceEarnedCredit.objects.count() == 2
 
         def update_function(cursor):
             ec_2013.issuance_status = ComplianceEarnedCredit.IssuanceStatus.APPROVED
