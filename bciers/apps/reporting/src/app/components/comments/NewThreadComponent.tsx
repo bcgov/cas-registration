@@ -1,7 +1,10 @@
 import { Button, MenuItem, Stack, TextField } from "@mui/material";
 import ThreadFrame from "./ThreadFrame";
 import { Thread } from "./types";
-import { SubmitEventHandler } from "react";
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+import getUserFullName from "@bciers/utils/src/getUserFullName";
+import dayjs from "dayjs";
 
 interface Props {
   version_id: number;
@@ -16,57 +19,86 @@ const NewThreadComponent: React.FC<Props> = ({
   onThreadCreated,
   onCancel,
 }) => {
-  const handleSubmit: SubmitEventHandler<HTMLFormElement> = (evt) => {
-    evt.preventDefault();
-    evt.stopPropagation();
+  const { data: session } = useSession();
 
-    const data = new FormData(evt.target);
+  const [newThreadData, setNewThreadData] = useState<{
+    comment?: string;
+    facility?: string;
+  }>({});
 
-    console.log("submit", evt);
+  const handleSubmit = () => {
+    onThreadCreated({
+      version_id: version_id,
+      facility_name: newThreadData.facility || undefined,
+      comments: [
+        {
+          version_id: version_id,
+          author: getUserFullName(session),
+          timestamp: dayjs().format("MMM D, YYYY h:mm A"),
+          comment: newThreadData.comment ?? "",
+        },
+      ],
+    });
   };
 
   const handleCancel = () => {
-    console.log("cancel");
+    onCancel();
   };
+
+  // Factory to create change handlers based on the field it is for
+  // And update its new value in the component state
+  const changeHandlerFactory =
+    (field: string) => (evt: React.ChangeEvent<HTMLInputElement>) => {
+      setNewThreadData((tData) => ({
+        ...tData,
+        [field]: evt.target.value,
+      }));
+    };
 
   return (
     <ThreadFrame version_id={version_id}>
-      <form onSubmit={handleSubmit}>
-        <Stack spacing={2} sx={{ mt: 2 }}>
-          <TextField
-            select
-            fullWidth
-            label="Facility (optional)"
-            defaultValue=""
+      <Stack spacing={2} sx={{ mt: 2 }}>
+        <TextField
+          select
+          fullWidth
+          label="Facility (optional)"
+          defaultValue=""
+          onChange={changeHandlerFactory("facility")}
+        >
+          <MenuItem value="">Select Facility</MenuItem>
+          {facilities.map((facility) => (
+            <MenuItem key={facility} value={facility}>
+              {facility}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          fullWidth
+          label="Comment"
+          multiline
+          rows={3}
+          onChange={changeHandlerFactory("comment")}
+        />
+        <Stack direction="row" spacing={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ width: "50%" }}
+            type="button"
+            onClick={handleSubmit}
           >
-            <MenuItem value="">Select Facility</MenuItem>
-            {facilities.map((facility) => (
-              <MenuItem key={facility} value={facility}>
-                {facility}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField fullWidth label="Comment" multiline rows={3} />
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ width: "50%" }}
-              type="submit"
-            >
-              Save
-            </Button>
-            <Button
-              variant="outlined"
-              sx={{ width: "50%" }}
-              type="button"
-              onClick={onCancel}
-            >
-              Cancel
-            </Button>
-          </Stack>
+            Save
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{ width: "50%" }}
+            type="button"
+            onClick={handleCancel}
+          >
+            Cancel
+          </Button>
         </Stack>
-      </form>
+      </Stack>
     </ThreadFrame>
   );
 };

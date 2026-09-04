@@ -27,4 +27,4 @@ class Rls:
             RlsOperations.SELECT,
         ],
     }
-    grants = generate_rls_grants(role_grants_mapping, ReportingTableNames.THREAD)
+    grants = generate_rls_grants(role_grants_mapping, ReportingTableNames.COMMENT_THREAD)

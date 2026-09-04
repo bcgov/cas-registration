@@ -49,7 +49,7 @@ from .report_attachment_confirmation import ReportAttachmentConfirmation
 from .expected_value_range_fuel_amount import ExpectedValueRangeFuelAmount
 from .expected_value_range_methodology_field import ExpectedValueRangeMethodologyField
 
-from .thread import Thread
+from .comment_thread import CommentThread
 from .comment import Comment
 
 __all__ = [
@@ -100,6 +100,6 @@ __all__ = [
     "ReportAttachmentConfirmation",
     "ExpectedValueRangeFuelAmount",
     "ExpectedValueRangeMethodologyField",
-    "Thread",
+    "CommentThread",
     "Comment",
 ]
