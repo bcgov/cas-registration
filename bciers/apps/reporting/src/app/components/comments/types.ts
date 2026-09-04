@@ -1,8 +1,8 @@
 export type Comment = {
   id?: number;
   version_id: number;
-  author: string;
-  timestamp: string;
+  author?: string;
+  timestamp?: string;
   comment: string;
 };
 

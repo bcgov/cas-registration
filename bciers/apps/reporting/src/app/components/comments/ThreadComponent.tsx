@@ -1,38 +1,21 @@
-import {
-  Box,
-  Button,
-  Chip,
-  MenuItem,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { Comment } from "./types";
+import { Button, Typography } from "@mui/material";
+import { Thread } from "./types";
 import CommentComponent from "./CommentComponent";
 import ThreadFrame from "./ThreadFrame";
 
 interface Props {
-  version_id: number;
-  facility_name?: string;
-  facility_names: string[];
-  comments: Comment[];
+  thread: Thread;
 }
 
-const ThreadComponent: React.FC<Props> = ({
-  version_id,
-  facility_name,
-  facility_names,
-  comments,
-}) => {
+const ThreadComponent: React.FC<Props> = ({ thread }) => {
   return (
-    <ThreadFrame version_id={version_id}>
-      {facility_name && (
+    <ThreadFrame version_id={thread.version_id}>
+      {thread.facility_name && (
         <Typography variant="body2" sx={{ mt: 1 }}>
-          Facility Name:&nbsp;&nbsp;{facility_name}
+          Facility Name:&nbsp;&nbsp;{thread.facility_name}
         </Typography>
       )}
-      {comments.map((comment) => (
+      {thread.comments.map((comment) => (
         <CommentComponent
           key={comment.id ?? "comment-pending-submission"}
           comment={comment}

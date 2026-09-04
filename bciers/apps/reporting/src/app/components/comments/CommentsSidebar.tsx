@@ -4,9 +4,11 @@ import { Box, Button, Paper, Typography } from "@mui/material";
 import { Thread } from "./types";
 import ThreadComponent from "./ThreadComponent";
 import NewThreadComponent from "./NewThreadComponent";
+import { useState } from "react";
 
 const getCommentThreads = (version_id: number): Thread[] => {
-  // Placeholder function to fetch comment threads for a given report version
+  // Will call the GET api
+
   return [
     {
       id: 1,
@@ -50,8 +52,19 @@ interface Props {
 }
 
 const CommentsSidebar: React.FC<Props> = ({ version_id }) => {
-  const commentThreads = getCommentThreads(version_id);
   const facilitiesList = ["Facility 1", "Facility 2", "Facility 3"];
+
+  const [isCreating, setIsCreating] = useState(false);
+  const [commentThreads, setCommentThreads] = useState(
+    getCommentThreads(version_id),
+  );
+
+  const handleCreate = (thread: Thread) => {
+    // Will call the create thread API
+
+    setCommentThreads((prevThreads) => [thread, ...prevThreads]);
+    setIsCreating(false);
+  };
 
   return (
     <Paper
@@ -71,24 +84,27 @@ const CommentsSidebar: React.FC<Props> = ({ version_id }) => {
         <Typography variant="h6" sx={{ p: 2, pl: 0 }}>
           Comments
         </Typography>
-        <Button variant="contained" color="primary" fullWidth>
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          onClick={() => setIsCreating(true)}
+        >
           Add internal Comment
         </Button>
       </Box>
-      <NewThreadComponent
-        facilities={facilitiesList}
-        onCancel={() => {}}
-        onThreadCreated={() => {}}
-        version_id={version_id}
-      />
-      {commentThreads.map((thread) => (
-        <ThreadComponent
-          key={thread.id ?? "thread-pending-submission"}
-          version_id={thread.version_id}
-          facility_name={thread.facility_name}
-          facility_names={facilitiesList}
-          comments={thread.comments}
+      {isCreating && (
+        <NewThreadComponent
+          facilities={facilitiesList}
+          onCancel={() => {
+            setIsCreating(false);
+          }}
+          onThreadCreated={handleCreate}
+          version_id={version_id}
         />
+      )}
+      {commentThreads.map((thread) => (
+        <ThreadComponent key={`thread-${thread.id}`} thread={thread} />
       ))}
     </Paper>
   );
