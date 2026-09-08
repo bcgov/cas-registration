@@ -40,10 +40,11 @@ export const complianceSummaryReviewUiSchema = (
   // Earned Credits Section
   earned_credits_header: headerUiConfig,
   earned_credits_alert: {
+    "ui:FieldTemplate": ({ children }: { children: React.ReactNode }) =>
+      children,
     "ui:widget": isCasStaff ? () => null : EarnedCreditsAlertNote,
     "ui:options": {
       label: false,
-      inline: true,
     },
   },
   earned_credits_amount: commonReadOnlyOptions,

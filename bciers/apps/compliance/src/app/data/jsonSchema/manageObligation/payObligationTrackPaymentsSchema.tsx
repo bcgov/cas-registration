@@ -84,11 +84,9 @@ export const payObligationTrackPaymentsUiSchema: UiSchema = {
   // Outstanding Compliance Obligation Section
   outstanding_obligation_header: headerUiConfig,
   payment_status_note: {
+    "ui:FieldTemplate": ({ children }: { children: React.ReactNode }) =>
+      children,
     "ui:widget": PaymentStatusNoteWidget,
-    "ui:options": {
-      label: false,
-      inline: true,
-    },
   },
   outstanding_balance: tco2eUiConfig,
   equivalent_value: {

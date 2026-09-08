@@ -52,11 +52,9 @@ export const payPenaltyTrackPaymentsUiSchema: UiSchema = {
   // Outstanding Penalty Section
   outstanding_penalty_header: headerUiConfig,
   payment_status_note: {
+    "ui:FieldTemplate": ({ children }: { children: React.ReactNode }) =>
+      children,
     "ui:widget": PenaltyPaymentStatusNote,
-    "ui:options": {
-      label: false,
-      inline: true,
-    },
   },
   outstanding_amount: {
     ...commonReadOnlyOptions,

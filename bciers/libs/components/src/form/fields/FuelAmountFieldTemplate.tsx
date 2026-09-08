@@ -90,29 +90,29 @@ function FuelAmountFieldTemplate({
         className={`flex flex-col md:flex-row items-start md:items-center ${classNames}`}
       >
         {isLabel && (
-          <div className={`w-full ${labelClassNames}`}>
+          <div className={`w-full ${labelClassNames} md:shrink-0`}>
             <label htmlFor={id} className="font-bold">
               {label}
               {required && "*"}
             </label>
           </div>
         )}
-        <div className={`relative flex items-center w-full ${cellWidth}`}>
+        <div
+          className={`relative flex items-center w-full ${cellWidth} md:shrink-0`}
+        >
           {children}
         </div>
         {displayUnit && (
-          <div
-            className={`relative flex items-center w-full ml-2 text-bc-bg-blue ${cellWidth}`}
-          >
+          <div className="relative flex items-center md:w-auto md:shrink-0 ml-0 md:ml-2 text-bc-bg-blue whitespace-nowrap">
             <p>{displayUnit}</p>
           </div>
         )}
         {isErrors && (
           <div
-            className="w-full md:w-4/12 flex items-center text-red-600 ml-0 md:ml-4"
+            className="w-full md:flex-1 md:min-w-0 flex items-center text-red-600 ml-0 md:ml-3"
             role="alert"
           >
-            <div className="hidden md:block mr-3">
+            <div className="hidden md:block mr-3 shrink-0">
               <AlertIcon />
             </div>
             <span>{error}</span>

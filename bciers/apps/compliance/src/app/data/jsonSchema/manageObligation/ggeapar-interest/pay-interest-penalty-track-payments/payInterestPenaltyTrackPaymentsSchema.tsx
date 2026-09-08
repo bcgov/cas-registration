@@ -52,11 +52,9 @@ export const payInterestPenaltyTrackPaymentsUiSchema: UiSchema = {
   // Outstanding Interest Section
   outstanding_interest_header: headerUiConfig,
   payment_status_note: {
+    "ui:FieldTemplate": ({ children }: { children: React.ReactNode }) =>
+      children,
     "ui:widget": InterestPaymentStatusNote,
-    "ui:options": {
-      label: false,
-      inline: true,
-    },
   },
   outstanding_amount: {
     ...commonReadOnlyOptions,
