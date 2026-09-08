@@ -5,49 +5,7 @@ import { Thread } from "./types";
 import ThreadComponent from "./ThreadComponent";
 import NewThreadComponent from "./NewThreadComponent";
 import { useState } from "react";
-import { getCommentThreads } from "../../utils/getCommentThreads";
-
-const getData = async (version_id: number): Promise<Thread[]> => {
-  // Will call the GET api
-
-  return await getCommentThreads(version_id);
-  // [
-  //   {
-  //     id: 1,
-  //     version_id: version_id,
-  //     facility_name: "Dining & Cutlery Pad 15-30-19W7182",
-  //     comments: [
-  //       {
-  //         id: 1,
-  //         version_id: 5,
-  //         author: "John Doe",
-  //         timestamp: "2024-06-01T12:00:00Z",
-  //         comment: "The allocation of emissions is incorrect",
-  //       },
-  //       {
-  //         id: 2,
-  //         version_id: 6,
-  //         author: "Adam C.",
-  //         timestamp: "2024-06-01T12:00:00Z",
-  //         comment: "Thank you.",
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: 2,
-  //     version_id: 7,
-  //     comments: [
-  //       {
-  //         id: 3,
-  //         version_id: 8,
-  //         author: "Pierre B.",
-  //         timestamp: "2024-06-01T12:00:00Z",
-  //         comment: "This is just wrong!",
-  //       },
-  //     ],
-  //   },
-  // ];
-};
+import postCommentThread from "../../utils/postCommentThread";
 
 interface Props {
   version_id: number;
@@ -60,10 +18,10 @@ const CommentsSidebar: React.FC<Props> = ({ version_id, threads }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [commentThreads, setCommentThreads] = useState(threads);
 
-  const handleCreate = (thread: Thread) => {
-    // Will call the create thread API
+  const handleCreate = async (comment: string, facilityId?: string) => {
+    const newThread = await postCommentThread(version_id, comment, facilityId);
 
-    setCommentThreads((prevThreads) => [thread, ...prevThreads]);
+    setCommentThreads((prevThreads) => [newThread, ...prevThreads]);
     setIsCreating(false);
   };
 
