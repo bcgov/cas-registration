@@ -11,4 +11,5 @@ export type Thread = {
   version_id: number;
   facility_name?: string;
   comments: Comment[];
+  created_by: string;
 };
