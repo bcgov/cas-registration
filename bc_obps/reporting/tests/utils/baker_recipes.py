@@ -19,6 +19,8 @@ from reporting.models import (
     ReportNewEntrantProduction,
     ReportOperationRepresentative,
     ReportElectricityImportData,
+    CommentThread,
+    Comment,
 )
 from reporting.models import ReportAdditionalData
 from reporting.models.activity_json_schema import ActivityJsonSchema
@@ -335,4 +337,17 @@ naics_regulatory_override = Recipe(
     NaicsRegulatoryOverride,
     valid_from=date(1000, 1, 1),
     valid_to=date(3000, 1, 1),
+)
+
+comment_thread = Recipe(
+    CommentThread,
+    report=foreign_key(report),
+    report_version=foreign_key(report_version),
+    facility=foreign_key(facility),
+)
+
+comment = Recipe(
+    Comment,
+    comment_thread=foreign_key(comment_thread),
+    report_version=foreign_key(report_version),
 )
