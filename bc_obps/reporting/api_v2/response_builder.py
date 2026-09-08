@@ -1,11 +1,13 @@
-from typing import Any, Iterable, Self, override
+from typing import Any, Generic, Iterable, Self, TypeVar, override
 
 from django.http import HttpRequest
 from ninja.pagination import PageNumberPagination
 from reporting.constants import PAGE_SIZE
 
+TPayload = TypeVar("TPayload", default=dict)
 
-class ResponseBuilder:
+
+class ResponseBuilder(Generic[TPayload]):
     """
     Builder to make API responses for GET requests.
 
@@ -17,7 +19,7 @@ class ResponseBuilder:
     ) -> None:
         self.response: dict = {}
 
-    def payload(self, payload: dict) -> Self:
+    def payload(self, payload: TPayload) -> Self:
         self.response["payload"] = payload
         return self
 
