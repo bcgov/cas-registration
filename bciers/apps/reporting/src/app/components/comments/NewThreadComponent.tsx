@@ -1,15 +1,11 @@
 import { Button, MenuItem, Stack, TextField } from "@mui/material";
 import ThreadFrame from "./ThreadFrame";
-import { Thread } from "./types";
 import { useState } from "react";
-import { useSession } from "next-auth/react";
-import getUserFullName from "@bciers/utils/src/getUserFullName";
-import dayjs from "dayjs";
 
 interface Props {
   version_id: number;
   facilities: string[];
-  onThreadCreated: (thread: Thread) => void;
+  onThreadCreated: (comment: string, facilityId?: string) => void;
   onCancel: () => void;
 }
 
@@ -19,26 +15,16 @@ const NewThreadComponent: React.FC<Props> = ({
   onThreadCreated,
   onCancel,
 }) => {
-  const { data: session } = useSession();
-
   const [newThreadData, setNewThreadData] = useState<{
     comment?: string;
     facility?: string;
   }>({});
 
   const handleSubmit = () => {
-    onThreadCreated({
-      version_id: version_id,
-      facility_name: newThreadData.facility || undefined,
-      comments: [
-        {
-          version_id: version_id,
-          author: getUserFullName(session),
-          timestamp: dayjs().format("MMM D, YYYY h:mm A"),
-          comment: newThreadData.comment ?? "",
-        },
-      ],
-    });
+    onThreadCreated(
+      newThreadData.comment || "Unable to retrieve comment message",
+      newThreadData.facility || undefined,
+    );
   };
 
   const handleCancel = () => {

@@ -10,6 +10,7 @@ export type Thread = {
   id?: number;
   version_id: number;
   facility_name?: string;
+  facility_id?: string;
   comments: Comment[];
   created_by: string;
 };
