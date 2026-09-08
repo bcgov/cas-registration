@@ -5,14 +5,14 @@ from reporting.models import CommentThread, Comment
 
 
 class CommentSchema(ModelSchema):
-    user_name: str | None = None
+    author: str | None = None
 
     class Meta:
         model = Comment
         fields = "__all__"
 
     @staticmethod
-    def resolve_user_name(obj: Comment) -> str | None:
+    def resolve_author(obj: Comment) -> str | None:
         if obj.created_by:
             return obj.created_by.get_full_name()
         return None
@@ -24,15 +24,15 @@ class CommentThreadSchema(ModelSchema):
     """
 
     comments: list[CommentSchema]
-    user_name: str | None = None
     facility_name: str | None = None
+    author: str | None = None
 
     class Meta:
         model = CommentThread
         fields = "__all__"
 
     @staticmethod
-    def resolve_user_name(obj: CommentThread) -> str | None:
+    def resolve_author(obj: CommentThread) -> str | None:
         if obj.created_by:
             return obj.created_by.get_full_name()
         return None
