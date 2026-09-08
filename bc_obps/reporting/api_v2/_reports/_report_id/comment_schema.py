@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from ninja import ModelSchema, Schema
 from reporting.models import CommentThread, Comment
 
@@ -44,3 +46,13 @@ class CommentThreadSchema(ModelSchema):
 
 class CommentThreadsOut(Schema):
     threads: list[CommentThreadSchema]
+
+
+class CommentThreadIn(Schema):
+    """
+    Schema for creating a new comment thread, with an initial comment.
+    Author and timestamp will be pre-populated by the backend.
+    """
+
+    facility_id: UUID
+    comment: str
