@@ -5,9 +5,9 @@ import {
   commonReadOnlyOptions,
   readOnlyStringField,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import { TableField } from "@/compliance/src/app/widgets/TableWidget";
 import { PenaltyTypeButtonGroupWidget } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltyTypeButtonGroupWidget";
 import { PenaltySummaryField } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltySummaryField";
+import { PenaltyAccrualDataGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltyAccrualDataGrid";
 
 export const penaltyCalculatorSchema: RJSFSchema = {
   type: "object",
@@ -92,18 +92,10 @@ export const penaltyCalculatorUiSchema: UiSchema = {
     "ui:classNames": "!block [&>div]:!w-full [&>div]:!max-w-none",
   },
   accrual_data: {
-    "ui:field": TableField,
+    "ui:field": PenaltyAccrualDataGrid,
     "ui:FieldTemplate": FieldTemplateFullWidth,
     "ui:options": {
       rowsPerPage: 10,
-      columnHeaders: [
-        "Date",
-        "Daily Penalty",
-        "Daily compounded",
-        "Accumulated penalty",
-        "Accumulated compounded",
-        "Interest rate %",
-      ],
     },
   },
 };
