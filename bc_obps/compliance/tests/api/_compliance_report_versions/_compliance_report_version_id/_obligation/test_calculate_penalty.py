@@ -6,7 +6,6 @@ from unittest.mock import patch
 import pytest
 from django.http import HttpRequest
 from django.utils import timezone
-from ninja.errors import HttpError
 from model_bakery import baker
 
 from compliance.api._compliance_report_versions._compliance_report_version_id._obligation.calculate_penalty import (
@@ -134,7 +133,7 @@ def test_get_calculated_penalty_for_obligation_late_submission_success(
 @patch(
     "compliance.api._compliance_report_versions._compliance_report_version_id._obligation.calculate_penalty.PenaltyCalculationService.get_automatic_overdue_penalty_data"
 )
-def test_get_calculated_penalty_for_obligation_invalid_penalty_type_raises_http_error(
+def test_get_calculated_penalty_for_obligation_invalid_penalty_type_raises_error(
     mock_get_automatic_overdue_penalty_data,
     mock_get_late_submission_penalty_data,
 ):
@@ -142,7 +141,7 @@ def test_get_calculated_penalty_for_obligation_invalid_penalty_type_raises_http_
     mock_get_automatic_overdue_penalty_data.return_value = {"penalty_type": "Automatic Overdue"}
     mock_get_late_submission_penalty_data.return_value = {"penalty_type": "Late Submission"}
 
-    with pytest.raises(HttpError, match="Invalid penalty_type 'not_a_valid_type'"):
+    with pytest.raises(ValueError, match="Invalid penalty_type 'not_a_valid_type'"):
         get_calculated_penalty_for_obligation(
             HttpRequest(),
             obligation.compliance_report_version_id,
