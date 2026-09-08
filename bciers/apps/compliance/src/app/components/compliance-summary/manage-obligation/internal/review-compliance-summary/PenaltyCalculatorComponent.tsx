@@ -10,38 +10,7 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/internal/PenaltyCalculatorSchema";
 import { getPenaltyAccrualCalculationData } from "@/compliance/src/app/utils/getPenaltyAccrualCalculationData";
 import AlertNote from "@bciers/components/form/components/AlertNote";
-
-type PenaltyAccrualRow = {
-  date?: string;
-  daily_penalty?: string | number | null;
-  daily_compounded?: string | number | null;
-  accumulated_penalty?: string | number | null;
-  accumulated_compounded?: string | number | null;
-  interest_rate?: string | number | null;
-};
-
-type CalculatedPenaltyResponse = {
-  requested_penalty_type?: string;
-  automatic_overdue_penalty_status?: string;
-  ggeapar_interest_status?: string;
-  days_late?: number;
-  total_penalty?: string | number | null;
-  daily_accumulated_list?: PenaltyAccrualRow[];
-};
-
-type PenaltyCalculatorFormData = {
-  automatic_overdue_penalty_status?: string;
-  ggeapar_interest_status?: string;
-  requested_penalty_type: string;
-  final_day_of_penalty_accrual?: string;
-  penalty_summary: {
-    total_penalty_amount?: string | number | null;
-    days_late?: number | string | null;
-  };
-  accrual_data: {
-    tableData: Array<Array<string | number | null | undefined>>;
-  };
-};
+import { CalculatedPenaltyResponse, PenaltyCalculatorFormData } from "./types";
 
 const normalizePenaltyTypeForForm = (value?: string): string => {
   const normalized = value?.trim().toLowerCase();
