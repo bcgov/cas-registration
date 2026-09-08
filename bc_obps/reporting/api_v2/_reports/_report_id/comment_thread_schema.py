@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 
 from ninja import ModelSchema, Schema
@@ -54,5 +55,5 @@ class CommentThreadIn(Schema):
     Author and timestamp will be pre-populated by the backend.
     """
 
-    facility_id: UUID
+    facility_id: Optional[UUID] = None
     comment: str
