@@ -5,7 +5,6 @@ import {
   commonReadOnlyOptions,
   readOnlyStringField,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import { PenaltyTypeButtonGroupWidget } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltyTypeButtonGroupWidget";
 import { PenaltySummaryField } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltySummaryField";
 import { PenaltyAccrualDataGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltyAccrualDataGrid";
 
@@ -67,10 +66,12 @@ export const penaltyCalculatorUiSchema: UiSchema = {
   automatic_overdue_penalty_status: commonReadOnlyOptions,
   ggeapar_interest_status: commonReadOnlyOptions,
   requested_penalty_type: {
-    "ui:widget": PenaltyTypeButtonGroupWidget,
+    "ui:widget": "RadioWidget",
+    "ui:enumNames": ["Automatic overdue", "GGEAPAR"],
+    "ui:classNames": "penalty-type-radio-group",
     "ui:options": {
-      label: false,
-      classNames: "text-bc-bg-blue",
+      inline: true,
+      labelOverrideStyle: "font-normal text-bc-bg-blue",
     },
   },
   final_day_of_penalty_accrual: {
