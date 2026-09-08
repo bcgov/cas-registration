@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 from django.utils import timezone
-from datetime import date, datetime
+from datetime import datetime
 import calendar
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Dict, Any, Tuple
@@ -11,7 +11,6 @@ from compliance.service.elicensing.elicensing_data_refresh_service import (
     ElicensingInvoice,
 )
 from django.db.models import Sum
-from django.utils import timezone
 from compliance.models import (
     ElicensingLineItem,
     ElicensingPayment,
