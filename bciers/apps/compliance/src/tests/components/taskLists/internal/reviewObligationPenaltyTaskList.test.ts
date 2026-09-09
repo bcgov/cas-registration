@@ -143,24 +143,20 @@ describe("generateReviewObligationPenaltyTaskList", () => {
     ).toBe(true);
   });
 
-  it.each(["NOT PAID", "PAID"])(
-    "includes penalty page when there is a confirmed penalty status and zero outstanding balance",
-    (penaltyStatus) => {
-      const taskList = generateReviewObligationPenaltyTaskList(
-        mockComplianceReportVersionId,
-        {
-          reportingYear: mockReportingYear,
-          hasLateSubmissionPenalty: false,
-          outstandingBalance: 0,
-          hasOverduePenalty: true,
-          penaltyStatus,
-        } as any,
-      );
-
-      expect(taskList).toHaveLength(2);
-      expect(taskList[1].title).toBe("Review Penalty Summary");
-    },
-  );
+  it("includes penalty page when there is zero outstanding balance and a penalty status of 'PAID'", () => {
+    const taskList = generateReviewObligationPenaltyTaskList(
+      mockComplianceReportVersionId,
+      {
+        reportingYear: mockReportingYear,
+        hasLateSubmissionPenalty: false,
+        outstandingBalance: 0,
+        hasOverduePenalty: true,
+        penaltyStatus: "PAID",
+      } as any,
+    );
+    expect(taskList).toHaveLength(2);
+    expect(taskList[1].title).toBe("Review Penalty Summary");
+  });
 
   it("includes penalty page and penalty calculator when there is zero outstanding balance and a penalty status of 'NOT PAID'", () => {
     const taskList = generateReviewObligationPenaltyTaskList(

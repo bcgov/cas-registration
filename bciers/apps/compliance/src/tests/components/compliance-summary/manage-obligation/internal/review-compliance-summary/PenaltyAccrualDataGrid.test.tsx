@@ -48,7 +48,7 @@ describe("PenaltyAccrualDataGrid", () => {
     expect(screen.getByText("0.56")).toBeVisible();
     expect(screen.getByText("100.12")).toBeVisible();
     expect(screen.getByText("8.9")).toBeVisible();
-    expect(screen.getByText("5.5")).toBeVisible();
+    expect(screen.getAllByText("5.5")).toHaveLength(2);
     expect(screen.getByText("2026-01-02")).toBeVisible();
   });
 

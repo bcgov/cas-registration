@@ -14,6 +14,28 @@ const getDisplayValue = (value: string | number | null | undefined): string => {
   return String(value);
 };
 
+const getDisplayPenaltyAmount = (
+  value: string | number | null | undefined,
+): string => {
+  if (value === null || value === undefined || value === "") {
+    return "$-";
+  }
+
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return formatMonetaryValue(value);
+  }
+
+  if (typeof value === "string") {
+    const normalizedValue = value.replaceAll(",", "").trim();
+    if (normalizedValue !== "" && !Number.isNaN(Number(normalizedValue))) {
+      return formatMonetaryValue(Number(normalizedValue));
+    }
+    return `$${value}`;
+  }
+
+  return `$${String(value)}`;
+};
+
 type PenaltySummaryFieldProps = {
   formData?: PenaltySummaryValue;
   label?: string;
@@ -24,10 +46,9 @@ export const PenaltySummaryField = ({
   label,
 }: PenaltySummaryFieldProps) => {
   const summary = (formData ?? {}) as PenaltySummaryValue;
-  const totalPenaltyAmount =
-    typeof summary.total_penalty_amount === typeof Number
-      ? formatMonetaryValue(Number(summary.total_penalty_amount))
-      : getDisplayValue(summary.total_penalty_amount);
+  const totalPenaltyAmount = getDisplayPenaltyAmount(
+    summary.total_penalty_amount,
+  );
   const daysLate = getDisplayValue(summary.days_late);
 
   return (
@@ -46,7 +67,7 @@ export const PenaltySummaryField = ({
           className="rounded-md bg-red-50 p-4 text-bc-error-red"
         >
           <p className="text-sm font-medium">Total penalty amount</p>
-          <p className="mt-1 text-2xl font-bold">${totalPenaltyAmount}</p>
+          <p className="mt-1 text-2xl font-bold">{totalPenaltyAmount}</p>
         </div>
         <div
           style={{
