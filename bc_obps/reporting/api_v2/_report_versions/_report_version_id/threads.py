@@ -16,6 +16,7 @@ from reporting.models.comment import Comment
 from reporting.models.comment_thread import CommentThread
 from reporting.models.report_version import ReportVersion
 from reporting.schema.generic import Message
+from reporting.service.report_facilities_service import ReportFacilitiesService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
@@ -29,8 +30,12 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[200], dict]:
     report = ReportVersion.objects.get(id=version_id).report
     threads = report.comment_threads.all()
-
-    response = ResponseBuilder[CommentThreadsOut]().payload(CommentThreadsOut(threads=list(threads))).build()
+    facilities_dict = ReportFacilitiesService.get_all_facilities_for_review(int(version_id))
+    facilities = [
+        {"facility_id": facility["facility_id"], "facility_name": facility["facility__name"]}
+        for facility in [*facilities_dict["current_facilities"], *facilities_dict["past_facilities"]]
+    ]
+    response = ResponseBuilder().payload({"threads": threads, "facilities": facilities}).build()
     return 200, response
 
 
