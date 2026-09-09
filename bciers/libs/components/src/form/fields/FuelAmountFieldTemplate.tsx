@@ -101,9 +101,7 @@ function FuelAmountFieldTemplate({
           {children}
         </div>
         {displayUnit && (
-          <div
-            className={`relative flex items-center w-full ml-2 text-bc-bg-blue ${cellWidth}`}
-          >
+          <div className="relative flex items-center ml-2 text-bc-bg-blue w-auto whitespace-nowrap">
             <p>{displayUnit}</p>
           </div>
         )}
