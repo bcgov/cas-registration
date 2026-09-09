@@ -1,5 +1,18 @@
 # Changelog
 
+# [5.21.0](https://github.com/bcgov/cas-registration/compare/v5.20.1...v5.21.0) (2026-09-09)
+
+### Bug Fixes
+
+- **deps:** update dependency eslint-config-next to v16.3.3 ([fa013f4](https://github.com/bcgov/cas-registration/commit/fa013f4df9d0175833d3f9c941570804975cb974))
+- **deps:** update node dependencies ([5368034](https://github.com/bcgov/cas-registration/commit/53680343f438f9d56fff06488c3fa1a20175de66))
+- has-changes conditional checking existance not value ([9eaf691](https://github.com/bcgov/cas-registration/commit/9eaf691fae7d65846ef6c9586f501cea15a0a687))
+- non-approval pr_review events should not cancel in-progress CI ([ad186c2](https://github.com/bcgov/cas-registration/commit/ad186c21e321bf84e449e5cfa95400155a3283ea))
+
+### Features
+
+- introduce handling for capped automatic overdue penalties at 3x obligation ([0ab6fc3](https://github.com/bcgov/cas-registration/commit/0ab6fc387eb4154ac1ff0abb3e2f290c52853810))
+
 ## [5.20.1](https://github.com/bcgov/cas-registration/compare/v5.20.0...v5.20.1) (2026-09-01)
 
 # [5.20.0](https://github.com/bcgov/cas-registration/compare/v5.19.1...v5.20.0) (2026-09-01)
