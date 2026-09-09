@@ -52,6 +52,23 @@ describe("PenaltyAccrualDataGrid", () => {
     expect(screen.getByText("2026-01-02")).toBeVisible();
   });
 
+  it("renders when the form passes a raw table row array", () => {
+    render(
+      <PenaltyAccrualDataGrid
+        formData={[
+          ["2026-11-07", "167.17", "18.73", "4848.00", "266.96", "0.003800"],
+        ]}
+      />,
+    );
+
+    expect(screen.getByText("2026-11-07")).toBeVisible();
+    expect(screen.getByText("167.17")).toBeVisible();
+    expect(screen.getByText("18.73")).toBeVisible();
+    expect(screen.getByText("4848.00")).toBeVisible();
+    expect(screen.getByText("266.96")).toBeVisible();
+    expect(screen.getByText("0.003800")).toBeVisible();
+  });
+
   it("displays '-' for null, undefined, and empty string values", () => {
     render(
       <PenaltyAccrualDataGrid

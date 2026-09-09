@@ -100,6 +100,32 @@ describe("The DataGrid component", () => {
     expect(screen.getByText(/No records found/i)).toBeInTheDocument();
   });
 
+  it("updates rows when initialData changes after an API response", async () => {
+    const { rerender } = render(
+      <DataGrid
+        columns={defaultColumns}
+        initialData={{ rows: [], row_count: 0 }}
+      />,
+    );
+
+    expect(screen.getByText(/No records found/i)).toBeInTheDocument();
+
+    rerender(
+      <DataGrid
+        columns={defaultColumns}
+        initialData={{
+          rows: [{ id: 1, col1: "value1", col2: "value2", col3: "value3" }],
+          row_count: 1,
+        }}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("value1")).toBeInTheDocument();
+      expect(screen.queryByText(/No records found/i)).not.toBeInTheDocument();
+    });
+  });
+
   it("sorts the column data and updates the URL", async () => {
     render(
       <DataGrid columns={defaultColumns} initialData={defaultInitialData} />,

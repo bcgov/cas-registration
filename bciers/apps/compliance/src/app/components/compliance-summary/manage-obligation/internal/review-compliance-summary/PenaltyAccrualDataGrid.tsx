@@ -5,9 +5,24 @@ import penaltyAccrualColumns from "@/compliance/src/app/components/datagrid/mode
 
 type PenaltyAccrualCell = string | number | null | undefined;
 
-type PenaltyAccrualDataGridValue = {
-  tableData?: Array<PenaltyAccrualCell[]>;
-};
+type PenaltyAccrualDataGridValue =
+  | {
+      tableData?: Array<PenaltyAccrualCell[]>;
+      accrual_data?: Array<PenaltyAccrualCell[]>;
+      daily_accumulated_list?: Array<
+        | PenaltyAccrualCell[]
+        | {
+            date?: PenaltyAccrualCell;
+            daily_penalty?: PenaltyAccrualCell;
+            daily_compounded?: PenaltyAccrualCell;
+            accumulated_penalty?: PenaltyAccrualCell;
+            accumulated_compounded?: PenaltyAccrualCell;
+            interest_rate?: PenaltyAccrualCell;
+          }
+      >;
+    }
+  | Array<PenaltyAccrualCell[]>
+  | undefined;
 
 type PenaltyAccrualRow = {
   id: string;
@@ -36,18 +51,51 @@ const getDisplayValue = (value: PenaltyAccrualCell): string => {
 };
 
 const toPenaltyAccrualRow = (
-  row: PenaltyAccrualCell[],
+  row: PenaltyAccrualCell[] | Record<string, PenaltyAccrualCell>,
   index: number,
 ): PenaltyAccrualRow => {
+  const rowValues = Array.isArray(row)
+    ? row
+    : [
+        row?.date,
+        row?.daily_penalty,
+        row?.daily_compounded,
+        row?.accumulated_penalty,
+        row?.accumulated_compounded,
+        row?.interest_rate,
+      ];
+
   return {
     id: `penalty-accrual-${index}`,
-    date: getDisplayValue(row[0]),
-    daily_penalty: getDisplayValue(row[1]),
-    daily_compounded: getDisplayValue(row[2]),
-    accumulated_penalty: getDisplayValue(row[3]),
-    accumulated_compounded: getDisplayValue(row[4]),
-    interest_rate: getDisplayValue(row[5]),
+    date: getDisplayValue(rowValues[0]),
+    daily_penalty: getDisplayValue(rowValues[1]),
+    daily_compounded: getDisplayValue(rowValues[2]),
+    accumulated_penalty: getDisplayValue(rowValues[3]),
+    accumulated_compounded: getDisplayValue(rowValues[4]),
+    interest_rate: getDisplayValue(rowValues[5]),
   };
+};
+
+const normalizeAccrualRows = (
+  formData: PenaltyAccrualDataGridValue,
+): Array<PenaltyAccrualCell[] | Record<string, PenaltyAccrualCell>> => {
+  if (Array.isArray(formData)) {
+    return formData;
+  }
+
+  if (!formData || typeof formData !== "object") {
+    return [];
+  }
+
+  const tableData = Array.isArray(formData.tableData)
+    ? formData.tableData
+    : Array.isArray(formData.accrual_data)
+      ? formData.accrual_data
+      : Array.isArray(formData.daily_accumulated_list)
+        ? formData.daily_accumulated_list
+        : [];
+
+  return tableData;
 };
 
 export const PenaltyAccrualDataGrid = ({
@@ -55,7 +103,8 @@ export const PenaltyAccrualDataGrid = ({
   label,
   uiSchema,
 }: PenaltyAccrualDataGridFieldProps) => {
-  const rows = (formData?.tableData ?? []).map(toPenaltyAccrualRow);
+  const rawRows = normalizeAccrualRows(formData);
+  const rows = rawRows.map(toPenaltyAccrualRow);
   const rowsPerPage = Number(uiSchema?.["ui:options"]?.rowsPerPage ?? 10);
   const showLabel = uiSchema?.["ui:options"]?.label !== false;
 

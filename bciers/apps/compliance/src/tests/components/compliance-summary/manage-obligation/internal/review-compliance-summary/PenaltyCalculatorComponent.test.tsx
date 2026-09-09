@@ -88,6 +88,33 @@ describe("PenaltyCalculatorComponent", () => {
     expect(formDataText).toContain('"days_late":5');
   });
 
+  it("maps API rows that arrive as raw arrays into the form table data", () => {
+    render(
+      <PenaltyCalculatorComponent
+        complianceReportVersionId={123}
+        initialPenaltyType="automatic_overdue"
+        initialFinalDayOfPenaltyAccrual="2026-01-15"
+        penaltyData={{
+          automatic_overdue_penalty_status: "NOT PAID",
+          ggeapar_interest_status: "N/A",
+          days_late: 5,
+          total_penalty: 50.25,
+          daily_accumulated_list: [
+            ["2026-11-07", "167.17", "18.73", "4848.00", "266.96", "0.003800"],
+          ],
+        }}
+      />,
+    );
+
+    const formDataText = screen.getByTestId("form-data").textContent ?? "";
+    expect(formDataText).toContain('"2026-11-07"');
+    expect(formDataText).toContain('"167.17"');
+    expect(formDataText).toContain('"18.73"');
+    expect(formDataText).toContain('"4848.00"');
+    expect(formDataText).toContain('"266.96"');
+    expect(formDataText).toContain('"0.003800"');
+  });
+
   it("normalizes penalty type and date before requesting updated penalty data", async () => {
     mockedGetPenaltyAccrualCalculationData.mockResolvedValue({
       automatic_overdue_penalty_status: "NOT PAID",
