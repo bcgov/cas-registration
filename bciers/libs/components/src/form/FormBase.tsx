@@ -80,6 +80,9 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   const [formState, setFormState] = useState(formData ?? {});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const validationErrorRef = useRef<HTMLDivElement>(null);
+  // After the first failed validation, enable live validation so remaining
+  // field errors stay visible as the user corrects individual fields.
+  const [hasValidationErrors, setHasValidationErrors] = useState(false);
 
   // Handling form state externally as RJSF was resetting the form data on submission and
   // creating buggy behaviour if there was an API error and the user attempted to resubmit
@@ -95,6 +98,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   // A re-render would pass changed children to RJSF, causing it to re-derive form state
   // and reset conditional fields (e.g. toggled sections driven by dependencies).
   const handleError = () => {
+    setHasValidationErrors(true);
     if (validationErrorRef.current) validationErrorRef.current.hidden = false;
   };
 
@@ -113,6 +117,7 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
       {...props}
       ref={formRef}
       formData={isSubmitting ? formState : formData}
+      liveValidate={hasValidationErrors}
       onChange={handleChange}
       noHtml5Validate
       omitExtraData={omitExtraData ?? true}
