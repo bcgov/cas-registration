@@ -12,5 +12,14 @@ export type Thread = {
   facility_name?: string;
   facility_id?: string;
   comments: Comment[];
-  created_by: string;
+};
+
+export type FacilityItem = {
+  facility_id: string;
+  facility_name: string;
+};
+
+export type ThreadsResponse = {
+  threads: Thread[];
+  facilities: FacilityItem[];
 };
