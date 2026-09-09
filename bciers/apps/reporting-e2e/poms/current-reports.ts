@@ -610,26 +610,9 @@ export class CurrentReportsPOM {
     await this.page.goto(this.getSubmissionUrl(reportVersionId));
 
     // Assert report has been Submitted
-    const submissionSuccessText = this.page.getByText(
-      new RegExp(SUBMISSION_SUCCESS_TEXT, "i"),
-    );
-
-    // The submission page can render duplicate nodes for the same label, where one
-    // is hidden for responsive layout. Assert that at least one matching node is visible.
-    await expect(async () => {
-      const count = await submissionSuccessText.count();
-      expect(count).toBeGreaterThan(0);
-
-      let hasVisibleMatch = false;
-      for (let i = 0; i < count; i++) {
-        if (await submissionSuccessText.nth(i).isVisible()) {
-          hasVisibleMatch = true;
-          break;
-        }
-      }
-
-      expect(hasVisibleMatch).toBe(true);
-    }).toPass({ timeout: 30_000 });
+    await expect(
+      this.page.getByText(new RegExp(SUBMISSION_SUCCESS_TEXT, "i")),
+    ).toBeVisible();
   }
 
   // -----------------
@@ -821,7 +804,7 @@ export class CurrentReportsPOM {
       reviewChangesReason?: string;
       facilityId?: FacilityIDs;
     },
-  ): Promise<number> {
+  ): Promise<void> {
     const reportId = await this.createSupplementaryReportById(
       ReportIDs.OBLIGATION_NOT_MET,
     );
@@ -848,7 +831,5 @@ export class CurrentReportsPOM {
     await this.clickSaveAndContinue(new RegExp(this.getSignOffUrl(reportId)));
 
     await this.submitReportById(apiContext, reportId, false, true, true);
-
-    return reportId;
   }
 }
