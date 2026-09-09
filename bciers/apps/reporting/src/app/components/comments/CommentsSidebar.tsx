@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Button, Paper, Typography } from "@mui/material";
-import { Thread } from "./types";
+import { Thread, FacilityItem } from "./types";
 import ThreadComponent from "./ThreadComponent";
 import NewThreadComponent from "./NewThreadComponent";
 import { useState } from "react";
@@ -10,10 +10,17 @@ import postCommentThread from "../../utils/postCommentThread";
 interface Props {
   version_id: number;
   threads: Thread[];
+  facilities: FacilityItem[];
 }
 
-const CommentsSidebar: React.FC<Props> = ({ version_id, threads }) => {
-  const facilitiesList = ["Facility 1", "Facility 2", "Facility 3"];
+const CommentsSidebar: React.FC<Props> = ({
+  version_id,
+  threads,
+  facilities,
+}) => {
+  const facilitiesList = facilities.map(
+    (facility) => facility.facility_name || "Unknown Facility",
+  );
 
   const [isCreating, setIsCreating] = useState(false);
   const [commentThreads, setCommentThreads] = useState(threads);
