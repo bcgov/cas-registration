@@ -50,19 +50,35 @@ const normalizeDateString = (value?: string): string | null => {
   return null;
 };
 
+const normalizeAccrualRow = (
+  row: any,
+): Array<string | number | null | undefined> => {
+  if (Array.isArray(row)) {
+    return row;
+  }
+
+  if (row && typeof row === "object") {
+    return [
+      row.date,
+      row.daily_penalty,
+      row.daily_compounded,
+      row.accumulated_penalty,
+      row.accumulated_compounded,
+      row.interest_rate,
+    ];
+  }
+
+  return [];
+};
+
 const mapApiDataToFormData = (
   data: CalculatedPenaltyResponse | undefined,
   penaltyType: string,
   finalDay: string,
 ): PenaltyCalculatorFormData => {
-  const accrualRows = (data?.daily_accumulated_list ?? []).map((row) => [
-    row.date,
-    row.daily_penalty,
-    row.daily_compounded,
-    row.accumulated_penalty,
-    row.accumulated_compounded,
-    row.interest_rate,
-  ]);
+  const accrualRows = (data?.daily_accumulated_list ?? []).map(
+    normalizeAccrualRow,
+  );
 
   return {
     automatic_overdue_penalty_status:
