@@ -8,7 +8,7 @@ export default function withReportComments<
   TPageProps extends { version_id: number },
 >(WrappedPage: React.FC<TPageProps>) {
   const WrappedComponent: React.FC<TPageProps> = async (props) => {
-    const commentThreads = await getCommentThreads(props.version_id);
+    const threadsResponse = await getCommentThreads(props.version_id);
     return (
       <Grid container spacing={2}>
         <Grid item md={8}>
@@ -17,7 +17,8 @@ export default function withReportComments<
         <Grid item md={4}>
           <CommentsSidebar
             version_id={props.version_id}
-            threads={commentThreads}
+            threads={threadsResponse.threads}
+            facilities={threadsResponse.facilities}
           />
         </Grid>
       </Grid>
