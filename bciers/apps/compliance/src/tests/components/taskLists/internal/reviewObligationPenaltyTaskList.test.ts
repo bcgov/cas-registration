@@ -157,9 +157,10 @@ describe("generateReviewObligationPenaltyTaskList", () => {
         } as any,
       );
 
-    expect(taskList).toHaveLength(2);
-    expect(taskList[1].title).toBe("Review Penalty Summary");
-  });
+      expect(taskList).toHaveLength(2);
+      expect(taskList[1].title).toBe("Review Penalty Summary");
+    },
+  );
 
   it("includes penalty page and penalty calculator when there is zero outstanding balance and a penalty status of 'NOT PAID'", () => {
     const taskList = generateReviewObligationPenaltyTaskList(
