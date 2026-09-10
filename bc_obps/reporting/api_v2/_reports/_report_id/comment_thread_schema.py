@@ -2,7 +2,7 @@ import datetime
 from typing import Optional
 from uuid import UUID
 
-from ninja import ModelSchema, Schema
+from ninja import Field, ModelSchema, Schema
 
 from reporting.models import CommentThread, Comment
 
@@ -73,4 +73,4 @@ class CommentThreadIn(Schema):
     """
 
     facility_id: Optional[UUID] = None
-    comment: str
+    comment: str = Field(..., min_length=1)
