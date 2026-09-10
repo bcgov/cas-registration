@@ -22,11 +22,8 @@
     "**/*.tsx",
     "**/*.js",
     "**/*.jsx",
-    "../../apps/compliance/.next/types/**/*.ts",
-    "../../dist/apps/compliance/.next/types/**/*.ts",
     "next-env.d.ts",
-    ".next/types/**/*.ts",
-    "../../dist/compliance/.next/types/**/*.ts"
+    ".next/types/**/*.ts"
   ],
   "exclude": [".next", "node_modules"]
 }

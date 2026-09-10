@@ -3,39 +3,29 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/compliance",
   "projectType": "application",
-  "tags": ["layer:frontend"],
   "build-args": ["application_path=compliance"],
+  "tags": ["layer:frontend"],
+  "// targets": "to see all targets run: nx show project compliance --web",
   "targets": {
+    "build": {
+      "dependsOn": []
+    },
     "dev": {
-      "executor": "@nx/next:server",
       "options": {
-        "buildTarget": "compliance:build",
         "port": 7000
       }
     },
     "start": {
-      "executor": "@nx/next:server",
       "options": {
-        "buildTarget": "compliance:build",
-        "port": 3000,
-        "dev": false
+        "port": 3000
       }
     },
     "start:local": {
-      "executor": "@nx/next:server",
+      "executor": "nx:run-commands",
+      "continuous": true,
       "options": {
-        "buildTarget": "compliance:build",
-        "port": 7000,
-        "dev": false
-      }
-    },
-    "build": {
-      "executor": "@nx/next:build",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "dev",
-      "options": {
-        "outputPath": "dist/compliance",
-        "generateLockfile": true
+        "cwd": "apps/compliance",
+        "command": "next start --port=7000"
       }
     },
     "container": {
@@ -44,7 +34,7 @@
       "defaultConfiguration": "dev",
       "options": {
         "engine": "docker",
-        "context": "dist/compliance",
+        "context": "apps/compliance",
         "file": "Dockerfile",
         "build-args": ["application_path=compliance"],
         "tags": ["cas-compliance:latest"]

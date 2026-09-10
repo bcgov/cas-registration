@@ -4,35 +4,27 @@
   "sourceRoot": "apps/dashboard",
   "projectType": "application",
   "tags": ["layer:frontend"],
+  "// targets": "to see all targets run: nx show project dashboard --web",
   "targets": {
+    "build": {
+      "dependsOn": []
+    },
     "dev": {
       "options": {
         "port": 3000
       }
     },
     "start": {
-      "executor": "@nx/next:server",
       "options": {
-        "buildTarget": "dashboard:build",
-        "port": 3000,
-        "dev": false
+        "port": 3000
       }
     },
     "start:local": {
-      "executor": "@nx/next:server",
+      "executor": "nx:run-commands",
+      "continuous": true,
       "options": {
-        "buildTarget": "dashboard:build",
-        "port": 3000,
-        "dev": false
-      }
-    },
-    "build": {
-      "executor": "@nx/next:build",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "dev",
-      "options": {
-        "outputPath": "dist/dashboard",
-        "generateLockfile": true
+        "cwd": "apps/dashboard",
+        "command": "next start --port=3000"
       }
     },
     "container": {
@@ -41,7 +33,7 @@
       "defaultConfiguration": "dev",
       "options": {
         "engine": "docker",
-        "context": "dist/dashboard",
+        "context": "apps/dashboard",
         "file": "Dockerfile",
         "build-args": ["application_path=dashboard"],
         "tags": ["cas-dashboard:latest"]

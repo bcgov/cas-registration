@@ -22,7 +22,7 @@ COPY ./.next/standalone .
 COPY ./public ./apps/${application_path}/public
 # Create a symlink so the entrypoint is ALWAYS at /usr/src/app/server.js
 RUN ln -s /usr/src/app/apps/${application_path}/server.js /usr/src/app/server.js
-COPY ./.next/static ./dist/${application_path}/.next/static
+COPY ./.next/static ./apps/${application_path}/.next/static
 
 ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
