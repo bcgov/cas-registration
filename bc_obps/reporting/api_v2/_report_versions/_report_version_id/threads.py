@@ -30,7 +30,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[200], dict]:
     report_id = ReportVersion.objects.get(id=version_id).report_id
 
-    threads = CommentThread.objects.prefetch_related("comments").filter(report_id=report_id)
+    threads = CommentThread.objects.select_related("facility").prefetch_related("comments__created_by").filter(report_id=report_id)
 
     facilities_dict = ReportFacilitiesService.get_all_facilities_for_review(int(version_id))
 
