@@ -1,11 +1,24 @@
+export type PenaltyAccrualValue = string | number | null | undefined;
+
 export type PenaltyAccrualRow = {
-  date?: string;
-  daily_penalty?: string | number | null;
-  daily_compounded?: string | number | null;
-  accumulated_penalty?: string | number | null;
-  accumulated_compounded?: string | number | null;
-  interest_rate?: string | number | null;
+  date?: PenaltyAccrualValue;
+  daily_penalty?: PenaltyAccrualValue;
+  daily_compounded?: PenaltyAccrualValue;
+  accumulated_penalty?: PenaltyAccrualValue;
+  accumulated_compounded?: PenaltyAccrualValue;
+  interest_rate?: PenaltyAccrualValue;
 };
+
+export type PenaltyAccrualEntry =
+  | PenaltyAccrualRow
+  | [
+      PenaltyAccrualValue,
+      PenaltyAccrualValue,
+      PenaltyAccrualValue,
+      PenaltyAccrualValue,
+      PenaltyAccrualValue,
+      PenaltyAccrualValue,
+    ];
 
 export type CalculatedPenaltyResponse = {
   requested_penalty_type?: string;
@@ -13,7 +26,7 @@ export type CalculatedPenaltyResponse = {
   ggeapar_interest_status?: string;
   days_late?: number;
   total_penalty?: string | number | null;
-  daily_accumulated_list?: PenaltyAccrualRow[];
+  daily_accumulated_list?: PenaltyAccrualEntry[];
 };
 
 export type PenaltyCalculatorFormData = {
