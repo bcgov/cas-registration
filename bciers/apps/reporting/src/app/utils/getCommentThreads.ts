@@ -4,13 +4,8 @@ import { ThreadsResponse } from "@reporting/src/app/components/comments/types";
 
 export async function getCommentThreads(
   reportVersionId: number,
-  facilityId?: string,
 ): Promise<ThreadsResponse> {
-  let endpoint = `reporting/v2/report-version/${reportVersionId}/threads`;
-
-  if (facilityId) {
-    endpoint += `?facility_id=${facilityId}`;
-  }
+  const endpoint = `reporting/v2/report-version/${reportVersionId}/threads`;
 
   const response: ReportingResponse<ThreadsResponse> = await actionHandler(
     endpoint,
