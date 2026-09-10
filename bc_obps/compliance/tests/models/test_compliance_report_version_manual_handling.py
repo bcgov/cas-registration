@@ -1,5 +1,4 @@
 from datetime import date
-import unittest
 from model_bakery.baker import make_recipe
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
@@ -7,11 +6,10 @@ from rls.tests.helpers import (
     assert_policies_for_cas_roles,
     assert_policies_for_industry_user,
 )
-from compliance.models import ComplianceReportVersion
 from compliance.models.compliance_report_version_manual_handling import (
     ComplianceReportVersionManualHandling,
 )
-from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
+from compliance.tests.utils.compliance_rls_test_infrastructure import ComplianceReportRlsTestSetup
 
 # ---------------------------------------------------------------------------
 # Basic field / meta tests
@@ -174,84 +172,36 @@ class ComplianceReportVersionManualHandlingDirectorDecisionTriggerTest(BaseTestC
 # ---------------------------------------------------------------------------
 
 
-@unittest.skip(
-    "Needs schema 'erc' privileges for RLS test roles; currently failing "
-    "with 'permission denied for schema erc' in local test DB. "
-    "Re-enable once GRANT USAGE ON SCHEMA erc is correctly applied for RLS roles."
-)
+# @unittest.skip(
+#     "Needs schema 'erc' privileges for RLS test roles; currently failing "
+#     "with 'permission denied for schema erc' in local test DB. "
+#     "Re-enable once GRANT USAGE ON SCHEMA erc is correctly applied for RLS roles."
+# )
 class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
-    def test_manual_handling_rls_industry_user_currently_owned_operation(self):
-        # create two user_operators to set up for transfers
-        new_user_operator = make_recipe("registration.tests.utils.approved_user_operator")
-        old_user_operator = make_recipe("registration.tests.utils.approved_user_operator")
+    def test_manual_handling_rls_industry_user(self):
+        # test setup
+        t = ComplianceReportRlsTestSetup()
 
-        # operation
-        operation = make_recipe(
-            "registration.tests.utils.operation",
-            operator=new_user_operator.operator,
-            status="Registered",
+        # within access bounds
+        manual_2010 = make_recipe(
+            'compliance.tests.utils.compliance_report_version_manual_handling',
+            compliance_report_version=t.compliance_report_version_2010,
         )
-
-        # timeline of current and historical ownership
-        make_recipe(
-            "registration.tests.utils.operation_designated_operator_timeline",
-            operation=operation,
-            operator=old_user_operator.operator,
-        )
-        make_recipe(
-            "registration.tests.utils.operation_designated_operator_timeline",
-            operation=operation,
-            operator=new_user_operator.operator,
+        supp_compliance_report_version_2010 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=t.compliance_report_2010,
+            is_supplementary=True,
         )
 
-        # old operator's data
-        old_operator_report = make_recipe(
-            "reporting.tests.utils.report",
-            operation=operation,
-            operator=old_user_operator.operator,
+        # outside access bounds
+        supp_compliance_report_version_2013 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=t.compliance_report_2013,
+            is_supplementary=True,
         )
-        old_operator_compliance_report = make_recipe(
-            "compliance.tests.utils.compliance_report",
-            report=old_operator_report,
-        )
-        old_operator_compliance_report_version = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=old_operator_compliance_report,
-        )
-        old_operator_manual_handling = make_recipe(
-            "compliance.tests.utils.compliance_report_version_manual_handling",
-            compliance_report_version=old_operator_compliance_report_version,
-        )
-
-        # new operator's data
-        new_operator_report = make_recipe(
-            "reporting.tests.utils.report",
-            operation=operation,
-            operator=new_user_operator.operator,
-        )
-        new_operator_compliance_report = make_recipe(
-            "compliance.tests.utils.compliance_report",
-            report=new_operator_report,
-        )
-        new_operator_compliance_report_version = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=new_operator_compliance_report,
-        )
-        new_operator_manual_handling = make_recipe(
-            "compliance.tests.utils.compliance_report_version_manual_handling",
-            compliance_report_version=new_operator_compliance_report_version,
-        )
-
-        # extra objects for insert
-        new_operator_compliance_report_version_for_insert = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=new_operator_compliance_report,
-            is_supplementary=False,
-        )
-        old_operator_compliance_report_version_for_insert = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=old_operator_compliance_report,
-            is_supplementary=False,
+        manual_2013 = make_recipe(
+            'compliance.tests.utils.compliance_report_version_manual_handling',
+            compliance_report_version=t.compliance_report_version_2013,
         )
 
         #
@@ -259,17 +209,19 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
         #
         def select_function(cursor):
             # Should be able to read their own manual-handling record
-            ComplianceReportVersionManualHandling.objects.get(id=new_operator_manual_handling.id)
+            ComplianceReportVersionManualHandling.objects.get(id=manual_2010.id)
 
         def forbidden_select_function(cursor):
             # Must NOT be able to see previous operator's record
-            ComplianceReportVersionManualHandling.objects.get(id=old_operator_manual_handling.id)
+            ComplianceReportVersionManualHandling.objects.get(id=manual_2013.id)
 
         def insert_function(cursor):
             # Should be able to create a manual-handling record for their own CRV
             ComplianceReportVersionManualHandling.objects.create(
-                compliance_report_version=new_operator_compliance_report_version_for_insert,
+                compliance_report_version=supp_compliance_report_version_2010,
                 analyst_comment="New manual handling record for current operator",
+                handling_type="obligation",
+                context=ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH,
             )
 
         def forbidden_insert_function(cursor):
@@ -278,13 +230,22 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
                 """
                     INSERT INTO "erc"."compliance_report_version_manual_handling" (
                         compliance_report_version_id,
-                        analyst_comment
+                        analyst_comment,
+                        handling_type,
+                        context
                     ) VALUES (
+                        %s,
+                        %s,
                         %s,
                         %s
                     )
                 """,
-                (old_operator_compliance_report_version_for_insert.id, "Should be forbidden"),
+                (
+                    supp_compliance_report_version_2013.id,
+                    "Should be forbidden",
+                    "obligation",
+                    ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH,
+                ),
             )
 
         def forbidden_update_function(cursor):
@@ -294,7 +255,7 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
                     SET context = %s
                     WHERE id = %s
                 """,
-                ("Should be forbidden", new_operator_manual_handling.id),
+                ("Should be forbidden", manual_2010.id),
             )
             return cursor.rowcount
 
@@ -304,13 +265,13 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
                     DELETE FROM "erc"."compliance_report_version_manual_handling"
                     WHERE id = %s
                 """,
-                (new_operator_manual_handling.id,),
+                (manual_2010.id,),
             )
             return cursor.rowcount
 
         assert_policies_for_industry_user(
             ComplianceReportVersionManualHandling,
-            new_user_operator.user,
+            t.approved_user_operator.user,
             select_function=select_function,
             insert_function=insert_function,
             # UPDATE/DELETE should NOT be allowed for industry users
@@ -322,85 +283,24 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
             forbidden_delete_function=forbidden_delete_function,
         )
 
-        #
-        # RLS as seen by the *previous* operator (old_user_operator)
-        #
-        def select_function_prev(cursor):
-            # Previous operator should see their own manual-handling record
-            ComplianceReportVersionManualHandling.objects.get(id=old_operator_manual_handling.id)
-
-        def forbidden_select_function_prev(cursor):
-            # Must NOT see the new operator's record
-            ComplianceReportVersionManualHandling.objects.get(id=new_operator_manual_handling.id)
-
-        def insert_function_prev(cursor):
-            # Should be able to create manual-handling for their own CRV
-            ComplianceReportVersionManualHandling.objects.create(
-                compliance_report_version=old_operator_compliance_report_version_for_insert,
-                analyst_comment="New manual handling record for previous operator",
-            )
-
-        def forbidden_insert_function_prev(cursor):
-            # Must NOT be able to create manual-handling for the new operator's CRV
-            cursor.execute(
-                """
-                    INSERT INTO "erc"."compliance_report_version_manual_handling" (
-                        compliance_report_version_id,
-                        analyst_comment
-                    ) VALUES (
-                        %s,
-                        %s
-                    )
-                """,
-                (new_operator_compliance_report_version.id, "Should be forbidden"),
-            )
-
-        def forbidden_update_function_prev(cursor):
-            cursor.execute(
-                """
-                    UPDATE "erc"."compliance_report_version_manual_handling"
-                    SET context = %s
-                    WHERE id = %s
-                """,
-                ("Should be forbidden", old_operator_manual_handling.id),
-            )
-            return cursor.rowcount
-
-        def forbidden_delete_function_prev(cursor):
-            cursor.execute(
-                """
-                    DELETE FROM "erc"."compliance_report_version_manual_handling"
-                    WHERE id = %s
-                """,
-                (old_operator_manual_handling.id,),
-            )
-            return cursor.rowcount
-
-        assert_policies_for_industry_user(
-            ComplianceReportVersionManualHandling,
-            old_user_operator.user,
-            select_function=select_function_prev,
-            insert_function=insert_function_prev,
-            update_function=None,
-            delete_function=None,
-            forbidden_select_function=forbidden_select_function_prev,
-            forbidden_insert_function=forbidden_insert_function_prev,
-            forbidden_update_function=forbidden_update_function_prev,
-            forbidden_delete_function=forbidden_delete_function_prev,
-        )
-
     def test_manual_handling_rls_cas_users(self):
-        ComplianceTestHelper.build_test_data(
-            crv_status=ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING,
+        t = ComplianceReportRlsTestSetup()
+        make_recipe(
+            'compliance.tests.utils.compliance_report_version_manual_handling',
+            compliance_report_version=t.compliance_report_version_2010,
+        )
+        manual_2013 = make_recipe(
+            'compliance.tests.utils.compliance_report_version_manual_handling',
+            compliance_report_version=t.compliance_report_version_2013,
         )
 
         def select_function(cursor):
-            assert ComplianceReportVersionManualHandling.objects.count() == 1
+            assert ComplianceReportVersionManualHandling.objects.count() == 2
 
         def update_function(cursor):
-            obj = ComplianceReportVersionManualHandling.objects.first()
+            obj = manual_2013
             obj.director_decision = ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
-            obj.context = "Resolved by CAS role"
+            obj.context = ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH
             obj.save()
 
             assert (

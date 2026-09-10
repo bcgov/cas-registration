@@ -7,6 +7,9 @@ from model_bakery.baker import make_recipe, make
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
+from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsTestSetup
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
+from common.lib import pgtrigger
 
 
 class ReportProductModelTest(BaseTestCase):
@@ -150,3 +153,124 @@ class ReportProductModelTest(BaseTestCase):
 
     def test_immutable_after_report_version_submitted(self):
         assert_immutable_report_version("reporting.tests.utils.report_product")
+
+
+class ReportProductRlsTest(BaseTestCase):
+
+    def test_report_product_rls_industry_user(self):
+        # Common Test Setup
+        t = ReportRlsTestSetup(parent_object='facility_report')
+
+        # ReportProduct Setup
+        # Inside access bounds
+        with pgtrigger.ignore("reporting.ReportProduct:immutable_report_version"):
+            report_product_2010_submitted = make_recipe(
+                'reporting.tests.utils.report_product',
+                report_version=t.report_version_2010_submitted,
+            )
+        report_product_2010_draft = make_recipe(
+            'reporting.tests.utils.report_product', report_version=t.report_version_2010_draft
+        )
+        # Outside access bounds
+        report_product_2013_draft = make_recipe(
+            'reporting.tests.utils.report_product', report_version=t.report_version_2013_draft
+        )
+
+        test_product = make_recipe('registration.tests.utils.regulated_product')
+
+        def select_function(cursor):
+            ReportProduct.objects.get(id=report_product_2010_submitted.id)
+
+        def forbidden_select_function(cursor):
+            ReportProduct.objects.get(id=report_product_2013_draft.id)
+
+        def insert_function(cursor):
+            ReportProduct.objects.create(
+                report_version=t.report_version_2010_draft,
+                facility_report=t.parent_object_2010_draft,
+                product=test_product,
+                annual_production=20,
+            )
+
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
+                    INSERT into "erc"."report_product"(report_version_id)
+                    values(%s)
+                """,
+                (t.report_version_2013_draft.id,),
+            )
+
+        def update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."report_product"
+                    SET annual_production = %s
+                    WHERE id = %s
+                """,
+                (30, report_product_2010_draft.id),
+            )
+            return cursor.rowcount
+
+        def forbidden_update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."report_product"
+                    SET annual_production = %s
+                    WHERE id = %s
+                """,
+                (40, report_product_2013_draft.id),
+            )
+            return cursor.rowcount
+
+        def delete_function(cursor):
+            # Delete the report for the approved user operator
+            cursor.execute(
+                """
+                    DELETE from "erc"."report_product"
+                    WHERE id = %s
+                """,
+                (report_product_2010_draft.id,),
+            )
+            return cursor.rowcount
+
+        def forbidden_delete_function(cursor):
+            # Delete the report for the approved user operator
+            cursor.execute(
+                """
+                    DELETE from "erc"."report_product"
+                    WHERE id in (%s,%s)
+                """,
+                (report_product_2010_submitted.id, report_product_2013_draft.id),
+            )
+            return cursor.rowcount
+
+        assert_policies_for_industry_user(
+            ReportProduct,
+            t.approved_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+            delete_function=delete_function,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
+        )
+
+    def test_report_product_rls_cas_user(self):
+        test_quantity = 2
+        make_recipe(
+            "reporting.tests.utils.report_product",
+        )
+        make_recipe(
+            "reporting.tests.utils.report_product",
+        )
+
+        def select_function(cursor):
+            assert ReportProduct.objects.count() == test_quantity
+
+        assert_policies_for_cas_roles(
+            ReportProduct,
+            select_function=select_function,
+        )
