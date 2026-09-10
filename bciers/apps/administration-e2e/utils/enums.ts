@@ -265,13 +265,12 @@ export enum FacilityFormField {
 export enum FacilityType {
   LARGE = "Large Facility",
   SMALL_AGGREGATE = "Small Aggregate",
-  SFO = "Single Facility",
 }
 
 export const FacilityE2EValue = {
-  LFO_OPERATION_WITH_FACILITIES: "Banana LFO - Registered",
-  LFO_EDIT_FACILITY_NAME: "Facility 3",
-  LFO_EDIT_FACILITY_BCGHG_ID: "13219990007",
+  LFO_OPERATION_WITH_FACILITIES: "Bees LFO - Registered",
+  LFO_EDIT_FACILITY_NAME: "Facility 38",
+  LFO_NEW_FACILITY_NAME: "Facility 38 - new",
   SFO_OPERATION_WITH_FACILITY: "Bugle SFO - Registered",
   SFO_FACILITY_NAME: "Facility 22",
   TEMP_MUNICIPALITY: "Temp Town",
@@ -306,3 +305,21 @@ export const SfoPageLocators = {
   latitude: "root_section2_latitude_of_largest_emissions",
   longitude: "root_section2_longitude_of_largest_emissions",
 };
+
+// Fields that stay read-only even after clicking Edit, regardless of the
+// form's overall disabled/enabled state (rendered via ReadOnlyWidget /
+// ReadOnlyComboBoxWidget in the frontend, never a plain editable input).
+export const SfoAlwaysReadOnlyFields: ReadonlyArray<
+  keyof typeof SfoPageLocators
+> = ["name", "type", "province"];
+
+export const LfoAlwaysReadOnlyFields: ReadonlyArray<
+  keyof typeof LfoPageLocators
+> = ["province"];
+
+export enum FacilityFormErrorMessages {
+  LATITUDE_ERROR = "Latitude of largest point of emissions must be between -90 and 90",
+  LONGITUDE_ERROR = "Longitude of largest point of emissions must be between -180 and 180",
+  FACILITY_NAME_ERROR = "Facility name is required",
+  FACILITY_TYPE_ERROR = "Facility type is required",
+}
