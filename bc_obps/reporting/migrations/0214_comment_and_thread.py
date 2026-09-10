@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0195_V5_20_1'),
-        ('reporting', '0212_V5_20_1'),
+        ('reporting', '0213_V5_21_0'),
     ]
 
     operations = [
