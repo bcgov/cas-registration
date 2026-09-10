@@ -16,7 +16,7 @@ class CommentThread(TimeStampedModel):
     )
     report_version = ForeignKey(
         "reporting.ReportVersion",
-        on_delete=models.SET_NULL,  # Do not delete the thread if the report version is deleted
+        on_delete=models.DO_NOTHING,  # Do not delete the thread if the report version is deleted
         null=True,
         blank=True,
         related_name="comment_threads",
@@ -24,7 +24,7 @@ class CommentThread(TimeStampedModel):
     )
     facility = ForeignKey(
         Facility,
-        on_delete=models.SET_NULL,  # Do not delete the thread if the facility is deleted
+        on_delete=models.DO_NOTHING,  # Do not delete the thread if the facility is deleted
         null=True,
         blank=True,
         related_name="comment_threads",
