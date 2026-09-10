@@ -434,6 +434,8 @@ ENDPOINTS = {
             "endpoint_name": "get_compliance_report_version_manual_handling",
             "kwargs": {"compliance_report_version_id": MOCK_INT},
         },
+        {"method": "get", "endpoint_name": "get_comment_threads", "kwargs": {"version_id": MOCK_INT}},
+        {"method": "post", "endpoint_name": "create_thread", "kwargs": {"version_id": MOCK_INT}},
     ],
     "approved_authorized_roles": [
         {
