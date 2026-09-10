@@ -29,12 +29,9 @@ const NewThreadComponent: React.FC<Props> = ({
       setErrors([{ field: "comment", error: "Comment cannot be empty" }]);
       return;
     }
-    setErrors([]);
 
-    onThreadCreated(
-      newThreadData.comment || "Unable to retrieve comment message",
-      newThreadData.facility || undefined,
-    );
+    setErrors([]);
+    onThreadCreated(newThreadData.comment, newThreadData.facility || undefined);
   };
 
   const handleCancel = () => {
