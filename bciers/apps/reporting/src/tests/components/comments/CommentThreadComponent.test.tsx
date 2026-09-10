@@ -21,7 +21,7 @@ describe("The comment thread component", () => {
               id: 2,
               version_id: 42,
               author: "Second Author",
-              timestamp: "2026-09-10T13:00:00Z",
+              timestamp: "1999-06-22T23:00:00Z",
               comment: "Second comment",
             },
           ],
@@ -32,10 +32,10 @@ describe("The comment thread component", () => {
     expect(screen.getByText(/Facility Name:.*Facility One/)).toBeVisible();
     expect(screen.getByText("First Author")).toBeVisible();
     expect(screen.getByText("First comment")).toBeVisible();
-    expect(screen.getByText("September 10, 2026 12:00 PM")).toBeVisible();
+    expect(screen.getByText("Sep 10, 2026 5:00 AM")).toBeVisible();
     expect(screen.getByText("Second Author")).toBeVisible();
     expect(screen.getByText("Second comment")).toBeVisible();
-    expect(screen.getByText("September 10, 2026 1:00 PM")).toBeVisible();
+    expect(screen.getByText("Jun 22, 1999 4:00 PM")).toBeVisible();
   });
 
   it("has a non-functional reply button", () => {
