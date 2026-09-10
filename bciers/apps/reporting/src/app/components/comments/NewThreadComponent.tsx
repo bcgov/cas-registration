@@ -1,10 +1,11 @@
 import { Button, MenuItem, Stack, TextField } from "@mui/material";
 import ThreadFrame from "./ThreadFrame";
 import { useState } from "react";
+import { FacilityItem } from "./types";
 
 interface Props {
   version_id: number;
-  facilities: string[];
+  facilities: FacilityItem[];
   onThreadCreated: (comment: string, facilityId?: string) => void;
   onCancel: () => void;
 }
@@ -53,8 +54,8 @@ const NewThreadComponent: React.FC<Props> = ({
         >
           <MenuItem value="">Select Facility</MenuItem>
           {facilities.map((facility) => (
-            <MenuItem key={facility} value={facility}>
-              {facility}
+            <MenuItem key={facility.facility_id} value={facility.facility_id}>
+              {facility.facility_name}
             </MenuItem>
           ))}
         </TextField>
