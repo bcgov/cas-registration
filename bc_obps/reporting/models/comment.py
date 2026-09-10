@@ -18,6 +18,7 @@ class Comment(TimeStampedModel):
         on_delete=models.SET_NULL,  # Do not delete the comment if the report version is deleted
         null=True,
         blank=True,
+        related_name="comments",
         db_comment="The report version this comment is related to. Foreign key to erc.report_version",
     )
     comment = models.TextField(
