@@ -6,7 +6,16 @@ describe("The new comment thread component", () => {
     render(
       <NewThreadComponent
         version_id={42}
-        facilities={["Facility One", "Facility Two"]}
+        facilities={[
+          {
+            facility_id: "00000000-0000-0000-0000-000000000001",
+            facility_name: "Facility One",
+          },
+          {
+            facility_id: "00000000-0000-0000-0000-000000000002",
+            facility_name: "Facility Two",
+          },
+        ]}
         onCancel={vi.fn()}
         onThreadCreated={vi.fn()}
       />,
@@ -49,7 +58,12 @@ describe("The new comment thread component", () => {
     render(
       <NewThreadComponent
         version_id={42}
-        facilities={["Facility One"]}
+        facilities={[
+          {
+            facility_id: "10000000-0000-0000-0000-000000000001",
+            facility_name: "Facility A Million",
+          },
+        ]}
         onCancel={vi.fn()}
         onThreadCreated={onThreadCreated}
       />,
@@ -58,7 +72,7 @@ describe("The new comment thread component", () => {
     fireEvent.mouseDown(
       screen.getByRole("combobox", { name: "Facility (optional)" }),
     );
-    fireEvent.click(screen.getByRole("option", { name: "Facility One" }));
+    fireEvent.click(screen.getByRole("option", { name: "Facility A Million" }));
     fireEvent.change(screen.getByRole("textbox", { name: "Comment" }), {
       target: { value: "A new comment" },
     });
@@ -66,7 +80,7 @@ describe("The new comment thread component", () => {
 
     expect(onThreadCreated).toHaveBeenCalledWith(
       "A new comment",
-      "Facility One",
+      "10000000-0000-0000-0000-000000000001",
     );
   });
 });

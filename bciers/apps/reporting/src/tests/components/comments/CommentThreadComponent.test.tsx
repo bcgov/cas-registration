@@ -32,10 +32,10 @@ describe("The comment thread component", () => {
     expect(screen.getByText(/Facility Name:.*Facility One/)).toBeVisible();
     expect(screen.getByText("First Author")).toBeVisible();
     expect(screen.getByText("First comment")).toBeVisible();
-    expect(screen.getByText("2026-09-10T12:00:00Z")).toBeVisible();
+    expect(screen.getByText("September 10, 2026 12:00 PM")).toBeVisible();
     expect(screen.getByText("Second Author")).toBeVisible();
     expect(screen.getByText("Second comment")).toBeVisible();
-    expect(screen.getByText("2026-09-10T13:00:00Z")).toBeVisible();
+    expect(screen.getByText("September 10, 2026 1:00 PM")).toBeVisible();
   });
 
   it("has a non-functional reply button", () => {
