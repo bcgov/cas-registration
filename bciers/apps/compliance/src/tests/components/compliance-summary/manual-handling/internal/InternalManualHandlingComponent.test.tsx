@@ -85,6 +85,32 @@ describe("InternalManualHandlingComponent", () => {
     expect(screen.queryByRole("button", { name: "Submit" })).toBeNull();
   });
 
+  it("hides the Submit button for CAS Admin", () => {
+    useSessionRole.mockReturnValue(FrontEndRoles.CAS_ADMIN);
+
+    render(
+      <InternalManualHandlingComponent
+        initialFormData={baseFormData}
+        complianceReportVersionId={CRV_ID}
+      />,
+    );
+
+    expect(screen.queryByRole("button", { name: "Submit" })).toBeNull();
+  });
+
+  it("hides the Submit button for CAS View-Only users", () => {
+    useSessionRole.mockReturnValue(FrontEndRoles.CAS_VIEW_ONLY);
+
+    render(
+      <InternalManualHandlingComponent
+        initialFormData={baseFormData}
+        complianceReportVersionId={CRV_ID}
+      />,
+    );
+
+    expect(screen.queryByRole("button", { name: "Submit" })).toBeNull();
+  });
+
   it("shows the resolved note text when initial director_decision is issue_resolved", () => {
     const resolvedFormData: ManualHandlingData = {
       ...baseFormData,

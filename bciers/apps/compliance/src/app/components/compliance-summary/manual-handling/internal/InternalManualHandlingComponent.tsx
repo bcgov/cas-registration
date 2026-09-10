@@ -33,6 +33,7 @@ const InternalManualHandlingComponent = ({
   const userRole = useSessionRole();
   const isCasAnalyst = userRole === FrontEndRoles.CAS_ANALYST;
   const isCasDirector = userRole === FrontEndRoles.CAS_DIRECTOR;
+  const isRoleAllowedToSubmit = isCasAnalyst || isCasDirector;
 
   const [errors, setErrors] = useState<string[] | undefined>();
   const [formData, setFormData] = useState<ManualHandlingDataWithInitial>({
@@ -119,7 +120,7 @@ const InternalManualHandlingComponent = ({
         submitButtonDisabled={isSubmitting}
         className="mt-8"
       >
-        {!isAnalystLockedByDirector && (
+        {isRoleAllowedToSubmit && !isAnalystLockedByDirector && (
           <SubmitButton isSubmitting={isSubmitting}>
             {isSuccess ? "✅ Success" : "Submit"}
           </SubmitButton>
