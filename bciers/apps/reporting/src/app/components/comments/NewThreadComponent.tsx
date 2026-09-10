@@ -2,6 +2,7 @@ import { Button, MenuItem, Stack, TextField } from "@mui/material";
 import ThreadFrame from "./ThreadFrame";
 import { useState } from "react";
 import { FacilityItem } from "./types";
+import AlertNote from "@bciers/components/form/components/AlertNote";
 
 interface Props {
   version_id: number;
@@ -21,7 +22,15 @@ const NewThreadComponent: React.FC<Props> = ({
     facility?: string;
   }>({});
 
+  const [errors, setErrors] = useState<{ field: string; error: string }[]>([]);
+
   const handleSubmit = () => {
+    if (!newThreadData.comment?.trim()) {
+      setErrors([{ field: "comment", error: "Comment cannot be empty" }]);
+      return;
+    }
+    setErrors([]);
+
     onThreadCreated(
       newThreadData.comment || "Unable to retrieve comment message",
       newThreadData.facility || undefined,
@@ -51,6 +60,7 @@ const NewThreadComponent: React.FC<Props> = ({
           label="Facility (optional)"
           defaultValue=""
           onChange={changeHandlerFactory("facility")}
+          error={errors.some((e) => e.field === "facility")}
         >
           <MenuItem value="">Select Facility</MenuItem>
           {facilities.map((facility) => (
@@ -65,7 +75,15 @@ const NewThreadComponent: React.FC<Props> = ({
           multiline
           rows={3}
           onChange={changeHandlerFactory("comment")}
+          error={errors.some((e) => e.field === "comment")}
         />
+        {errors.length > 0 && (
+          <AlertNote alertType="ERROR">
+            {errors.map((error, index) => (
+              <div key={index}>{error.error}</div>
+            ))}
+          </AlertNote>
+        )}
         <Stack direction="row" spacing={2}>
           <Button
             variant="contained"
