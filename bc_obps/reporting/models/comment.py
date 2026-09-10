@@ -15,7 +15,7 @@ class Comment(TimeStampedModel):
     )
     report_version = models.ForeignKey(
         "reporting.ReportVersion",
-        on_delete=models.SET_NULL,  # Do not delete the comment if the report version is deleted
+        on_delete=models.DO_NOTHING,  # Do not delete the comment if the report version is deleted
         null=True,
         blank=True,
         related_name="comments",
