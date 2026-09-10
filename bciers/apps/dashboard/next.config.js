@@ -1,5 +1,3 @@
-const { composePlugins, withNx } = require("@nx/next");
-
 // The hosts are only available at build time. Routing locally is handled by Next.js while routing on OpenShift is handled by ingress rules.
 const {
   HOST_ADMINISTRATION,
@@ -11,7 +9,7 @@ const {
 const { nextConfigBase, withSentry } = require("../../next.config.base");
 
 /**
- * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
+ * @type {import('next').NextConfig}
  **/
 const nextConfig = {
   ...nextConfigBase,
@@ -28,7 +26,6 @@ const nextConfig = {
           },
         ]
       : [];
-
     const registrationRoutes = HOST_REGISTRATION
       ? [
           {
@@ -41,7 +38,6 @@ const nextConfig = {
           },
         ]
       : [];
-
     const reportingRoutes = HOST_REPORTING
       ? [
           {
@@ -54,7 +50,6 @@ const nextConfig = {
           },
         ]
       : [];
-
     const complianceRoutes = HOST_COMPLIANCE
       ? [
           {
@@ -67,14 +62,12 @@ const nextConfig = {
           },
         ]
       : [];
-
     const localRoutes = [
       ...adminRoutes,
       ...registrationRoutes,
       ...reportingRoutes,
       ...complianceRoutes,
     ];
-
     return [
       {
         source: "/:path*",
@@ -83,13 +76,7 @@ const nextConfig = {
       ...localRoutes,
     ];
   },
-  nx: {},
 };
 
-const plugins = [
-  // Add more Next.js plugins to this list if needed.
-  withNx,
-  withSentry, // Use shared Sentry config without overrides
-];
-
-module.exports = composePlugins(...plugins)(nextConfig);
+// Wrap the config in more Next.js plugins here if needed.
+module.exports = withSentry(nextConfig);

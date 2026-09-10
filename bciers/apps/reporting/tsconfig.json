@@ -23,8 +23,6 @@
     "./.eslintrc.json",
     "./.next/types/**/*.ts",
     ".next/types/**/*.ts",
-    "../../dist/reporting/.next/types/**/*.ts",
-    ".next/types/**/*.ts",
     "src/app/components/taskList/.ts"
   ],
   "exclude": [".next", "node_modules"]

@@ -22,8 +22,7 @@
     "./happo.config.mts",
     "./.eslintrc.json",
     "./.next/types/**/*.ts",
-    ".next/types/**/*.ts",
-    "../../dist/administration/.next/types/**/*.ts"
+    ".next/types/**/*.ts"
   ],
   "exclude": [".next", "node_modules"]
 }
