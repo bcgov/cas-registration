@@ -234,6 +234,12 @@ class UserModelTest(BaseTestCase):
                 None,
                 None,
             ),
+            ("commentthread_created", "comment thread", None, None),
+            ("commentthread_updated", "comment thread", None, None),
+            ("commentthread_archived", "comment thread", None, None),
+            ("comment_created", "comment", None, None),
+            ("comment_updated", "comment", None, None),
+            ("comment_archived", "comment", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
