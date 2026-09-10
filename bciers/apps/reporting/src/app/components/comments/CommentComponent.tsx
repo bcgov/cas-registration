@@ -1,5 +1,6 @@
 import { Grid, Paper, Typography } from "@mui/material";
 import { Comment } from "./types";
+import { formatDate } from "@reporting/src/app/utils/formatDate";
 
 interface Props {
   comment: Comment;
@@ -13,7 +14,8 @@ const CommentComponent: React.FC<Props> = ({ comment }) => {
           {comment.author}
         </Typography>
         <Typography variant="caption" sx={{ color: "text.secondary" }}>
-          {comment.timestamp}
+          {comment.timestamp &&
+            formatDate(comment.timestamp, "MMMM D, YYYY h:mm A")}
         </Typography>
       </Grid>
       <Typography variant="body2" sx={{ mt: 1 }}>
