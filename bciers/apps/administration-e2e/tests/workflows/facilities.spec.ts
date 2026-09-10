@@ -3,22 +3,25 @@ import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import { FrontendMessages } from "@bciers/utils/src/enums";
 import { FacilityPOM } from "@/administration-e2e/poms/facility";
+import { OperationPOM } from "@/administration-e2e/poms/operation";
 import {
-  FacilityButtonText,
   FacilityE2EValue,
+  FacilityFormErrorMessages,
   FacilityFormField,
   FacilityType,
+  LfoAlwaysReadOnlyFields,
   LfoPageLocators,
+  SfoAlwaysReadOnlyFields,
   SfoPageLocators,
 } from "@/administration-e2e/utils/enums";
 import {
   analyzeAccessibility,
   assertSuccessfulSnackbar,
-  checkAlertMessage,
   checkBreadcrumbText,
   clickButton,
   fillComboxboxWidget,
   fillInputValueByLabel,
+  stabilizeGrid,
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
 
@@ -27,15 +30,17 @@ const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
 
-test.describe("Add/edit facility", () => {
-  test("Verify that SFO has no Add Facility button and required-field validation exists", async ({
-    page,
-  }) => {
-    const facilityPage = new FacilityPOM(page);
-    await facilityPage.route();
+test.describe("SFO", () => {
+  let facilityPage: FacilityPOM;
+  let operationPage: OperationPOM;
+
+  test.beforeEach(async ({ page }) => {
+    facilityPage = new FacilityPOM(page);
+    operationPage = new OperationPOM(page);
+    await operationPage.route();
 
     // 🛸 Locate Bugle SFO via the Operations grid search
-    let row = await facilityPage.searchOperationByName(
+    const row = await operationPage.searchOperationByName(
       FacilityE2EValue.SFO_OPERATION_WITH_FACILITY,
     );
 
@@ -45,36 +50,26 @@ test.describe("Add/edit facility", () => {
       .getByRole("link", { name: "View Facility", exact: true });
     await expect(viewFacilityLink).toBeVisible();
     await viewFacilityLink.click();
-    await page.waitForLoadState();
+    await checkBreadcrumbText(page, FacilityE2EValue.SFO_FACILITY_NAME);
+  });
 
-    // Verify that SFO operations do not have Add Facility button
-    await expect(
-      page.getByRole("button", { name: FacilityButtonText.ADD_FACILITY }),
-    ).toBeHidden();
-    await expect(page.getByRole("button", { name: /edit/i })).toBeVisible();
+  test("should enforce permissions and read-only fields on initial load", async () => {
+    await facilityPage.assertAddFacilityButtonVisible(false);
+    await facilityPage.assertEditButtonVisible();
+    await facilityPage.assertFieldsReadOnly(SfoPageLocators);
+  });
 
-    for (const id of Object.values(SfoPageLocators)) {
-      await expect(page.locator(`#${id}`)).toBeVisible();
-      await expect(page.locator(`#${id}`)).toHaveClass(/read-only/i);
-    }
+  test("should discard changes and route back to operations grid on cancel", async ({
+    page,
+  }) => {
+    await facilityPage.assertEditButtonVisible();
 
     // Edit: Facility name, type, and province stays as read-only widget
     await clickButton(page, /edit/i);
-
-    const {
-      name: nameId,
-      type: typeId,
-      province: provinceId,
-      ...editableFieldIds
-    } = SfoPageLocators;
-    for (const id of Object.values(editableFieldIds)) {
-      await expect(page.locator(`#${id}`)).toBeVisible();
-      await expect(page.locator(`#${id}`)).not.toHaveClass(/read-only/i);
-    }
-
-    await expect(page.locator(`#${nameId}`)).toHaveClass(/read-only/i);
-    await expect(page.locator(`#${typeId}`)).toHaveClass(/read-only/i);
-    await expect(page.locator(`#${provinceId}`)).toHaveClass(/read-only/i);
+    await facilityPage.assertFieldsEditableExcept(
+      SfoPageLocators,
+      SfoAlwaysReadOnlyFields,
+    );
 
     await fillInputValueByLabel(
       page,
@@ -84,19 +79,24 @@ test.describe("Add/edit facility", () => {
 
     // Cancel discards the change and routes back to the Operations grid
     await clickButton(page, /cancel/i);
-    await page.waitForLoadState();
     await expect(page).toHaveURL(/operations/i);
 
     // Go back to the facility page (re-search — Cancel's route change remounts
     // the Operations grid, so any prior search-box state is gone)
-    row = await facilityPage.searchOperationByName(
+    const row = await operationPage.searchOperationByName(
       FacilityE2EValue.SFO_OPERATION_WITH_FACILITY,
     );
     await row
       .first()
       .getByRole("link", { name: "View Facility", exact: true })
       .click();
-    await page.waitForLoadState();
+    await checkBreadcrumbText(page, FacilityE2EValue.SFO_FACILITY_NAME);
+
+    // Verify temporary change was not saved
+    await facilityPage.assertValueVisible(
+      FacilityE2EValue.TEMP_MUNICIPALITY,
+      false,
+    );
 
     // Make changes to the form
     await clickButton(page, /edit/i);
@@ -108,119 +108,131 @@ test.describe("Add/edit facility", () => {
     await clickButton(page, /save/i);
     await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);
 
-    // Required-field validation: clear latitude (a required field) and save
-    await clickButton(page, /edit/i);
-    await fillInputValueByLabel(page, FacilityFormField.LATITUDE, "");
-    await clickButton(page, /save/i);
-    await checkAlertMessage(
-      page,
-      "This form can't be saved yet. Please fix the errors above.",
-    );
-
-    // Required-field validation: enter value for latitude, clear longitude and save
-    await fillInputValueByLabel(page, FacilityFormField.LATITUDE, "1");
-    await fillInputValueByLabel(page, FacilityFormField.LONGITUDE, "");
-    await clickButton(page, /save/i);
-    await checkAlertMessage(
-      page,
-      "This form can't be saved yet. Please fix the errors above.",
-    );
-
-    // Required-field validation: fill out required fields and save
-    await fillInputValueByLabel(page, FacilityFormField.LONGITUDE, "1");
-    await clickButton(page, /save/i);
-    await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);
-  });
-
-  test("Verify that LFO has Add Facility button, editing works, and required-field validation exists", async ({
-    page,
-  }) => {
-    const facilityPage = new FacilityPOM(page);
-    await facilityPage.route();
-
-    // 🛸 Locate Banana LFO via the Operations grid, then its Facilities grid
-    await facilityPage.goToOperationFacilities(
-      FacilityE2EValue.LFO_OPERATION_WITH_FACILITIES,
-      /view facilities/i,
-    );
-
-    await expect(
-      page.getByRole("button", { name: FacilityButtonText.ADD_FACILITY }),
-    ).toBeVisible();
-
-    // Locate a specific facility via the Facilities grid search
-    await facilityPage.searchFacilitiesGrid(
-      /bc ghg id/i,
-      FacilityE2EValue.LFO_EDIT_FACILITY_BCGHG_ID,
-    );
-    await facilityPage.openFacilityFromGrid(
-      FacilityE2EValue.LFO_EDIT_FACILITY_NAME,
-    );
-    await expect(page.getByRole("button", { name: /edit/i })).toBeVisible();
-
-    // Edit: change type, Cancel discards it and routes back to the Facilities grid
-    await clickButton(page, /edit/i);
-    await fillComboxboxWidget(
-      page,
-      FacilityFormField.TYPE,
-      FacilityType.SMALL_AGGREGATE,
-    );
-    await clickButton(page, /cancel/i);
-    await page.waitForLoadState();
-
-    // Verify that clicking Cancel from facility form routes back to Facilities grid
-    await facilityPage.searchFacilitiesGrid(
-      /bc ghg id/i,
-      FacilityE2EValue.LFO_EDIT_FACILITY_BCGHG_ID,
-    );
-    await facilityPage.openFacilityFromGrid(
-      FacilityE2EValue.LFO_EDIT_FACILITY_NAME,
-    );
-
-    for (const id of Object.values(LfoPageLocators)) {
-      await expect(page.locator(`#${id}`)).toBeVisible();
-      await expect(page.locator(`#${id}`)).toHaveClass(/read-only/i);
-    }
-
-    await clickButton(page, /edit/i);
-    const { province: provinceId, ...editableFieldIds } = LfoPageLocators;
-    for (const id of Object.values(editableFieldIds)) {
-      await expect(page.locator(`#${id}`)).toBeVisible();
-      await expect(page.locator(`#${id}`)).not.toHaveClass(/read-only/i);
-    }
-    await expect(page.locator(`#${provinceId}`)).toHaveClass(/read-only/i);
-
-    await fillComboxboxWidget(page, FacilityFormField.TYPE, FacilityType.LARGE);
-    await clickButton(page, /save/i);
-    await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);
-
-    // Go back to the Facilities grid to click Add Facility button
-    await clickButton(page, /back/i);
-    await page.waitForLoadState();
-
-    // Required-field validation on the create flow
-    await facilityPage.clickAddFacility();
-    await clickButton(page, /save/i);
-    await checkAlertMessage(
-      page,
-      "This form can't be saved yet. Please fix the errors above.",
+    // Verify municipality change was saved
+    await facilityPage.assertValueVisible(
+      FacilityE2EValue.TEMP_MUNICIPALITY,
+      true,
     );
   });
 
-  test("LFO — Add Facility happy path creates Large and Small Aggregate facilities", async ({
+  test("should validate required fields and successfully save when resolved", async ({
     page,
     happoScreenshot,
   }) => {
-    const facilityPage = new FacilityPOM(page);
-    await facilityPage.route();
+    await checkBreadcrumbText(page, FacilityE2EValue.SFO_FACILITY_NAME);
+    await facilityPage.assertEditButtonVisible();
 
-    // 🛸 Locate Banana LFO via the Operations grid, then its Facilities grid
-    await facilityPage.goToOperationFacilities(
-      FacilityE2EValue.LFO_OPERATION_WITH_FACILITIES,
-      /view facilities/i,
+    // Required-field validation: clear latitude (a required field) and save
+    await clickButton(page, /edit/i);
+    await facilityPage.setCoordinates("", "-123.5");
+    await facilityPage.saveExpectingValidationError(
+      FacilityFormErrorMessages.LATITUDE_ERROR,
     );
 
+    // Required-field validation: enter value for latitude, clear longitude and save
+    await facilityPage.setCoordinates("1", "");
+    await facilityPage.saveExpectingValidationError(
+      FacilityFormErrorMessages.LONGITUDE_ERROR,
+    );
+
+    // Required-field validation: fill out required fields and save
+    await facilityPage.setCoordinates("1", "1");
+
+    const componentName = "SFO - Edit facility form";
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: componentName,
+      variant: "filled",
+    });
+    await analyzeAccessibility(page, componentName);
+
+    await facilityPage.saveSuccessfully();
+  });
+});
+
+test.describe("LFO", () => {
+  let facilityPage: FacilityPOM;
+  let operationPage: OperationPOM;
+
+  test.beforeEach(async ({ page }) => {
+    facilityPage = new FacilityPOM(page);
+    operationPage = new OperationPOM(page);
+    await operationPage.route();
+
+    // 🛸 Locate Bees LFO via the Operations grid, then its Facilities grid
+    const operationRow = await operationPage.searchOperationByName(
+      FacilityE2EValue.LFO_OPERATION_WITH_FACILITIES,
+    );
+    await facilityPage.goToOperationFacilities(
+      operationRow,
+      /view facilities/i,
+    );
+  });
+  test("should enfore permissions and allow adding facilities on initial load", async () => {
+    await facilityPage.assertAddFacilityButtonVisible(true);
     await facilityPage.clickAddFacility();
+  });
+
+  test("should discard changes and route back to facilities grid on cancel", async ({
+    page,
+  }) => {
+    //2: Verify form editing behaviour
+    await facilityPage.openFacilityByName(
+      FacilityE2EValue.LFO_EDIT_FACILITY_NAME,
+    );
+    await facilityPage.assertEditButtonVisible();
+
+    // Edit: change name, Cancel discards it and routes back to the Facilities grid
+    await clickButton(page, /edit/i);
+    await page
+      .getByLabel(/facility name/i)
+      .fill(FacilityE2EValue.LFO_NEW_FACILITY_NAME);
+    await clickButton(page, /cancel/i);
+
+    // Verify that clicking Cancel from facility form routes back to Facilities grid
+    await stabilizeGrid(page, 1);
+
+    // Verify facility name change was discarded
+    await facilityPage.openFacilityByName(
+      FacilityE2EValue.LFO_EDIT_FACILITY_NAME,
+    );
+    await facilityPage.assertValueVisible(
+      FacilityE2EValue.LFO_EDIT_FACILITY_NAME,
+      true,
+    );
+  });
+
+  test("should validate required fields and successfully save when resolved", async ({
+    page,
+  }) => {
+    await facilityPage.openFacilityByName(
+      FacilityE2EValue.LFO_EDIT_FACILITY_NAME,
+    );
+    await facilityPage.assertEditButtonVisible();
+    await clickButton(page, /edit/i);
+    await facilityPage.assertFieldsEditableExcept(
+      LfoPageLocators,
+      LfoAlwaysReadOnlyFields,
+    );
+
+    await fillComboxboxWidget(page, FacilityFormField.TYPE, FacilityType.LARGE);
+
+    const facilityNameField = page.getByLabel(FacilityFormField.NAME);
+    await facilityNameField.fill("");
+    await clickButton(page, /save/i);
+    await facilityPage.saveExpectingValidationError(
+      FacilityFormErrorMessages.FACILITY_NAME_ERROR,
+    );
+
+    await facilityNameField.fill(FacilityE2EValue.LFO_EDIT_FACILITY_NAME);
+    await facilityPage.saveSuccessfully();
+  });
+
+  test("should create a Large facility and update breadcrumbs", async ({
+    page,
+    happoScreenshot,
+  }) => {
+    await facilityPage.clickAddFacility();
+    await facilityPage.stabilizeFacilityForm();
 
     // Fill out for large facility
     await facilityPage.fillAddFacilityForm(
@@ -230,39 +242,48 @@ test.describe("Add/edit facility", () => {
       FacilityE2EValue.NEW_LONGITUDE,
     );
 
-    let componentName = "Add Facility form - large facility";
+    const componentName = "Add Facility form - large facility";
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: componentName,
       variant: "filled",
     });
     await analyzeAccessibility(page, componentName);
-    await clickButton(page, /save/i);
-
-    await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);
-    await expect(page).not.toHaveURL(/add-facility/);
+    await facilityPage.saveSuccessfully();
+    await page.waitForURL(
+      new RegExp(encodeURIComponent(FacilityE2EValue.NEW_FACILITY_NAME), "i"),
+    );
 
     // The breadcrumb updates to show the new facility's name once created
     await checkBreadcrumbText(page, FacilityE2EValue.NEW_FACILITY_NAME);
+  });
 
-    // Fill out for small aggregate
-    await clickButton(page, /back/i);
-    await page.waitForLoadState();
+  test("should conditionally hide coordinates when creating a Small Aggregate facility", async ({
+    page,
+    happoScreenshot,
+  }) => {
     await facilityPage.clickAddFacility();
+    await facilityPage.stabilizeFacilityForm();
 
     await facilityPage.fillAddFacilityForm(
       FacilityE2EValue.NEW_SMALL_AGGREGATE_FACILITY_NAME,
       FacilityType.SMALL_AGGREGATE,
     );
-    await expect(page.getByLabel(FacilityFormField.LATITUDE)).toHaveCount(0);
-    await expect(page.getByLabel(FacilityFormField.LONGITUDE)).toHaveCount(0);
+    await expect(page.getByLabel(FacilityFormField.LATITUDE)).toBeHidden();
+    await expect(page.getByLabel(FacilityFormField.LONGITUDE)).toBeHidden();
 
-    componentName = "Add Facility form - small aggregate";
+    const componentName = "Add Facility form - small aggregate";
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: componentName,
       variant: "filled",
     });
-    await clickButton(page, /save/i);
-    await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);
+
+    await facilityPage.saveSuccessfully();
+    await page.waitForURL(
+      new RegExp(
+        encodeURIComponent(FacilityE2EValue.NEW_SMALL_AGGREGATE_FACILITY_NAME),
+        "i",
+      ),
+    );
     await checkBreadcrumbText(
       page,
       FacilityE2EValue.NEW_SMALL_AGGREGATE_FACILITY_NAME,

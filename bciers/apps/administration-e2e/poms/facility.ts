@@ -6,24 +6,22 @@
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
 import {
-  AppRoute,
   FacilityButtonText,
   FacilityFormField,
 } from "@/administration-e2e/utils/enums";
 import {
+  assertSuccessfulSnackbar,
+  checkAlertMessage,
   clickButton,
   fillComboxboxWidget,
   fillInputValueByLabel,
   searchGridByUniqueValue,
-  stabilizeGrid,
   waitForGridReady,
 } from "@bciers/e2e/utils/helpers";
+import { FrontendMessages } from "@bciers/utils/src/enums";
 
 export class FacilityPOM {
   readonly page: Page;
-
-  readonly operationsUrl: string =
-    process.env.E2E_BASEURL + AppRoute.OPERATIONS;
 
   constructor(page: Page) {
     this.page = page;
@@ -31,28 +29,10 @@ export class FacilityPOM {
 
   // ###  Actions ###
 
-  async route() {
-    await this.page.goto(this.operationsUrl);
-  }
-
-  async searchOperationByName(operationName: string): Promise<Locator> {
-    const row = await searchGridByUniqueValue(
-      this.page,
-      /operation name/i,
-      operationName,
-    );
-    await stabilizeGrid(this.page, 1);
-    return row;
-  }
-
-  // Navigate from the Operations grid to an operation's Facilities page via its grid action-cell link
-  async goToOperationFacilities(
-    operationName: string,
-    linkName: string | RegExp,
-  ) {
-    const row = await this.searchOperationByName(operationName);
+  // OperationPOM has searchOperationByName usable with this
+  async goToOperationFacilities(row: Locator, linkName: string | RegExp) {
     await row.first().getByRole("link", { name: linkName }).click();
-    await this.page.waitForLoadState();
+    await this.assertViewFacilitiesNoteIsVisible();
   }
 
   async clickAddFacility() {
@@ -102,5 +82,109 @@ export class FacilityPOM {
     value: string,
   ): Promise<Locator> {
     return searchGridByUniqueValue(this.page, field, value);
+  }
+
+  // Search the Facilities grid by name and open the matching facility's view/edit page
+  async openFacilityByName(facilityName: string) {
+    await this.searchFacilitiesGrid(/facility name/i, facilityName);
+    await this.openFacilityFromGrid(facilityName);
+  }
+
+  async setCoordinates(latitude: string, longitude: string) {
+    await fillInputValueByLabel(
+      this.page,
+      FacilityFormField.LATITUDE,
+      latitude,
+    );
+    await fillInputValueByLabel(
+      this.page,
+      FacilityFormField.LONGITUDE,
+      longitude,
+    );
+  }
+
+  async saveExpectingValidationError(expectedFieldError?: RegExp | string) {
+    await clickButton(this.page, /save/i);
+    await checkAlertMessage(
+      this.page,
+      "This form can't be saved yet. Please fix the errors above",
+    );
+    if (expectedFieldError) {
+      await expect(this.page.getByText(expectedFieldError)).toBeVisible();
+    }
+  }
+
+  async saveSuccessfully() {
+    await clickButton(this.page, /save/i);
+    await assertSuccessfulSnackbar(
+      this.page,
+      FrontendMessages.SUBMIT_CONFIRMATION,
+    );
+  }
+
+  // ###  Assertions ###
+
+  async stabilizeFacilityForm() {
+    await expect(this.page.getByText(FacilityFormField.NAME)).toBeVisible();
+    await expect(this.page.getByText(FacilityFormField.TYPE)).toBeVisible();
+    await expect(
+      this.page.getByRole("button", { name: /save/i }),
+    ).toBeVisible();
+    await expect(
+      this.page.getByRole("button", { name: /back/i }),
+    ).toBeVisible();
+  }
+
+  async assertFieldsReadOnly(locatorIds: Record<string, string>) {
+    for (const id of Object.values(locatorIds)) {
+      await expect(this.page.locator(`#${id}`)).toBeVisible();
+      await expect(this.page.locator(`#${id}`)).toHaveClass(/read-only/i);
+    }
+  }
+
+  async assertFieldsEditableExcept<T extends Record<string, string>>(
+    locatorIds: T,
+    alwaysReadOnlyKeys: ReadonlyArray<keyof T>,
+  ) {
+    for (const key of Object.keys(locatorIds) as Array<keyof T>) {
+      const id = locatorIds[key];
+      if (alwaysReadOnlyKeys.includes(key)) {
+        await expect(this.page.locator(`#${id}`)).toHaveClass(/read-only/i);
+      } else {
+        await expect(this.page.locator(`#${id}`)).toBeVisible();
+        await expect(this.page.locator(`#${id}`)).not.toHaveClass(/read-only/i);
+      }
+    }
+  }
+
+  async assertViewFacilitiesNoteIsVisible() {
+    const note = "View the facilities of this operation here.";
+    await expect(this.page.getByText(note)).toBeVisible();
+  }
+
+  async assertEditButtonVisible() {
+    const editButton = this.page.getByRole("button", { name: /edit/i });
+    await expect(editButton).toBeVisible();
+    await expect(editButton).toBeEnabled();
+  }
+
+  async assertAddFacilityButtonVisible(expected: boolean) {
+    const addButton = this.page.getByRole("button", {
+      name: FacilityButtonText.ADD_FACILITY,
+    });
+    if (expected) {
+      await expect(addButton).toBeVisible();
+    } else {
+      await expect(addButton).toBeHidden();
+    }
+  }
+
+  async assertValueVisible(text: string, expected: boolean) {
+    const locator = this.page.getByText(text).first();
+    if (expected) {
+      await expect(locator).toBeVisible();
+    } else {
+      await expect(locator).toBeHidden();
+    }
   }
 }
