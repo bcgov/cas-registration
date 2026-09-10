@@ -19,6 +19,7 @@ class CommentThread(TimeStampedModel):
         on_delete=models.SET_NULL,  # Do not delete the thread if the report version is deleted
         null=True,
         blank=True,
+        related_name="comment_threads",
         db_comment="The report version this thread was started at. Foreign key to erc.report_version",
     )
     facility = ForeignKey(
@@ -26,6 +27,7 @@ class CommentThread(TimeStampedModel):
         on_delete=models.SET_NULL,  # Do not delete the thread if the facility is deleted
         null=True,
         blank=True,
+        related_name="comment_threads",
         db_comment="The facility this thread is optionally associated with. Foreign key to registration.facility",
     )
 
