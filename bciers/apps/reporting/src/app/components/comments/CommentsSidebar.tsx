@@ -18,10 +18,6 @@ const CommentsSidebar: React.FC<Props> = ({
   threads,
   facilities,
 }) => {
-  const facilitiesList = facilities.map(
-    (facility) => facility.facility_name || "Unknown Facility",
-  );
-
   const [isCreating, setIsCreating] = useState(false);
   const [commentThreads, setCommentThreads] = useState(threads);
 
@@ -61,7 +57,7 @@ const CommentsSidebar: React.FC<Props> = ({
       </Box>
       {isCreating && (
         <NewThreadComponent
-          facilities={facilitiesList}
+          facilities={facilities}
           onCancel={() => {
             setIsCreating(false);
           }}
