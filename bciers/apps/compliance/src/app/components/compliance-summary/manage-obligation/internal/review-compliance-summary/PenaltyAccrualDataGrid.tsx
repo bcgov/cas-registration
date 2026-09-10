@@ -21,8 +21,7 @@ type PenaltyAccrualDataGridValue =
           }
       >;
     }
-  | Array<PenaltyAccrualCell[]>
-  | undefined;
+  | Array<PenaltyAccrualCell[]>;
 
 type PenaltyAccrualRow = {
   id: string;
@@ -77,7 +76,7 @@ const toPenaltyAccrualRow = (
 };
 
 const normalizeAccrualRows = (
-  formData: PenaltyAccrualDataGridValue,
+  formData?: PenaltyAccrualDataGridValue,
 ): Array<PenaltyAccrualCell[] | Record<string, PenaltyAccrualCell>> => {
   if (Array.isArray(formData)) {
     return formData;
@@ -87,13 +86,17 @@ const normalizeAccrualRows = (
     return [];
   }
 
-  const tableData = Array.isArray(formData.tableData)
-    ? formData.tableData
-    : Array.isArray(formData.accrual_data)
-      ? formData.accrual_data
-      : Array.isArray(formData.daily_accumulated_list)
-        ? formData.daily_accumulated_list
-        : [];
+  let tableData: Array<
+    PenaltyAccrualCell[] | Record<string, PenaltyAccrualCell>
+  > = [];
+
+  if (Array.isArray(formData.tableData)) {
+    tableData = formData.tableData;
+  } else if (Array.isArray(formData.accrual_data)) {
+    tableData = formData.accrual_data;
+  } else if (Array.isArray(formData.daily_accumulated_list)) {
+    tableData = formData.daily_accumulated_list;
+  }
 
   return tableData;
 };
@@ -104,7 +107,7 @@ export const PenaltyAccrualDataGrid = ({
   uiSchema,
 }: PenaltyAccrualDataGridFieldProps) => {
   const rawRows = normalizeAccrualRows(formData);
-  const rows = rawRows.map(toPenaltyAccrualRow);
+  const rows = rawRows.map((row, index) => toPenaltyAccrualRow(row, index));
   const rowsPerPage = Number(uiSchema?.["ui:options"]?.rowsPerPage ?? 10);
   const showLabel = uiSchema?.["ui:options"]?.label !== false;
 
