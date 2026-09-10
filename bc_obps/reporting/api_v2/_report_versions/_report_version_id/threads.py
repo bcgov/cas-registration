@@ -1,6 +1,7 @@
 from typing import Literal, Tuple
 
 from common.permissions import authorize
+from django.db import transaction
 from django.http import HttpRequest
 
 from reporting.api_v2._reports._report_id.comment_thread_schema import (
@@ -47,8 +48,9 @@ def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[
     response={201: CommentThreadSchema, custom_codes_4xx: Message},
     tags=[*EMISSIONS_REPORT_TAGS, *REPORT_COMMENTS_TAGS],
     description="Creates a new comment thread for a specific report version, with an optional facility associated.",
-    auth=authorize("authorized_irc_user"),
+    auth=authorize("cas_director_analyst_and_industry_admin_user"),
 )
+@transaction.atomic
 def create_thread(
     request: HttpRequest, version_id: str, payload: CommentThreadIn
 ) -> Tuple[Literal[201], CommentThread]:
