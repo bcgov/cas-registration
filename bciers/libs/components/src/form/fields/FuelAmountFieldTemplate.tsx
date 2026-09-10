@@ -90,16 +90,48 @@ function FuelAmountFieldTemplate({
         className={`flex flex-col md:flex-row items-start md:items-center ${classNames}`}
       >
         {isLabel && (
-          <div className={`w-full ${labelClassNames}`}>
+          <div className={`w-full flex-none break-keep ${labelClassNames}`}>
             <label htmlFor={id} className="font-bold">
               {label}
               {required && "*"}
             </label>
           </div>
         )}
-        <div className={`relative flex items-center w-full ${cellWidth}`}>
+
+        {/* put unit and alert inside to share sizing with input field */}
+        {/* doesn't show when doing lg:flex */}
+        <div
+          className={`hidden md:flex relative flex items-start w-full ${cellWidth}`}
+        >
           {children}
+
+          <div className={`hidden lg:block`}>
+            {displayUnit && (
+              <div
+                className={`relative flex items-center w-full ml-2 text-bc-bg-blue ${cellWidth}`}
+              >
+                <p>{displayUnit}</p>
+              </div>
+            )}
+
+            {isErrors && (
+              <div
+                className="w-full md:w-4/12 flex items-center text-red-600 ml-0 md:ml-4"
+                role="alert"
+              >
+                <div>
+                  <AlertIcon />
+                </div>
+                <span className="hidden lg:block mr-3">{error}</span>
+              </div>
+            )}
+          </div>
         </div>
+      </div>
+
+      {/* block version underneath for mobile/tablet view */}
+      {/* doesn't hide for some reason */}
+      <div className={`md:hidden relative flex flex-row w-full`}>
         {displayUnit && (
           <div
             className={`relative flex items-center w-full ml-2 text-bc-bg-blue ${cellWidth}`}
@@ -107,15 +139,16 @@ function FuelAmountFieldTemplate({
             <p>{displayUnit}</p>
           </div>
         )}
+
         {isErrors && (
           <div
             className="w-full md:w-4/12 flex items-center text-red-600 ml-0 md:ml-4"
             role="alert"
           >
-            <div className="hidden md:block mr-3">
+            <div>
               <AlertIcon />
             </div>
-            <span>{error}</span>
+            <span className="hidden lg:block mr-3">{error}</span>
           </div>
         )}
       </div>
