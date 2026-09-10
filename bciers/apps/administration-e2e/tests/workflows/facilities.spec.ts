@@ -1,7 +1,6 @@
 import { expect } from "@playwright/test";
-import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
+import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
-import { FrontendMessages } from "@bciers/utils/src/enums";
 import { FacilityPOM } from "@/administration-e2e/poms/facility";
 import { OperationPOM } from "@/administration-e2e/poms/operation";
 import {
@@ -9,10 +8,6 @@ import {
   FacilityFormErrorMessages,
   FacilityFormField,
   FacilityType,
-  LfoAlwaysReadOnlyFields,
-  LfoPageLocators,
-  SfoAlwaysReadOnlyFields,
-  SfoPageLocators,
 } from "@/administration-e2e/utils/enums";
 import {
   analyzeAccessibility,
@@ -24,8 +19,9 @@ import {
   stabilizeGrid,
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
+import { FacilityTypes, FrontendMessages } from "@bciers/utils/src/enums";
 
-const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
+const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
@@ -53,10 +49,15 @@ test.describe("SFO", () => {
     await checkBreadcrumbText(page, FacilityE2EValue.SFO_FACILITY_NAME);
   });
 
-  test("should enforce permissions and read-only fields on initial load", async () => {
+  test("should enforce permissions and validate field states across modes", async () => {
+    // 1. Initial Load: Verify view-only permissions and all fields read-only
     await facilityPage.assertAddFacilityButtonVisible(false);
     await facilityPage.assertEditButtonVisible();
-    await facilityPage.assertFieldsReadOnly(SfoPageLocators);
+    await facilityPage.assertFieldsReadOnly(FacilityTypes.SFO);
+
+    // 2. Edit Mode: Enter edit mode and verify granular field editability rules
+    await facilityPage.clickEdit();
+    await facilityPage.assertFieldStates(FacilityTypes.SFO);
   });
 
   test("should discard changes and route back to operations grid on cancel", async ({
@@ -64,13 +65,7 @@ test.describe("SFO", () => {
   }) => {
     await facilityPage.assertEditButtonVisible();
 
-    // Edit: Facility name, type, and province stays as read-only widget
-    await clickButton(page, /edit/i);
-    await facilityPage.assertFieldsEditableExcept(
-      SfoPageLocators,
-      SfoAlwaysReadOnlyFields,
-    );
-
+    await facilityPage.clickEdit();
     await fillInputValueByLabel(
       page,
       FacilityFormField.MUNICIPALITY,
@@ -78,7 +73,7 @@ test.describe("SFO", () => {
     );
 
     // Cancel discards the change and routes back to the Operations grid
-    await clickButton(page, /cancel/i);
+    await facilityPage.clickCancel();
     await expect(page).toHaveURL(/operations/i);
 
     // Go back to the facility page (re-search — Cancel's route change remounts
@@ -97,9 +92,12 @@ test.describe("SFO", () => {
       FacilityE2EValue.TEMP_MUNICIPALITY,
       false,
     );
+  });
 
-    // Make changes to the form
-    await clickButton(page, /edit/i);
+  test("should successfully save modifications", async ({ page }) => {
+    await facilityPage.assertEditButtonVisible();
+
+    await facilityPage.clickEdit();
     await fillInputValueByLabel(
       page,
       FacilityFormField.MUNICIPALITY,
@@ -123,7 +121,7 @@ test.describe("SFO", () => {
     await facilityPage.assertEditButtonVisible();
 
     // Required-field validation: clear latitude (a required field) and save
-    await clickButton(page, /edit/i);
+    await facilityPage.clickEdit();
     await facilityPage.setCoordinates("", "-123.5");
     await facilityPage.saveExpectingValidationError(
       FacilityFormErrorMessages.LATITUDE_ERROR,
@@ -167,26 +165,38 @@ test.describe("LFO", () => {
       /view facilities/i,
     );
   });
-  test("should enfore permissions and allow adding facilities on initial load", async () => {
+
+  test("should enforce permissions and allow adding facilities on initial load", async () => {
     await facilityPage.assertAddFacilityButtonVisible(true);
-    await facilityPage.clickAddFacility();
+  });
+
+  test("should enforce permissions and validate field states across modes", async () => {
+    await facilityPage.openFacilityByName(
+      FacilityE2EValue.LFO_EDIT_FACILITY_NAME,
+    );
+    await facilityPage.assertEditButtonVisible();
+    await facilityPage.assertFieldsReadOnly(FacilityTypes.LFO);
+
+    await facilityPage.clickEdit();
+    await facilityPage.assertFieldStates(FacilityTypes.LFO);
   });
 
   test("should discard changes and route back to facilities grid on cancel", async ({
     page,
   }) => {
-    //2: Verify form editing behaviour
     await facilityPage.openFacilityByName(
       FacilityE2EValue.LFO_EDIT_FACILITY_NAME,
     );
     await facilityPage.assertEditButtonVisible();
 
     // Edit: change name, Cancel discards it and routes back to the Facilities grid
-    await clickButton(page, /edit/i);
-    await page
-      .getByLabel(/facility name/i)
-      .fill(FacilityE2EValue.LFO_NEW_FACILITY_NAME);
-    await clickButton(page, /cancel/i);
+    await facilityPage.clickEdit();
+    await fillInputValueByLabel(
+      page,
+      FacilityFormField.NAME,
+      FacilityE2EValue.LFO_NEW_FACILITY_NAME,
+    );
+    await facilityPage.clickCancel();
 
     // Verify that clicking Cancel from facility form routes back to Facilities grid
     await stabilizeGrid(page, 1);
@@ -201,6 +211,28 @@ test.describe("LFO", () => {
     );
   });
 
+  test("should successfully save modifications", async ({ page }) => {
+    await facilityPage.openFacilityByName(
+      FacilityE2EValue.LFO_EDIT_FACILITY_NAME,
+    );
+    await facilityPage.assertEditButtonVisible();
+
+    await facilityPage.clickEdit();
+    await fillInputValueByLabel(
+      page,
+      FacilityFormField.MUNICIPALITY,
+      FacilityE2EValue.TEMP_MUNICIPALITY,
+    );
+    await clickButton(page, /save/i);
+    await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);
+
+    // Verify municipality change was saved
+    await facilityPage.assertValueVisible(
+      FacilityE2EValue.TEMP_MUNICIPALITY,
+      true,
+    );
+  });
+
   test("should validate required fields and successfully save when resolved", async ({
     page,
   }) => {
@@ -208,11 +240,8 @@ test.describe("LFO", () => {
       FacilityE2EValue.LFO_EDIT_FACILITY_NAME,
     );
     await facilityPage.assertEditButtonVisible();
-    await clickButton(page, /edit/i);
-    await facilityPage.assertFieldsEditableExcept(
-      LfoPageLocators,
-      LfoAlwaysReadOnlyFields,
-    );
+    await facilityPage.clickEdit();
+    await facilityPage.assertFieldStates(FacilityTypes.LFO);
 
     await fillComboxboxWidget(page, FacilityFormField.TYPE, FacilityType.LARGE);
 
