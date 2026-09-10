@@ -83,4 +83,19 @@ describe("The new comment thread component", () => {
       "10000000-0000-0000-0000-000000000001",
     );
   });
+
+  it("displays an error when trying to submit an empty comment", () => {
+    render(
+      <NewThreadComponent
+        version_id={42}
+        facilities={[]}
+        onCancel={vi.fn()}
+        onThreadCreated={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(screen.getByText(/Comment cannot be empty/)).toBeVisible();
+  });
 });
