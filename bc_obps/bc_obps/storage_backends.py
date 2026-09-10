@@ -41,6 +41,9 @@ class SimpleLocal(FileSystemStorage):
 
     location = os.path.join(settings.MEDIA_ROOT)
 
+    def url(self, name: str | None = None) -> str:
+        return f"http://localhost:8000{super().url(name)}"
+
     def get_file_bucket(self, name: str) -> str | None:
         return "Clean"
 
