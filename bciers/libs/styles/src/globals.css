@@ -61,59 +61,6 @@
     /* Selecting label child element so we can pass it in using ui:classNames in the form schema */
     @apply [&>label]:py-2 [&>label]:w-full [&>label]:font-bold [&>label]:text-bc-bg-blue [&>label]:mb-4;
   }
-
-  .penalty-type-radio-group {
-    @apply text-bc-bg-blue;
-  }
-
-  .penalty-type-radio-group > label {
-    @apply mb-4 font-normal text-bc-bg-blue;
-  }
-
-  .penalty-type-radio-group .MuiFormGroup-root,
-  #root_requested_penalty_type {
-    @apply flex-nowrap gap-0;
-  }
-
-  .penalty-type-radio-group .MuiFormControlLabel-root,
-  #root_requested_penalty_type .MuiFormControlLabel-root {
-    @apply relative m-0 flex-1 justify-center overflow-hidden border border-[#d9d9d9] bg-white px-4 py-1 text-[#666666];
-    min-height: 37.5px;
-    min-width: 260px;
-    transition:
-      background-color 150ms ease,
-      border-color 150ms ease,
-      color 150ms ease;
-  }
-
-  .penalty-type-radio-group .MuiFormControlLabel-root:first-of-type,
-  #root_requested_penalty_type .MuiFormControlLabel-root:first-of-type {
-    border-right: 0;
-  }
-
-  .penalty-type-radio-group .MuiRadio-root,
-  #root_requested_penalty_type .MuiRadio-root {
-    display: none;
-  }
-
-  .penalty-type-radio-group .MuiTypography-root,
-  #root_requested_penalty_type .MuiTypography-root {
-    @apply w-full whitespace-nowrap text-center text-base font-normal leading-[1.25];
-  }
-
-  .penalty-type-radio-group .MuiFormControlLabel-root:has(input:checked),
-  #root_requested_penalty_type .MuiFormControlLabel-root:has(input:checked) {
-    @apply border-bc-bg-blue bg-bc-bg-blue text-white;
-  }
-
-  .penalty-type-radio-group
-    .MuiFormControlLabel-root:has(input:checked)
-    .MuiTypography-root,
-  #root_requested_penalty_type
-    .MuiFormControlLabel-root:has(input:checked)
-    .MuiTypography-root {
-    @apply text-white;
-  }
 }
 
 /* CSS resets */
