@@ -15,7 +15,12 @@ const CommentComponent: React.FC<Props> = ({ comment }) => {
         </Typography>
         <Typography variant="caption" sx={{ color: "text.secondary" }}>
           {comment.timestamp &&
-            formatDate(comment.timestamp, "MMM D, YYYY h:mm A")}
+            formatDate(
+              new Date(comment.timestamp).toLocaleString("en-US", {
+                timeZone: "America/Vancouver",
+              }),
+              "MMM D, YYYY h:mm A",
+            )}
         </Typography>
       </Grid>
       <Typography variant="body2" sx={{ mt: 1 }}>
