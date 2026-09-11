@@ -20,106 +20,117 @@ export const additionalReportingDataSchema: RJSFSchema = {
           title: "Did you capture emissions?",
         },
       },
-      dependencies: {
-        capture_emissions: {
-          oneOf: [
-            {
-              properties: {
-                capture_emissions: { const: false },
+
+      allOf: [
+        {
+          if: {
+            properties: {
+              capture_emissions: {
+                const: true,
               },
             },
-            {
-              properties: {
-                capture_emissions: { const: true },
-                capture_type: {
-                  type: "array",
-                  title: "Capture type",
-                  minItems: 1,
-                  items: {
-                    type: "string",
-                    enum: [
-                      "On-site use",
-                      "On-site sequestration",
-                      "Off-site transfer",
-                    ],
-                  },
+            required: ["capture_emissions"],
+          },
+
+          then: {
+            properties: {
+              capture_type: {
+                type: "array",
+                title: "Capture type",
+                minItems: 1,
+                items: {
+                  type: "string",
+                  enum: [
+                    "On-site use",
+                    "On-site sequestration",
+                    "Off-site transfer",
+                  ],
                 },
               },
-              allOf: [
-                // require capture_type after the "true" branch is selected
-                {
-                  if: {
-                    properties: {
-                      capture_emissions: { const: true },
-                    },
-                  },
-                  then: {
-                    required: ["capture_type"],
-                  },
-                },
-                {
-                  if: {
-                    properties: {
-                      capture_type: {
-                        contains: { enum: ["On-site use"] },
-                      },
-                    },
-                  },
-                  then: {
-                    properties: {
-                      emissions_on_site_use: {
-                        type: "number",
-                        title: "Emissions (t) captured for on-site use",
-                        minimum: 0,
-                      },
-                    },
-                    required: ["emissions_on_site_use"],
-                  },
-                },
-                {
-                  if: {
-                    properties: {
-                      capture_type: {
-                        contains: { enum: ["On-site sequestration"] },
-                      },
-                    },
-                  },
-                  then: {
-                    properties: {
-                      emissions_on_site_sequestration: {
-                        type: "number",
-                        title:
-                          "Emissions (t) captured for on-site sequestration",
-                        minimum: 0,
-                      },
-                    },
-                    required: ["emissions_on_site_sequestration"],
-                  },
-                },
-                {
-                  if: {
-                    properties: {
-                      capture_type: {
-                        contains: { enum: ["Off-site transfer"] },
-                      },
-                    },
-                  },
-                  then: {
-                    properties: {
-                      emissions_off_site_transfer: {
-                        type: "number",
-                        title: "Emissions (t) captured for off-site transfer",
-                        minimum: 0,
-                      },
-                    },
-                    required: ["emissions_off_site_transfer"],
-                  },
-                },
-              ],
             },
-          ],
+
+            required: ["capture_type"],
+          },
         },
-      },
+
+        // On-site use
+        {
+          if: {
+            properties: {
+              capture_type: {
+                contains: {
+                  const: "On-site use",
+                },
+              },
+            },
+            required: ["capture_type"],
+          },
+
+          then: {
+            properties: {
+              emissions_on_site_use: {
+                type: "number",
+                title: "Emissions (t) captured for on-site use",
+                minimum: 0,
+              },
+            },
+
+            required: ["emissions_on_site_use"],
+          },
+        },
+
+        // On-site sequestration
+        {
+          if: {
+            properties: {
+              capture_type: {
+                contains: {
+                  const: "On-site sequestration",
+                },
+              },
+            },
+            required: ["capture_type"],
+          },
+
+          then: {
+            properties: {
+              emissions_on_site_sequestration: {
+                type: "number",
+                title: "Emissions (t) captured for on-site sequestration",
+                minimum: 0,
+              },
+            },
+
+            required: ["emissions_on_site_sequestration"],
+          },
+        },
+
+        // Off-site transfer
+        {
+          if: {
+            properties: {
+              capture_type: {
+                contains: {
+                  const: "Off-site transfer",
+                },
+              },
+            },
+            required: ["capture_type"],
+          },
+
+          then: {
+            properties: {
+              emissions_off_site_transfer: {
+                type: "number",
+                title: "Emissions (t) captured for off-site transfer",
+                minimum: 0,
+              },
+            },
+
+            required: ["emissions_off_site_transfer"],
+          },
+        },
+      ],
     },
   },
 };

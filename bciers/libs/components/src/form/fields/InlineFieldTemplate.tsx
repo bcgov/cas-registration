@@ -122,9 +122,7 @@ function InlineFieldTemplate({
           {children}
         </div>
         {resolvedUnit && (
-          <div
-            className={`relative flex items-center w-full ml-2 text-bc-bg-blue ${cellWidth}`}
-          >
+          <div className="relative flex items-center ml-2 text-bc-bg-blue w-auto whitespace-nowrap">
             <p>{resolvedUnit}</p>
           </div>
         )}
@@ -137,10 +135,10 @@ function InlineFieldTemplate({
         )}
         {isErrors && (
           <div
-            className="w-full md:w-4/12 flex items-center text-red-600 ml-0 md:ml-4"
+            className="flex items-center text-red-600 md:ml-4 whitespace-nowrap"
             role="alert"
           >
-            <div className="hidden md:block mr-3">
+            <div className="hidden md:block mr-3 shrink-0">
               <AlertIcon />
             </div>
             <span>{error}</span>

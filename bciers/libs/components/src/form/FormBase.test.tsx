@@ -171,4 +171,36 @@ describe("The FormBase component", () => {
       ),
     ).not.toBeVisible();
   });
+
+  it("keeps remaining validation errors visible after correcting one field", () => {
+    const props = {
+      schema: {
+        type: "object",
+        required: ["field1", "field2"],
+        properties: {
+          field1: {
+            type: "string",
+          },
+          field2: {
+            type: "string",
+          },
+        },
+      },
+    } as any;
+
+    render(<FormBase {...props} />);
+
+    const submitButton = screen.getByRole("button", { name: /Submit/i });
+    const field1 = screen.getByRole("textbox", { name: "field1*" });
+
+    fireEvent.click(submitButton);
+
+    expect(screen.getAllByText(/^.* is required/i)).toHaveLength(2);
+
+    fireEvent.change(field1, {
+      target: { value: "anything" },
+    });
+
+    expect(screen.getAllByText(/^.* is required/i)).toHaveLength(1);
+  });
 });
