@@ -1,13 +1,14 @@
 import { Button, MenuItem, Stack, TextField } from "@mui/material";
 import ThreadFrame from "./ThreadFrame";
 import { useState } from "react";
-import { FacilityItem } from "./types";
+import { FacilityItem, Thread } from "./types";
 import AlertNote from "@bciers/components/form/components/AlertNote";
+import postCommentThread from "../../utils/postCommentThread";
 
 interface Props {
   version_id: number;
   facilities: FacilityItem[];
-  onThreadCreated: (comment: string, facilityId?: string) => void;
+  onThreadCreated: (thread: Thread) => void;
   onCancel: () => void;
 }
 
@@ -24,14 +25,21 @@ const NewThreadComponent: React.FC<Props> = ({
 
   const [errors, setErrors] = useState<{ field: string; error: string }[]>([]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!newThreadData.comment?.trim()) {
       setErrors([{ field: "comment", error: "Comment cannot be empty" }]);
       return;
     }
 
     setErrors([]);
-    onThreadCreated(newThreadData.comment, newThreadData.facility || undefined);
+
+    const newThread = await postCommentThread(
+      version_id,
+      newThreadData.comment,
+      newThreadData.facility || undefined,
+    );
+
+    onThreadCreated(newThread);
   };
 
   const handleCancel = () => {
