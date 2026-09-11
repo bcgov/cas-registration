@@ -188,23 +188,6 @@ describe("actionHandler function", () => {
     expect(captureExceptionMock).toHaveBeenCalled();
   });
 
-  it("should throw for GET errors that are not handled", async () => {
-    fetch.mockResponses(
-      // getToken fetch
-      [JSON.stringify(responseToken), { status: 200 }],
-      // actionHandler fetch
-      [JSON.stringify({ message: "Error message" }), { status: 400 }],
-      // getToken fetch in catch block
-      [JSON.stringify(responseToken), { status: 200 }],
-    );
-
-    await expect(actionHandler("/endpoint", "GET")).rejects.toThrow(
-      "Error message",
-    );
-
-    expect(captureExceptionMock).toHaveBeenCalledWith(expect.any(Error));
-  });
-
   it("should not throw for handled GET 401 responses", async () => {
     fetch.mockResponses(
       // getToken fetch
@@ -223,6 +206,61 @@ describe("actionHandler function", () => {
       expect.objectContaining({
         message: "Unauthorized",
       }),
+    );
+  });
+
+  describe("user errors", () => {
+    const userErrorMessage = "You cannot perform this action.";
+    const userErrorResponse = {
+      message: userErrorMessage,
+      errors: [
+        {
+          key: "user_error",
+          error: {
+            severity: "Error",
+            message: userErrorMessage,
+          },
+        },
+      ],
+    };
+
+    // Route by URL rather than queueing responses, so the test does not depend
+    // on how many times actionHandler fetches the token
+    const mockUserErrorResponse = () => {
+      fetch.mockImplementation(async (url: string) =>
+        String(url).includes("/api/auth/token")
+          ? new Response(JSON.stringify(responseToken), { status: 200 })
+          : new Response(JSON.stringify(userErrorResponse), { status: 400 }),
+      );
+    };
+
+    afterEach(() => {
+      fetch.mockReset();
+    });
+
+    it.each(["GET", "POST", "PUT", "PATCH", "DELETE"] as const)(
+      "should return the message for %s requests so the frontend can display it",
+      async (method) => {
+        mockUserErrorResponse();
+
+        const result = await actionHandler("/endpoint", method);
+
+        expect(result).toEqual({
+          error: userErrorMessage,
+          validation: userErrorResponse,
+        });
+      },
+    );
+
+    it.each(["GET", "POST", "PUT", "PATCH", "DELETE"] as const)(
+      "should not report %s user errors to Sentry",
+      async (method) => {
+        mockUserErrorResponse();
+
+        await actionHandler("/endpoint", method);
+
+        expect(captureExceptionMock).not.toHaveBeenCalled();
+      },
     );
   });
 
@@ -276,38 +314,6 @@ describe("actionHandler function", () => {
         message: "Validation failed",
       }),
     );
-  });
-
-  it("should not capture user_error responses in Sentry", async () => {
-    const userErrorResponse = {
-      message: "Your business BCeID does not have access to this operator.",
-      errors: [
-        {
-          key: "user_error",
-          error: {
-            severity: "Error",
-            message:
-              "Your business BCeID does not have access to this operator.",
-          },
-        },
-      ],
-    };
-
-    fetch.mockResponses(
-      // getToken fetch
-      [JSON.stringify(responseToken), { status: 200 }],
-      // actionHandler fetch
-      [JSON.stringify(userErrorResponse), { status: 400 }],
-    );
-
-    const result = await actionHandler("/endpoint", "POST");
-
-    expect(result).toEqual({
-      error: "Your business BCeID does not have access to this operator.",
-      validation: userErrorResponse,
-    });
-
-    expect(captureExceptionMock).not.toHaveBeenCalled();
   });
 
   it("should return validation errors for form PUT 4xx responses", async () => {

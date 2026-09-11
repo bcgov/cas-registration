@@ -203,8 +203,14 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
 
     await waitFor(() => {
-      expect(screen.getByText("Unknown error")).toBeVisible();
+      expect(
+        screen.getByText(
+          /Remote BC Carbon Registry system issues, please try again later or contact/i,
+        ),
+      ).toBeVisible();
     });
+
+    expect(screen.queryByText("Unknown error")).not.toBeInTheDocument();
   });
 
   it("shows loading state when submitting form", async () => {
