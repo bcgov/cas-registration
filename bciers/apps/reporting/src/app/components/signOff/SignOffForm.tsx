@@ -10,8 +10,11 @@ import { useRouter } from "next/navigation";
 import postSubmitReport from "@bciers/actions/api/postSubmitReport";
 import { RJSFSchema } from "@rjsf/utils";
 import { signOffUiSchema } from "@reporting/src/data/jsonSchema/signOff/signOff";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
+import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
 
 interface Props extends HasReportVersion {
   navigationInformation: NavigationInformation;
@@ -30,7 +33,9 @@ export default function SignOffForm({
     date: "",
     supplementary: {},
   });
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } = useValidationErrors({
+    config: validationUIConfig,
+  });
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
   const allChecked = (formData: SignOffFormItems) => {
@@ -62,9 +67,9 @@ export default function SignOffForm({
 
     setSubmitButtonDisabled(false);
 
-    const isValid = handleApiResponse(response, setErrors);
+    const isSuccess = handleApiResponse(response, setErrors);
 
-    if (!isValid) {
+    if (!isSuccess) {
       return false;
     }
 

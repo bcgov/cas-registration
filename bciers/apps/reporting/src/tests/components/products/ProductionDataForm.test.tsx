@@ -1,25 +1,28 @@
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bciers/testConfig/mocks";
 import { postProductionData } from "@reporting/src/app/utils/productDataForm/postProductionData";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import ProductionDataForm from "@reporting/src/app/components/products/ProductionDataForm";
 import { act, render, waitFor } from "@testing-library/react";
 import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
-import ReportValidationSummary from "@reporting/src/app/components/shared/validation/ReportValidationSummary";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import {
+  ValidationErrorSummary,
+  createGenericValidationError,
+} from "@bciers/components/validationErrors";
 
-vi.mock(
-  "@reporting/src/app/components/shared/validation/ReportValidationSummary",
-  () => ({
-    default: vi.fn(() => null),
-  }),
-);
+vi.mock("@bciers/components/validationErrors", async (importOriginal) => {
+  const actual =
+    await importOriginal<
+      typeof import("@bciers/components/validationErrors")
+    >();
 
-const mockReportValidationSummary = ReportValidationSummary as ReturnType<
-  typeof vi.fn
->;
-vi.mock("next/navigation", () => ({
-  useRouter: vi.fn(),
-}));
+  return {
+    ...actual,
+    ValidationErrorSummary: vi.fn(() => null),
+  };
+});
+
+const mockValidationErrorSummary = vi.mocked(ValidationErrorSummary);
+
 vi.mock("@bciers/components/form/MultiStepFormWithTaskList", () => ({
   default: vi.fn(({ children }) => <div>{children}</div>),
 }));
@@ -31,7 +34,7 @@ const mockMultiStepFormWithTaskList = MultiStepFormWithTaskList as ReturnType<
   typeof vi.fn
 >;
 const mockPostProductionData = postProductionData as ReturnType<typeof vi.fn>;
-const mockRouter = useRouter as ReturnType<typeof vi.fn>;
+const mockRouter = useRouter;
 
 describe("The ProductionDataForm component", () => {
   beforeEach(() => {
@@ -433,8 +436,8 @@ describe("The ProductionDataForm component", () => {
         ][0];
 
       expect(latestCall.errors[0].props.errors).toStrictEqual([
-        createGenericReportValidationError(
-          "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
+        createGenericValidationError(
+          "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page.",
         ),
       ]);
     });
@@ -483,7 +486,7 @@ describe("The ProductionDataForm component", () => {
     });
 
     expect(result).toBe(true);
-    expect(mockReportValidationSummary).not.toHaveBeenCalled();
+    expect(mockValidationErrorSummary).not.toHaveBeenCalled();
   });
 
   it("does not show missing product error when overlappingIndustrialProcessEmissions is 0", async () => {
@@ -531,7 +534,7 @@ describe("The ProductionDataForm component", () => {
     });
 
     expect(result).toBe(true);
-    expect(mockReportValidationSummary).not.toHaveBeenCalled();
+    expect(mockValidationErrorSummary).not.toHaveBeenCalled();
   });
 
   it("does not show missing product error when chemical pulp is selected", async () => {
@@ -581,7 +584,7 @@ describe("The ProductionDataForm component", () => {
     });
 
     expect(result).toBe(true);
-    expect(mockReportValidationSummary).not.toHaveBeenCalled();
+    expect(mockValidationErrorSummary).not.toHaveBeenCalled();
   });
   it("does not show no-product-selected error for SFO because products are preselected", async () => {
     render(
@@ -685,5 +688,67 @@ describe("The ProductionDataForm component", () => {
       "ui:widget": "hidden",
     });
     expect(calledProps.submitButtonDisabled).toBe(false);
+  });
+
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+
+    mockPostProductionData.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    const productionData = {
+      product_selection: ["test"],
+      production_data: [
+        {
+          product_id: 2024,
+          product_name: "test",
+          production_methodology: "a",
+          unit: "unit",
+        },
+      ],
+    };
+
+    render(
+      <ProductionDataForm
+        allowedProducts={[{ product_id: 2024, product_name: "test" }]}
+        initialData={productionData.production_data}
+        facility_id="abcd"
+        report_version_id={1000}
+        schema={{ testSchema: true }}
+        navigationInformation={dummyNavigationInformation}
+        facilityType={"Large Facility"}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        reportingYear={2024}
+        isOptedOut={false}
+      />,
+    );
+
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+
+    let result;
+    await act(async () => {
+      result = await calledProps.onSubmit({
+        formData: productionData,
+      });
+    });
+
+    expect(result).toBe(false);
+
+    expect(mockPostProductionData).toHaveBeenCalledTimes(1);
+    expect(mockPostProductionData).toHaveBeenCalledWith(
+      1000,
+      "abcd",
+      expect.anything(),
+    );
+
+    await waitFor(() => {
+      const latestProps = mockMultiStepFormWithTaskList.mock.lastCall![0];
+
+      expect(latestProps.errors[0].props.errors).toStrictEqual([
+        createGenericValidationError(errorMessage),
+      ]);
+    });
   });
 });

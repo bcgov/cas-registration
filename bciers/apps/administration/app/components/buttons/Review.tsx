@@ -9,6 +9,10 @@ import Modal from "@bciers/components/modal/Modal";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { Role, Status } from "@bciers/utils/src/enums";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   confirmApproveMessage: string;
@@ -56,10 +60,11 @@ const Review = ({
   onApprove,
   onReject,
 }: Readonly<Props>) => {
-  const [errorList, setErrorList] = useState([] as any[]);
   const [successMessageList, setSuccessMessageList] = useState([] as any[]);
   const [modalState, setModalState] = useState("" as string);
   const [dismissAlert, setDismissAlert] = useState(false);
+
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const handleApprove = () => {
     setModalState("approve");
@@ -74,25 +79,29 @@ const Review = ({
   };
 
   const handleConfirmApprove = async () => {
+    setErrors(undefined);
+    setModalState("");
     const response = await onApprove();
-    if (response.error) {
-      setModalState("");
-      return setErrorList([{ message: response.error }]);
+    const isSuccess = handleApiResponse(response, setErrors);
+
+    if (!isSuccess) {
+      return;
     }
 
-    setModalState("");
     return setSuccessMessageList([{ message: approvedMessage }]);
   };
 
   const handleConfirmReject = async () => {
+    setErrors(undefined);
+    setModalState("");
     const response = await onReject();
-    if (response.error) {
-      setModalState("");
-      return setErrorList([{ message: response.error }]);
+    const isSuccess = handleApiResponse(response, setErrors);
+
+    if (!isSuccess) {
+      return;
     }
 
-    setModalState("");
-    return setSuccessMessageList([{ message: declinedMessage }]);
+    setSuccessMessageList([{ message: declinedMessage }]);
   };
 
   const handleCloseAlert = () => {
@@ -102,7 +111,7 @@ const Review = ({
   const isReviewButtons =
     status !== Status.DECLINED &&
     role !== Role.ADMIN &&
-    errorList.length === 0 &&
+    !renderedErrors &&
     successMessageList.length === 0;
 
   const isApprove = modalState === "approve";
@@ -229,18 +238,9 @@ const Review = ({
           }
         </Box>
       )}
-      {errorList.length > 0 &&
-        !dismissAlert &&
-        errorList.map((e: any) => (
-          <Alert
-            key={e.message}
-            action={<CloseButton onClose={handleCloseAlert} />}
-            severity="error"
-            className="mb-4"
-          >
-            {e?.stack ?? e.message}
-          </Alert>
-        ))}
+
+      {renderedErrors && <div className="mb-4">{renderedErrors}</div>}
+
       {successMessageList.length > 0 &&
         !dismissAlert &&
         successMessageList.map((e: any) => (

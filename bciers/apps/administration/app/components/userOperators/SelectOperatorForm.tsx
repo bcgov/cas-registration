@@ -2,21 +2,26 @@
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import Link from "next/link";
 import Form from "@bciers/components/form/FormBase";
-import { useState } from "react";
-import { Alert } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
-import { SelectOperatorFormData } from "../userOperators/types";
-import { selectOperatorUiSchema } from "../../data/jsonSchema/selectOperator";
-import { selectOperatorSchema } from "../../data/jsonSchema/selectOperator";
+import { SelectOperatorFormData } from "@/administration/app/components/userOperators/types";
+import {
+  selectOperatorSchema,
+  selectOperatorUiSchema,
+} from "@/administration/app/data/jsonSchema/selectOperator";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  setClientError,
+} from "@bciers/components/validationErrors";
 
 export default function SelectOperatorForm() {
-  const [errorList, setErrorList] = useState<{ message: string }[]>([]);
+  const { setErrors, renderedErrors } = useValidationErrors();
   const router = useRouter();
 
   const handleSubmit = async (data: { formData?: SelectOperatorFormData }) => {
     // Reset previous errors on new submission
-    setErrorList([]);
+    setErrors(undefined);
 
     const queryParam = `?${data.formData?.search_type}=${
       data.formData?.[
@@ -30,23 +35,8 @@ export default function SelectOperatorForm() {
         "GET",
         "/select-operator",
       );
-
-      // Updated check: handles response.error, response.message, or response.detail
-      const errorMessage =
-        response?.error || response?.message || response?.detail;
-
-      if (errorMessage) {
-        console.log("[ERROR DETECTED] Setting error message:", errorMessage);
-        setErrorList([
-          {
-            message:
-              typeof errorMessage === "string"
-                ? errorMessage
-                : JSON.stringify(errorMessage),
-          },
-        ]);
-        return;
-      }
+      const isSuccess = handleApiResponse(response, setErrors);
+      if (!isSuccess) return;
 
       // If the response is an array, we want the first element
       let operatorId;
@@ -58,17 +48,16 @@ export default function SelectOperatorForm() {
         operatorId = response.id;
         operatorLegalName = response.legal_name;
       } else {
-        setErrorList([{ message: "Unexpected response format from server." }]);
+        const message = "Unexpected response format from server.";
+        setClientError(message, setErrors);
         return;
       }
 
       router.push(
         `/select-operator/confirm/${operatorId}?title=${operatorLegalName}`,
       );
-    } catch (err: any) {
-      setErrorList([
-        { message: err?.message || "An unexpected error occurred." },
-      ]);
+    } catch (err) {
+      setClientError(err, setErrors);
     }
   };
 
@@ -83,16 +72,7 @@ export default function SelectOperatorForm() {
           className="mx-auto"
         >
           {/* Needed to display errors from cra number */}
-          {errorList.length > 0 &&
-            errorList.map((e: any, index: number) => {
-              return (
-                <Alert key={index} severity="error" className="mt-2">
-                  {e.message}
-                </Alert>
-              );
-            })}
-          {/* Needed to prevent rendering of standard submit buttons by RJSF */}
-          <></>
+          <div className="w-full max-w-xl mx-auto">{renderedErrors}</div>
         </Form>
         <p>
           Don&apos;t see the operator?{" "}

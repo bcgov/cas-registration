@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { Alert } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import FormBase from "@bciers/components/form/FormBase";
 import { Button } from "@mui/material";
@@ -13,6 +12,10 @@ import {
   UserProfilePartialFormData,
 } from "@bciers/types/form/formData";
 import { IDP } from "@bciers/utils/src/enums";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 export const userSchema: RJSFSchema = {
   type: "object",
@@ -49,12 +52,8 @@ export default function ProfileForm({
   idp,
   contactId,
 }: Props) {
-  // 🐜 To display errors
-  const [errorList, setErrorList] = useState([] as any[]);
-
-  // 🌀 Loading state for the Submit button
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [isLoading, setIsLoading] = useState(false);
-  // ✅ Success state for for the Submit button
   const [isSuccess, setIsSuccess] = useState(false);
 
   const emailHelpTextFirstClause = (
@@ -87,23 +86,15 @@ export default function ProfileForm({
     }
   }
 
-  // 👤 Use NextAuth.js hook to get information about the user's session
-  //  Destructuring assignment from data property of the object returned by useSession()
-  //
   // 🛠️ Function to update the session, without reloading the page
   const handleUpdate = async () => {
     // With NextAuth strategy: "jwt" , update() method will trigger a jwt callback where app_role will be augmented to the jwt and session objects
     await getSession();
-    // const { update } = useSession();
-    // await update({ trigger: "update" });
-    // ✅ Set success state to true
     setIsSuccess(true);
-    // 🕐 Wait for 3 second and then reset success state
     setTimeout(() => {
       setIsSuccess(false);
     }, 3000);
     if (isCreate) {
-      // 🛸 Redirect: after the update is complete, navigate to the dashboard
       window.location.href = "/dashboard";
     }
   };
@@ -120,14 +111,11 @@ export default function ProfileForm({
 
   // 🛠️ Function to submit user form data to API
   const submitHandler = async (data: { formData?: UserProfileFormData }) => {
-    //Set states
-    setErrorList([]);
+    setErrors(undefined);
     setIsLoading(true);
     setIsSuccess(false);
 
     const session = await getSession();
-
-    // 🚀 API call: POST/PUT user form data
     const response = await actionHandler(
       isCreate ? `registration/users` : `registration/user/user-profile`,
       isCreate ? "POST" : "PUT",
@@ -142,11 +130,10 @@ export default function ProfileForm({
       },
     );
 
-    // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);
 
-    if (response.error) {
-      setErrorList([{ message: response.error }]);
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
       return;
     }
 
@@ -162,14 +149,8 @@ export default function ProfileForm({
       uiSchema={userUiSchema}
       onSubmit={submitHandler}
     >
-      {errorList.length > 0 &&
-        errorList.map((e: any) => (
-          <Alert key={e.message} severity="error">
-            {e?.stack ?? e.message}
-          </Alert>
-        ))}
+      {renderedErrors}
       <div className="flex justify-end gap-3">
-        {/* Disable the button when loading or when success state is true */}
         <Button
           variant="contained"
           type="submit"

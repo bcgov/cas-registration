@@ -11,9 +11,11 @@ import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperatio
 import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../../taskList/types";
 import SnackBar from "@bciers/components/form/components/SnackBar";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  setClientError,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   initialData: any;
@@ -37,17 +39,17 @@ interface Facility {
   is_selected: boolean;
 }
 
-export default function LFOFacilitiesForm({
+export default function ReviewFacilitiesForm({
   initialData,
   version_id,
   navigationInformation,
   isSyncAllowed = true,
-}: Props) {
+}: Readonly<Props>) {
   const [formData, setFormData] = useState(() => ({ ...initialData }));
   const [facilitiesData, setFacilitiesData] = useState(() => ({
     ...initialData,
   }));
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [modalOpen, setModalOpen] = useState(false);
   const [submittingDisabled, setSubmittingDisabled] = useState(false);
   const [deselectedFacilities, setDeselectedFacilities] = useState<string[]>(
@@ -132,9 +134,8 @@ export default function LFOFacilitiesForm({
     const anyFacilitySelected = isAnyFacilitySelected(e.formData);
 
     if (!anyFacilitySelected) {
-      setErrors([
-        createGenericReportValidationError("No facilities selected."),
-      ]);
+      const message = "No facilities selected.";
+      setClientError(message, setErrors);
       setSubmittingDisabled(true);
       return;
     }
@@ -155,9 +156,9 @@ export default function LFOFacilitiesForm({
       },
     );
 
-    const isValid = handleApiResponse(response, setErrors);
+    const isSuccess = handleApiResponse(response, setErrors);
 
-    if (!isValid) {
+    if (!isSuccess) {
       return false;
     }
 
@@ -180,7 +181,7 @@ export default function LFOFacilitiesForm({
 
   const handleModalConfirm = async () => {
     setModalOpen(false);
-    submit(formData);
+    return submit(formData);
   };
 
   const handleSubmit = async (data: any, navigateAfterSubmit: boolean) => {

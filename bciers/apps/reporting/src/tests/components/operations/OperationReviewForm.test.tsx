@@ -8,22 +8,12 @@ import {
 import { userEvent } from "@testing-library/user-event";
 import type { MockedFunction } from "vitest";
 import { describe, expect, it, beforeEach, vi } from "vitest";
-import { useRouter } from "next/navigation";
-import { actionHandler } from "@bciers/actions";
+import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import OperationReviewForm from "@reporting/src/app/components/operations/OperationReviewForm";
 import { buildOperationReviewSchema } from "@reporting/src/data/jsonSchema/operations";
-import { dummyNavigationInformation } from "../taskList/utils";
+import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
 import { getUpdatedReportOperationDetails } from "@reporting/src/app/utils/getUpdatedReportOperationDetails";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
-
-vi.mock("@bciers/actions", () => ({
-  actionHandler: vi.fn(),
-}));
-
-vi.mock("next/navigation", () => ({
-  useRouter: vi.fn(),
-  useSearchParams: vi.fn(),
-}));
 
 vi.mock("@reporting/src/app/utils/getUpdatedReportOperationDetails", () => ({
   getUpdatedReportOperationDetails: vi.fn(),
@@ -113,6 +103,9 @@ const schema = buildOperationReviewSchema(
 
 describe("OperationReviewForm Component", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
+    mockActionHandler.mockReset();
+
     mockUseRouter.mockReturnValue({
       push: vi.fn(),
       refresh: vi.fn(),
@@ -122,6 +115,7 @@ describe("OperationReviewForm Component", () => {
       prefetch: vi.fn(),
       bfcacheId: "",
     });
+
     mockActionHandler.mockResolvedValue(true); // Mock successful action handler
   });
 
@@ -192,6 +186,31 @@ describe("OperationReviewForm Component", () => {
       });
     },
   );
+
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+
+    mockActionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    renderForm();
+
+    fireEvent.click(screen.getByText(/Save & Continue/i));
+
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+
+    expect(mockActionHandler).toHaveBeenCalledTimes(1);
+    expect(mockActionHandler).toHaveBeenCalledWith(
+      "reporting/report-version/1/report-operation",
+      "POST",
+      "reporting/report-version/1/review-operation-information",
+      expect.anything(),
+    );
+
+    const { push } = useRouter();
+    expect(push).not.toHaveBeenCalled();
+  });
 
   it("displays helper text for Simple Report", async () => {
     renderForm();
@@ -306,6 +325,7 @@ describe("OperationReviewForm Component", () => {
     const reportTypeFieldAfterCancel = screen.getByTestId(
       "root_operation_report_type",
     );
+
     const reportTypeSelectAfterCancel =
       reportTypeFieldAfterCancel.querySelector(
         'input[role="combobox"]',
@@ -496,5 +516,40 @@ describe("OperationReviewForm Component", () => {
         /Any edits to operation information made here will only apply to this report/i,
       ),
     ).toBeInTheDocument();
+  });
+
+  it("displays an error message when the submission request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+
+    mockActionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    renderForm();
+
+    const submitButton = screen.getByRole("button", {
+      name: /save & continue/i,
+    });
+
+    fireEvent.click(submitButton);
+
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+
+    expect(mockActionHandler).toHaveBeenCalledTimes(1);
+    expect(mockActionHandler).toHaveBeenCalledWith(
+      "reporting/report-version/1/report-operation",
+      "POST",
+      "reporting/report-version/1/review-operation-information",
+      expect.anything(),
+    );
+
+    const { push } = useRouter();
+    expect(push).not.toHaveBeenCalled();
+
+    expect(
+      screen.getByRole("button", {
+        name: /save & continue/i,
+      }),
+    ).toBeEnabled();
   });
 });

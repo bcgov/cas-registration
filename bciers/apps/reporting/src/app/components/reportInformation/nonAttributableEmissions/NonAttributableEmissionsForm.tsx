@@ -8,8 +8,10 @@ import {
 } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { actionHandler } from "@bciers/actions";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 export interface GasType {
   id: number;
@@ -62,7 +64,7 @@ export default function NonAttributableEmissionsForm({
   emissionCategories,
   navigationInformation,
 }: NonAttributableEmissionsFormProps) {
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [formData, setFormData] = useState<NonAttributableFormData>({
     emissions_exceeded: emissionFormData.emissions_exceeded,
     // Seed one empty row so the form renders a first entry when the user switches to "Yes",

@@ -147,6 +147,7 @@ describe("the SingleStepTaskListForm component", () => {
     expect(screen.getByRole("button", { name: "Save" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Back" })).toBeVisible();
   });
+
   it("should show the confirmation snackbar when new form is submitted (when creating)", async () => {
     const schemaNonRequired: RJSFSchema = {
       type: "object",
@@ -182,6 +183,7 @@ describe("the SingleStepTaskListForm component", () => {
     // check that the component correctly unnested the formData
     expect(mockOnSubmit).toHaveBeenCalledWith({});
   });
+
   it("should transform and render the formData (when editing)", () => {
     render(
       <SingleStepTaskListForm
@@ -337,7 +339,9 @@ describe("the SingleStepTaskListForm component", () => {
   //   expect(inputBorderElement).toHaveStyle(defaultStyle);
   // });
 
-  it("should render an api error if an error is passed", () => {
+  it("should render errors if errors are passed", () => {
+    const errorMessage = "Name: Facility with this Name already exists";
+
     render(
       <SingleStepTaskListForm
         schema={schema}
@@ -351,13 +355,12 @@ describe("the SingleStepTaskListForm component", () => {
           // eslint-disable-next-line no-console
           console.log("submit", e);
         }}
-        error={"Name: Facility with this Name already exists"}
+        errors={<div role="alert">{errorMessage}</div>}
       />,
     );
-    expect(screen.getByTestId("ErrorOutlineIcon")).toBeVisible();
-    expect(
-      screen.getByText("Name: Facility with this Name already exists"),
-    ).toBeVisible();
+
+    expect(screen.getByRole("alert")).toBeVisible();
+    expect(screen.getByText(errorMessage)).toBeVisible();
   });
 
   it("should not render Edit/Submit button when allowEdit is false", () => {
@@ -461,6 +464,7 @@ describe("the SingleStepTaskListForm component", () => {
     ).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
   });
+
   it("should render the Back button when creating", () => {
     render(
       <SingleStepTaskListForm

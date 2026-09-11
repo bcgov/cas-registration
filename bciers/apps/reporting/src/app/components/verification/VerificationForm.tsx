@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { IChangeEvent } from "@rjsf/core";
@@ -10,8 +11,10 @@ import {
 import { actionHandler } from "@bciers/actions";
 import { NavigationInformation } from "../taskList/types";
 import { createVerificationUISchema } from "@reporting/src/app/components/verification/createVerificationUISchema";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   version_id: number;
@@ -31,9 +34,9 @@ export default function VerificationForm({
   navigationInformation,
   isSupplementaryReport,
   isEIO,
-}: Props) {
+}: Readonly<Props>) {
   const [formData, setFormData] = useState(initialData);
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   const handleChange = (e: IChangeEvent) => {
     setFormData({ ...e.formData });

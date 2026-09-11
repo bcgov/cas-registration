@@ -10,7 +10,7 @@ import { LogoWidget } from "./LogoWidget";
 import {
   PaymentInstructionsDetails,
   PaymentRemarks,
-} from "../../../components/compliance-summary/manage-obligation/download-payment-instructions/PaymentInstructionsDownloadSections";
+} from "@/compliance/src/app/components/compliance-summary/manage-obligation/download-payment-instructions/PaymentInstructionsDownloadSections";
 export const createDownloadPaymentInstructionsSchema = (): RJSFSchema => ({
   type: "object",
   title: `Download Payment Instructions`,

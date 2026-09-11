@@ -12,12 +12,16 @@ import {
   RequestIssuanceOfEarnedCreditsFormData,
 } from "@/compliance/src/app/types";
 import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
-import FormAlerts from "@bciers/components/form/FormAlerts";
 import { IChangeEvent } from "@rjsf/core";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  setClientError,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   complianceReportVersionId: number;
@@ -34,7 +38,7 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
 
   const [formData, setFormData] =
     useState<Partial<RequestIssuanceOfEarnedCreditsFormData>>(data);
-  const [errors, setErrors] = useState<string[] | undefined>();
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const idRequiringChange =
     data?.issuance_status === IssuanceStatus.CHANGES_REQUIRED
@@ -49,18 +53,17 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
   const handleChange = (
     e: IChangeEvent<RequestIssuanceOfEarnedCreditsFormData>,
   ) => {
+    setErrors(undefined);
     const newFormData = e.formData;
     const prevAccountId = (formData as RequestIssuanceOfEarnedCreditsFormData)
       ?.bccr_holding_account_id;
     const newAccountId = newFormData?.bccr_holding_account_id;
 
-    // If someone enters the same account id that they previously tried, set form data back to the complete initial data so issuance_status appears
     if (newAccountId === idRequiringChange) {
       setFormData(data);
       return;
     }
 
-    // If account ID changed, clear everything except the account ID
     if (prevAccountId !== newAccountId) {
       setFormData({
         bccr_holding_account_id: newAccountId,
@@ -83,6 +86,8 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
     e: IChangeEvent<RequestIssuanceOfEarnedCreditsFormData>,
   ) => {
     setIsSubmitting(true);
+    setErrors(undefined);
+
     const response = await actionHandler(
       `compliance/compliance-report-versions/${complianceReportVersionId}/earned-credits`,
       "PUT",
@@ -91,13 +96,14 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
         body: JSON.stringify(e.formData),
       },
     );
-    if (response && !response.error) {
-      setErrors(undefined);
-      router.push(saveAndContinueUrl);
-    } else {
-      setErrors([response.error || "Failed to submit request"]);
-      setIsSubmitting(false); // we only set isSubmitting to false if there was an error so that the button will remain disabled if user tries to submit again
+
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
+      setIsSubmitting(false);
+      return;
     }
+
+    router.push(saveAndContinueUrl);
   };
 
   return (
@@ -117,12 +123,14 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
               ...response,
             }),
           ),
-        onError: setErrors,
+        onError: (err: any) => {
+          setClientError(err, setErrors);
+        },
       }}
       className="w-full min-h-[62vh] flex flex-col justify-between"
     >
       <div>
-        <FormAlerts errors={errors} />
+        {renderedErrors}
         <ComplianceStepButtons backUrl={backUrl} className="mt-4">
           <SubmitButton
             isSubmitting={isSubmitting}

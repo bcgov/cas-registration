@@ -12,9 +12,11 @@ import {
 } from "@bciers/components/form/fields";
 import NoRegulatedProductsAlertFieldTemplate from "@reporting/src/data/jsonSchema/facility/NoRegulatedProductsAlertFieldTemplate";
 import { createFormContext } from "@reporting/src/app/components/shared/formContextHelpers";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  setClientError,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   report_version_id: number;
@@ -107,7 +109,7 @@ const ProductionDataForm: React.FC<Props> = ({
   };
 
   const [formData, setFormData] = useState<any>(initialFormData);
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   // No regulated product short circuits
   if (allowedProducts.length < 1) {
@@ -174,6 +176,7 @@ const ProductionDataForm: React.FC<Props> = ({
   };
 
   const onSubmit = async (data: any) => {
+    setErrors(undefined);
     /*
       Handle pulp & paper overlapping industrial process exception:
       If pulp & paper is reported and there are industrial process emissions that are also categorized as excluded (ie: woody biomass)
@@ -181,19 +184,14 @@ const ProductionDataForm: React.FC<Props> = ({
     */
     if (isPulpAndPaper && overlappingIndustrialProcessEmissions > 0) {
       if (!data.product_selection.includes("Pulp and paper: chemical pulp")) {
-        setErrors([
-          createGenericReportValidationError(
-            "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
-          ),
-        ]);
-        return false;
+        return setClientError(
+          "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page.",
+          setErrors,
+        );
       }
     }
     if (!isLfoFacility && formData.product_selection.length < 1) {
-      setErrors([
-        createGenericReportValidationError("A product must be selected."),
-      ]);
-      return false;
+      return setClientError("A product must be selected.", setErrors);
     }
     const response = await postProductionData(
       report_version_id,

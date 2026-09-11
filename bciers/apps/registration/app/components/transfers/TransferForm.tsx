@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import FormBase from "@bciers/components/form/FormBase";
-import { Alert, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 import { useRouter } from "next/navigation";
 import { IChangeEvent } from "@rjsf/core";
@@ -17,6 +17,11 @@ import TransferSuccess from "@/registration/app/components/transfers/TransferSuc
 import { OperationRow } from "@/administration/app/components/operations/types";
 import { fetchOperationsPageData } from "@bciers/actions/api";
 import useKey from "@bciers/utils/src/useKey";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  setClientError,
+} from "@bciers/components/validationErrors";
 import { UiSchema } from "@rjsf/utils";
 
 interface TransferFormProps {
@@ -38,7 +43,7 @@ export default function TransferForm({
 
   const [formState, setFormState] = useState(formData);
   const [key, resetKey] = useKey();
-  const [error, setError] = useState<string | undefined>(undefined);
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [schema, setSchema] = useState(transferSchema);
   const [uiSchema, setUiSchema] = useState(transferUISchema);
   const [fromOperatorOperations, setFromOperatorOperations] = useState<
@@ -155,7 +160,7 @@ export default function TransferForm({
 
   const handleOperatorChange = async (transferFormData: TransferFormData) => {
     // Reset error state
-    setError(undefined);
+    setErrors(undefined);
 
     // Handle the error when the same operator is selected for both from and to operators when transferring an operation
     if (sameOperatorSelectedForOperationEntity(transferFormData))
@@ -165,14 +170,12 @@ export default function TransferForm({
     const fromRes = await fetchOperatorOperations(
       transferFormData?.from_operator,
     );
-    if (fromRes.error) {
-      setError(fromRes.error);
+    if (!handleApiResponse(fromRes, setErrors)) {
       return;
     }
 
     const toRes = await fetchOperatorOperations(transferFormData?.to_operator);
-    if (toRes.error) {
-      setError(toRes.error);
+    if (!handleApiResponse(toRes, setErrors)) {
       return;
     }
 
@@ -215,13 +218,12 @@ export default function TransferForm({
   const handleFromOperationChange = async (
     transferFormData: TransferFormData,
   ) => {
-    setError(undefined);
+    setErrors(undefined);
 
     const facilitiesRes = await fetchFacilities(
       transferFormData?.from_operation,
     );
-    if (facilitiesRes.error) {
-      setError(facilitiesRes.error);
+    if (!handleApiResponse(facilitiesRes, setErrors)) {
       return;
     }
 
@@ -257,13 +259,15 @@ export default function TransferForm({
   };
 
   const submitHandler = async (e: IChangeEvent) => {
+    setErrors(undefined);
     const updatedFormData = e.formData as TransferFormData;
     // we can't transfer facilities to the same operation
     if (
       updatedFormData.transfer_entity === "Facility" &&
       updatedFormData.from_operation === updatedFormData.to_operation
     ) {
-      setError("Cannot transfer facilities to the same operation!");
+      const message = "Cannot transfer facilities to the same operation!";
+      setClientError(message, setErrors);
       return;
     }
 
@@ -284,8 +288,7 @@ export default function TransferForm({
 
     setIsSubmitting(false);
 
-    if (!response || response?.error) {
-      setError(response?.error);
+    if (!handleApiResponse(response, setErrors)) {
       return;
     }
 
@@ -329,9 +332,7 @@ export default function TransferForm({
               onSubmit={submitHandler}
               omitExtraData={true}
             >
-              <div className="min-h-6">
-                {error && <Alert severity="error">{error}</Alert>}
-              </div>
+              <div className="min-h-6">{renderedErrors}</div>
               <div className="flex justify-between mt-8">
                 <Button
                   className="ml-4"
