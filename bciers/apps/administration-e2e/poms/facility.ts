@@ -8,6 +8,8 @@ import { Locator, Page, expect } from "@playwright/test";
 import {
   FacilityButtonText,
   FacilityFormField,
+  SfoPageLocators,
+  LfoPageLocators,
 } from "@/administration-e2e/utils/enums";
 import {
   assertSuccessfulSnackbar,
@@ -18,16 +20,53 @@ import {
   searchGridByUniqueValue,
   waitForGridReady,
 } from "@bciers/e2e/utils/helpers";
-import { FrontendMessages } from "@bciers/utils/src/enums";
+import { FacilityTypes, FrontendMessages } from "@bciers/utils/src/enums";
 
 export class FacilityPOM {
   readonly page: Page;
+  readonly sfoLocators: Record<string, Locator>;
+  readonly lfoLocators: Record<string, Locator>;
+
+  private readonly sfoReadOnlyKeys: ReadonlyArray<string> = [
+    "name",
+    "type",
+    "province",
+  ];
+  private readonly lfoReadOnlyKeys: ReadonlyArray<string> = ["province"];
 
   constructor(page: Page) {
     this.page = page;
+    this.sfoLocators = {
+      streetAddress: page.locator(`#${SfoPageLocators.streetAddress}`),
+      municipality: page.locator(`#${SfoPageLocators.municipality}`),
+      province: page.locator(`#${SfoPageLocators.province}`),
+      postalCode: page.locator(`#${SfoPageLocators.postalCode}`),
+      latitude: page.locator(`#${SfoPageLocators.latitude}`),
+      longitude: page.locator(`#${SfoPageLocators.longitude}`),
+      name: page.locator(`#${SfoPageLocators.name}`),
+      type: page.locator(`#${SfoPageLocators.type}`),
+    };
+    this.lfoLocators = {
+      streetAddress: page.locator(`#${LfoPageLocators.streetAddress}`),
+      municipality: page.locator(`#${LfoPageLocators.municipality}`),
+      province: page.locator(`#${LfoPageLocators.province}`),
+      postalCode: page.locator(`#${LfoPageLocators.postalCode}`),
+      latitude: page.locator(`#${LfoPageLocators.latitude}`),
+      longitude: page.locator(`#${LfoPageLocators.longitude}`),
+      name: page.locator(`#${LfoPageLocators.name}`),
+      type: page.locator(`#${LfoPageLocators.type}`),
+    };
   }
 
   // ###  Actions ###
+
+  async clickEdit() {
+    await clickButton(this.page, /edit/i);
+  }
+
+  async clickCancel() {
+    await clickButton(this.page, /cancel/i);
+  }
 
   // OperationPOM has searchOperationByName usable with this
   async goToOperationFacilities(row: Locator, linkName: string | RegExp) {
@@ -135,26 +174,29 @@ export class FacilityPOM {
     ).toBeVisible();
   }
 
-  async assertFieldsReadOnly(locatorIds: Record<string, string>) {
-    for (const id of Object.values(locatorIds)) {
-      await expect(this.page.locator(`#${id}`)).toBeVisible();
-      await expect(this.page.locator(`#${id}`)).toHaveClass(/read-only/i);
+  async assertFieldStates(
+    facilityType: FacilityTypes.SFO | FacilityTypes.LFO,
+    allReadOnly: boolean = false,
+  ) {
+    const isSfo = facilityType === FacilityTypes.SFO;
+    const locators = isSfo ? this.sfoLocators : this.lfoLocators;
+    const readOnlyKeys = isSfo ? this.sfoReadOnlyKeys : this.lfoReadOnlyKeys;
+
+    for (const [key, locator] of Object.entries(locators)) {
+      await expect(locator).toBeVisible();
+
+      if (allReadOnly || readOnlyKeys.includes(key)) {
+        await expect(locator).toHaveClass(/read-only/i);
+      } else {
+        await expect(locator).not.toHaveClass(/read-only/i);
+      }
     }
   }
 
-  async assertFieldsEditableExcept<T extends Record<string, string>>(
-    locatorIds: T,
-    alwaysReadOnlyKeys: ReadonlyArray<keyof T>,
+  async assertFieldsReadOnly(
+    facilityType: FacilityTypes.SFO | FacilityTypes.LFO,
   ) {
-    for (const key of Object.keys(locatorIds) as Array<keyof T>) {
-      const id = locatorIds[key];
-      if (alwaysReadOnlyKeys.includes(key)) {
-        await expect(this.page.locator(`#${id}`)).toHaveClass(/read-only/i);
-      } else {
-        await expect(this.page.locator(`#${id}`)).toBeVisible();
-        await expect(this.page.locator(`#${id}`)).not.toHaveClass(/read-only/i);
-      }
-    }
+    await this.assertFieldStates(facilityType, true);
   }
 
   async assertViewFacilitiesNoteIsVisible() {

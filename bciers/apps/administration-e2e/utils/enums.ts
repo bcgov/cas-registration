@@ -306,17 +306,6 @@ export const SfoPageLocators = {
   longitude: "root_section2_longitude_of_largest_emissions",
 };
 
-// Fields that stay read-only even after clicking Edit, regardless of the
-// form's overall disabled/enabled state (rendered via ReadOnlyWidget /
-// ReadOnlyComboBoxWidget in the frontend, never a plain editable input).
-export const SfoAlwaysReadOnlyFields: ReadonlyArray<
-  keyof typeof SfoPageLocators
-> = ["name", "type", "province"];
-
-export const LfoAlwaysReadOnlyFields: ReadonlyArray<
-  keyof typeof LfoPageLocators
-> = ["province"];
-
 export enum FacilityFormErrorMessages {
   LATITUDE_ERROR = "Latitude of largest point of emissions must be between -90 and 90",
   LONGITUDE_ERROR = "Longitude of largest point of emissions must be between -180 and 180",
