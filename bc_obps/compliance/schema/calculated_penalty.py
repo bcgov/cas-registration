@@ -1,13 +1,15 @@
 from decimal import Decimal
 from ninja import Schema
-from compliance.models import CompliancePenalty
+from compliance.models import ComplianceObligation, CompliancePenalty
 from enum import Enum
 
 
-class PenaltyTypeStatusEnum(str, Enum):
-    ACCRUING = "Accruing"
-    PAID = "Paid"
-    NONE = "None"
+class PenaltyTypeStatus(str, Enum):
+    NONE = ComplianceObligation.PenaltyStatus.NONE.value
+    ACCRUING = ComplianceObligation.PenaltyStatus.ACCRUING.value
+    PAID = ComplianceObligation.PenaltyStatus.PAID.value
+    NOT_PAID = ComplianceObligation.PenaltyStatus.NOT_PAID.value
+    NOT_APPLICABLE = "NOT APPLICABLE"
 
 
 class PenaltyAccrual(Schema):
@@ -20,14 +22,9 @@ class PenaltyAccrual(Schema):
 
 
 class CalculatedPenaltyOut(Schema):
-    """
-    Schema for a calculated penalty for an obligation that has not yet been met returned from the API.
-    """
-
-    automatic_overdue_penalty_status: PenaltyTypeStatusEnum
-    ggeapar_interest_status: PenaltyTypeStatusEnum
-    penalty_type: CompliancePenalty.PenaltyType | None = None
-    days_late: int | None = None
-    total_penalty: Decimal | None = None
+    automatic_overdue_penalty_status: PenaltyTypeStatus
+    ggeapar_interest_status: PenaltyTypeStatus
+    penalty_type: CompliancePenalty.PenaltyType
+    days_late: int = 0
+    total_penalty: Decimal = Decimal("0.00")
     daily_accumulated_list: list[PenaltyAccrual] = []
-    message: str | None = None

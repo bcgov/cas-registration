@@ -7,6 +7,8 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { PenaltySummaryField } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltySummaryField";
 import { PenaltyAccrualDataGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltyAccrualDataGrid";
+import PenaltyTypeRadioWidget from "@/compliance/src/app/widgets/PenaltyTypeRadioWidget";
+import { PenaltyType } from "@/compliance/src/app/types";
 
 export const penaltyCalculatorSchema: RJSFSchema = {
   type: "object",
@@ -19,8 +21,8 @@ export const penaltyCalculatorSchema: RJSFSchema = {
     requested_penalty_type: {
       type: "string",
       title: "1. Select penalty type",
-      enum: ["automatic_overdue", "ggeapar"],
-      default: "automatic_overdue",
+      enum: [PenaltyType.AUTOMATIC_OVERDUE, PenaltyType.LATE_SUBMISSION],
+      default: PenaltyType.AUTOMATIC_OVERDUE,
     },
     final_day_of_penalty_accrual: {
       type: "string",
@@ -31,12 +33,8 @@ export const penaltyCalculatorSchema: RJSFSchema = {
       type: "object",
       title: "Penalty summary",
       properties: {
-        total_penalty_amount: {
-          type: ["string", "number", "null"],
-        },
-        days_late: {
-          type: ["string", "number", "null"],
-        },
+        total_penalty_amount: { type: "string" },
+        days_late: { type: "number" },
       },
       additionalProperties: false,
     },
@@ -44,14 +42,11 @@ export const penaltyCalculatorSchema: RJSFSchema = {
       type: "object",
       title: "Accrual data",
       properties: {
-        tableData: {
+        // Identifies the query these rows came from; the grid remounts when it changes
+        query_id: { type: "string" },
+        rows: {
           type: "array",
-          items: {
-            type: "array",
-            items: {
-              type: ["string", "number", "null"],
-            },
-          },
+          items: { type: "object" },
         },
       },
       additionalProperties: false,
@@ -59,28 +54,35 @@ export const penaltyCalculatorSchema: RJSFSchema = {
   },
 };
 
-export const penaltyCalculatorUiSchema: UiSchema = {
+// !block overrides FieldTemplate's inline-block label, which otherwise leaves MUI's
+// inline-flex picker sitting beside its header rather than below it
+const numberedSectionOptions = {
+  labelOverrideStyle: "!block mb-4 font-normal text-bc-bg-blue",
+};
+
+// A factory, so minDate resolves when the page renders rather than at module load
+export const createPenaltyCalculatorUiSchema = (): UiSchema => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
 
   automatic_overdue_penalty_status: commonReadOnlyOptions,
   ggeapar_interest_status: commonReadOnlyOptions,
   requested_penalty_type: {
-    "ui:widget": "RadioWidget",
+    "ui:widget": PenaltyTypeRadioWidget,
     "ui:enumNames": ["Automatic overdue", "GGEAPAR"],
-    "ui:classNames": "penalty-type-radio-group",
-    "ui:options": {
-      inline: true,
-      labelOverrideStyle: "font-normal text-bc-bg-blue",
-    },
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:classNames": "text-bc-bg-blue mt-8 mb-6",
+    "ui:options": numberedSectionOptions,
   },
   final_day_of_penalty_accrual: {
     "ui:widget": "DateWidget",
     "ui:FieldTemplate": FieldTemplate,
-    "ui:classNames": "text-bc-bg-blue",
+    "ui:classNames": "text-bc-bg-blue [&>div]:max-w-[200px]",
     "ui:options": {
+      ...numberedSectionOptions,
       simpleDateFormat: true,
-      labelOverrideStyle: "font-normal text-bc-bg-blue",
+      minDate: new Date(),
+      actionBarActions: ["cancel", "today"],
     },
   },
   penalty_summary: {
@@ -95,8 +97,5 @@ export const penaltyCalculatorUiSchema: UiSchema = {
   accrual_data: {
     "ui:field": PenaltyAccrualDataGrid,
     "ui:FieldTemplate": FieldTemplateFullWidth,
-    "ui:options": {
-      rowsPerPage: 10,
-    },
   },
-};
+});
