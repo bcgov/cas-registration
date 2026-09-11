@@ -48,11 +48,16 @@ export class OperationPOM {
     await operationsLink.click();
   }
 
-  async searchOperationByName(operation: string, operator: string) {
-    await this.page
-      .getByLabel(/Operator Legal Name/i)
-      .getByPlaceholder(/Search/i)
-      .fill(operator);
+  async searchOperationByName(operation: string, operator?: string) {
+    // Industry users only see their own operator's operations, so the grid
+    // has no Operator Legal Name column to search — only internal-staff
+    // roles (e.g. CAS Director) get an operator filter.
+    if (operator) {
+      await this.page
+        .getByLabel(/Operator Legal Name/i)
+        .getByPlaceholder(/Search/i)
+        .fill(operator);
+    }
     await this.page
       .getByLabel(/Operation Name/i)
       .getByPlaceholder(/Search/i)
