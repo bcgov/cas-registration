@@ -2,6 +2,7 @@ import {
   AnalystSuggestion,
   ComplianceSummaryStatus,
   IssuanceStatus,
+  PenaltyStatus,
 } from "@bciers/utils/src/enums";
 
 export interface DataGridSearchParams {
@@ -221,6 +222,37 @@ export interface PenaltyData {
   outstanding_amount: string;
   penalty_status: string;
   payment_data: PaymentData;
+}
+
+export enum PenaltyType {
+  AUTOMATIC_OVERDUE = "Automatic Overdue",
+  LATE_SUBMISSION = "Late Submission",
+}
+
+export const PenaltyTypeStatus = {
+  ...PenaltyStatus,
+  NOT_APPLICABLE: "NOT APPLICABLE",
+} as const;
+
+export type PenaltyTypeStatus =
+  (typeof PenaltyTypeStatus)[keyof typeof PenaltyTypeStatus];
+
+export interface PenaltyAccrual {
+  date: string;
+  interest_rate: string;
+  daily_penalty: string;
+  daily_compounded: string;
+  accumulated_penalty: string;
+  accumulated_compounded: string;
+}
+
+export interface CalculatedPenalty {
+  automatic_overdue_penalty_status: PenaltyTypeStatus;
+  ggeapar_interest_status: PenaltyTypeStatus;
+  penalty_type: PenaltyType;
+  days_late: number;
+  total_penalty: string;
+  daily_accumulated_list: PenaltyAccrual[];
 }
 
 export interface PayPenaltyTrackPaymentsFormData extends PenaltyData {

@@ -6,6 +6,7 @@ export enum ActivePage {
   ReviewComplianceObligationReport = "ReviewComplianceObligationReport",
   ReviewInterestSummary = "ReviewInterestSummary",
   ReviewPenaltySummary = "ReviewPenaltySummary",
+  PenaltyCalculator = "PenaltyCalculator",
 }
 
 export const generateReviewObligationPenaltyTaskList: (
@@ -33,6 +34,15 @@ export const generateReviewObligationPenaltyTaskList: (
       isActive: activePage === ActivePage.ReviewComplianceObligationReport,
     },
   ];
+
+  if (penaltyStatus !== PenaltyStatus.PAID) {
+    elements.push({
+      type: "Page" as const,
+      title: "Penalty calculator",
+      link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/penalty-calculator`,
+      isActive: activePage === ActivePage.PenaltyCalculator,
+    });
+  }
 
   if (isObligationFullyPaid && hasLateSubmissionPenalty) {
     elements.push({
