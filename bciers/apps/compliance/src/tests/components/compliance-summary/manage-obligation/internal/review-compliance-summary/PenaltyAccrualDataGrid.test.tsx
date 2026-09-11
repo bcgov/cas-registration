@@ -1,97 +1,120 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { useSearchParams } from "@bciers/testConfig/mocks";
 import { PenaltyAccrualDataGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltyAccrualDataGrid";
+import { PenaltyAccrual } from "@/compliance/src/app/types";
 
 useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
+const buildAccrual = (
+  overrides: Partial<PenaltyAccrual> = {},
+): PenaltyAccrual => ({
+  date: "2026-01-01",
+  interest_rate: "0.38",
+  daily_penalty: "10.00",
+  daily_compounded: "1.00",
+  accumulated_penalty: "10.00",
+  accumulated_compounded: "1.00",
+  ...overrides,
+});
+
 describe("PenaltyAccrualDataGrid", () => {
-  it("renders default label and expected DataGrid column headers", () => {
-    render(<PenaltyAccrualDataGrid formData={{ tableData: [] }} />);
-
-    expect(screen.getByText("Accrual data")).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Date" })).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Daily Penalty" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Daily compounded" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Accumulated penalty" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Accumulated compounded" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Interest rate %" }),
-    ).toBeVisible();
-  });
-
-  it("renders supplied label and row data", () => {
+  it("renders the default label and the expected column headers", () => {
     render(
       <PenaltyAccrualDataGrid
-        label="My Accrual Grid"
+        formData={{ query_id: "Automatic Overdue-2026-01-15", rows: [] }}
+      />,
+    );
+
+    expect(screen.getByText("Accrual data")).toBeVisible();
+    for (const header of [
+      "Date",
+      "Daily Penalty",
+      "Daily compounded",
+      "Accumulated penalty",
+      "Accumulated compounded",
+      "Interest rate %",
+    ]) {
+      expect(screen.getByRole("columnheader", { name: header })).toBeVisible();
+    }
+  });
+
+  it("renders a row per accrual", () => {
+    render(
+      <PenaltyAccrualDataGrid
         formData={{
-          tableData: [
-            ["2026-01-01", 12.34, 0.56, 100.12, 8.9, 5.5],
-            ["2026-01-02", 11.11, 0.44, 111.23, 9.34, 5.5],
+          query_id: "Automatic Overdue-2026-01-15",
+          rows: [
+            buildAccrual(),
+            buildAccrual({ date: "2026-01-02", accumulated_penalty: "30.00" }),
           ],
         }}
       />,
     );
 
-    expect(screen.getByText("My Accrual Grid")).toBeVisible();
-    expect(screen.getByText("2026-01-01")).toBeVisible();
-    expect(screen.getByText("12.34")).toBeVisible();
-    expect(screen.getByText("0.56")).toBeVisible();
-    expect(screen.getByText("100.12")).toBeVisible();
-    expect(screen.getByText("8.9")).toBeVisible();
-    expect(screen.getAllByText("5.5")).toHaveLength(2);
-    expect(screen.getByText("2026-01-02")).toBeVisible();
+    const grid = screen.getByRole("grid");
+    expect(within(grid).getByText("2026-01-01")).toBeVisible();
+    expect(within(grid).getByText("2026-01-02")).toBeVisible();
+    expect(within(grid).getByText("30.00")).toBeVisible();
   });
 
-  it("renders when the form passes a raw table row array", () => {
+  it("hides the label when the ui schema turns it off", () => {
     render(
       <PenaltyAccrualDataGrid
-        formData={[
-          ["2026-11-07", "167.17", "18.73", "4848.00", "266.96", "0.003800"],
-        ]}
+        formData={{ query_id: "Automatic Overdue-2026-01-15", rows: [] }}
+        uiSchema={{ "ui:options": { label: false } }}
       />,
     );
 
-    expect(screen.getByText("2026-11-07")).toBeVisible();
-    expect(screen.getByText("167.17")).toBeVisible();
-    expect(screen.getByText("18.73")).toBeVisible();
-    expect(screen.getByText("4848.00")).toBeVisible();
-    expect(screen.getByText("266.96")).toBeVisible();
-    expect(screen.getByText("0.003800")).toBeVisible();
+    expect(screen.queryByText("Accrual data")).not.toBeInTheDocument();
   });
 
-  it("displays '-' for null, undefined, and empty string values", () => {
-    render(
+  it("swaps the rows over when a new result set arrives", () => {
+    const { rerender } = render(
       <PenaltyAccrualDataGrid
         formData={{
-          tableData: [["", null, undefined, "", null, undefined]],
+          query_id: "Automatic Overdue-2026-01-15",
+          rows: [buildAccrual()],
         }}
       />,
     );
 
-    const dashCells = screen.getAllByText("-");
-    expect(dashCells.length).toBeGreaterThanOrEqual(6);
-  });
+    expect(screen.getByText("2026-01-01")).toBeVisible();
 
-  it("hides label when ui:options.label is false", () => {
-    render(
+    rerender(
       <PenaltyAccrualDataGrid
-        label="Hidden label"
-        uiSchema={{ "ui:options": { label: false } }}
-        formData={{ tableData: [["2026-01-01", 1, 1, 1, 1, 1]] }}
+        formData={{
+          query_id: "Late Submission-2026-01-15",
+          rows: [buildAccrual({ date: "2026-02-02" })],
+        }}
       />,
     );
 
-    expect(screen.queryByText("Hidden label")).not.toBeInTheDocument();
-    expect(screen.getByText("2026-01-01")).toBeVisible();
+    expect(screen.getByText("2026-02-02")).toBeVisible();
+    expect(screen.queryByText("2026-01-01")).not.toBeInTheDocument();
+  });
+
+  it("swaps the rows over when only the accrual end date changes", () => {
+    const { rerender } = render(
+      <PenaltyAccrualDataGrid
+        formData={{
+          query_id: "Automatic Overdue-2026-01-15",
+          rows: [buildAccrual()],
+        }}
+      />,
+    );
+
+    rerender(
+      <PenaltyAccrualDataGrid
+        formData={{
+          query_id: "Automatic Overdue-2027-01-10",
+          rows: [buildAccrual({ date: "2026-03-03" })],
+        }}
+      />,
+    );
+
+    expect(screen.getByText("2026-03-03")).toBeVisible();
+    expect(screen.queryByText("2026-01-01")).not.toBeInTheDocument();
   });
 });

@@ -1,302 +1,171 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { actionHandler, useSearchParams } from "@bciers/testConfig/mocks";
 import PenaltyCalculatorComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/internal/review-compliance-summary/PenaltyCalculatorComponent";
-import { getPenaltyAccrualCalculationData } from "@/compliance/src/app/utils/getPenaltyAccrualCalculationData";
+import {
+  CalculatedPenalty,
+  PenaltyType,
+  PenaltyTypeStatus,
+} from "@/compliance/src/app/types";
 
-let nextFormData: any;
-
-vi.mock("@bciers/components/form", () => ({
-  FormBase: ({
-    children,
-    formData,
-    onChange,
-  }: {
-    children: React.ReactNode;
-    formData: any;
-    onChange: (e: { formData: any }) => void;
-  }) => (
-    <div data-testid="form-base">
-      <div data-testid="form-data">{JSON.stringify(formData)}</div>
-      <button
-        type="button"
-        onClick={() => onChange({ formData: nextFormData })}
-      >
-        Trigger Change
-      </button>
-      {children}
-    </div>
-  ),
-}));
+useSearchParams.mockReturnValue({
+  get: vi.fn(),
+});
 
 vi.mock("@/compliance/src/app/components/ComplianceStepButtons", () => ({
-  __esModule: true,
   default: ({ backUrl }: { backUrl: string }) => <div>Back: {backUrl}</div>,
 }));
 
-vi.mock("@/compliance/src/app/utils/getPenaltyAccrualCalculationData", () => ({
-  getPenaltyAccrualCalculationData: vi.fn(),
-}));
+const COMPLIANCE_REPORT_VERSION_ID = 123;
 
-const mockedGetPenaltyAccrualCalculationData =
-  getPenaltyAccrualCalculationData as unknown as ReturnType<typeof vi.fn>;
+const buildPenaltyData = (
+  overrides: Partial<CalculatedPenalty> = {},
+): CalculatedPenalty => ({
+  automatic_overdue_penalty_status: PenaltyTypeStatus.ACCRUING,
+  ggeapar_interest_status: PenaltyTypeStatus.NONE,
+  penalty_type: PenaltyType.AUTOMATIC_OVERDUE,
+  days_late: 5,
+  total_penalty: "50.25",
+  daily_accumulated_list: [
+    {
+      date: "2026-01-01",
+      interest_rate: "0.38",
+      daily_penalty: "10.00",
+      daily_compounded: "1.00",
+      accumulated_penalty: "10.00",
+      accumulated_compounded: "1.00",
+    },
+  ],
+  ...overrides,
+});
+
+const renderComponent = (penaltyData = buildPenaltyData()) =>
+  render(
+    <PenaltyCalculatorComponent
+      complianceReportVersionId={COMPLIANCE_REPORT_VERSION_ID}
+      penaltyData={penaltyData}
+      finalDayOfPenaltyAccrual="2026-01-15"
+    />,
+  );
 
 describe("PenaltyCalculatorComponent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    nextFormData = undefined;
   });
 
-  it("renders initial mapped form data and step buttons back URL", () => {
-    render(
-      <PenaltyCalculatorComponent
-        complianceReportVersionId={123}
-        initialPenaltyType="automatic_overdue"
-        initialFinalDayOfPenaltyAccrual="2026-01-15"
-        penaltyData={{
-          automatic_overdue_penalty_status: "NOT PAID",
-          ggeapar_interest_status: "N/A",
-          days_late: 5,
-          total_penalty: 50.25,
-          daily_accumulated_list: [
-            {
-              date: "2026-01-10",
-              daily_penalty: 10,
-              daily_compounded: 1,
-              accumulated_penalty: 10,
-              accumulated_compounded: 1,
-              interest_rate: 5,
-            },
-          ],
-        }}
-      />,
-    );
+  it("renders the penalty data it was given", () => {
+    renderComponent();
 
-    expect(screen.getByTestId("form-base")).toBeVisible();
+    expect(screen.getByText("Accruing")).toBeVisible();
+    expect(screen.getByText("$50.25")).toBeVisible();
+    expect(screen.getByText("5")).toBeVisible();
+    expect(screen.getByRole("gridcell", { name: "2026-01-01" })).toBeVisible();
     expect(
       screen.getByText(
-        "Back: /compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
+        `Back: /compliance-administration/compliance-summaries/${COMPLIANCE_REPORT_VERSION_ID}/review-compliance-obligation-report`,
       ),
     ).toBeVisible();
-
-    const formDataText = screen.getByTestId("form-data").textContent ?? "";
-    expect(formDataText).toContain(
-      '"requested_penalty_type":"automatic_overdue"',
-    );
-    expect(formDataText).toContain(
-      '"final_day_of_penalty_accrual":"2026-01-15"',
-    );
-    expect(formDataText).toContain('"total_penalty_amount":50.25');
-    expect(formDataText).toContain('"days_late":5');
   });
 
-  it("maps API rows that arrive as raw arrays into the form table data", () => {
-    render(
-      <PenaltyCalculatorComponent
-        complianceReportVersionId={123}
-        initialPenaltyType="automatic_overdue"
-        initialFinalDayOfPenaltyAccrual="2026-01-15"
-        penaltyData={{
-          automatic_overdue_penalty_status: "NOT PAID",
-          ggeapar_interest_status: "N/A",
-          days_late: 5,
-          total_penalty: 50.25,
-          daily_accumulated_list: [
-            ["2026-11-07", "167.17", "18.73", "4848.00", "266.96", "0.003800"],
-          ],
-        }}
-      />,
-    );
-
-    const formDataText = screen.getByTestId("form-data").textContent ?? "";
-    expect(formDataText).toContain('"2026-11-07"');
-    expect(formDataText).toContain('"167.17"');
-    expect(formDataText).toContain('"18.73"');
-    expect(formDataText).toContain('"4848.00"');
-    expect(formDataText).toContain('"266.96"');
-    expect(formDataText).toContain('"0.003800"');
-  });
-
-  it("normalizes penalty type and date before requesting updated penalty data", async () => {
-    mockedGetPenaltyAccrualCalculationData.mockResolvedValue({
-      automatic_overdue_penalty_status: "NOT PAID",
-      ggeapar_interest_status: "NONE",
-      requested_penalty_type: "ggeapar",
-      days_late: 12,
-      total_penalty: 321.09,
-      daily_accumulated_list: [
-        {
-          date: "2026-03-10",
-          daily_penalty: 20,
-          daily_compounded: 2,
-          accumulated_penalty: 20,
-          accumulated_compounded: 2,
-          interest_rate: 3,
-        },
-      ],
-    });
-
-    nextFormData = {
-      requested_penalty_type: "Late Submission",
-      final_day_of_penalty_accrual: "2026-03-10T00:00:00Z",
-      penalty_summary: {},
-      accrual_data: { tableData: [] },
-    };
-
-    render(
-      <PenaltyCalculatorComponent
-        complianceReportVersionId={999}
-        initialPenaltyType="automatic_overdue"
-        initialFinalDayOfPenaltyAccrual="2026-01-15"
-      />,
-    );
-
-    screen.getByRole("button", { name: "Trigger Change" }).click();
-
-    await waitFor(() => {
-      expect(mockedGetPenaltyAccrualCalculationData).toHaveBeenCalledWith(999, {
-        requested_penalty_type: "ggeapar",
-        final_day_of_penalty_accrual: "2026-03-10",
-      });
-    });
-
-    await waitFor(() => {
-      const formDataText = screen.getByTestId("form-data").textContent ?? "";
-      expect(formDataText).toContain('"requested_penalty_type":"ggeapar"');
-      expect(formDataText).toContain(
-        '"final_day_of_penalty_accrual":"2026-03-10"',
-      );
-      expect(formDataText).toContain('"total_penalty_amount":321.09');
-      expect(formDataText).toContain('"days_late":12');
-    });
-  });
-
-  it("shows warning message when recalculation API returns an error", async () => {
-    mockedGetPenaltyAccrualCalculationData.mockResolvedValue({
-      error: "Penalty calculation is unavailable",
-    });
-
-    nextFormData = {
-      requested_penalty_type: "automatic_overdue",
-      final_day_of_penalty_accrual: "2026-02-01",
-      penalty_summary: {},
-      accrual_data: { tableData: [] },
-    };
-
-    render(
-      <PenaltyCalculatorComponent
-        complianceReportVersionId={777}
-        initialPenaltyType="automatic_overdue"
-        initialFinalDayOfPenaltyAccrual="2026-01-15"
-      />,
-    );
-
-    screen.getByRole("button", { name: "Trigger Change" }).click();
+  it("preselects the penalty type the data was calculated for", () => {
+    renderComponent();
 
     expect(
-      await screen.findByText("Penalty calculation is unavailable"),
+      screen.getByRole("radio", { name: "Automatic overdue" }),
+    ).toBeChecked();
+    expect(screen.getByRole("radio", { name: "GGEAPAR" })).not.toBeChecked();
+  });
+
+  it("recalculates against the newly selected penalty type", async () => {
+    actionHandler.mockResolvedValue(
+      buildPenaltyData({
+        penalty_type: PenaltyType.LATE_SUBMISSION,
+        ggeapar_interest_status: PenaltyTypeStatus.ACCRUING,
+        days_late: 9,
+        total_penalty: "99.99",
+        daily_accumulated_list: [
+          {
+            date: "2099-12-31",
+            interest_rate: "0.50",
+            daily_penalty: "77.00",
+            daily_compounded: "7.00",
+            accumulated_penalty: "77.00",
+            accumulated_compounded: "7.00",
+          },
+        ],
+      }),
+    );
+    renderComponent();
+
+    await userEvent.click(screen.getByRole("radio", { name: "GGEAPAR" }));
+
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `requested_penalty_type=${encodeURIComponent(PenaltyType.LATE_SUBMISSION)}`,
+        ),
+        "GET",
+        "",
+      );
+    });
+
+    expect(await screen.findByText("$99.99")).toBeVisible();
+    expect(screen.getByText("9")).toBeVisible();
+
+    // The grid seeds its rows on mount, so it has to swap over too.
+    const grid = screen.getByRole("grid");
+    expect(within(grid).getByText("2099-12-31")).toBeInTheDocument();
+    expect(within(grid).queryByText("2026-01-01")).not.toBeInTheDocument();
+  });
+
+  it("explains an inapplicable penalty type rather than showing a stale figure", async () => {
+    actionHandler.mockResolvedValue(
+      buildPenaltyData({
+        penalty_type: PenaltyType.LATE_SUBMISSION,
+        ggeapar_interest_status: PenaltyTypeStatus.NOT_APPLICABLE,
+        days_late: 0,
+        total_penalty: "0.00",
+        daily_accumulated_list: [],
+      }),
+    );
+    renderComponent();
+
+    await userEvent.click(screen.getByRole("radio", { name: "GGEAPAR" }));
+
+    expect(
+      await screen.findByText(/GGEAPAR interest only applies to obligations/i),
     ).toBeVisible();
+    expect(screen.getByText("$0.00")).toBeVisible();
+    expect(screen.queryByText("$50.25")).not.toBeInTheDocument();
   });
 
-  it("does not call recalculation when final day cannot be normalized", async () => {
-    nextFormData = {
-      requested_penalty_type: "ggeapar",
-      final_day_of_penalty_accrual: "02/01/2026",
-      penalty_summary: {},
-      accrual_data: { tableData: [] },
-    };
-
-    render(
-      <PenaltyCalculatorComponent
-        complianceReportVersionId={555}
-        initialPenaltyType="automatic_overdue"
-        initialFinalDayOfPenaltyAccrual="2026-01-15"
-      />,
+  it("renders each accrual row in the grid", () => {
+    renderComponent(
+      buildPenaltyData({
+        daily_accumulated_list: [
+          {
+            date: "2026-01-01",
+            interest_rate: "0.38",
+            daily_penalty: "10.00",
+            daily_compounded: "1.00",
+            accumulated_penalty: "10.00",
+            accumulated_compounded: "1.00",
+          },
+          {
+            date: "2026-01-02",
+            interest_rate: "0.38",
+            daily_penalty: "20.00",
+            daily_compounded: "2.00",
+            accumulated_penalty: "30.00",
+            accumulated_compounded: "3.00",
+          },
+        ],
+      }),
     );
 
-    screen.getByRole("button", { name: "Trigger Change" }).click();
-
-    await waitFor(() => {
-      expect(mockedGetPenaltyAccrualCalculationData).not.toHaveBeenCalled();
-    });
-  });
-
-  it("ignores stale responses from older requests", async () => {
-    const dateNowMock = vi
-      .spyOn(Date, "now")
-      .mockReturnValueOnce(100)
-      .mockReturnValueOnce(200);
-
-    let resolveFirstRequest: (value: any) => void;
-    let resolveSecondRequest: (value: any) => void;
-
-    const firstPromise = new Promise((resolve) => {
-      resolveFirstRequest = resolve;
-    });
-
-    const secondPromise = new Promise((resolve) => {
-      resolveSecondRequest = resolve;
-    });
-
-    mockedGetPenaltyAccrualCalculationData
-      .mockImplementationOnce(() => firstPromise)
-      .mockImplementationOnce(() => secondPromise);
-
-    render(
-      <PenaltyCalculatorComponent
-        complianceReportVersionId={222}
-        initialPenaltyType="automatic_overdue"
-        initialFinalDayOfPenaltyAccrual="2026-01-15"
-      />,
-    );
-
-    nextFormData = {
-      requested_penalty_type: "automatic_overdue",
-      final_day_of_penalty_accrual: "2026-03-01",
-      penalty_summary: {},
-      accrual_data: { tableData: [] },
-    };
-    screen.getByRole("button", { name: "Trigger Change" }).click();
-
-    nextFormData = {
-      requested_penalty_type: "automatic_overdue",
-      final_day_of_penalty_accrual: "2026-03-02",
-      penalty_summary: {},
-      accrual_data: { tableData: [] },
-    };
-    screen.getByRole("button", { name: "Trigger Change" }).click();
-
-    resolveSecondRequest!({
-      automatic_overdue_penalty_status: "NOT PAID",
-      ggeapar_interest_status: "N/A",
-      days_late: 2,
-      total_penalty: 222,
-      daily_accumulated_list: [],
-    });
-
-    await waitFor(() => {
-      const formDataText = screen.getByTestId("form-data").textContent ?? "";
-      expect(formDataText).toContain(
-        '"final_day_of_penalty_accrual":"2026-03-02"',
-      );
-      expect(formDataText).toContain('"total_penalty_amount":222');
-    });
-
-    resolveFirstRequest!({
-      automatic_overdue_penalty_status: "NOT PAID",
-      ggeapar_interest_status: "N/A",
-      days_late: 1,
-      total_penalty: 111,
-      daily_accumulated_list: [],
-    });
-
-    await waitFor(() => {
-      const formDataText = screen.getByTestId("form-data").textContent ?? "";
-      expect(formDataText).toContain(
-        '"final_day_of_penalty_accrual":"2026-03-02"',
-      );
-      expect(formDataText).toContain('"total_penalty_amount":222');
-      expect(formDataText).not.toContain('"total_penalty_amount":111');
-    });
-
-    dateNowMock.mockRestore();
+    const grid = screen.getByRole("grid");
+    expect(within(grid).getByText("2026-01-01")).toBeVisible();
+    expect(within(grid).getByText("2026-01-02")).toBeVisible();
+    expect(within(grid).getByText("30.00")).toBeVisible();
   });
 });
