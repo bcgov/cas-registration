@@ -90,7 +90,6 @@ function InlineFieldTemplate({
   const options = uiSchema?.["ui:options"] || {};
   const isLabel = options?.label !== false;
   const labelClassNames = (options?.labelClassNames as string) ?? "lg:w-3/12";
-  const labelOverrideStyle = (options?.labelOverrideStyle as string) ?? "";
   const unitOption = (options.unit ?? options.displayUnit) as
     UnitOption | undefined;
 
@@ -113,7 +112,7 @@ function InlineFieldTemplate({
       >
         {isLabel && (
           <div className={`w-full ${labelClassNames}`}>
-            <label htmlFor={id} className={`font-bold ${labelOverrideStyle}`}>
+            <label htmlFor={id} className="font-bold">
               {label}
               {required && "*"}
             </label>
