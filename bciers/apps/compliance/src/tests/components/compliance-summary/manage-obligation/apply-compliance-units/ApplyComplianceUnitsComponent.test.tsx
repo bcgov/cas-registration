@@ -260,9 +260,9 @@ describe("ApplyComplianceUnitsComponent", () => {
   });
 
   it("handles account validation errors", async () => {
-    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-      new Error("Invalid account"),
-    );
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      error: "Account not found in BCCR",
+    });
 
     render(
       <ApplyComplianceUnitsComponent
@@ -275,7 +275,11 @@ describe("ApplyComplianceUnitsComponent", () => {
     fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
 
     await waitFor(() => {
-      expect(screen.getByText("Invalid account")).toBeVisible();
+      expect(
+        screen.getByText(
+          /please enter a valid bccr holding account id to move to the next step, or contact/i,
+        ),
+      ).toBeVisible();
     });
 
     // Should not allow progression when there's an error
@@ -308,11 +312,10 @@ describe("ApplyComplianceUnitsComponent", () => {
     });
 
     // Now enter an invalid account (error response)
-    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-      new Error(
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      error:
         "The provided holding account does not own the compliance sub-account for this operation.",
-      ),
-    );
+    });
 
     fireEvent.change(accountInput, { target: { value: "999999999999999" } });
 
@@ -320,7 +323,7 @@ describe("ApplyComplianceUnitsComponent", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "The provided holding account does not own the compliance sub-account for this operation.",
+          /please enter a valid bccr holding account id to move to the next step, or contact/i,
         ),
       ).toBeVisible();
       expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();

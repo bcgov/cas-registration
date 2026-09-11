@@ -106,27 +106,8 @@ describe("BccrHoldingAccountWidget", () => {
     expect(mockOnError).toHaveBeenCalledWith(undefined);
   });
 
-  it("handles validation errors", async () => {
-    const errorMessage = "Network error";
-    mockValidateBccrAccount.mockRejectedValueOnce(new Error(errorMessage));
-
-    render(<BccrHoldingAccountWidget {...defaultProps} />);
-    const input = screen.getByRole("textbox");
-
-    fireEvent.change(input, { target: { value: "123456789012345" } });
-
-    await waitFor(() => {
-      expect(mockOnError).toHaveBeenCalledWith([errorMessage]);
-      expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
-    });
-  });
-
-  it("shows error message for wrong account type", async () => {
-    const wrongAccountTypeError =
-      "Account exists but does not match the required account type. Expected account type ID: 11, found: 14";
-    mockValidateBccrAccount.mockRejectedValueOnce(
-      new Error(wrongAccountTypeError),
-    );
+  it("shows a system issue message when the request fails unexpectedly", async () => {
+    mockValidateBccrAccount.mockRejectedValueOnce(new Error("Network error"));
 
     render(<BccrHoldingAccountWidget {...defaultProps} />);
     const input = screen.getByRole("textbox");
@@ -135,18 +116,71 @@ describe("BccrHoldingAccountWidget", () => {
 
     await waitFor(() => {
       expect(input).toHaveAttribute("aria-invalid", "true");
-      expect(
-        screen.getByText(
-          /please enter a bccr account id with the account type 'operator of regulated operation', or contact/i,
-        ),
-      ).toBeVisible();
-      expect(
-        screen.getByRole("link", {
-          name: /ghgregulator@gov\.bc\.ca/i,
-        }),
-      ).toHaveAttribute("href", "mailto:GHGRegulator@gov.bc.ca");
-      expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
     });
+
+    expect(
+      screen.getByText(
+        /Remote BC Carbon Registry system issues, please try again later or contact/i,
+      ),
+    ).toBeVisible();
+    expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
+    expect(screen.queryByText("Network error")).not.toBeInTheDocument();
+    expect(mockOnError).not.toHaveBeenCalledWith(["Network error"]);
+  });
+
+  it("shows error message for wrong account type", async () => {
+    mockValidateBccrAccount.mockResolvedValueOnce({
+      error:
+        "Account exists but does not match the required account type. Expected account type ID: 11, found: 14",
+    });
+
+    render(<BccrHoldingAccountWidget {...defaultProps} />);
+    const input = screen.getByRole("textbox");
+
+    fireEvent.change(input, { target: { value: "123456789012345" } });
+
+    await waitFor(() => {
+      expect(input).toHaveAttribute("aria-invalid", "true");
+    });
+
+    expect(screen.queryByTestId("CheckCircleIcon")).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /please enter a bccr account id with the account type 'operator of regulated operation', or contact/i,
+      ),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("link", {
+        name: /ghgregulator@gov\.bc\.ca/i,
+      }),
+    ).toHaveAttribute("href", "mailto:GHGRegulator@gov.bc.ca");
+    expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
+  });
+
+  it("falls back to the invalid account message for unrecognised errors", async () => {
+    mockValidateBccrAccount.mockResolvedValueOnce({
+      error: "The sub-account does not belong to the holding account.",
+    });
+
+    render(<BccrHoldingAccountWidget {...defaultProps} />);
+    const input = screen.getByRole("textbox");
+
+    fireEvent.change(input, { target: { value: "123456789012345" } });
+
+    await waitFor(() => {
+      expect(input).toHaveAttribute("aria-invalid", "true");
+    });
+
+    expect(screen.queryByTestId("CheckCircleIcon")).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /please enter a valid bccr holding account id to move to the next step, or contact/i,
+      ),
+    ).toBeVisible();
+    expect(
+      screen.queryByText(/does not belong to the holding account/i),
+    ).not.toBeInTheDocument();
+    expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
   });
 
   it("shows error message for remote BCCR API errors", async () => {
