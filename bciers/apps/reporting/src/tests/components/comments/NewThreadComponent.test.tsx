@@ -1,7 +1,18 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import NewThreadComponent from "@reporting/src/app/components/comments/NewThreadComponent";
+import postCommentThread from "@reporting/src/app/utils/postCommentThread";
+
+vi.mock("@reporting/src/app/utils/postCommentThread", () => ({
+  default: vi.fn(),
+}));
+
+const mockPostCommentThread = postCommentThread as ReturnType<typeof vi.fn>;
 
 describe("The new comment thread component", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("renders the new thread component with a facility list, a comment box and save/cancel buttons", () => {
     render(
       <NewThreadComponent
@@ -52,8 +63,10 @@ describe("The new comment thread component", () => {
     expect(onCancel).toHaveBeenCalledOnce();
   });
 
-  it("calls onThreadCreated on pressing the save button", () => {
+  it("calls onThreadCreated on pressing the save button with the result of the post request", async () => {
     const onThreadCreated = vi.fn();
+
+    mockPostCommentThread.mockReturnValueOnce("test return value");
 
     render(
       <NewThreadComponent
@@ -76,11 +89,18 @@ describe("The new comment thread component", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Comment" }), {
       target: { value: "A new comment" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    });
 
-    expect(onThreadCreated).toHaveBeenCalledWith(
+    expect(mockPostCommentThread).toHaveBeenCalledExactlyOnceWith(
+      42,
       "A new comment",
       "10000000-0000-0000-0000-000000000001",
+    );
+
+    expect(onThreadCreated).toHaveBeenCalledExactlyOnceWith(
+      "test return value",
     );
   });
 
