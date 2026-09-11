@@ -1,19 +1,8 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import CommentsSidebar from "@reporting/src/app/components/comments/CommentsSidebar";
 import * as NewThreadComponentModule from "@reporting/src/app/components/comments/NewThreadComponent";
-import postCommentThread from "@reporting/src/app/utils/postCommentThread";
-
-vi.mock("@reporting/src/app/utils/postCommentThread", () => ({
-  default: vi.fn(),
-}));
-
-const mockPostCommentThread = postCommentThread as ReturnType<typeof vi.fn>;
 
 describe("The Comments Sidebar", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it("shows a comments title and a new comment button", () => {
     render(<CommentsSidebar version_id={42} threads={[]} facilities={[]} />);
 
@@ -71,19 +60,6 @@ describe("The Comments Sidebar", () => {
 
   it("adds a thread when the callback returns", async () => {
     const newThreadComponentSpy = vi.spyOn(NewThreadComponentModule, "default");
-    mockPostCommentThread.mockResolvedValueOnce({
-      id: 20,
-      version_id: 42,
-      comments: [
-        {
-          id: 21,
-          version_id: 42,
-          author: "New Author",
-          timestamp: "2026-09-10T12:01:00Z",
-          comment: "New comment",
-        },
-      ],
-    });
 
     render(<CommentsSidebar version_id={42} threads={[]} facilities={[]} />);
     fireEvent.click(
@@ -92,14 +68,21 @@ describe("The Comments Sidebar", () => {
 
     const { onThreadCreated } = newThreadComponentSpy.mock.calls[0][0];
     await act(async () => {
-      await onThreadCreated("New comment");
+      await onThreadCreated({
+        id: 20,
+        version_id: 42,
+        comments: [
+          {
+            id: 21,
+            version_id: 42,
+            author: "New Author",
+            timestamp: "2026-09-10T12:01:00Z",
+            comment: "New comment",
+          },
+        ],
+      });
     });
 
-    expect(mockPostCommentThread).toHaveBeenCalledWith(
-      42,
-      "New comment",
-      undefined,
-    );
     expect(await screen.findByText("New comment")).toBeVisible();
     expect(
       screen.queryByRole("textbox", { name: "Comment" }),

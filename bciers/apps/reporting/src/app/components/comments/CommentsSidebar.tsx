@@ -5,7 +5,6 @@ import { Thread, FacilityItem } from "./types";
 import ThreadComponent from "./ThreadComponent";
 import NewThreadComponent from "./NewThreadComponent";
 import { useState } from "react";
-import postCommentThread from "../../utils/postCommentThread";
 
 interface Props {
   version_id: number;
@@ -21,9 +20,7 @@ const CommentsSidebar: React.FC<Props> = ({
   const [isCreating, setIsCreating] = useState(false);
   const [commentThreads, setCommentThreads] = useState(threads);
 
-  const handleCreate = async (comment: string, facilityId?: string) => {
-    const newThread = await postCommentThread(version_id, comment, facilityId);
-
+  const handleCreate = async (newThread: Thread) => {
     setCommentThreads((prevThreads) => [newThread, ...prevThreads]);
     setIsCreating(false);
   };
