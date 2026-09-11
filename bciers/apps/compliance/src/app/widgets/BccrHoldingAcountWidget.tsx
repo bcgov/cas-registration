@@ -45,6 +45,9 @@ const REMOTE_BCCR_ISSUE_MESSAGE = (
   </span>
 );
 
+const WRONG_ACCOUNT_TYPE_ERROR =
+  "Account exists but does not match the required account type";
+
 const BccrHoldingAccountWidget = (props: WidgetProps) => {
   const { id, value, disabled, readonly, onChange, registry } = props;
   const { formContext } = registry;
@@ -64,6 +67,13 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
 
   const isReadOnly = disabled || readonly || isLoading;
 
+  const showValidationError = (message: React.ReactNode) => {
+    setIsValid(false);
+    setShowError(true);
+    setErrorMessage(message);
+    onValidAccountResolved?.(undefined);
+  };
+
   const validateAccount = async (accountId: string) => {
     if (accountId.length !== 15 || !validateBccrAccount) return;
 
@@ -76,39 +86,26 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
         complianceReportVersionId,
       );
 
-      if (response?.has_remote_bccr_errors) {
-        setIsValid(false);
-        setShowError(true);
-        setErrorMessage(REMOTE_BCCR_ISSUE_MESSAGE);
-        onValidAccountResolved?.(undefined);
-      } else if (response?.bccr_trading_name === null) {
-        setIsValid(false);
-        setShowError(true);
-        setErrorMessage(INVALID_ACCOUNT_MESSAGE);
-        onValidAccountResolved?.(undefined);
+      if (response?.error) {
+        showValidationError(
+          response.error.includes(WRONG_ACCOUNT_TYPE_ERROR)
+            ? WRONG_ACCOUNT_TYPE_MESSAGE
+            : INVALID_ACCOUNT_MESSAGE,
+        );
+      } else if (response?.has_remote_bccr_errors) {
+        showValidationError(REMOTE_BCCR_ISSUE_MESSAGE);
+      } else if (!response?.bccr_trading_name) {
+        showValidationError(INVALID_ACCOUNT_MESSAGE);
       } else {
         setIsValid(true);
         setShowError(false);
         onValidAccountResolved?.(response);
-        onError?.(undefined);
       }
-    } catch (error) {
-      setIsValid(false);
-      const errorMessageText = (error as Error).message;
-      if (
-        errorMessageText.includes(
-          "Account exists but does not match the required account type",
-        )
-      ) {
-        setShowError(true);
-        setErrorMessage(WRONG_ACCOUNT_TYPE_MESSAGE);
-      } else {
-        setShowError(false);
-        onError?.([errorMessageText]);
-      }
-      onValidAccountResolved?.(undefined);
+    } catch {
+      showValidationError(REMOTE_BCCR_ISSUE_MESSAGE);
     } finally {
       setIsLoading(false);
+      onError?.(undefined);
     }
   };
 
