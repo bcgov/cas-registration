@@ -1,192 +1,138 @@
 "use client";
 
-import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
-import { FormBase } from "@bciers/components/form";
-import { IChangeEvent } from "@rjsf/core";
 import { useMemo, useRef, useState } from "react";
+import { IChangeEvent } from "@rjsf/core";
+import { FormBase } from "@bciers/components/form";
+import AlertNote from "@bciers/components/form/components/AlertNote";
+import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import {
   penaltyCalculatorSchema,
-  penaltyCalculatorUiSchema,
+  createPenaltyCalculatorUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/internal/PenaltyCalculatorSchema";
 import { getPenaltyAccrualCalculationData } from "@/compliance/src/app/utils/getPenaltyAccrualCalculationData";
-import AlertNote from "@bciers/components/form/components/AlertNote";
-import { CalculatedPenaltyResponse, PenaltyCalculatorFormData } from "./types";
+import {
+  CalculatedPenalty,
+  PenaltyType,
+  PenaltyTypeStatus,
+} from "@/compliance/src/app/types";
+import { PenaltyCalculatorFormData } from "./types";
 
-const normalizePenaltyTypeForForm = (value?: string): string => {
-  const normalized = value?.trim().toLowerCase();
+const GGEAPAR_NOT_APPLICABLE_MESSAGE =
+  "GGEAPAR interest only applies to obligations for supplementary compliance reports.";
 
-  if (normalized === "ggeapar" || normalized === "late submission") {
-    return "ggeapar";
-  }
-
-  return "automatic_overdue";
+const STATUS_LABELS: Record<PenaltyTypeStatus, string> = {
+  [PenaltyTypeStatus.NONE]: "None",
+  [PenaltyTypeStatus.ACCRUING]: "Accruing",
+  [PenaltyTypeStatus.PAID]: "Paid",
+  [PenaltyTypeStatus.NOT_PAID]: "Not paid",
+  [PenaltyTypeStatus.NOT_APPLICABLE]: "Not applicable",
 };
 
-const mapPenaltyTypeToFrontend = (penaltyType?: string): string => {
-  return normalizePenaltyTypeForForm(penaltyType);
+const isCompleteDate = (value?: string): boolean =>
+  /^\d{4}-\d{2}-\d{2}$/.test(value ?? "");
+
+const buildQueryId = (penaltyType: PenaltyType, endDate: string) =>
+  `${penaltyType}-${endDate}`;
+
+type PenaltyResult = {
+  penalty: CalculatedPenalty;
+  queryId: string;
 };
+
+const toFormData = (
+  result: PenaltyResult,
+  penaltyType: PenaltyType,
+  finalDay: string,
+): PenaltyCalculatorFormData => ({
+  automatic_overdue_penalty_status:
+    STATUS_LABELS[result.penalty.automatic_overdue_penalty_status],
+  ggeapar_interest_status:
+    STATUS_LABELS[result.penalty.ggeapar_interest_status],
+  requested_penalty_type: penaltyType,
+  final_day_of_penalty_accrual: finalDay,
+  penalty_summary: {
+    total_penalty_amount: result.penalty.total_penalty,
+    days_late: result.penalty.days_late,
+  },
+  accrual_data: {
+    query_id: result.queryId,
+    rows: result.penalty.daily_accumulated_list,
+  },
+});
 
 interface Props {
   complianceReportVersionId: number;
-  penaltyData?: CalculatedPenaltyResponse;
-  initialPenaltyType: string;
-  initialFinalDayOfPenaltyAccrual: string;
+  penaltyData: CalculatedPenalty;
+  finalDayOfPenaltyAccrual: string;
 }
-
-const normalizeDateString = (value?: string): string | null => {
-  if (!value) {
-    return null;
-  }
-
-  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-    return value;
-  }
-
-  const isoDateMatch = value.match(/^(\d{4}-\d{2}-\d{2})T/);
-  if (isoDateMatch?.[1]) {
-    return isoDateMatch[1];
-  }
-
-  return null;
-};
-
-const normalizeAccrualRow = (
-  row: any,
-): Array<string | number | null | undefined> => {
-  if (Array.isArray(row)) {
-    return row;
-  }
-
-  if (row && typeof row === "object") {
-    return [
-      row.date,
-      row.daily_penalty,
-      row.daily_compounded,
-      row.accumulated_penalty,
-      row.accumulated_compounded,
-      row.interest_rate,
-    ];
-  }
-
-  return [];
-};
-
-const mapApiDataToFormData = (
-  data: CalculatedPenaltyResponse | undefined,
-  penaltyType: string,
-  finalDay: string,
-): PenaltyCalculatorFormData => {
-  const accrualRows = (data?.daily_accumulated_list ?? []).map(
-    normalizeAccrualRow,
-  );
-
-  return {
-    automatic_overdue_penalty_status:
-      data?.automatic_overdue_penalty_status ?? "",
-    ggeapar_interest_status: data?.ggeapar_interest_status ?? "",
-    requested_penalty_type: penaltyType,
-    final_day_of_penalty_accrual: finalDay,
-    penalty_summary: {
-      total_penalty_amount: data?.total_penalty,
-      days_late: data?.days_late,
-    },
-    accrual_data: {
-      tableData: accrualRows,
-    },
-  };
-};
 
 export default function PenaltyCalculatorComponent({
   complianceReportVersionId,
   penaltyData,
-  initialPenaltyType,
-  initialFinalDayOfPenaltyAccrual,
+  finalDayOfPenaltyAccrual,
 }: Readonly<Props>) {
   const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`;
-  const derivedPenaltyType =
-    initialPenaltyType ??
-    mapPenaltyTypeToFrontend(penaltyData?.requested_penalty_type);
 
-  const initialFormData = useMemo(
-    () =>
-      mapApiDataToFormData(
-        penaltyData,
-        derivedPenaltyType,
-        initialFinalDayOfPenaltyAccrual,
-      ),
-    [penaltyData, derivedPenaltyType, initialFinalDayOfPenaltyAccrual],
+  const [result, setResult] = useState<PenaltyResult>(() => ({
+    penalty: penaltyData,
+    queryId: buildQueryId(penaltyData.penalty_type, finalDayOfPenaltyAccrual),
+  }));
+  const [penaltyType, setPenaltyType] = useState<PenaltyType>(
+    penaltyData.penalty_type,
+  );
+  const [finalDay, setFinalDay] = useState(finalDayOfPenaltyAccrual);
+  const latestRequestIdRef = useRef(0);
+
+  const uiSchema = createPenaltyCalculatorUiSchema();
+
+  const formData = useMemo(
+    () => toFormData(result, penaltyType, finalDay),
+    [result, penaltyType, finalDay],
   );
 
-  const [formData, setFormData] =
-    useState<PenaltyCalculatorFormData>(initialFormData);
-  const [warningMessage, setWarningMessage] = useState<string | null>(null);
-  const lastRequestIdRef = useRef(0);
+  const handleChange = async (
+    event: IChangeEvent<PenaltyCalculatorFormData>,
+  ) => {
+    const nextFormData = event.formData;
+    if (!nextFormData) return;
 
-  const handleChange = async (e: IChangeEvent<PenaltyCalculatorFormData>) => {
-    const nextFormData = e.formData;
-    if (!nextFormData) {
-      return;
-    }
+    const nextPenaltyType = nextFormData.requested_penalty_type;
+    const nextFinalDay = nextFormData.final_day_of_penalty_accrual;
 
-    const selectedPenaltyType = normalizePenaltyTypeForForm(
-      nextFormData?.requested_penalty_type ??
-        formData?.requested_penalty_type ??
-        initialPenaltyType,
-    );
-    const selectedFinalDay =
-      nextFormData?.final_day_of_penalty_accrual ??
-      formData?.final_day_of_penalty_accrual ??
-      initialFinalDayOfPenaltyAccrual;
-    const normalizedFinalDay = normalizeDateString(selectedFinalDay);
+    setPenaltyType(nextPenaltyType);
+    setFinalDay(nextFinalDay);
 
-    setFormData({
-      ...nextFormData,
-      requested_penalty_type: selectedPenaltyType,
-      final_day_of_penalty_accrual: selectedFinalDay,
-    });
+    if (!nextPenaltyType || !isCompleteDate(nextFinalDay)) return;
 
-    if (!selectedPenaltyType || !normalizedFinalDay) {
-      return;
-    }
-
-    const requestId = Date.now();
-    lastRequestIdRef.current = requestId;
-
-    const refreshedPenaltyData = await getPenaltyAccrualCalculationData(
+    const requestId = ++latestRequestIdRef.current;
+    const penalty = await getPenaltyAccrualCalculationData(
       complianceReportVersionId,
-      {
-        requested_penalty_type: selectedPenaltyType,
-        final_day_of_penalty_accrual: normalizedFinalDay,
-      },
+      { requested_penalty_type: nextPenaltyType, end_date: nextFinalDay },
     );
 
-    if (lastRequestIdRef.current !== requestId) {
-      return;
-    }
+    // Requests can land out of order, so an earlier one must not overwrite a later.
+    if (latestRequestIdRef.current !== requestId) return;
 
-    if (refreshedPenaltyData?.error) {
-      setWarningMessage(refreshedPenaltyData.error);
-      return;
-    }
-
-    setWarningMessage(null);
-    setFormData(
-      mapApiDataToFormData(
-        refreshedPenaltyData,
-        selectedPenaltyType,
-        normalizedFinalDay,
-      ),
-    );
+    setResult({
+      penalty,
+      queryId: buildQueryId(nextPenaltyType, nextFinalDay),
+    });
   };
+
+  const isGgeaparNotApplicable =
+    penaltyType === PenaltyType.LATE_SUBMISSION &&
+    result.penalty.ggeapar_interest_status === PenaltyTypeStatus.NOT_APPLICABLE;
 
   return (
     <>
-      {warningMessage && (
-        <AlertNote alertType="ALERT">{warningMessage}</AlertNote>
+      {isGgeaparNotApplicable && (
+        <AlertNote alertType="ALERT">
+          {GGEAPAR_NOT_APPLICABLE_MESSAGE}
+        </AlertNote>
       )}
       <FormBase
         schema={penaltyCalculatorSchema}
-        uiSchema={penaltyCalculatorUiSchema}
+        uiSchema={uiSchema}
         formData={formData}
         onChange={handleChange}
         className="w-full"

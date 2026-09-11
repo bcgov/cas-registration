@@ -3,37 +3,8 @@
 import { formatMonetaryValue } from "@/compliance/src/app/utils/formatting";
 
 type PenaltySummaryValue = {
-  total_penalty_amount?: string | number | null;
-  days_late?: string | number | null;
-};
-
-const getDisplayValue = (value: string | number | null | undefined): string => {
-  if (value === null || value === undefined || value === "") {
-    return "-";
-  }
-  return String(value);
-};
-
-const getDisplayPenaltyAmount = (
-  value: string | number | null | undefined,
-): string => {
-  if (value === null || value === undefined || value === "") {
-    return "$-";
-  }
-
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return formatMonetaryValue(value);
-  }
-
-  if (typeof value === "string") {
-    const normalizedValue = value.replaceAll(",", "").trim();
-    if (normalizedValue !== "" && !Number.isNaN(Number(normalizedValue))) {
-      return formatMonetaryValue(Number(normalizedValue));
-    }
-    return `$${value}`;
-  }
-
-  return `$${String(value)}`;
+  total_penalty_amount: string;
+  days_late: number;
 };
 
 type PenaltySummaryFieldProps = {
@@ -41,49 +12,26 @@ type PenaltySummaryFieldProps = {
   label?: string;
 };
 
+const tileStyles =
+  "w-[350px] shrink-0 rounded-md border border-solid border-current p-4";
+
 export const PenaltySummaryField = ({
   formData,
   label,
-}: PenaltySummaryFieldProps) => {
-  const summary = (formData ?? {}) as PenaltySummaryValue;
-  const totalPenaltyAmount = getDisplayPenaltyAmount(
-    summary.total_penalty_amount,
-  );
-  const daysLate = getDisplayValue(summary.days_late);
-
-  return (
-    <div className="w-full">
-      <p className="mb-2 text-bc-bg-blue">{label ?? "Penalty summary"}</p>
-      <div className="flex w-full flex-nowrap gap-4">
-        <div
-          style={{
-            width: "350px",
-            minWidth: "350px",
-            maxWidth: "350px",
-            borderWidth: "1px",
-            borderStyle: "solid",
-            borderColor: "currentColor",
-          }}
-          className="rounded-md bg-red-50 p-4 text-bc-error-red"
-        >
-          <p className="text-sm font-medium">Total penalty amount</p>
-          <p className="mt-1 text-2xl font-bold">{totalPenaltyAmount}</p>
-        </div>
-        <div
-          style={{
-            width: "350px",
-            minWidth: "350px",
-            maxWidth: "350px",
-            borderWidth: "1px",
-            borderStyle: "solid",
-            borderColor: "currentColor",
-          }}
-          className="rounded-md bg-white p-4 text-bc-bg-blue"
-        >
-          <p className="text-sm font-medium">Days late</p>
-          <p className="mt-1 text-2xl font-bold">{daysLate}</p>
-        </div>
+}: PenaltySummaryFieldProps) => (
+  <div className="w-full">
+    <p className="mb-2 text-bc-bg-blue">{label ?? "Penalty summary"}</p>
+    <div className="flex w-full flex-nowrap gap-4">
+      <div className={`${tileStyles} bg-red-50 text-bc-error-red`}>
+        <p className="text-sm font-medium">Total penalty amount</p>
+        <p className="mt-1 text-2xl font-bold">
+          {formatMonetaryValue(Number(formData?.total_penalty_amount ?? 0))}
+        </p>
+      </div>
+      <div className={`${tileStyles} bg-bc-white text-bc-bg-blue`}>
+        <p className="text-sm font-medium">Days late</p>
+        <p className="mt-1 text-2xl font-bold">{formData?.days_late ?? 0}</p>
       </div>
     </div>
-  );
-};
+  </div>
+);

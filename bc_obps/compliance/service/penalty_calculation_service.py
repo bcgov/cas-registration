@@ -1,10 +1,9 @@
 from datetime import date, timedelta
 from django.utils import timezone
-from datetime import datetime
 import calendar
 from decimal import Decimal, ROUND_HALF_UP
-from typing import Dict, Any, Tuple
-from compliance.schema.calculated_penalty import PenaltyTypeStatusEnum
+from typing import Any, Dict, Tuple
+from compliance.schema.calculated_penalty import CalculatedPenaltyOut, PenaltyAccrual, PenaltyTypeStatus
 from compliance.service.compliance_penalty_rate_service import CompliancePenaltyRateService
 from compliance.service.elicensing.elicensing_data_refresh_service import (
     ElicensingDataRefreshService,
@@ -31,7 +30,7 @@ from compliance.service.elicensing.elicensing_api_client import (
 from compliance.service.elicensing.schema import FeeCreationItem
 from compliance.enums import ComplianceInvoiceTypes
 from django.db import transaction
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 
 elicensing_api_client = ELicensingAPIClient()
 
@@ -67,14 +66,6 @@ class CalculatedPenaltyData:
     cap_reached_date: date | None = None
 
 
-@dataclass
-class CalculatedPenaltyForObligationData:
-    automatic_overdue_penalty_status: PenaltyTypeStatusEnum
-    ggeapar_interest_status: PenaltyTypeStatusEnum
-    calculated_penalty: CalculatedPenaltyData | None = None
-    message: str | None = None
-
-
 class PenaltyCalculationService:
     """
     Service for calculating automatic overdue penalties for compliance obligations.
@@ -84,30 +75,22 @@ class PenaltyCalculationService:
     """
 
     @classmethod
-    def _normalize_penalty_type(cls, penalty_type: str) -> str:
-        normalized = penalty_type.strip().lower().replace("-", "_").replace(" ", "_")
-
-        if normalized in {"automatic_overdue", "automaticoverdue"}:
-            return CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
-        if normalized in {"late_submission", "latesubmission", "ggeapar"}:
-            return CompliancePenalty.PenaltyType.LATE_SUBMISSION
-
-        return penalty_type
-
-    @classmethod
     def _get_penalty_statuses(
         cls,
         obligation: ComplianceObligation,
         penalty_accrual_context: PenaltyAccrualContext,
-    ) -> Tuple[PenaltyTypeStatusEnum, PenaltyTypeStatusEnum]:
-        automatic_overdue_penalty_status = PenaltyTypeStatusEnum.NONE
-        ggeapar_interest_status = PenaltyTypeStatusEnum.NONE
+    ) -> Tuple[PenaltyTypeStatus, PenaltyTypeStatus]:
+        automatic_overdue_penalty_status = PenaltyTypeStatus.NONE
 
         if penalty_accrual_context.effective_deadline < timezone.now().date():
-            automatic_overdue_penalty_status = PenaltyTypeStatusEnum.ACCRUING
+            automatic_overdue_penalty_status = PenaltyTypeStatus.ACCRUING
 
-        if obligation.compliance_report_version.is_supplementary and penalty_accrual_context.has_late_submission:
-            ggeapar_interest_status = PenaltyTypeStatusEnum.ACCRUING
+        if not obligation.compliance_report_version.is_supplementary:
+            ggeapar_interest_status = PenaltyTypeStatus.NOT_APPLICABLE
+        elif penalty_accrual_context.has_late_submission:
+            ggeapar_interest_status = PenaltyTypeStatus.ACCRUING
+        else:
+            ggeapar_interest_status = PenaltyTypeStatus.NONE
 
         return automatic_overdue_penalty_status, ggeapar_interest_status
 
@@ -115,33 +98,24 @@ class PenaltyCalculationService:
     def _calculate_penalty_for_type(
         cls,
         obligation: ComplianceObligation,
-        requested_penalty_type: str,
-        compliance_deadline: date,
+        requested_penalty_type: CompliancePenalty.PenaltyType,
         final_accrual_date: date,
         penalty_accrual_context: PenaltyAccrualContext,
     ) -> CalculatedPenaltyData:
-        default_start_date = compliance_deadline + timedelta(days=1)
-
         if requested_penalty_type == CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE:
             # Automatic Overdue Penalty begins accruing 1 day after the compliance deadline unless it is a
             # supplementary report that came in after the deadline. In that case, it begins accruing 1 day
-            # after the invoice due date.
-            start_date = penalty_accrual_context.effective_deadline + timedelta(days=1)
-            return PenaltyCalculationService.calculate_penalty(
+            # after the invoice due date. get_penalty_accrual_context has already resolved which applies.
+            return cls.calculate_penalty(
                 obligation=obligation,
-                accrual_start_date=start_date,
+                accrual_start_date=penalty_accrual_context.effective_deadline + timedelta(days=1),
                 final_accrual_date=final_accrual_date,
             )
 
-        if requested_penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION:
-            return PenaltyCalculationService.calculate_late_submission_penalty(
-                obligation=obligation,
-                accrual_start_date=default_start_date,
-                final_accrual_date=final_accrual_date,
-            )
-
-        raise ValueError(
-            f"Invalid penalty_type '{requested_penalty_type}'. Expected '{CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE}' or '{CompliancePenalty.PenaltyType.LATE_SUBMISSION}'.",
+        return cls.calculate_late_submission_penalty(
+            obligation=obligation,
+            accrual_start_date=penalty_accrual_context.compliance_deadline + timedelta(days=1),
+            final_accrual_date=final_accrual_date,
         )
 
     @classmethod
@@ -404,7 +378,7 @@ class PenaltyCalculationService:
             "feeProfileGroupName": "OBPS Administrative Penalty",
             "feeDescription": penalty_description,
             "feeAmount": float(total_penalty),
-            "feeDate": date.today().strftime("%Y-%m-%d"),
+            "feeDate": timezone.now().date().strftime("%Y-%m-%d"),
         }
 
         # Create fee in eLicensing
@@ -414,7 +388,7 @@ class PenaltyCalculationService:
 
         # Compose the invoice data for the penalty invoice
         invoice_data: Dict[str, Any] = {
-            "paymentDueDate": (date.today() + timedelta(days=30)).strftime(
+            "paymentDueDate": (timezone.now().date() + timedelta(days=30)).strftime(
                 "%Y-%m-%d"
             ),  # 30 days after creating the invoice
             "businessAreaCode": "OBPS",
@@ -609,7 +583,7 @@ class PenaltyCalculationService:
             compliance_obligation=obligation,
             penalty_type=penalty_type,
             defaults={
-                "fee_date": date.today().strftime("%Y-%m-%d"),
+                "fee_date": timezone.now().date().strftime("%Y-%m-%d"),
                 "accrual_start_date": penalty_accrual_start_date,
                 "accrual_final_date": final_transaction_date,
                 "accrual_frequency": CompliancePenalty.Frequency.DAILY,
@@ -779,7 +753,7 @@ class PenaltyCalculationService:
             compliance_report_version_id=obligation.compliance_report_version_id
         )
 
-        last_calculation_day = final_accrual_date if final_accrual_date else date.today()
+        last_calculation_day = final_accrual_date if final_accrual_date else timezone.now().date()
 
         # Initialize variables
         base = obligation.fee_amount_dollars or Decimal('0.00')
@@ -847,45 +821,57 @@ class PenaltyCalculationService:
 
     @classmethod
     def calculate_penalty_for_obligation(
-        cls, compliance_report_version_id: int, requested_penalty_type: str, end_date: str
-    ) -> CalculatedPenaltyForObligationData:
-        date_format_string = "%Y-%m-%d"
-        formatted_end_date = datetime.strptime(end_date, date_format_string).date()
+        cls,
+        compliance_report_version_id: int,
+        requested_penalty_type: CompliancePenalty.PenaltyType,
+        end_date: date,
+    ) -> CalculatedPenaltyOut:
+        """
+        Calculate what an obligation's penalty of the requested type would come to if it
+        stopped accruing on end_date
+
+        Args:
+            compliance_report_version_id: The compliance report version to calculate for
+            requested_penalty_type: The type of penalty to model
+            end_date: The final day of penalty accrual
+
+        Returns:
+            CalculatedPenaltyOut
+        """
         obligation = ComplianceObligation.objects.select_related(
             'compliance_report_version__compliance_report__compliance_period', 'elicensing_invoice'
         ).get(compliance_report_version_id=compliance_report_version_id)
-        penalty_accrual_context = PenaltyCalculationService.get_penalty_accrual_context(obligation=obligation)
+        penalty_accrual_context = cls.get_penalty_accrual_context(obligation=obligation)
 
-        # determine penalty type statuses
         automatic_overdue_penalty_status, ggeapar_interest_status = cls._get_penalty_statuses(
             obligation,
             penalty_accrual_context,
         )
 
-        # Note that this is what type of penalty we should be calculating, not necessarily what type of penalty is currently accruing
-        requested_penalty_type = cls._normalize_penalty_type(requested_penalty_type)
-
         if (
             requested_penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION
             and not obligation.compliance_report_version.is_supplementary
         ):
-            return CalculatedPenaltyForObligationData(
-                calculated_penalty=None,
+            return CalculatedPenaltyOut(
                 automatic_overdue_penalty_status=automatic_overdue_penalty_status,
                 ggeapar_interest_status=ggeapar_interest_status,
-                message="GGEAPAR interest only applies to obligations for supplementary compliance reports.",
+                penalty_type=requested_penalty_type,
             )
 
         calculated_penalty = cls._calculate_penalty_for_type(
             obligation=obligation,
             requested_penalty_type=requested_penalty_type,
-            compliance_deadline=obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline,
-            final_accrual_date=formatted_end_date,
+            final_accrual_date=end_date,
             penalty_accrual_context=penalty_accrual_context,
         )
 
-        return CalculatedPenaltyForObligationData(
-            calculated_penalty=calculated_penalty,
+        return CalculatedPenaltyOut(
             automatic_overdue_penalty_status=automatic_overdue_penalty_status,
             ggeapar_interest_status=ggeapar_interest_status,
+            penalty_type=calculated_penalty.penalty_type,
+            days_late=calculated_penalty.days_late,
+            total_penalty=calculated_penalty.total_penalty,
+            daily_accumulated_list=[
+                PenaltyAccrual(**asdict(accrual)) for accrual in calculated_penalty.daily_accumulated_list
+            ],
         )
