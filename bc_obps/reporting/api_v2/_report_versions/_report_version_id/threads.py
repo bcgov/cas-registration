@@ -31,7 +31,11 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[200], dict]:
     report_id = ReportVersion.objects.get(id=version_id).report_id
 
-    threads = CommentThread.objects.select_related("facility").prefetch_related("comments__created_by").filter(report_id=report_id)
+    threads = (
+        CommentThread.objects.select_related("facility")
+        .prefetch_related("comments__created_by")
+        .filter(report_id=report_id)
+    )
 
     facilities_dict = ReportFacilitiesService.get_all_facilities_for_review(int(version_id))
 
@@ -48,7 +52,7 @@ def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[
     response={201: CommentThreadSchema, custom_codes_4xx: Message},
     tags=[*EMISSIONS_REPORT_TAGS, *REPORT_COMMENTS_TAGS],
     description="Creates a new comment thread for a specific report version, with an optional facility associated.",
-    auth=authorize("cas_director_analyst_and_industry_admin_user"),
+    auth=authorize("cas_director_analyst"),
 )
 @transaction.atomic
 def create_thread(
