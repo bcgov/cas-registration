@@ -82,8 +82,13 @@ const DataGrid: React.FC<Props> = ({
   const [rows, setRows] = useState(initialData.rows ?? []);
   const [rowCount, setRowCount] = useState(initialData.row_count ?? undefined);
   const [loading, setLoading] = useState(false);
-  const isRowsEmpty = !rows || rows.length === 0;
   const searchParams = useSearchParams();
+
+  const resolvedRows = fetchPageData ? rows : (initialData.rows ?? []);
+  const resolvedRowCount = fetchPageData
+    ? (rowCount ?? 0)
+    : (initialData.row_count ?? 0);
+  const isRowsEmpty = !resolvedRows || resolvedRows.length === 0;
   const [sortModel, setSortModel] = useState<GridSortItem[]>([]);
 
   // Track if this is the initial mount - skip fetch since server already provided initialData
@@ -256,11 +261,11 @@ const DataGrid: React.FC<Props> = ({
   return (
     <div style={{ height: "auto", width: "100%" }}>
       <MuiGrid
-        rows={rows}
+        rows={resolvedRows}
         columns={columns}
         columnGroupingModel={columnGroupModel}
         loading={loading}
-        rowCount={rowCount}
+        rowCount={resolvedRowCount}
         showCellVerticalBorder
         experimentalFeatures={experimentalFeatures}
         disableColumnMenu
