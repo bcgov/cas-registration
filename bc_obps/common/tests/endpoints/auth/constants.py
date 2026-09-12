@@ -434,6 +434,7 @@ ENDPOINTS = {
             "endpoint_name": "get_compliance_report_version_manual_handling",
             "kwargs": {"compliance_report_version_id": MOCK_INT},
         },
+        {"method": "get", "endpoint_name": "get_comment_threads", "kwargs": {"version_id": MOCK_INT}},
     ],
     "approved_authorized_roles": [
         {
@@ -693,6 +694,11 @@ ENDPOINTS = {
         {"method": "post", "endpoint_name": "create_transfer_event"},
         {"method": "patch", "endpoint_name": "update_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
         {"method": "delete", "endpoint_name": "delete_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
+        {
+            "method": "post",
+            "endpoint_name": "create_thread",
+            "kwargs": {"version_id": MOCK_INT},
+        },
     ],
     "cas_admin": [
         {"method": "patch", "endpoint_name": "update_user_role", "kwargs": {"user_id": MOCK_UUID}},

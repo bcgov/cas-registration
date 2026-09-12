@@ -78,6 +78,8 @@ class ReportVersionTest(BaseTestCase):
             ("report_electricity_import_data", "report electricity import data", None, None),
             ("report_attachment_confirmation", "report attachment confirmation", None, None),
             ("report_raw_activity_data", "report raw activity data", None, 0),
+            ("comment_threads", "comment thread", None, None),
+            ("comments", "comment", None, None),
         ]
 
     def test_unique_draft_version_per_report(self):
