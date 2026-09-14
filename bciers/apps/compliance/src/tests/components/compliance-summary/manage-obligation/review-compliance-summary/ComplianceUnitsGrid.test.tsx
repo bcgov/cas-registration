@@ -241,7 +241,6 @@ describe("ComplianceUnitsGrid", () => {
         registry={{
           formContext: {
             reportingYear: 2025,
-            isInternalUser: true,
           },
         }}
         value={mockErrorValue}
