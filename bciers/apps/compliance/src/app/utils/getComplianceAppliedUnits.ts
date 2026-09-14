@@ -1,5 +1,6 @@
 import { actionHandler } from "@bciers/actions";
 import { ComplianceAppliedUnitsData } from "@/compliance/src/app/types";
+import { captureException } from "@bciers/sentryConfig/sentry";
 
 const getComplianceAppliedUnits = async (
   complianceReportVersionId: number,
@@ -18,7 +19,8 @@ const getComplianceAppliedUnits = async (
         can_apply_compliance_units: canApplyComplianceUnits,
       };
     })
-    .catch(() => {
+    .catch((err) => {
+      captureException(err instanceof Error ? err : new Error(String(err)));
       return {
         rows: [],
         row_count: 0,
