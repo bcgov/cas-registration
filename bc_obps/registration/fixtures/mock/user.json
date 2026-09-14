@@ -55,34 +55,7 @@
       "phone_number": "+16044011234"
     }
   },
-  {
-    "model": "registration.user",
-    "fields": {
-      "user_guid": "00000000-0000-0000-0000-000000000003",
-      "business_guid": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "bceid_business_name": "Bravo Technologies - has parTNER operator",
-      "app_role": "industry_user",
-      "first_name": "Bill",
-      "last_name": "Blue",
-      "position_title": "Manager",
-      "email": "bill.blue@example.com",
-      "phone_number": "+16044011235"
-    }
-  },
-  {
-    "model": "registration.user",
-    "fields": {
-      "user_guid": "00000000-0000-0000-0000-000000000004",
-      "business_guid": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "bceid_business_name": "Bravo Technologies - has parTNER operator",
-      "app_role": "industry_user",
-      "first_name": "Bob",
-      "last_name": "Brown",
-      "position_title": "Manager",
-      "email": "bob.brown@example.com",
-      "phone_number": "+16044011236"
-    }
-  },
+
   {
     "model": "registration.user",
     "fields": {
@@ -95,20 +68,6 @@
       "position_title": "Manager",
       "email": "blair.balloons@example.com",
       "phone_number": "+16044011237"
-    }
-  },
-  {
-    "model": "registration.user",
-    "fields": {
-      "user_guid": "00000000-0000-0000-0000-000000000006",
-      "business_guid": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "bceid_business_name": "Bravo Technologies - has parTNER operator",
-      "app_role": "industry_user",
-      "first_name": "Bart",
-      "last_name": "Banker",
-      "position_title": "Manager",
-      "email": "bart.banker@example.com",
-      "phone_number": "+16044011238"
     }
   },
   {
