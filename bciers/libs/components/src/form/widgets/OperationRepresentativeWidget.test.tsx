@@ -27,6 +27,7 @@ const testUiSchema = {
 
 const defaultFormContext = {
   operationId: "6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
+  step: 1,
 };
 
 describe("RJSF OperationRepresentativeWidget", () => {
@@ -75,7 +76,7 @@ describe("RJSF OperationRepresentativeWidget", () => {
     expect(actionHandler).toHaveBeenCalledWith(
       "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/registration/operation-representative",
       "PUT",
-      "registration/administration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
+      "/register-an-operation/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/1",
       {
         body: JSON.stringify({ id: 1 }),
       },
@@ -110,7 +111,7 @@ describe("RJSF OperationRepresentativeWidget", () => {
     expect(actionHandler).toHaveBeenCalledWith(
       "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/registration/operation-representative",
       "PUT",
-      "registration/administration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
+      "/register-an-operation/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/1",
       expect.anything(),
     );
 
