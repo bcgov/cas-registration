@@ -42,13 +42,13 @@ describe("InterestSummaryReviewComponent", () => {
     expect(screen.getByText("Prime + 3.00%"));
 
     expect(screen.getByText("GGEAPAR Interest Amount:")).toBeVisible();
-    expect(screen.getByText("100.00")).toBeVisible();
+    expect(screen.getByText("$100.00")).toBeVisible();
 
     expect(screen.getByText("FAA Interest (Annual):")).toBeVisible();
-    expect(screen.getByText("10.00")).toBeVisible();
+    expect(screen.getByText("$10.00")).toBeVisible();
 
     expect(screen.getByText("Total Amount:")).toBeVisible();
-    expect(screen.getByText("110.00")).toBeVisible();
+    expect(screen.getByText("$110.00")).toBeVisible();
   });
 
   it("navigates to the correct back and continue URLs", () => {

@@ -63,7 +63,5 @@ export const tco2eUiConfig = {
 
 export const currencyUiConfig = {
   ...commonReadOnlyOptions,
-  "ui:options": {
-    prefix: "$",
-  },
+  "ui:widget": "ReadOnlyCurrencyWidget",
 };
