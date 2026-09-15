@@ -10,7 +10,6 @@ import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import userEvent from "@testing-library/user-event";
 import SelectOperatorForm from "apps/administration/app/components/userOperators/SelectOperatorForm";
 import { expectLink } from "@bciers/testConfig/helpers/expectLink";
-
 import { id, operatorLegalName } from "./constants";
 
 const operatorCRA = "123456789";
@@ -166,5 +165,61 @@ describe("Select Operator Form", () => {
     await clickSubmitButton(buttonCRANumber);
     // Verify the "Required field" error message to appear and form is not submited
     await verifyRequiredOperator(requiredCRANumber);
+  });
+
+  it("displays an error message when the search response has an unexpected format", async () => {
+    selectSearchByCRANumber();
+    const searchField = screen.getByPlaceholderText(craNumberDefaultText);
+    await userEvent.type(searchField, operatorCRA);
+    actionHandler.mockResolvedValueOnce([]);
+    await clickSubmitButton(buttonCRANumber);
+    expect(
+      await screen.findByText("Unexpected response format from server."),
+    ).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/operators/search?cra_business_number=${operatorCRA}`,
+      "GET",
+      "/select-operator",
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it("displays an error message when the search request fails", async () => {
+    const errorMessage = "No operator found with this CRA Business Number.";
+    selectSearchByCRANumber();
+    const searchField = screen.getByPlaceholderText(craNumberDefaultText);
+    await userEvent.type(searchField, operatorCRA);
+    // actionHandler GET resolves normally
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    await clickSubmitButton(buttonCRANumber);
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/operators/search?cra_business_number=${operatorCRA}`,
+      "GET",
+      "/select-operator",
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it("displays an error message when the search request throws", async () => {
+    const errorMessage = "Internal Server Error";
+    selectSearchByCRANumber();
+    const searchField = screen.getByPlaceholderText(craNumberDefaultText);
+    await userEvent.type(searchField, operatorCRA);
+    // actionHandler GET throws
+    actionHandler.mockRejectedValueOnce(new Error(errorMessage));
+    await clickSubmitButton(buttonCRANumber);
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/operators/search?cra_business_number=${operatorCRA}`,
+      "GET",
+      "/select-operator",
+    );
+    expect(mockPush).not.toHaveBeenCalled();
   });
 });

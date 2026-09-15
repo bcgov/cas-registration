@@ -288,15 +288,19 @@ describe("The MultiStepBase component", () => {
           ...testSchema,
           title: "page2",
         }}
-        error={"Test error"}
+        errors={"Test error"}
       />,
     );
     expect(screen.getByRole("alert")).toBeVisible();
     expect(screen.getByText("Test error")).toBeVisible();
   });
 
-  it("shows an error if response returns an error", async () => {
-    mockOnSubmit.mockReturnValueOnce({ error: "whoopsie" });
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    mockOnSubmit.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
     render(
       <MultiStepBase
         {...defaultProps}
@@ -309,16 +313,17 @@ describe("The MultiStepBase component", () => {
       />,
     );
 
-    const saveAndContinueButton = screen.getByRole("button", {
-      name: /Save and Continue/i,
-    });
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /save and continue/i,
+      }),
+    );
 
-    fireEvent.click(saveAndContinueButton);
-    await waitFor(() => {
-      expect(mockOnSubmit).toHaveBeenCalled();
-      expect(screen.getByRole("alert")).toBeVisible();
-      expect(screen.getByText("whoopsie")).toBeVisible();
-    });
+    expect(mockOnSubmit).toHaveBeenCalledTimes(1);
+
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(screen.getByRole("alert")).toBeVisible();
+    expect(mockPush).not.toHaveBeenCalled();
   });
 
   it("clears old errors", async () => {
@@ -331,7 +336,7 @@ describe("The MultiStepBase component", () => {
           ...testSchema,
           title: "page2",
         }}
-        error="old"
+        errors="old"
       />,
     );
 

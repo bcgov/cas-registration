@@ -277,4 +277,24 @@ describe("RJSF OperatorSearchWidget", () => {
       />,
     );
   });
+
+  it("displays an error message when the search request fails with a server error", async () => {
+    const errorMessage = "Unable to complete the request.";
+    actionHandler.mockRejectedValueOnce(new Error(errorMessage));
+
+    render(
+      <FormBase
+        schema={operatorSearchFieldSchema}
+        uiSchema={operatorSearchFieldUiSchema}
+      />,
+    );
+
+    const searchField = screen.getByRole("combobox");
+
+    await userEvent.type(searchField, "Operator");
+
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+
+    expect(screen.queryByText("Operator 1")).not.toBeInTheDocument();
+  });
 });
