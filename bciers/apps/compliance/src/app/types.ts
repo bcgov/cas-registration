@@ -168,6 +168,7 @@ export interface ComplianceAppliedUnitsData {
   rows: ComplianceAppliedUnits[];
   row_count: number;
   can_apply_compliance_units: boolean;
+  connection_error?: boolean;
 }
 
 export interface ComplianceAppliedUnitsSummary {

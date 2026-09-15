@@ -42,6 +42,16 @@ const mockValue: ComplianceAppliedUnitsSummary = {
   applied_compliance_units: appliedComplianceUnits,
 };
 
+const mockErrorValue: ComplianceAppliedUnitsSummary = {
+  compliance_report_version_id: complianceReportVersionId,
+  applied_compliance_units: {
+    row_count: 0,
+    rows: [],
+    can_apply_compliance_units: false,
+    connection_error: true,
+  },
+};
+
 describe("ComplianceUnitsGrid", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -223,5 +233,24 @@ describe("ComplianceUnitsGrid", () => {
 
     const alertNote = screen.getByRole("alert");
     expect(alertNote).toHaveTextContent("to meet up to 40%");
+  });
+
+  it("displays an error message instead of the gridif there is a connection issue with BCCR", () => {
+    render(
+      <ComplianceUnitsGrid
+        registry={{
+          formContext: {
+            reportingYear: 2025,
+          },
+        }}
+        value={mockErrorValue}
+      />,
+    );
+
+    const alertNote = screen.getByRole("alert");
+    expect(alertNote).toBeInTheDocument();
+    expect(alertNote).toHaveTextContent(
+      "BCIERS cannot connect to the external Carbon Registry application. Please try again later. If the problem persists, contact GHGRegulator@gov.bc.ca for help",
+    );
   });
 });

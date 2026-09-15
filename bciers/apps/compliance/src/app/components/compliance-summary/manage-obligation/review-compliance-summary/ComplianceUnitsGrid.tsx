@@ -43,6 +43,18 @@ export const ComplianceUnitsGrid = ({
 
   const columns = complianceUnitsColumns();
 
+  // If the connection to BCCR fails, only render the accordion header & error message
+  if (appliedComplianceUnits.connection_error)
+    return (
+      <SimpleAccordion title="Compliance Units Applied">
+        <AlertNote alertType="ERROR">
+          BCIERS cannot connect to the external Carbon Registry application.
+          Please try again later. If the problem persists, contact
+          GHGRegulator@gov.bc.ca for help
+        </AlertNote>
+      </SimpleAccordion>
+    );
+
   return (
     <SimpleAccordion title="Compliance Units Applied">
       {!isInternalUser && (
