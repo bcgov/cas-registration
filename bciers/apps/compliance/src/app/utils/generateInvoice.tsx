@@ -45,10 +45,7 @@ const generateInvoice = async (
       }
 
       return {
-        error:
-          payload.message ||
-          payload.error ||
-          `Failed to generate penalty invoice (status ${res.status})`,
+        error: payload.message,
       };
     }
 
