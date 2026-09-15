@@ -125,7 +125,7 @@ class TestOperationServiceReportable:
         )
 
         results = OperationService.list_previous_reportable_operations(user_guid)
-        print(results)
+
         assert len(results) == 3
         # Two results from the designated operation with no reports for the 2 reporting years
         assert len([x for x in results if x.get("operation_name") == "Designated Op"]) == 2
