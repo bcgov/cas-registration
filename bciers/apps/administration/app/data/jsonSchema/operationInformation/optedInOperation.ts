@@ -13,6 +13,10 @@ import {
 // A little bit of extra margin so the detail page is slightly easier to read
 const customClassNamesForDetailsPage = "mb-2";
 
+// Unlike the registration version, these questions put their JSX in `ui:options.labelOverride`
+// rather than `ui:title`: here they sit inside the registration_purpose `oneOf`, where a JSX
+// title makes every "required" message read "[object Object]" and RJSF drops the duplicates.
+
 export const optedInOperationDetailsUiSchema: UiSchema = {
   opted_in_operation: {
     "ui:FieldTemplate": SectionFieldTemplate,
@@ -20,9 +24,9 @@ export const optedInOperationDetailsUiSchema: UiSchema = {
       label: false,
     },
     meets_section_3_emissions_requirements: {
-      "ui:title": meetsSection3EmissionsRequirementsText,
       "ui:widget": "RadioWidget",
       "ui:classNames": customClassNamesForDetailsPage,
+      "ui:options": { labelOverride: meetsSection3EmissionsRequirementsText },
     },
     meets_electricity_import_operation_criteria: {
       "ui:title": "Is this operation an electricity import operation?",
@@ -30,34 +34,42 @@ export const optedInOperationDetailsUiSchema: UiSchema = {
       "ui:classNames": customClassNamesForDetailsPage,
     },
     meets_entire_operation_requirements: {
-      "ui:title": meetsEntireOperationRequirementsText,
       "ui:widget": "RadioWidget",
       "ui:classNames": customClassNamesForDetailsPage,
+      "ui:options": { labelOverride: meetsEntireOperationRequirementsText },
     },
     meets_section_6_emissions_requirements: {
-      "ui:title": meetsSection6EmissionsRequirementsText,
       "ui:widget": "RadioWidget",
       "ui:classNames": customClassNamesForDetailsPage,
+      "ui:options": { labelOverride: meetsSection6EmissionsRequirementsText },
     },
     meets_naics_code_11_22_562_classification_requirements: {
-      "ui:title": meetsNaicsCode1122562ClassificationRequirementsText,
       "ui:widget": "RadioWidget",
       "ui:classNames": customClassNamesForDetailsPage,
+      "ui:options": {
+        labelOverride: meetsNaicsCode1122562ClassificationRequirementsText,
+      },
     },
     meets_producing_gger_schedule_a1_regulated_product: {
-      "ui:title": meetsProducingGgerScheduleA1RegulatedProductText,
       "ui:widget": "RadioWidget",
       "ui:classNames": customClassNamesForDetailsPage,
+      "ui:options": {
+        labelOverride: meetsProducingGgerScheduleA1RegulatedProductText,
+      },
     },
     meets_reporting_and_regulated_obligations: {
-      "ui:title": meetsReportingAndRegulatedObligationsText,
       "ui:widget": "RadioWidget",
       "ui:classNames": customClassNamesForDetailsPage,
+      "ui:options": {
+        labelOverride: meetsReportingAndRegulatedObligationsText,
+      },
     },
     meets_notification_to_director_on_criteria_change: {
-      "ui:title": meetsNotificationToDirectorOnCriteriaChangeText,
       "ui:widget": "RadioWidget",
       "ui:classNames": customClassNamesForDetailsPage,
+      "ui:options": {
+        labelOverride: meetsNotificationToDirectorOnCriteriaChangeText,
+      },
     },
   },
 };

@@ -1,4 +1,5 @@
 "use client";
+import { ReactNode } from "react";
 import { FieldTemplateProps } from "@rjsf/utils";
 
 function FieldTemplate({
@@ -14,7 +15,7 @@ function FieldTemplate({
   uiSchema,
 }: FieldTemplateProps) {
   const isLabel = uiSchema?.["ui:options"]?.label !== false;
-  const labelOverride = uiSchema?.["ui:options"]?.labelOverride as string;
+  const labelOverride = uiSchema?.["ui:options"]?.labelOverride as ReactNode;
   const labelOverrideStyle = uiSchema?.["ui:options"]?.labelOverrideStyle;
 
   return (
