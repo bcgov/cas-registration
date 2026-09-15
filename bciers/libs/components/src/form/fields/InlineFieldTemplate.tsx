@@ -104,21 +104,22 @@ function InlineFieldTemplate({
   if (noteDescription) {
     noteDescription = <b>Note:</b> + " " + noteDescription; // Modify here, e.g., prepend "Note:"
   }
-
   return (
     <div className="mb-4 md:mb-2">
       <div
         className={`flex flex-col md:flex-row items-start md:items-center ${classNames}`}
       >
         {isLabel && (
-          <div className={`w-full ${labelClassNames}`}>
+          <div className={`w-full shrink-0 ${labelClassNames}`}>
             <label htmlFor={id} className="font-bold">
               {label}
               {required && "*"}
             </label>
           </div>
         )}
-        <div className={`relative flex items-center w-full ${cellWidth}`}>
+        <div
+          className={`relative flex items-center shrink-0 w-full ${cellWidth}`}
+        >
           {children}
         </div>
         {resolvedUnit && (
@@ -134,10 +135,7 @@ function InlineFieldTemplate({
           </div>
         )}
         {isErrors && (
-          <div
-            className="flex items-center text-red-600 md:ml-4 whitespace-nowrap"
-            role="alert"
-          >
+          <div className="flex items-center text-red-600 md:ml-4" role="alert">
             <div className="hidden md:block mr-3 shrink-0">
               <AlertIcon />
             </div>
@@ -148,9 +146,11 @@ function InlineFieldTemplate({
       <div
         className={`flex flex-col md:flex-row items-start md:items-center ${classNames}`}
       >
-        {isLabel && <div className="w-full lg:w-3/12" />}
+        {isLabel && <div className="w-full shrink-0 lg:w-3/12" />}
         {description || help ? (
-          <div className={`relative flex items-center w-full ${cellWidth}`}>
+          <div
+            className={`relative flex items-center shrink-0 w-full ${cellWidth}`}
+          >
             {noteDescription ? (
               <small className="inline-display">{description}</small>
             ) : (
