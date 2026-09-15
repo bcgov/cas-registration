@@ -12,10 +12,7 @@ export const validationUIConfig: Partial<
     priority: 1,
     renderMode: "inline_link",
     label: "ghgregulator@gov.bc.ca",
-    getHref: () =>
-      ghgRegulatorEmail.startsWith("mailto:")
-        ? ghgRegulatorEmail
-        : `mailto:${ghgRegulatorEmail}`,
+    getHref: () => ghgRegulatorEmail,
     formatMessage: ({ label }) =>
       `Your business BCeID does not have access to this operator. Please contact your operator's administrator to request the correct business BCeID. If this issue persists, please contact ${label}.`,
   }),
