@@ -107,10 +107,10 @@ function FuelAmountFieldTemplate({
         )}
         {isErrors && (
           <div
-            className="w-full md:w-4/12 flex items-center text-red-600 ml-0 md:ml-4"
+            className="flex flex-1 min-w-0 items-center text-red-600 ml-0 md:ml-4"
             role="alert"
           >
-            <div className="hidden md:block mr-3">
+            <div className="hidden md:block mr-3 shrink-0">
               <AlertIcon />
             </div>
             <span>{error}</span>
