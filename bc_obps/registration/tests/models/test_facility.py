@@ -53,6 +53,7 @@ class FacilityModelTest(BaseTestCase):
             ("is_current_year", "is current year", None, None),
             ("starting_date", "starting date", None, None),
             ("facility_reports", "facility report", None, 0),
+            ("comment_threads", "comment thread", None, None),
             ("transfer_events", "transfer event", None, None),
             ("restart_events", "restart event", None, None),
             ("closure_events", "closure event", None, None),

@@ -21,3 +21,7 @@ export type ReportingFormResponse<TPayload> = {
   facility_data?: FacilityData;
   operation_data?: OperationData;
 };
+
+export type ReportingResponse<TPayload> = {
+  payload: TPayload;
+};
