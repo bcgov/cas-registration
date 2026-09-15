@@ -47,6 +47,9 @@ class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
             self,
             operator=self.report_version.report.operator,
         )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+        )
 
         mock_product = ReportProductComplianceData(
             name="Test Product",

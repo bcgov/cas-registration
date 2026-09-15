@@ -23,6 +23,9 @@ class TestComplianceReportVersionEndpoint(CommonTestSetup):
             compliance_report__report__operation__operator=operator,
             compliance_report__report__operator=operator,
         )
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[compliance_report_version.compliance_report.report.operation]
+        )
         mock_get_version.return_value = compliance_report_version
 
         # Act
