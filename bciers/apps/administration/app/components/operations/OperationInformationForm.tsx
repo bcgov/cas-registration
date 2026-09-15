@@ -46,6 +46,10 @@ const OperationInformationForm = ({
   const [error, setError] = useState(undefined);
   const [schema, setSchema] = useState(initialSchema);
   const [confirmedFormData, setConfirmedFormData] = useState(formData);
+  // Switching the purpose to EIO overwrites the type in the form,
+  // so switching away has to restore this - otherwise the read-only Operation Type field
+  // stays stuck on EIO and every later save fails validation
+  const [savedType, setSavedType] = useState(formData.type);
   const [
     pendingChangeRegistrationPurpose,
     setPendingChangeRegistrationPurpose,
@@ -83,8 +87,9 @@ const OperationInformationForm = ({
     const newFormData = {
       ...confirmedFormData,
       registration_purpose: newPurpose,
-      // When switching to EIO, set the type to EIO since that's the only valid option
-      ...(isEio && { type: OperationTypes.EIO }),
+      // When switching to EIO, set the type to EIO since that's the only valid option,
+      // and when switching away from EIO, put the saved type back
+      type: isEio ? OperationTypes.EIO : savedType,
     };
     setConfirmedFormData(newFormData);
 
@@ -123,6 +128,7 @@ const OperationInformationForm = ({
       return { error: response.error };
     } else {
       setConfirmedFormData(response);
+      setSavedType(response.type);
     }
 
     if (!data.formData?.opted_in_operation) return;
@@ -150,6 +156,7 @@ const OperationInformationForm = ({
 
   const confirmRegistrationPurposeChange = () => {
     if (pendingChangeRegistrationPurpose !== "") {
+      setError(undefined);
       updateConfirmedFormData(pendingChangeRegistrationPurpose);
       setFormMode(FormMode.EDIT); // Keep form in edit mode after remount
       resetKey();
