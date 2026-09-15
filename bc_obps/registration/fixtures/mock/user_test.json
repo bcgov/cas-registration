@@ -3,7 +3,7 @@
     "model": "registration.user",
     "fields": {
       "user_guid": "59038013-a0c1-4c70-b025-a8312062d4c9",
-      "business_guid": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "business_guid": "8a598d0c-972a-437d-942c-33a54c153982",
       "bceid_business_name": "Bravo Technologies - has parTNER operator",
       "first_name": "Tammie",
       "last_name": "Test",
@@ -17,7 +17,7 @@
     "model": "registration.user",
     "fields": {
       "user_guid": "b52343e2-2699-40d8-8fac-b4dbb52446e9",
-      "business_guid": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "business_guid": "8a598d0c-972a-437d-942c-33a54c153982",
       "bceid_business_name": "Bravo Technologies - has parTNER operator",
       "first_name": "bc-cas-test",
       "last_name": "Industry user",
@@ -31,7 +31,7 @@
     "model": "registration.user",
     "fields": {
       "user_guid": "eba0da56-1758-4c5b-a2ae-99dc665258ef",
-      "business_guid": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "business_guid": "8a598d0c-972a-437d-942c-33a54c153982",
       "bceid_business_name": "Bravo Technologies - has parTNER operator",
       "first_name": "bc-cas-test-two",
       "last_name": "Industry user",
@@ -39,6 +39,48 @@
       "email": "ggircs2@gov.bc.ca",
       "phone_number": "+12345678900",
       "app_role": "industry_user"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "00000000-0000-0000-0000-000000000003",
+      "business_guid": "8a598d0c-972a-437d-942c-33a54c153982",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
+      "app_role": "industry_user",
+      "first_name": "Bill",
+      "last_name": "Blue",
+      "position_title": "Manager",
+      "email": "bill.blue@example.com",
+      "phone_number": "+16044011235"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "00000000-0000-0000-0000-000000000004",
+      "business_guid": "8a598d0c-972a-437d-942c-33a54c153982",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
+      "app_role": "industry_user",
+      "first_name": "Bob",
+      "last_name": "Brown",
+      "position_title": "Manager",
+      "email": "bob.brown@example.com",
+      "phone_number": "+16044011236"
+    }
+  },
+  {
+    "model": "registration.user",
+    "fields": {
+      "user_guid": "00000000-0000-0000-0000-000000000006",
+      "business_guid": "8a598d0c-972a-437d-942c-33a54c153982",
+      "bceid_business_name": "Bravo Technologies - has parTNER operator",
+      "app_role": "industry_user",
+      "first_name": "Bart",
+      "last_name": "Banker",
+      "position_title": "Manager",
+      "email": "bart.banker@example.com",
+      "phone_number": "+16044011238"
     }
   }
 ]

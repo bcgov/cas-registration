@@ -2,18 +2,6 @@
   {
     "model": "registration.useroperator",
     "fields": {
-      "user": "00000000-0000-0000-0000-000000000003",
-      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "role": "admin",
-      "status": "Approved",
-      "verified_at": "2024-02-26 06:24:57.293242-08",
-      "verified_by": "00000000-0000-0000-0000-000000000005",
-      "user_friendly_id": 1
-    }
-  },
-  {
-    "model": "registration.useroperator",
-    "fields": {
       "user": "00000000-0000-0000-0000-000000000002",
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "role": "admin",
@@ -35,19 +23,6 @@
       "user_friendly_id": 4
     }
   },
-
-  {
-    "model": "registration.useroperator",
-    "fields": {
-      "user": "00000000-0000-0000-0000-000000000004",
-      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "role": "admin",
-      "status": "Approved",
-      "verified_at": null,
-      "verified_by": null,
-      "user_friendly_id": 7
-    }
-  },
   {
     "model": "registration.useroperator",
     "fields": {
@@ -58,18 +33,6 @@
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 8
-    }
-  },
-  {
-    "model": "registration.useroperator",
-    "fields": {
-      "user": "00000000-0000-0000-0000-000000000006",
-      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "role": "admin",
-      "status": "Approved",
-      "verified_at": null,
-      "verified_by": null,
-      "user_friendly_id": 9
     }
   },
   {
