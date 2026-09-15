@@ -62,7 +62,9 @@ const DateWidget: React.FC<WidgetProps> = ({
         minDate={dayjs((options?.minDate as Date) || null)}
         slotProps={{
           actionBar: {
-            actions: ["clear", "cancel"],
+            actions: (options?.actionBarActions as (
+              "clear" | "cancel" | "accept" | "today"
+            )[]) ?? ["clear", "cancel"],
           },
           textField: {
             id,
