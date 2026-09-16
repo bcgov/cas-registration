@@ -807,31 +807,44 @@ class OperationService:
 
         user_operator = UserDataAccessService.get_user_operator_by_user(user_guid)
         reporting_years = ReportingYearService.get_previous_reporting_years()
-        year_values = {reporting_year.reporting_year for reporting_year in reporting_years}
+        year_values = sorted({reporting_year.reporting_year for reporting_year in reporting_years})
+        timelines = list(
+            OperationDesignatedOperatorTimeline.objects.select_related("operation")
+            .filter(
+                Q(end_date__year__gt=year_values[0]) | Q(end_date__isnull=True),
+                operator_id=user_operator.operator_id,
+                operation__status=Operation.Statuses.REGISTERED,
+                start_date__year__lte=year_values[-1],
+            )
+            .order_by("operation__name")
+        )
+
+        existing_reports = set(
+            Report.objects.filter(
+                operation_id__in={timeline.operation_id for timeline in timelines},
+                reporting_year__reporting_year__in=year_values,
+            ).values_list("operation_id", "reporting_year__reporting_year")
+        )
 
         reportable_operations: list[dict] = []
+        seen: set[tuple[UUID, int]] = set()
         for year in year_values:
-            ownership_date = date(year, 12, 31)
-            owned_operations_for_year = (
-                OperationDesignatedOperatorTimeline.objects.select_related("operation")
-                .filter(
-                    (Q(end_date__gt=ownership_date) | Q(end_date__isnull=True)),
-                    operator_id=user_operator.operator_id,
-                    operation__status=Operation.Statuses.REGISTERED,
-                    start_date__lte=ownership_date,
-                )
-                .order_by("operation__name")
-            )
-            for op in owned_operations_for_year:
-                if Report.objects.filter(reporting_year__reporting_year=year, operation=op.operation).exists():
+            for timeline in timelines:
+                if timeline.start_date is None or timeline.start_date.year > year:
                     continue
-                else:
-                    reportable_operations = [
-                        *reportable_operations,
-                        cls._build_reportable_operation_row(
-                            op.operation,
-                            year,
-                        ),
-                    ]
+                if timeline.end_date is not None and timeline.end_date.year <= year:
+                    continue
+
+                operation_year = (timeline.operation_id, year)
+                if operation_year in existing_reports or operation_year in seen:
+                    continue
+
+                seen.add(operation_year)
+                reportable_operations.append(
+                    cls._build_reportable_operation_row(
+                        timeline.operation,
+                        year,
+                    )
+                )
 
         return reportable_operations
