@@ -654,6 +654,7 @@ describe("the OperationInformationForm component", () => {
     const uiSchema = await createAdministrationOperationInformationUiSchema();
     render(
       <OperationInformationForm
+        // @ts-expect-error - opted_in_operation type is not important here
         formData={{ ...optInFormData, opted_in_operation: {} }}
         schema={createdFormSchema}
         operationId={operationId}
