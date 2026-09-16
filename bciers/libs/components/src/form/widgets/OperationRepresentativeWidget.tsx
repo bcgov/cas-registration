@@ -14,11 +14,12 @@ async function removeOperationRepresentative(
   operation_id: string,
   // Id will always be a number for operation representatives. We have to additionally type string to make FieldSchema happy.
   representative_id: number | string,
+  step: number,
 ) {
   const response = await actionHandler(
     `registration/operations/${operation_id}/registration/operation-representative`,
     "PUT",
-    `registration/administration/operations/${operation_id}`,
+    `/register-an-operation/${operation_id}/${step}`,
     {
       body: JSON.stringify({ id: representative_id }),
     },
@@ -64,6 +65,7 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
             const response = await removeOperationRepresentative(
               formContext?.operationId,
               option.id,
+              formContext?.step,
             );
             if (response?.error) {
               setError(response.error);
