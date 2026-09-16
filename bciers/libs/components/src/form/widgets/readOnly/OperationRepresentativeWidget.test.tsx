@@ -31,7 +31,17 @@ const operationRepresentativeWidgetUiSchema = {
 
 const defaultFormContext = {
   operationId: "6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
+  step: 5,
 };
+
+const expectedRemoveCall = [
+  "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/registration/operation-representative",
+  "PUT",
+  "/register-an-operation/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/5",
+  {
+    body: '{"id":1}',
+  },
+];
 
 describe("RJSF OperationRepresentativeWidget", () => {
   it("should render the field with no data", async () => {
@@ -70,6 +80,7 @@ describe("RJSF OperationRepresentativeWidget", () => {
   });
 
   it("should hit the API to remove a contact", async () => {
+    const onChange = vi.fn();
     render(
       <FormBase
         schema={operationRepresentativeWidgetSchema}
@@ -78,18 +89,17 @@ describe("RJSF OperationRepresentativeWidget", () => {
         formData={{
           operationRepresentativeTestField: operationRepresentativeValue,
         }}
+        onChange={onChange}
       />,
     );
     const trashNevilleButton = screen.getAllByTestId("DeleteOutlineIcon")[0];
     await userEvent.click(trashNevilleButton);
-    expect(actionHandler).toHaveBeenCalledWith(
-      "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/registration/operation-representative",
-      "PUT",
-      "registration/administration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
-      {
-        body: '{"id":1}',
-      },
-    );
+    expect(actionHandler).toHaveBeenCalledWith(...expectedRemoveCall);
+    await waitFor(() => {
+      expect(onChange.mock.calls[0][0].formData).toEqual({
+        operationRepresentativeTestField: [2],
+      });
+    });
     await waitFor(() => {
       expect(
         screen.getByText(/Operation Representative removed successfully/i),
@@ -99,6 +109,7 @@ describe("RJSF OperationRepresentativeWidget", () => {
 
   it("should show an error if deletion fails", async () => {
     actionHandler.mockReturnValueOnce({ error: " i bork :(" });
+    const onChange = vi.fn();
     render(
       <FormBase
         schema={operationRepresentativeWidgetSchema}
@@ -107,19 +118,15 @@ describe("RJSF OperationRepresentativeWidget", () => {
         formData={{
           operationRepresentativeTestField: operationRepresentativeValue,
         }}
+        onChange={onChange}
       />,
     );
     const trashNevilleButton = screen.getAllByTestId("DeleteOutlineIcon")[0];
     await userEvent.click(trashNevilleButton);
-    expect(actionHandler).toHaveBeenCalledWith(
-      "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/registration/operation-representative",
-      "PUT",
-      "registration/administration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
-      {
-        body: '{"id":1}',
-      },
-    );
+    expect(actionHandler).toHaveBeenCalledWith(...expectedRemoveCall);
     expect(screen.getByText(/i bork :\(/i)).toBeVisible();
+    // a failed deletion must leave the form data untouched
+    expect(onChange).not.toHaveBeenCalled();
     await waitFor(() => {
       expect(
         screen.queryByText(/Operation Representative removed successfully/i),

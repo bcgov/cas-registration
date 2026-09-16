@@ -1,6 +1,10 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import { useSessionRole, getContact } from "@bciers/testConfig/mocks";
+import {
+  useSessionRole,
+  getContact,
+  actionHandler,
+} from "@bciers/testConfig/mocks";
 import userEvent from "@testing-library/user-event";
 import NewOperationRepresentativeForm from "@/registration/app/components/operations/registration/NewOperationRepresentativeForm";
 
@@ -38,6 +42,9 @@ export const checkEmptyOperationRepresentativeForm = () => {
   ).toBeVisible();
   expect(screen.getByLabelText(/First Name/i)).toHaveValue("");
   expect(screen.getByLabelText(/Last Name/i)).toHaveValue("");
+  expect(screen.getByLabelText(/First Name/i)).toBeEnabled();
+  expect(screen.getByLabelText(/Last Name/i)).toBeEnabled();
+  expect(screen.getByLabelText(/Business Email Address/i)).toBeEnabled();
   expect(
     screen.getByRole("heading", { name: /Work Information/i }),
   ).toBeVisible();
@@ -356,4 +363,66 @@ describe("the NewOperationRepresentativeForm component", () => {
       ).toBeVisible();
     });
   });
+
+  it(
+    "can still save a new operation representative after an existing one was removed",
+    { timeout: 20000 },
+    async () => {
+      actionHandler.mockResolvedValue({ id: 99 });
+      const { rerender } = render(
+        <NewOperationRepresentativeForm
+          formData={{ operation_representatives: [3, 5] }}
+          operation={operationId}
+          step={5}
+          existingOperationRepresentatives={[
+            ...existingOperationRepresentativesMock,
+            { id: 5, full_name: "Jane Doe" },
+          ]}
+          contacts={contactsMock}
+        />,
+      );
+
+      await userEvent.click(screen.getAllByTestId("DeleteOutlineIcon")[0]);
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Operation Representative removed successfully/i),
+        ).toBeVisible();
+      });
+
+      // the page revalidates after a removal, so the component is re-rendered
+      // with only the remaining operation representative
+      rerender(
+        <NewOperationRepresentativeForm
+          formData={{ operation_representatives: [3, 5] }}
+          operation={operationId}
+          step={5}
+          existingOperationRepresentatives={[{ id: 5, full_name: "Jane Doe" }]}
+          contacts={contactsMock}
+        />,
+      );
+
+      await userEvent.click(
+        screen.getByRole("button", {
+          name: /add new operation representative/i,
+        }),
+      );
+      await fillOperationRepresentativeForm();
+      await userEvent.click(
+        screen.getByRole("button", {
+          name: /save operation representative/i,
+        }),
+      );
+
+      // the removed representative's id must not linger in the form data and
+      // block validation of the new one
+      await waitFor(() => {
+        expect(actionHandler).toHaveBeenCalledWith(
+          `registration/operations/${operationId}/registration/operation-representative`,
+          "POST",
+          expect.anything(),
+          expect.anything(),
+        );
+      });
+    },
+  );
 });
