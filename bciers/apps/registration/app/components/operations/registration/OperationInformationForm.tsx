@@ -118,6 +118,9 @@ const OperationInformationForm = ({
     } else {
       setSchema(initialSchema);
     }
+    // Remount the form so RJSF picks up the new schema immediately. Otherwise, RJSF discards the schema swap
+    // (e.g. the EIO type default) because it happens while it is still processing the purpose change
+    resetKey();
     updateUiSchemaWithHelpText(
       newConfirmedFormState.section1
         .registration_purpose as RegistrationPurposes,
