@@ -61,7 +61,7 @@ def clone_or_refresh_report_version_representatives(
         # User will need to save an update upon filing the supplementary report
 
         contacts = Contact.objects.filter(
-            operator_id=new_report_version.report.operation.operator_id, business_role_id="Operation Representative"
+            operator_id=new_report_version.report.operator_id, business_role_id="Operation Representative"
         )
         for c in contacts:
             ReportOperationRepresentative.objects.create(

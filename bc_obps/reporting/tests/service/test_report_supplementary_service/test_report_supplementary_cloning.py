@@ -240,7 +240,7 @@ class ReportSupplementaryCloningTests(TestCase):
             "registration.tests.utils.contact",
             first_name="John",
             last_name=seq("Doe"),
-            operator_id=self.new_report_version.report.operation.operator_id,
+            operator_id=self.new_report_version.report.operator_id,
             business_role_id="Operation Representative",
             _quantity=4,
         )
