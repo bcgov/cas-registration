@@ -22,6 +22,7 @@ export function InternalPenaltySummaryReviewComponent({
   const backUrl = hasLateSubmissionPenalty
     ? `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-interest-summary`
     : `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`;
+  const continueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/penalty-calculator`;
 
   const displayPenaltyStatus =
     data.penalty_status === "Not Paid" ? "Due" : data.penalty_status;
@@ -35,7 +36,7 @@ export function InternalPenaltySummaryReviewComponent({
       formData={formData}
       className="w-full"
     >
-      <ComplianceStepButtons backUrl={backUrl} />
+      <ComplianceStepButtons backUrl={backUrl} continueUrl={continueUrl} />
     </FormBase>
   );
 }

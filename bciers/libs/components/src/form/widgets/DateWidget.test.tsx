@@ -231,6 +231,47 @@ describe("RJSF DateWidget", () => {
       dateWidgetLabelRequired,
     );
   });
+  it("offers clear and cancel by default", async () => {
+    render(
+      <FormBase
+        schema={dateWidgetFieldSchema}
+        formData={{ dateWidgetTestField: "2024-07-05T09:00:00.000Z" }}
+        uiSchema={dateWidgetFieldUiSchema}
+      />,
+    );
+
+    await userEvent.click(
+      screen.getByTestId("CalendarIcon").parentElement as HTMLElement,
+    );
+
+    expect(screen.getByRole("button", { name: /clear/i })).toBeVisible();
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeVisible();
+  });
+
+  it("shows only the action bar buttons the ui schema asks for", async () => {
+    render(
+      <FormBase
+        schema={dateWidgetFieldSchema}
+        formData={{ dateWidgetTestField: "2024-07-05T09:00:00.000Z" }}
+        uiSchema={{
+          dateWidgetTestField: {
+            "ui:widget": "DateWidget",
+            "ui:options": { actionBarActions: ["cancel"] },
+          },
+        }}
+      />,
+    );
+
+    await userEvent.click(
+      screen.getByTestId("CalendarIcon").parentElement as HTMLElement,
+    );
+
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeVisible();
+    expect(
+      screen.queryByRole("button", { name: /clear/i }),
+    ).not.toBeInTheDocument();
+  });
+
   it("should trigger validation error when user clears the field and tries to submit", async () => {
     render(
       <FormBase
