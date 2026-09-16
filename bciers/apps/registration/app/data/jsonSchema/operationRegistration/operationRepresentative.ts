@@ -156,7 +156,7 @@ export const createOperationRepresentativeSchema = (
   return operationRepresentativeSchema;
 };
 
-let operationRepresentativeUiSchema: UiSchema = {
+const operationRepresentativeUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": [
@@ -233,46 +233,49 @@ export const createOperationRepresentativeUiSchema = (
   existingOperationRepresentatives: OperationRepresentative[],
   existingContact: boolean = false,
 ) => {
+  const baseNewRep =
+    operationRepresentativeUiSchema.new_operation_representative;
+  const baseItems = baseNewRep.items;
   // disable first name, last name and email for updating existing contact
-  if (existingContact)
-    operationRepresentativeUiSchema = {
-      ...operationRepresentativeUiSchema,
-      new_operation_representative: {
-        ...operationRepresentativeUiSchema.new_operation_representative,
-        items: {
-          ...operationRepresentativeUiSchema.new_operation_representative.items,
-          first_name: {
-            ...operationRepresentativeUiSchema.new_operation_representative
-              .items.first_name,
-            "ui:disabled": true,
-          },
-          last_name: {
-            ...operationRepresentativeUiSchema.new_operation_representative
-              .items.last_name,
-            "ui:disabled": true,
-          },
-          email: {
-            ...operationRepresentativeUiSchema.new_operation_representative
-              .items.email,
-            "ui:disabled": true,
-          },
+  const disabledForExistingContact = existingContact
+    ? { "ui:disabled": true }
+    : {};
+
+  // Build a new object, otherwise the options of one render (e.g. the
+  // disabled fields of a selected contact) leak into every subsequent render
+  const uiSchema: UiSchema = {
+    ...operationRepresentativeUiSchema,
+    new_operation_representative: {
+      ...baseNewRep,
+      items: {
+        ...baseItems,
+        first_name: {
+          ...baseItems.first_name,
+          ...disabledForExistingContact,
+        },
+        last_name: {
+          ...baseItems.last_name,
+          ...disabledForExistingContact,
+        },
+        email: {
+          ...baseItems.email,
+          ...disabledForExistingContact,
         },
       },
-    };
+    },
+  };
+
   const hasExistingOperationReps =
     existingOperationRepresentatives &&
     existingOperationRepresentatives.length !== 0;
 
   if (hasExistingOperationReps)
-    operationRepresentativeUiSchema = {
-      ...operationRepresentativeUiSchema,
-      operation_representatives: {
-        ...operationRepresentativeUiSchema.operation_representatives,
-        "ui:enumNames": existingOperationRepresentatives.map(
-          (operation_representative) => operation_representative?.full_name,
-        ),
-      },
+    uiSchema.operation_representatives = {
+      ...operationRepresentativeUiSchema.operation_representatives,
+      "ui:enumNames": existingOperationRepresentatives.map(
+        (operation_representative) => operation_representative?.full_name,
+      ),
     };
 
-  return operationRepresentativeUiSchema;
+  return uiSchema;
 };
