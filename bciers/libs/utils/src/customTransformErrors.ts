@@ -31,6 +31,13 @@ const transformPropertyError = (
     return error;
   }
   if (
+    // @ts-expect-error - we already checked for error.property's existence above
+    /(^|\.)meets_\w+$/.test(error.property)
+  ) {
+    error.message = "This field is required";
+    return error;
+  }
+  if (
     ["registration_purpose"].some((field) => {
       // @ts-expect-error - we already checked for error.property's existence above
       return error.property.includes(field);
@@ -182,11 +189,14 @@ const customTransformErrors = (
     if (error?.property) {
       if (error.message === "must be equal to constant") {
         error.message = undefined; // this is to handle the registration purpose dependencies. Since the schema uses oneOf, validation expects the complete oneOf formData, which we don't always have yet when a user clicks submit on an incomplete form
-      }
-      const propertyError = transformPropertyError(error);
-      // return early if the error was handled by transformPropertyError
-      if (propertyError) {
-        return propertyError;
+        // Skip transformPropertyError so it can't put a message back on the error we just
+        // silenced. `const` errors on checkboxes are still given a message further down.
+      } else {
+        const propertyError = transformPropertyError(error);
+        // return early if the error was handled by transformPropertyError
+        if (propertyError) {
+          return propertyError;
+        }
       }
     }
     // custom messages for general errors

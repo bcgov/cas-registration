@@ -1,5 +1,6 @@
 "use client";
 
+import { ReactNode } from "react";
 import { FieldTemplateProps, Registry } from "@rjsf/utils";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
 
@@ -89,6 +90,7 @@ function InlineFieldTemplate({
   // UI Schema options
   const options = uiSchema?.["ui:options"] || {};
   const isLabel = options?.label !== false;
+  const labelOverride = options?.labelOverride as ReactNode;
   const labelClassNames = (options?.labelClassNames as string) ?? "lg:w-3/12";
   const unitOption = (options.unit ?? options.displayUnit) as
     UnitOption | undefined;
@@ -113,7 +115,7 @@ function InlineFieldTemplate({
         {isLabel && (
           <div className={`w-full ${labelClassNames}`}>
             <label htmlFor={id} className="font-bold">
-              {label}
+              {labelOverride ?? label}
               {required && "*"}
             </label>
           </div>

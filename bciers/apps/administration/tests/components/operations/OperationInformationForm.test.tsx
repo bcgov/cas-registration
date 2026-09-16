@@ -643,6 +643,86 @@ describe("the OperationInformationForm component", () => {
       ),
     );
   });
+
+  it("should show a required error on every unanswered opt-in question", async () => {
+    useSessionRole.mockReturnValue("industry_user_admin");
+    const createdFormSchema =
+      await createAdministrationOperationInformationSchema(
+        RegistrationPurposes.OPTED_IN_OPERATION,
+        OperationStatus.REGISTERED,
+      );
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
+    render(
+      <OperationInformationForm
+        // @ts-expect-error - opted_in_operation type is not important here
+        formData={{ ...optInFormData, opted_in_operation: {} }}
+        schema={createdFormSchema}
+        operationId={operationId}
+        eioSchema={testSchema}
+        generalSchema={createdFormSchema}
+        uiSchema={uiSchema}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+    expect(screen.getAllByText("This field is required")).toHaveLength(8);
+  });
+
+  it("should restore the saved operation type when the purpose changes away from EIO", async () => {
+    useSessionRole.mockReturnValue("industry_user_admin");
+    vi.mocked(getRegistrationPurposes).mockResolvedValue([
+      ...registrationPurposesMock,
+      RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
+    ]);
+    const createdFormSchema =
+      await createAdministrationOperationInformationSchema(
+        RegistrationPurposes.REPORTING_OPERATION,
+        OperationStatus.REGISTERED,
+      );
+    const eioSchema = await createAdministrationOperationInformationSchema(
+      RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
+      OperationStatus.REGISTERED,
+    );
+    const uiSchema = await createAdministrationOperationInformationUiSchema();
+    const { container } = render(
+      <OperationInformationForm
+        formData={{
+          name: "Operation 3",
+          type: "Single Facility Operation",
+          registration_purpose: RegistrationPurposes.REPORTING_OPERATION,
+        }}
+        schema={createdFormSchema}
+        operationId={operationId}
+        eioSchema={eioSchema}
+        generalSchema={createdFormSchema}
+        uiSchema={uiSchema}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+
+    const selectPurpose = async (purpose: string) => {
+      const purposeInput = container.querySelector(
+        "#root_section3_registration_purpose",
+      ) as HTMLElement;
+      await userEvent.click(purposeInput);
+      await userEvent.click(
+        await screen.findByRole("option", { name: purpose }),
+      );
+      await userEvent.click(
+        screen.getByRole("button", { name: /change registration purpose/i }),
+      );
+    };
+
+    const operationType = () => container.querySelector("#root_section1_type");
+
+    await selectPurpose(RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION);
+    expect(operationType()).toHaveValue("Electricity Import Operation");
+    await selectPurpose(RegistrationPurposes.OPTED_IN_OPERATION);
+    expect(operationType()).toHaveValue("Single Facility Operation");
+  }, 15000);
+
   it("should use formContext to correctly render BORO ID and BCGHG ID widgets", async () => {
     useSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
     const uiSchema = await createAdministrationOperationInformationUiSchema();

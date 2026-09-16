@@ -497,6 +497,78 @@ describe("customTransformErrors", () => {
     expect(transformedErrors[0].message).not.toBe("Select at least one option");
   });
 
+  it("silences the const errors the registration purpose oneOf raises for unselected branches", () => {
+    // The registration purpose dependencies are a `oneOf`, so picking one branch leaves a `const`
+    // mismatch on every other branch. Those are noise, not something the user can act on
+    const unselectedOneOfBranchError = [
+      {
+        name: "const",
+        property: ".section3.registration_purpose",
+        message: "must be equal to constant",
+        params: { allowedValue: "Reporting Operation" },
+        stack: "must be equal to constant",
+        schemaPath:
+          "#/dependencies/registration_purpose/oneOf/1/properties/registration_purpose/const",
+      },
+    ];
+    const transformedErrors = customTransformErrors(
+      unselectedOneOfBranchError,
+      customFormatsErrorMessages,
+    );
+
+    // An undefined message is dropped by RJSF's toErrorSchema, so nothing renders on the field
+    expect(transformedErrors[0].message).toBeUndefined();
+    expect(transformedErrors[0].message).not.toBe(
+      "Select a Registration Purpose",
+    );
+  });
+
+  it("still marks a checkbox that must be accepted, which is also a const error", () => {
+    const mustBeAcceptedError = [
+      {
+        name: "const",
+        property: ".acknowledgement",
+        message: "must be equal to constant",
+        params: { allowedValue: true },
+        stack: "must be equal to constant",
+        title: "I acknowledge",
+        schemaPath: "#/properties/acknowledgement/const",
+      },
+    ];
+    const transformedErrors = customTransformErrors(
+      mustBeAcceptedError,
+      customFormatsErrorMessages,
+    );
+
+    expect(transformedErrors[0].message).toBe("I acknowledge must be accepted");
+  });
+
+  it("returns a short required message for each opted-in operation question", () => {
+    const optedInQuestionErrors = [
+      "meets_section_3_emissions_requirements",
+      "meets_electricity_import_operation_criteria",
+      "meets_entire_operation_requirements",
+    ].map((field) => ({
+      name: "required",
+      property: `.section3.opted_in_operation.${field}`,
+      message: `must have required property '${field}'`,
+      params: { missingProperty: field },
+      stack: `must have required property '${field}'`,
+      schemaPath:
+        "#/dependencies/registration_purpose/oneOf/4/properties/opted_in_operation/required",
+    }));
+
+    const transformedErrors = customTransformErrors(
+      optedInQuestionErrors,
+      customFormatsErrorMessages,
+    );
+
+    expect(transformedErrors).toHaveLength(3);
+    transformedErrors.forEach((error) => {
+      expect(error.message).toBe("This field is required");
+    });
+  });
+
   // Emissions, methodology and gas type filtering tests
   describe("emissions methodology and gas type filtering", () => {
     it("filters out oneOf errors at the emission level", () => {
