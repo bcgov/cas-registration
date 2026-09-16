@@ -380,6 +380,11 @@ describe("FacilityEmissionAllocationForm component", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(
       /To allocate emissions to a product that isn't shown below, return to the production data page and select the product first./i,
     );
+    expect(
+      screen.queryByText(
+        /Note: unregulated products will not be shown below./i,
+      ),
+    ).not.toBeInTheDocument();
   });
 
   it("clears products when methodology is changed to 'Not Applicable' and restores them when changed back", async () => {
