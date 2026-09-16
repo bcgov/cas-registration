@@ -297,7 +297,7 @@ class FacilityReportSchema(ModelSchema):
 
     @staticmethod
     def resolve_report_products(obj: FacilityReport) -> Dict[str, ReportProduct]:
-        products = obj.report_products.all()
+        products = obj.report_products.filter(product__is_regulated=True)
         return {product.product.name: product for product in products}
 
     @staticmethod
