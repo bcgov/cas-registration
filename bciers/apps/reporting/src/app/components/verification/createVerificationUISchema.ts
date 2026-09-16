@@ -15,16 +15,15 @@ export const createVerificationUISchema = (
 ): UiSchema => {
   const schema = schemaType === OperationTypes.SFO ? sfoUiSchema : lfoUiSchema;
 
-  if (isSupplementaryReport) {
-    schema.info_note = {
-      "ui:FieldTemplate": TitleOnlyFieldTemplate,
-      "ui:title": infoNote(),
-    };
-  }
   if (isEIO) {
     schema.info_note = {
       "ui:FieldTemplate": TitleOnlyFieldTemplate,
       "ui:title": infoNoteEIO(),
+    };
+  } else if (isSupplementaryReport) {
+    schema.info_note = {
+      "ui:FieldTemplate": TitleOnlyFieldTemplate,
+      "ui:title": infoNote(),
     };
   }
 
