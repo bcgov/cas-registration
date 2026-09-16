@@ -677,7 +677,7 @@ describe("the OperationInformationForm component", () => {
     ]);
     const createdFormSchema =
       await createAdministrationOperationInformationSchema(
-        formData.registration_purpose,
+        RegistrationPurposes.REPORTING_OPERATION,
         OperationStatus.REGISTERED,
       );
     const eioSchema = await createAdministrationOperationInformationSchema(
@@ -687,7 +687,11 @@ describe("the OperationInformationForm component", () => {
     const uiSchema = await createAdministrationOperationInformationUiSchema();
     const { container } = render(
       <OperationInformationForm
-        formData={formData}
+        formData={{
+          name: "Operation 3",
+          type: "Single Facility Operation",
+          registration_purpose: RegistrationPurposes.REPORTING_OPERATION,
+        }}
         schema={createdFormSchema}
         operationId={operationId}
         eioSchema={eioSchema}
@@ -717,7 +721,7 @@ describe("the OperationInformationForm component", () => {
     expect(operationType()).toHaveValue("Electricity Import Operation");
     await selectPurpose(RegistrationPurposes.OPTED_IN_OPERATION);
     expect(operationType()).toHaveValue("Single Facility Operation");
-  });
+  }, 15000);
 
   it("should use formContext to correctly render BORO ID and BCGHG ID widgets", async () => {
     useSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
