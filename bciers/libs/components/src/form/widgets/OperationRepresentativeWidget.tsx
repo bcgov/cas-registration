@@ -32,6 +32,7 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
   schema,
   registry,
   uiSchema,
+  onChange,
 }) => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [error, setError] = useState(undefined);
@@ -68,6 +69,14 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
               setError(response.error);
               return;
             }
+            // Keep the form data in sync with the server, otherwise the deleted
+            // id lingers in the form data and fails enum validation on the next
+            // save (the item disappears from the list but not from the data)
+            onChange(
+              (value as (number | string)[]).filter(
+                (repId) => repId !== option.id,
+              ),
+            );
             setIsSnackbarOpen(true);
           }}
         />

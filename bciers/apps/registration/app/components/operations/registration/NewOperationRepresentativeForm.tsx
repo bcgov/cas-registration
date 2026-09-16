@@ -85,7 +85,8 @@ const NewOperationRepresentativeForm: FC<
   };
 
   const handleChange = ({ formData: newFormData }: IChangeEvent) => {
-    const newOperationRepresentative = newFormData.new_operation_representative;
+    const newOperationRepresentative =
+      newFormData.new_operation_representative ?? [];
     const newSelectedContactId =
       newOperationRepresentative[0]?.existing_contact_id;
 
@@ -101,7 +102,9 @@ const NewOperationRepresentativeForm: FC<
     } else {
       // This is needed to update the form data and show the submit button
       setFormState({
-        operation_representatives: formState.operation_representatives,
+        // Take the list from the event so deletions made in the
+        // OperationRepresentativeWidget aren't discarded
+        operation_representatives: newFormData.operation_representatives ?? [],
         new_operation_representative: newOperationRepresentative,
       });
     }
@@ -154,7 +157,7 @@ const NewOperationRepresentativeForm: FC<
           existingOperationRepresentatives,
           Boolean(existingContactId),
         )}
-        formContext={{ operationId: operation }}
+        formContext={{ operationId: operation, step }}
         onChange={handleChange}
         onSubmit={submitHandler}
         formData={formState}
