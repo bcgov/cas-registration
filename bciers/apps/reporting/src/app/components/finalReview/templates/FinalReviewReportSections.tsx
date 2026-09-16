@@ -84,8 +84,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
 
   if (!data) return null;
 
-  const { isEIO, isLFO, isReportingOnly, isNewEntrant, isSFOReportingOnly } =
-    flowHelpers(flow);
+  const { isEIO, isLFO, isReportingOnly, isNewEntrant } = flowHelpers(flow);
 
   const facilityReportsLFO: FacilityReportLFO[] = isLFO
     ? (data.facility_reports as FacilityReportLFO[])
@@ -211,7 +210,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
     {
       title: "Compliance Summary",
       condition: (reportData: ReportData) =>
-        !isEIO && !isSFOReportingOnly && !!reportData.report_compliance_summary,
+        !isEIO && !isReportingOnly && !!reportData.report_compliance_summary,
       getData: (reportData: ReportData) => reportData.report_compliance_summary,
       fields: (reportData: ReportData) =>
         complianceSummaryFields(reportData.report_compliance_summary?.products),
