@@ -19,7 +19,6 @@ const MissingProductAlertContent: React.FC<Props> = (props) => {
     <div>
       To allocate emissions to a product that isn&apos;t shown below, return to
       the <LinkToProductionPage {...props} /> and select the product first.
-      Note: unregulated products will not be shown below.
     </div>
   );
 };
