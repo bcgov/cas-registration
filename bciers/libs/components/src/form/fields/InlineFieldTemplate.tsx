@@ -135,7 +135,7 @@ function InlineFieldTemplate({
         )}
         {isErrors && (
           <div
-            className="flex items-center text-red-600 md:ml-4 whitespace-nowrap"
+            className="flex flex-1 min-w-0 items-center text-red-600 md:ml-4"
             role="alert"
           >
             <div className="hidden md:block mr-3 shrink-0">
