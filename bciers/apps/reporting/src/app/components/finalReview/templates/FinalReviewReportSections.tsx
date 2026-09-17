@@ -147,7 +147,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
     {
       title: "Review Operation Information",
       getData: (reportData: ReportData) => reportData.report_operation,
-      fields: () => operationFields(isEIO),
+      fields: () => operationFields(isEIO, isReportingOnly),
     },
     {
       title: "Person Responsible for Submitting Report",
