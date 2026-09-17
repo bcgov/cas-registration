@@ -10,14 +10,28 @@ export const createVerificationSchema = (
   isSupplementaryReport: boolean,
   isEIO: boolean,
 ): RJSFSchema => {
-  const schema = schemaType === OperationTypes.SFO ? sfoSchema : lfoSchema;
+  const baseSchema = schemaType === OperationTypes.SFO ? sfoSchema : lfoSchema;
+
+  // make a copy of the properties from the imported baseSchema so that we can customize it
+  // without interfering with subsequent schemas needed when the user navigates to
+  // a different report type
+  // refer to bug https://github.com/bcgov/cas-registration/issues/4547
+  const properties = {
+    ...baseSchema.properties,
+  };
+
+  const required = [...(baseSchema.required ?? [])];
 
   if (isSupplementaryReport || isEIO) {
-    schema.properties = schema.properties || {};
-    schema.properties.info_note = { type: "object", readOnly: true };
+    properties.info_note = {
+      type: "object",
+      readOnly: true,
+    };
   }
-  if (isEIO) {
-    schema.required = [];
-  }
-  return schema;
+
+  return {
+    ...baseSchema,
+    properties,
+    required: isEIO ? [] : required,
+  };
 };
