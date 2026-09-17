@@ -124,7 +124,7 @@ const electricityFields = (
   },
 ];
 
-export const operationFields = (isEIO: boolean) => [
+export const operationFields = (isEIO: boolean, isReportingOnly: boolean) => [
   { label: "Report Type", key: FIELD_KEYS.reportType },
   { label: "Operation Representatives", key: "representatives" },
   { label: "Operator Legal Name", key: FIELD_KEYS.operatorLegalName },
@@ -139,8 +139,10 @@ export const operationFields = (isEIO: boolean) => [
     : [
         { label: "BORO ID", key: FIELD_KEYS.boroId },
         { label: "Reporting activities", key: "activities" },
-        { label: "Regulated products", key: "regulated_products" },
       ]),
+  ...(isEIO || isReportingOnly
+    ? []
+    : [{ label: "Regulated products", key: "regulated_products" }]),
 ];
 
 export const personResponsibleFields = [
