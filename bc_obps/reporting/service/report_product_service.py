@@ -10,6 +10,45 @@ from reporting.models.report_product import ReportProduct
 
 
 class ReportProductService:
+
+    @classmethod
+    def update_empty_records_for_unregulated_products(
+        cls,
+        report_version_id: int,
+        facility_report_id: int,
+    ) -> None:
+        """
+        Adds a "zero" report_product record for unregulated products reported by this operation (for emission allocation purposes only)
+        """
+
+        reported_unregulated_products = (
+            ReportOperation.objects.get(report_version_id=report_version_id)
+            .regulated_products.filter(is_regulated=False)
+            .exclude(
+                id__in=ReportProduct.objects.filter(report_version_id=report_version_id).values_list(
+                    "product_id", flat=True
+                )
+            )
+            .values_list("id", flat=True)
+        )
+
+        for product_id in reported_unregulated_products:
+            ReportProduct.objects.update_or_create(
+                report_version_id=report_version_id,
+                facility_report_id=facility_report_id,
+                product_id=product_id,
+                defaults={
+                    "report_version_id": report_version_id,
+                    "facility_report_id": facility_report_id,
+                    "product_id": product_id,
+                    "annual_production": 0,
+                    "production_data_jan_mar": 0,
+                    "production_data_apr_dec": 0,
+                    "production_methodology": "other",
+                    "production_methodology_description": "auto-generated report_product record for unregulated product",
+                },
+            )
+
     @classmethod
     @transaction.atomic()
     def save_production_data(
@@ -17,32 +56,28 @@ class ReportProductService:
     ) -> None:
 
         facility_report = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
-        unregulated_product_ids = RegulatedProduct.objects.filter(is_regulated=False).values_list("id", flat=True)
-
-        # Delete the report products that are not in the data
-
-        # A KeyError is raised if the "product_id" key doesn't exist
-        product_ids = [rp["product_id"] for rp in report_products]
 
         # A DoesNotExist error is raised if the report doesn't have a ReportOperation object.
-        allowed_product_ids = ReportOperation.objects.get(
-            report_version_id=report_version_id
-        ).regulated_products.values_list("id", flat=True)
+        allowed_products = ReportOperation.objects.get(report_version_id=report_version_id).regulated_products
+        allowed_product_ids = allowed_products.values_list("id", flat=True)
 
-        if RegulatedProduct.objects.filter(id__in=product_ids).exclude(id__in=allowed_product_ids).exists():
+        # A KeyError is raised if the "product_id" key doesn't exist
+        submitted_product_ids = {rp["product_id"] for rp in report_products}
+
+        if RegulatedProduct.objects.filter(id__in=submitted_product_ids).exclude(id__in=allowed_product_ids).exists():
             raise ValueError(
                 "Data was submitted for a product that is not in the products allowed for this facility. "
-                + f"Allowed products ids: {list(allowed_product_ids)}, Submitted product ids: {product_ids}"
+                + f"Allowed products ids: {list(allowed_product_ids)}, Submitted product ids: {submitted_product_ids}"
             )
+
         # Do not remove auto-generated report_product records for unregulated products
-        product_ids.extend(unregulated_product_ids)
+        keep = submitted_product_ids.union(allowed_products.filter(is_regulated=False).values_list("id", flat=True))
         ReportProduct.objects.filter(
             report_version_id=report_version_id, facility_report__facility_id=facility_id
-        ).exclude(product_id__in=product_ids).delete()
+        ).exclude(product_id__in=keep).delete()
 
         # Update or create the report products from the data
         for report_product in report_products:
-
             product_id = report_product["product_id"]
 
             ReportProduct.objects.update_or_create(
@@ -57,26 +92,7 @@ class ReportProductService:
                 },
             )
 
-        # Add a report_product record for unregulated products reported by this operation (for emission allocation only)
-        for r_product_id in ReportOperation.objects.get(
-            report_version_id=report_version_id
-        ).regulated_products.values_list("id", flat=True):
-            if r_product_id in unregulated_product_ids:
-                ReportProduct.objects.update_or_create(
-                    report_version_id=report_version_id,
-                    facility_report=facility_report,
-                    product_id=r_product_id,
-                    defaults={
-                        "report_version_id": report_version_id,
-                        "facility_report": facility_report,
-                        "product_id": r_product_id,
-                        "annual_production": 0,
-                        "production_data_jan_mar": 0,
-                        "production_data_apr_dec": 0,
-                        "production_methodology": "other",
-                        "production_methodology_description": "auto-generated report_product record for unregulated product",
-                    },
-                )
+        ReportProductService.update_empty_records_for_unregulated_products(report_version_id, facility_report.id)
 
     @classmethod
     def get_production_data(cls, report_version_id: int, facility_id: UUID) -> QuerySet[ReportProduct]:
