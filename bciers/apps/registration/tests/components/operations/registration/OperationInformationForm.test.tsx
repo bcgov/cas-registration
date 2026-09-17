@@ -739,4 +739,106 @@ describe("the OperationInformationForm component", () => {
       "read-only-widget",
     );
   });
+
+  it("displays an error message when the create request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    fetchFormEnums(Apps.REGISTRATION);
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    const schemaData = await createRegistrationOperationInformationSchemas();
+    render(
+      <OperationInformationForm
+        rawFormData={{}}
+        schema={schemaData.schema}
+        uiSchema={schemaData.uiSchema}
+        step={1}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+    const purposeInput = screen.getByRole("combobox", {
+      name: /The purpose of this registration+/i,
+    });
+    await fillComboboxWidgetField(purposeInput, "Electricity Import Operation");
+    await userEvent.type(
+      screen.getByLabelText(/Operation Name/i),
+      "EIO Op Name",
+    );
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: /save and continue/i,
+      }),
+    );
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenLastCalledWith(
+        "registration/operations",
+        "POST",
+        "",
+        expect.anything(),
+      );
+    });
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it("displays an error message when the update request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    const operationId = "b974a7fc-ff63-41aa-9d57-509ebe2553a4";
+    fetchFormEnums(Apps.REGISTRATION);
+    // Mock the GET from selecting an operation
+    actionHandler.mockResolvedValueOnce({
+      operation: operationId,
+      name: "Existing Operation",
+      type: "Single Facility Operation",
+      naics_code_id: 1,
+      boundary_map: JSON.stringify({
+        id: 1,
+        name: "testpdf.pdf",
+        status: "Clean",
+      }),
+      process_flow_diagram: JSON.stringify({
+        id: 2,
+        name: "testpdf2.pdf",
+        status: "Clean",
+      }),
+      registration_purpose: "Reporting Operation",
+      activities: [1],
+    });
+    // Mock the POST error response from the submit handler
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    const schemaData = await createRegistrationOperationInformationSchemas();
+    render(
+      <OperationInformationForm
+        rawFormData={{}}
+        schema={schemaData.schema}
+        uiSchema={schemaData.uiSchema}
+        step={1}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+    const operationInput = screen.getByLabelText(/Select your operation+/i);
+    await fillComboboxWidgetField(operationInput, "Existing Operation");
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
+        "Existing Operation",
+      );
+    });
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: /save and continue/i,
+      }),
+    );
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenLastCalledWith(
+        `registration/operations/${operationId}/registration/operation`,
+        "POST",
+        `/register-an-operation/${operationId}/1`,
+        expect.anything(),
+      );
+    });
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(mockPush).not.toHaveBeenCalled();
+  });
 });

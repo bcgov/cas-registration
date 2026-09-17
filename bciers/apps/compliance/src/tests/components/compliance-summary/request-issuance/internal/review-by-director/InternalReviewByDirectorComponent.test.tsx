@@ -1,25 +1,24 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import InternalReviewByDirectorComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/review-by-director/InternalReviewByDirectorComponent";
-import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
-import { useSessionRole } from "@bciers/utils/src/sessionUtils";
-import { actionHandler } from "@bciers/actions";
+import {
+  actionHandler,
+  useRouter,
+  useSessionRole,
+} from "@bciers/testConfig/mocks";
+import {
+  AnalystSuggestion,
+  FrontEndRoles,
+  IssuanceStatus,
+} from "@bciers/utils/src/enums";
 
 // Mock the router
 const mockPush = vi.fn();
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
-}));
 
-// Mock useSessionRole
-vi.mock("@bciers/utils/src/sessionUtils", () => ({
-  useSessionRole: vi.fn(),
-}));
+const mockActionHandler = vi.mocked(actionHandler);
 
-vi.mock("@bciers/actions", () => ({
-  actionHandler: vi.fn(),
-}));
+useRouter.mockReturnValue({
+  push: mockPush,
+});
 
 describe("InternalReviewByDirectorComponent", () => {
   const mockData = {
@@ -43,8 +42,15 @@ describe("InternalReviewByDirectorComponent", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useSessionRole as any).mockReturnValue("cas_director");
-    (actionHandler as any).mockResolvedValue({ error: null });
+    mockActionHandler.mockReset();
+
+    useSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
+
+    useRouter.mockReturnValue({
+      push: mockPush,
+    });
+
+    mockActionHandler.mockResolvedValue({ error: null });
   });
 
   it("renders form fields, section headers, and navigation buttons for director", () => {
@@ -79,7 +85,7 @@ describe("InternalReviewByDirectorComponent", () => {
   });
 
   it("renders form without action buttons when user is not CAS director", () => {
-    (useSessionRole as any).mockReturnValue("cas_analyst");
+    useSessionRole.mockReturnValue(FrontEndRoles.CAS_ANALYST);
 
     render(
       <InternalReviewByDirectorComponent
@@ -187,7 +193,7 @@ describe("InternalReviewByDirectorComponent", () => {
     fireEvent.click(approveButton);
 
     await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledWith(
+      expect(mockActionHandler).toHaveBeenCalledWith(
         `compliance/compliance-report-versions/${mockComplianceReportVersionId}/earned-credits`,
         "PUT",
         `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
@@ -217,7 +223,7 @@ describe("InternalReviewByDirectorComponent", () => {
     fireEvent.click(declineButton);
 
     await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalledWith(
+      expect(mockActionHandler).toHaveBeenCalledWith(
         `compliance/compliance-report-versions/${mockComplianceReportVersionId}/earned-credits`,
         "PUT",
         `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
@@ -233,31 +239,6 @@ describe("InternalReviewByDirectorComponent", () => {
     expect(mockPush).toHaveBeenCalledWith(
       `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
     );
-  });
-
-  it("handles submission error and displays error message", async () => {
-    (actionHandler as any).mockResolvedValue({ error: "Submission failed" });
-
-    render(
-      <InternalReviewByDirectorComponent
-        data={mockData}
-        complianceReportVersionId={mockComplianceReportVersionId}
-      />,
-    );
-
-    const approveButton = screen.getByRole("button", { name: "Approve" });
-    fireEvent.click(approveButton);
-
-    await waitFor(() => {
-      expect(actionHandler).toHaveBeenCalled();
-    });
-
-    // Should not navigate on error
-    expect(mockPush).not.toHaveBeenCalledWith(
-      `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
-    );
-
-    expect(screen.getByText("Submission failed")).toBeVisible();
   });
 
   it("displays awaiting note when issuance status is issuance requested", () => {
@@ -320,6 +301,30 @@ describe("InternalReviewByDirectorComponent", () => {
     // Further clicks on either button should be ignored
     fireEvent.click(approveButton);
     fireEvent.click(declineButton);
-    expect(actionHandler).toHaveBeenCalledTimes(1);
+
+    expect(mockActionHandler).toHaveBeenCalledTimes(1);
+  });
+
+  it("displays an error message when the update request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    mockActionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(
+      <InternalReviewByDirectorComponent
+        data={mockData}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Approve" }));
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(mockActionHandler).toHaveBeenCalledTimes(1);
+    expect(mockActionHandler).toHaveBeenCalledWith(
+      `compliance/compliance-report-versions/${mockComplianceReportVersionId}/earned-credits`,
+      "PUT",
+      `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
+      expect.anything(),
+    );
+    expect(mockPush).not.toHaveBeenCalled();
   });
 });

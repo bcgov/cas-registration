@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import FacilityEmissionAllocationForm from "@reporting/src/app/components/facility/FacilityEmissionAllocationForm";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
-import { dummyNavigationInformation } from "../taskList/utils";
+import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
 import userEvent from "@testing-library/user-event";
 import { EmissionAllocationResponse } from "@reporting/src/app/utils/getEmissionAllocations";
 import { RegulatedProduct } from "@reporting/src/app/components/operations/types";
@@ -461,5 +461,44 @@ describe("FacilityEmissionAllocationForm component", () => {
       expect(screen.getAllByText(/Product 1/i)).toHaveLength(2);
       expect(screen.getAllByText(/Product 2/i)).toHaveLength(2);
     });
+  });
+
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(
+      <FacilityEmissionAllocationForm
+        version_id={config.mockVersionId}
+        facility_id={config.mockFacilityId}
+        orderedActivities={[]}
+        initialData={mockInitialData}
+        navigationInformation={dummyNavigationInformation}
+        facilityType="Large Facility"
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        reportingYear={mockReportingYear}
+        regulatedProducts={mockRegulatedProducts}
+      />,
+    );
+    const submitButton = screen.getByRole("button", {
+      name: config.buttons.saveAndContinue,
+    });
+    await waitFor(() => {
+      expect(submitButton).toBeEnabled();
+    });
+    fireEvent.click(submitButton);
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledTimes(1);
+    });
+    expect(actionHandler).toHaveBeenCalledWith(
+      `reporting/report-version/${config.mockVersionId}/facilities/${config.mockFacilityId}/allocate-emissions`,
+      "POST",
+      `/reporting/reports/${config.mockVersionId}/facilities/${config.mockFacilityId}/allocation-of-emissions`,
+      expect.anything(),
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(mockRouterPush).not.toHaveBeenCalled();
   });
 });

@@ -12,6 +12,10 @@ import { useParams, useRouter } from "next/navigation";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import { actionHandler } from "@bciers/actions";
 import useKey from "@bciers/utils/src/useKey";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   schema: any;
@@ -35,7 +39,7 @@ export default function ContactForm({
   allowEdit,
 }: Readonly<Props>) {
   const router = useRouter();
-  const [error, setError] = useState(undefined);
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [formState, setFormState] = useState(formData ?? {});
   const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const [key, resetKey] = useKey();
@@ -51,14 +55,54 @@ export default function ContactForm({
   const handleArchiveContact = async () => {
     setIsSubmitting(true);
     const response = await archiveContact(params.contactId as string);
-    if (response?.error) {
-      setError(response.error as any);
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
       setModalOpen(false);
       setIsSubmitting(false);
       return;
     }
     router.push("/contacts?from_deletion=true");
     return;
+  };
+
+  const handleSubmit = async (data: { formData?: any }) => {
+    setErrors(undefined);
+    const updatedFormData = { ...formState, ...data.formData };
+    setFormState(updatedFormData);
+
+    const method = isCreatingState ? "POST" : "PUT";
+    const endpoint = isCreatingState
+      ? "registration/contacts"
+      : `registration/contacts/${formState.id}`;
+    const pathToRevalidate = isCreatingState
+      ? "/contacts"
+      : `/contacts/${formState.id}`;
+    const body = {
+      ...data.formData,
+    };
+
+    const response = await actionHandler(endpoint, method, pathToRevalidate, {
+      body: JSON.stringify(body),
+    });
+
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
+      return response;
+    }
+
+    if (isCreatingState) {
+      setIsCreatingState(false);
+      setFormState((prevState) => ({
+        ...prevState,
+        id: response.id,
+      }));
+    } else {
+      resetKey();
+    }
+    const replaceUrl = `/contacts/${
+      method === "POST" ? response.id : formState.id
+    }?contacts_title=${response.first_name} ${response.last_name}`;
+    router.replace(replaceUrl);
   };
 
   const hasPlacesAssigned =
@@ -82,7 +126,7 @@ export default function ContactForm({
       </SimpleModal>
       <SingleStepTaskListForm
         key={key}
-        error={error}
+        errors={renderedErrors}
         schema={schema}
         uiSchema={contactsUiSchema}
         formData={formState}
@@ -97,50 +141,7 @@ export default function ContactForm({
         }
         handleDelete={handleClickDelete}
         deleteButtonText="Delete Contact"
-        onSubmit={async (data: { formData?: any }) => {
-          setError(undefined);
-          const updatedFormData = { ...formState, ...data.formData };
-          setFormState(updatedFormData);
-
-          const method = isCreatingState ? "POST" : "PUT";
-          const endpoint = isCreatingState
-            ? "registration/contacts"
-            : `registration/contacts/${formState.id}`;
-          const pathToRevalidate = isCreatingState
-            ? "/contacts"
-            : `/contacts/${formState.id}`;
-          const body = {
-            ...data.formData,
-          };
-
-          const response = await actionHandler(
-            endpoint,
-            method,
-            pathToRevalidate,
-            {
-              body: JSON.stringify(body),
-            },
-          );
-
-          if (response.error) {
-            setError(response.error);
-            return { error: response.error };
-          }
-
-          if (isCreatingState) {
-            setIsCreatingState(false);
-            setFormState((prevState) => ({
-              ...prevState,
-              id: response.id,
-            }));
-          } else {
-            resetKey();
-          }
-          const replaceUrl = `/contacts/${
-            method === "POST" ? response.id : formState.id
-          }?contacts_title=${response.first_name} ${response.last_name}`;
-          router.replace(replaceUrl);
-        }}
+        onSubmit={handleSubmit}
         onCancel={() => router.replace("/contacts")}
       />
     </>
