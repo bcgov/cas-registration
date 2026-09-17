@@ -25,9 +25,10 @@ class ReportProductService:
             ReportOperation.objects.get(report_version_id=report_version_id)
             .regulated_products.filter(is_regulated=False)
             .exclude(
-                id__in=ReportProduct.objects.filter(report_version_id=report_version_id).values_list(
-                    "product_id", flat=True
-                )
+                id__in=ReportProduct.objects.filter(
+                    report_version_id=report_version_id,
+                    facility_report_id=facility_report_id,
+                ).values_list("product_id", flat=True)
             )
             .values_list("id", flat=True)
         )
