@@ -14,11 +14,12 @@ async function removeOperationRepresentative(
   operation_id: string,
   // Id will always be a number for operation representatives. We have to additionally type string to make FieldSchema happy.
   representative_id: number | string,
+  step: number,
 ) {
   const response = await actionHandler(
     `registration/operations/${operation_id}/registration/operation-representative`,
     "PUT",
-    `registration/administration/operations/${operation_id}`,
+    `/register-an-operation/${operation_id}/${step}`,
     {
       body: JSON.stringify({ id: representative_id }),
     },
@@ -32,6 +33,7 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
   schema,
   registry,
   uiSchema,
+  onChange,
 }) => {
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [error, setError] = useState(undefined);
@@ -63,11 +65,20 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
             const response = await removeOperationRepresentative(
               formContext?.operationId,
               option.id,
+              formContext?.step,
             );
             if (response?.error) {
               setError(response.error);
               return;
             }
+            // Keep the form data in sync with the server, otherwise the deleted
+            // id lingers in the form data and fails enum validation on the next
+            // save (the item disappears from the list but not from the data)
+            onChange(
+              (value as (number | string)[]).filter(
+                (repId) => repId !== option.id,
+              ),
+            );
             setIsSnackbarOpen(true);
           }}
         />
