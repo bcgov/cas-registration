@@ -8,8 +8,6 @@ import {
 const ALLOCATION_OF_EMISSIONS = {
   // Alert note at top of form — text is split by an embedded link, so verified in two parts
   MISSING_PRODUCT_ALERT_LINK: "production data page",
-  MISSING_PRODUCT_ALERT_NOTE:
-    "Note: unregulated products will not be shown below.",
 
   METHODOLOGY_LABEL: "Methodology",
   METHODOLOGY_OPTIONS: ["OBPS Allocation Calculator", "Other"] as const,
@@ -40,10 +38,7 @@ export class AllocationOfEmissionsPOM {
   async validateProductAlertVisible(visible: boolean = true) {
     await assertFieldVisibility(
       this.page,
-      [
-        ALLOCATION_OF_EMISSIONS.MISSING_PRODUCT_ALERT_LINK,
-        ALLOCATION_OF_EMISSIONS.MISSING_PRODUCT_ALERT_NOTE,
-      ],
+      [ALLOCATION_OF_EMISSIONS.MISSING_PRODUCT_ALERT_LINK],
       visible,
     );
   }
