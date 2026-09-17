@@ -70,7 +70,8 @@ class ReportEmissionAllocationService:
             facility_report_id
         )
 
-        # Step 3: Fetch report products for the given report version and facility
+        # Step 3: Fetch report products for the given report version and facility. We first make sure we have the unregulated products.
+        ReportProductService.update_empty_records_for_unregulated_products(report_version_id, facility_report_id)
         report_products = ReportProduct.objects.filter(
             report_version_id=report_version_id, facility_report__facility_id=facility_id
         )
