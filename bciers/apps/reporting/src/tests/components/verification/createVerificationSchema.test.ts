@@ -41,4 +41,24 @@ describe("createVerificationSchema", () => {
     expect(lfoSchema.required).toEqual(lfoRequired);
     expect(sfoSchema.required).toEqual(sfoRequired);
   });
+
+  it("retains required fields for non-EIO reports", () => {
+    const originalSfoRequired = [...(sfoSchema.required ?? [])];
+    const originalLfoRequired = [...(lfoSchema.required ?? [])];
+
+    const standardSfoSchema = createVerificationSchema(
+      OperationTypes.SFO,
+      false,
+      false,
+    );
+    const standardLfoSchema = createVerificationSchema(
+      OperationTypes.LFO,
+      false,
+      false,
+    );
+
+    // assert that the returned schemas kept their original required arrays
+    expect(standardSfoSchema.required).toEqual(originalSfoRequired);
+    expect(standardLfoSchema.required).toEqual(originalLfoRequired);
+  });
 });
