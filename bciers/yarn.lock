@@ -2600,7 +2600,7 @@ __metadata:
     eslint-plugin-react: "npm:^7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
     globals: "npm:^16.5.0"
-    happo: "npm:6.14.0"
+    happo: "npm:6.16.0"
     jiti: "npm:2.7.0"
     jsdom: "npm:~26.1.0"
     jsonc-eslint-parser: "npm:^2.1.0"
@@ -9039,9 +9039,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"happo@npm:6.14.0":
-  version: 6.14.0
-  resolution: "happo@npm:6.14.0"
+"happo@npm:6.16.0":
+  version: 6.16.0
+  resolution: "happo@npm:6.16.0"
   dependencies:
     async-retry: "npm:^1.3.3"
     base64-stream: "npm:^1.0.0"
@@ -9050,11 +9050,11 @@ __metadata:
     jose: "npm:^6.2.10"
     limit-concur: "npm:^4.0.0"
     mime-types: "npm:^3.0.2"
-    modern-tar: "npm:0.8.4"
+    modern-tar: "npm:0.8.5"
     srcset: "npm:^5.0.3"
   bin:
     happo: dist/cli/main.js
-  checksum: 10c0/53d93a8547093a98975d780b3eb929003e8371c9c819698bb1fe5afdc2b4f94d12e6c5505367072d8e5bf183b86ea763674fdcde1bd9c3971831b6d9c42183ab
+  checksum: 10c0/717a80764b67fae295ef5e1c95a4eed1da7f35b85b73e093962a9a4c93721c33f1927eab6a0ce973643a8cdf447eadcb5818add32bc00032c91a121811654473
   languageName: node
   linkType: hard
 
@@ -10439,10 +10439,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"modern-tar@npm:0.8.4":
-  version: 0.8.4
-  resolution: "modern-tar@npm:0.8.4"
-  checksum: 10c0/0e8dc160bb99ad70742d4dbc248c79de7b239ee57e0c3771634db2ed27a0f2b91df6097f17888d9227439280d8b636417ad8ff329dbdeb1f597b814088ea51d8
+"modern-tar@npm:0.8.5":
+  version: 0.8.5
+  resolution: "modern-tar@npm:0.8.5"
+  checksum: 10c0/29946b8a79679dff507cb2b042eb9286aa7ec44992f2717d024afdbdbeb2afd274ca8d32c4fcfe76f2b4cd45f6d2900fdd0a5505527677bf07ee0c1f159a848c
   languageName: node
   linkType: hard
 
