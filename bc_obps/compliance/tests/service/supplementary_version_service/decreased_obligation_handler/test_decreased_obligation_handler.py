@@ -5,8 +5,11 @@ from model_bakery import baker
 from compliance.models import ComplianceReportVersion, ElicensingInvoice
 from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
+from compliance.models.elicensing_line_item import ElicensingLineItem
+from reporting.models import ReportVersion
 from unittest.mock import MagicMock, patch
 from compliance.service.supplementary_version_service.decreased_obligation_handler import DecreasedObligationHandler
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 from compliance.tests.service.supplementary_version_service.utils import (
     BaseSupplementaryVersionServiceTest,
     ZERO_DECIMAL,
@@ -260,6 +263,74 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling.assert_called_once_with(
             res.id,
             context=ComplianceReportVersionManualHandling.Context.CREDITS_OVER_ALLOWED_PERCENTAGE,
+        )
+        mock_create_earned_credits.assert_not_called()
+
+    # voided invoice with compliance units applied manual handling test
+    def test_handle__void_invoice_with_compliance_units_applied__flags_manual_handling(
+        self,
+        mock_find_newest_unpaid_anchor,
+        mock_get_rate,
+        mock_create_adjustment,
+        mock_record_manual_handling,
+        mock_collect_unpaid,
+        mock_void_invoices,
+        mock_mark_fully_met,
+        mock_create_earned_credits,
+        mock_is_credit_usage_over_cap,
+        run_on_commit_immediately,
+    ):
+        """
+        A decrease to zero excess emissions that voids an invoice with compliance units applied (no cash)
+        flags the supplementary CRV for manual handling with the COMPLIANCE_UNITS_APPLIED_TO_VOIDED_INVOICE context
+        """
+        # Obligation of 100 t with a $1,000 invoice, $200 of which was paid with compliance units
+        data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
+        )
+        data.fee.line_item_type = ElicensingLineItem.LineItemType.FEE
+        data.fee.save()
+        baker.make_recipe(
+            'compliance.tests.utils.elicensing_adjustment',
+            elicensing_line_item=data.fee,
+            amount=Decimal("-200.00"),
+            reason=ElicensingAdjustment.Reason.COMPLIANCE_UNITS_APPLIED,
+        )
+
+        prev_summary = data.report_compliance_summary
+        data.report_version.status = ReportVersion.ReportVersionStatus.Submitted
+        data.report_version.save()
+
+        # Supplementary summary drops excess emissions to zero -> refund of $1,000 at $10/t
+        mock_get_rate.return_value = Decimal("10.00")
+        new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            report_version=baker.make_recipe('reporting.tests.utils.report_version', report=data.report),
+            excess_emissions=Decimal('0'),
+            credited_emissions=Decimal('0'),
+        )
+
+        prev_crv = data.compliance_report_version
+        mock_find_newest_unpaid_anchor.return_value = prev_crv
+        mock_collect_unpaid.return_value = [
+            {
+                "version_id": prev_crv.id,
+                "invoice_id": data.invoice.id,
+                "outstanding": Decimal("800.00"),  # $1,000 obligation less the $200 of applied units
+                "paid": Decimal("0.00"),
+                "prev_excess_emissions": prev_summary.excess_emissions,
+            }
+        ]
+
+        # Act
+        res = DecreasedObligationHandler.handle(data.compliance_report, new_summary, prev_summary, version_count=2)
+
+        # Invoice is voided, and the applied units are flagged for manual handling
+        mock_void_invoices.assert_called_once_with(prev_crv.id)
+        mock_record_manual_handling.assert_called_once_with(
+            res.id,
+            context=ComplianceReportVersionManualHandling.Context.COMPLIANCE_UNITS_APPLIED_TO_VOIDED_INVOICE,
         )
         mock_create_earned_credits.assert_not_called()
 

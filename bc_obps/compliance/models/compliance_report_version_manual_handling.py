@@ -33,6 +33,10 @@ class ComplianceReportVersionManualHandling(TimeStampedModel):
             "credits_over_allowed_percentage",
             "A supplementary decrease pushed the applied compliance units over the allowed percentage.",
         )
+        COMPLIANCE_UNITS_APPLIED_TO_VOIDED_INVOICE = (
+            "compliance_units_applied_to_voided_invoice",
+            "A supplementary decrease voided an invoice that had compliance units applied to it.",
+        )
 
     compliance_report_version = models.OneToOneField(
         ComplianceReportVersion,

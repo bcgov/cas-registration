@@ -301,13 +301,20 @@ class DecreasedObligationHandler:
             earned_credits_tonnes = over_corrected_tonnes
 
         # --- Manual handling decision -------------------------------------------
-        # Two situations require manual handling, differing only by the context:
-        #   - a refundable cash pool, or
+        # Three situations require manual handling, differing only by the context:
+        #   - a refundable cash pool,
+        #   - a decrease that voided an invoice with compliance units applied to it, or
         #   - a decrease that pushed applied credits over the cap
-        # An over-correction into earned credits takes precedence over the over-cap case.
+        # An over-correction into earned credits takes precedence over the compliance units cases.
         manual_handling_context: Optional[str] = None
         if has_cash:
             manual_handling_context = ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH
+        elif not should_create_earned_credits and DecreasedObligationHandler._has_compliance_units_on_voided_invoice(
+            invoice_adjustments
+        ):
+            manual_handling_context = (
+                ComplianceReportVersionManualHandling.Context.COMPLIANCE_UNITS_APPLIED_TO_VOIDED_INVOICE
+            )
         elif not should_create_earned_credits and DecreasedObligationHandler._has_credit_usage_over_cap(
             invoice_adjustments
         ):
@@ -689,6 +696,25 @@ class DecreasedObligationHandler:
 
         crv.status = ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING
         crv.save(update_fields=['status'])
+
+    @staticmethod
+    def _has_compliance_units_on_voided_invoice(invoice_adjustments: List[InvoiceAdjustment]) -> bool:
+        """
+        Return True if the decrease voids an invoice that already has compliance units applied to it
+        The void cancels the obligation the units were applied against, so the units need manual handling
+        """
+        voided_version_ids = [
+            invoice_adjustment.version_id
+            for invoice_adjustment in invoice_adjustments
+            if invoice_adjustment.should_void_invoice
+        ]
+        if not voided_version_ids:
+            return False
+
+        return ElicensingAdjustment.objects.filter(
+            elicensing_line_item__elicensing_invoice__compliance_obligation__compliance_report_version_id__in=voided_version_ids,
+            reason=ElicensingAdjustment.Reason.COMPLIANCE_UNITS_APPLIED,
+        ).exists()
 
     @staticmethod
     def _has_credit_usage_over_cap(invoice_adjustments: List[InvoiceAdjustment]) -> bool:
