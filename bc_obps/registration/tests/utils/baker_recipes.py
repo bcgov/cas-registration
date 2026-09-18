@@ -183,6 +183,6 @@ operation_designated_operator_timeline = Recipe(
     end_date=timezone.now(),
 )
 
-regulated_product = Recipe(RegulatedProduct, valid_from="2023-01-01", valid_to="2099-12-31")
+regulated_product = Recipe(RegulatedProduct, valid_from="2023-01-01", valid_to="2099-12-31", is_regulated=True)
 
 activity = Recipe(Activity)
