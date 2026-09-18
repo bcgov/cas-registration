@@ -9,6 +9,7 @@ from reporting.models import (
 )
 from registration.utils import custom_reverse_lazy
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from reporting.models.emission_category import EmissionCategory
 
 
 @pytest.mark.django_db
@@ -16,7 +17,9 @@ class TestReportFinalReview(CommonTestSetup):
     def setup_method(self):
         super().setup_method()
 
-        self.emission_category_ = make_recipe("reporting.tests.utils.emission_category", category_type="basic")
+        self.emission_category_ = EmissionCategory.objects.get(
+            category_name="Stationary fuel combustion emissions", category_type="basic"
+        )
         self.activity_1 = make_recipe("reporting.tests.utils.activity", name="very fake activity")
         self.activity_2 = make_recipe("reporting.tests.utils.activity", name="fake activity")
         self.regulated_product_1 = make_recipe(
@@ -209,8 +212,8 @@ class TestReportFinalReview(CommonTestSetup):
         assert allocation["allocation_methodology"] == "Other"
 
         # The schema returns the result from the report product emission allocation service
-        # One record per emission category
-        assert len(product_allocations) == 14
+        # One record per non-other-excluded emission category
+        assert len(product_allocations) == 12
 
         for emission_allocation in product_allocations:
             assert "emission_category_name" in emission_allocation
