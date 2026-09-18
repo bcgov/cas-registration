@@ -213,6 +213,7 @@ class TestReportFinalReview(CommonTestSetup):
 
         # The schema returns the result from the report product emission allocation service
         # One record per non-other-excluded emission category
+        assert len(EmissionCategory.objects.exclude(category_type="other_excluded")) == 12
         assert len(product_allocations) == 12
 
         for emission_allocation in product_allocations:
