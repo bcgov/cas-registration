@@ -10,7 +10,7 @@ export const createContactSchema = (
 
   // We should not show `places_assigned` when creating
   if (isCreating) {
-    delete localSchema.properties.section1.properties.places_assigned;
+    delete localSchema.properties.places_assigned;
   }
 
   return localSchema;

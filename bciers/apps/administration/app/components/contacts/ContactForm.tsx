@@ -1,9 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
+import TaskListForm from "@bciers/components/form/TaskListForm";
 import { ContactFormData } from "./types";
-import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
+import {
+  FormMode,
+  FrontEndRoles,
+  FrontendMessages,
+} from "@bciers/utils/src/enums";
+import SnackBar from "@bciers/components/form/components/SnackBar";
 import { contactsUiSchema } from "@/administration/app/data/jsonSchema/contact";
 import Link from "next/link";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
@@ -42,6 +47,7 @@ export default function ContactForm({
   const role = useSessionRole();
   const [modalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const params = useParams();
 
   const handleClickDelete = () => {
@@ -50,7 +56,11 @@ export default function ContactForm({
 
   const handleArchiveContact = async () => {
     setIsSubmitting(true);
-    const response = await archiveContact(params.contactId as string);
+    // Not the route param: after creating a contact the URL is rewritten with
+    // history.replaceState, so useParams() still reports the add-contact route
+    const response = await archiveContact(
+      String(formState.id ?? params.contactId),
+    );
     if (response?.error) {
       setError(response.error as any);
       setModalOpen(false);
@@ -66,6 +76,12 @@ export default function ContactForm({
 
   return (
     <>
+      {/* Sits outside TaskListForm so that resetKey() doesn't unmount it on save */}
+      <SnackBar
+        isSnackbarOpen={isSnackbarOpen}
+        setIsSnackbarOpen={setIsSnackbarOpen}
+        message={FrontendMessages.SUBMIT_CONFIRMATION}
+      />
       <SimpleModal
         title="Confirmation"
         open={modalOpen}
@@ -80,7 +96,7 @@ export default function ContactForm({
           ? "Before you can delete this contact, please remove them from the places they are assigned. If they are the only one assigned, you must replace them with another contact in the assigned place."
           : "Please confirm that you would like to delete this contact."}
       </SimpleModal>
-      <SingleStepTaskListForm
+      <TaskListForm
         key={key}
         error={error}
         schema={schema}
@@ -127,6 +143,8 @@ export default function ContactForm({
             return { error: response.error };
           }
 
+          setIsSnackbarOpen(true);
+
           if (isCreatingState) {
             setIsCreatingState(false);
             setFormState((prevState) => ({
@@ -139,7 +157,10 @@ export default function ContactForm({
           const replaceUrl = `/contacts/${
             method === "POST" ? response.id : formState.id
           }?contacts_title=${response.first_name} ${response.last_name}`;
-          router.replace(replaceUrl);
+          // Rewrite the URL in place. router.replace() re-suspends the page's Suspense
+          // boundary (see defaultPageFactory), which swaps the form for a loading
+          // skeleton and unmounts the success message along with it.
+          window.history.replaceState(null, "", `/administration${replaceUrl}`);
         }}
         onCancel={() => router.replace("/contacts")}
       />
