@@ -1,16 +1,29 @@
 import { RJSFSchema } from "@rjsf/utils";
 import provinceOptions from "@bciers/data/provinces.json";
-import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
+import SectionHeaderFieldTemplate from "@bciers/components/form/fields/SectionHeaderFieldTemplate";
 import {
   PlacesAssignedFieldTemplate,
   PlacesAssignedFieldItemTemplate,
 } from "@bciers/components/form/fields/PlacesAssignedFieldTemplate";
 
-const section1: RJSFSchema = {
+export const contactsSchema: RJSFSchema = {
   type: "object",
-  title: "Personal Information",
-  required: ["first_name", "last_name"],
+  required: [
+    "first_name",
+    "last_name",
+    "position_title",
+    "email",
+    "phone_number",
+    "street_address",
+    "municipality",
+    "province",
+    "postal_code",
+  ],
   properties: {
+    personal_information_title: {
+      type: "string",
+      title: "Personal Information",
+    },
     first_name: {
       type: "string",
       title: "First Name",
@@ -32,26 +45,18 @@ const section1: RJSFSchema = {
         },
       },
     },
-  },
-};
-
-const section2: RJSFSchema = {
-  type: "object",
-  title: "Work Information",
-  required: ["position_title"],
-  properties: {
+    work_information_title: {
+      type: "string",
+      title: "Work Information",
+    },
     position_title: {
       type: "string",
       title: "Job Title / Position",
     },
-  },
-};
-
-const section3: RJSFSchema = {
-  type: "object",
-  title: "Contact Information",
-  required: ["email", "phone_number"],
-  properties: {
+    contact_information_title: {
+      type: "string",
+      title: "Contact Information",
+    },
     email: {
       type: "string",
       title: "Business Email Address",
@@ -62,14 +67,10 @@ const section3: RJSFSchema = {
       title: "Business Telephone Number",
       format: "phone",
     },
-  },
-};
-
-const section4: RJSFSchema = {
-  type: "object",
-  title: "Address Information",
-  required: ["street_address", "municipality", "province", "postal_code"],
-  properties: {
+    address_information_title: {
+      type: "string",
+      title: "Address Information",
+    },
     street_address: {
       type: "string",
       title: "Business Mailing Address",
@@ -91,70 +92,54 @@ const section4: RJSFSchema = {
   },
 };
 
-export const contactsSchema: RJSFSchema = {
-  type: "object",
-  required: ["section1", "section2", "section3", "section4"],
-  properties: {
-    section1,
-    section2,
-    section3,
-    section4,
-  },
-};
-
 export const contactsUiSchema = {
-  "ui:FieldTemplate": SectionFieldTemplate,
-  "ui:options": {
-    label: false,
+  personal_information_title: {
+    "ui:FieldTemplate": SectionHeaderFieldTemplate,
   },
-  section1: {
-    "ui:FieldTemplate": SectionFieldTemplate,
-    "ui:order": ["selected_user", "first_name", "last_name", "places_assigned"],
-    places_assigned: {
-      "ui:ArrayFieldTemplate": PlacesAssignedFieldTemplate,
-      "ui:ArrayFieldItemTemplate": PlacesAssignedFieldItemTemplate,
-      "ui:classNames": "[&>div:last-child]:w-2/3",
-      items: {
-        "ui:widget": "ReadOnlyWidget",
+  places_assigned: {
+    "ui:ArrayFieldTemplate": PlacesAssignedFieldTemplate,
+    "ui:ArrayFieldItemTemplate": PlacesAssignedFieldItemTemplate,
+    "ui:classNames": "[&>div:last-child]:w-2/3",
+    items: {
+      "ui:widget": "ReadOnlyWidget",
+      "ui:options": {
+        label: false,
+        inline: true,
+      },
+      role_name: {
         "ui:options": {
           label: false,
-          inline: true,
         },
-        role_name: {
-          "ui:options": {
-            label: false,
-          },
+      },
+      operation_name: {
+        "ui:options": {
+          label: false,
         },
-        operation_name: {
-          "ui:options": {
-            label: false,
-          },
-        },
-        operation_id: {
-          "ui:widget": "hidden",
-        },
+      },
+      operation_id: {
+        "ui:widget": "hidden",
       },
     },
   },
-  section2: {
-    "ui:FieldTemplate": SectionFieldTemplate,
+  work_information_title: {
+    "ui:FieldTemplate": SectionHeaderFieldTemplate,
   },
-  section3: {
-    "ui:FieldTemplate": SectionFieldTemplate,
-    email: {
-      "ui:widget": "EmailWidget",
-    },
-    phone_number: {
-      "ui:widget": "PhoneWidget",
-    },
+  contact_information_title: {
+    "ui:FieldTemplate": SectionHeaderFieldTemplate,
   },
-  section4: {
-    "ui:FieldTemplate": SectionFieldTemplate,
-    province: {
-      "ui:widget": "ComboBox",
-    },
-    postal_code: {
-      "ui:widget": "PostalCodeWidget",
-    },
+  email: {
+    "ui:widget": "EmailWidget",
+  },
+  phone_number: {
+    "ui:widget": "PhoneWidget",
+  },
+  address_information_title: {
+    "ui:FieldTemplate": SectionHeaderFieldTemplate,
+  },
+  province: {
+    "ui:widget": "ComboBox",
+  },
+  postal_code: {
+    "ui:widget": "PostalCodeWidget",
   },
 };
