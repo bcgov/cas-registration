@@ -6,8 +6,10 @@ from compliance.models import ComplianceReportVersion, ElicensingInvoice
 from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
 from compliance.models.elicensing_line_item import ElicensingLineItem
+from reporting.models import ReportVersion
 from unittest.mock import MagicMock, patch
 from compliance.service.supplementary_version_service.decreased_obligation_handler import DecreasedObligationHandler
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 from compliance.tests.service.supplementary_version_service.utils import (
     BaseSupplementaryVersionServiceTest,
     ZERO_DECIMAL,
@@ -282,60 +284,47 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         A decrease to zero excess emissions that voids an invoice with compliance units applied (no cash)
         flags the supplementary CRV for manual handling with the COMPLIANCE_UNITS_APPLIED_TO_VOIDED_INVOICE context
         """
-        mock_get_rate.return_value = Decimal("80.00")
-
-        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
-            prev_summary = baker.make_recipe(
-                'reporting.tests.utils.report_compliance_summary',
-                excess_emissions=Decimal('100.0000'),
-                credited_emissions=Decimal('0'),
-                report_version=self.report_version_1,
-            )
-        new_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary',
-            excess_emissions=Decimal('0'),  # ↓ 100 t -> refund $8,000
-            credited_emissions=Decimal('0'),
-            report_version=self.report_version_2,
+        # Obligation of 100 t with a $1,000 invoice, $200 of which was paid with compliance units
+        data = ComplianceTestHelper.build_test_data(
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
         )
-        compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
-        )
-        prev_crv = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=prev_summary,
-        )
-        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice')
-        baker.make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=prev_crv,
-            elicensing_invoice=invoice,
-        )
-        fee = baker.make_recipe(
-            'compliance.tests.utils.elicensing_line_item',
-            elicensing_invoice=invoice,
-            line_item_type=ElicensingLineItem.LineItemType.FEE,
-        )
-        # $2,000 of compliance units already applied against the $8,000 obligation
+        data.fee.line_item_type = ElicensingLineItem.LineItemType.FEE
+        data.fee.save()
         baker.make_recipe(
             'compliance.tests.utils.elicensing_adjustment',
-            elicensing_line_item=fee,
-            amount=Decimal("-2000.00"),
+            elicensing_line_item=data.fee,
+            amount=Decimal("-200.00"),
             reason=ElicensingAdjustment.Reason.COMPLIANCE_UNITS_APPLIED,
         )
+
+        prev_summary = data.report_compliance_summary
+        data.report_version.status = ReportVersion.ReportVersionStatus.Submitted
+        data.report_version.save()
+
+        # Supplementary summary drops excess emissions to zero -> refund of $1,000 at $10/t
+        mock_get_rate.return_value = Decimal("10.00")
+        new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            report_version=baker.make_recipe('reporting.tests.utils.report_version', report=data.report),
+            excess_emissions=Decimal('0'),
+            credited_emissions=Decimal('0'),
+        )
+
+        prev_crv = data.compliance_report_version
         mock_find_newest_unpaid_anchor.return_value = prev_crv
         mock_collect_unpaid.return_value = [
             {
                 "version_id": prev_crv.id,
-                "invoice_id": invoice.id,
-                "outstanding": Decimal("6000.00"),
+                "invoice_id": data.invoice.id,
+                "outstanding": Decimal("800.00"),  # $1,000 obligation less the $200 of applied units
                 "paid": Decimal("0.00"),
-                "prev_excess_emissions": Decimal("100.0000"),
+                "prev_excess_emissions": prev_summary.excess_emissions,
             }
         ]
 
         # Act
-        res = DecreasedObligationHandler.handle(compliance_report, new_summary, prev_summary, version_count=2)
+        res = DecreasedObligationHandler.handle(data.compliance_report, new_summary, prev_summary, version_count=2)
 
         # Invoice is voided, and the applied units are flagged for manual handling
         mock_void_invoices.assert_called_once_with(prev_crv.id)
