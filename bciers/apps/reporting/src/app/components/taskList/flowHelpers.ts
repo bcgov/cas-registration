@@ -25,6 +25,5 @@ export const flowHelpers = (flow: ReportingFlow) => {
       ReportingFlow.NewEntrantSFO,
       ReportingFlow.NewEntrantLFO,
     ].includes(flow),
-    isSFOReportingOnly: flow === ReportingFlow.ReportingOnlySFO,
   };
 };
