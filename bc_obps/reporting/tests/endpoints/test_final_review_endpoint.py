@@ -63,7 +63,9 @@ class TestReportFinalReview(CommonTestSetup):
             'reporting.tests.utils.report_person_responsible', report_version=self.report_version
         )
         self.report_non_attributable_emissions = baker.make_recipe(
-            "reporting.tests.utils.report_non_attributable_emissions", report_version=self.report_version
+            "reporting.tests.utils.report_non_attributable_emissions",
+            report_version=self.report_version,
+            emission_category=self.emission_category_,
         )
         self.compliance_summary = baker.make_recipe(
             "reporting.tests.utils.report_compliance_summary", report_version=self.report_version
