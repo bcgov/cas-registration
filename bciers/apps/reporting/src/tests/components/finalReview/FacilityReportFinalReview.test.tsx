@@ -1,11 +1,17 @@
 import { render, screen } from "@testing-library/react";
 import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacilityFinalReviewData";
+import { getFlowWithNewCases } from "@reporting/src/app/components/taskList/reportingFlows";
 import FacilityReportFinalReview, {
   OriginSearchParams,
 } from "@reporting/src/app/components/finalReview/FacilityReportFinalReview";
+import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
 
 vi.mock("@reporting/src/app/utils/getFacilityFinalReviewData", () => ({
   getFacilityFinalReviewData: vi.fn(),
+}));
+
+vi.mock("@reporting/src/app/components/taskList/reportingFlows", () => ({
+  getFlowWithNewCases: vi.fn(),
 }));
 
 vi.mock(
@@ -31,6 +37,7 @@ describe("FacilityReportFinalReview", () => {
     (getFacilityFinalReviewData as any).mockResolvedValue({
       facility_name: "Test Facility",
     });
+    (getFlowWithNewCases as any).mockResolvedValue(ReportingFlow.SFO);
 
     render(
       await FacilityReportFinalReview({ version_id: 123, facility_id: "abc" }),
@@ -46,6 +53,7 @@ describe("FacilityReportFinalReview", () => {
     (getFacilityFinalReviewData as any).mockResolvedValue({
       facility_name: "Test Facility",
     });
+    (getFlowWithNewCases as any).mockResolvedValue(ReportingFlow.SFO);
 
     render(
       await FacilityReportFinalReview({
@@ -65,6 +73,7 @@ describe("FacilityReportFinalReview", () => {
     (getFacilityFinalReviewData as any).mockRejectedValue(
       new Error("Failed to fetch"),
     );
+    (getFlowWithNewCases as any).mockResolvedValue(ReportingFlow.SFO);
 
     await expect(
       FacilityReportFinalReview({ version_id: 1, facility_id: "abc" }),

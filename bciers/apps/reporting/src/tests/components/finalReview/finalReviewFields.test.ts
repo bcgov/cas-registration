@@ -1,5 +1,6 @@
 import {
   complianceSummaryFields,
+  operationFields,
   productionDataFields,
 } from "@reporting/src/app/components/finalReview/finalReviewFields";
 
@@ -176,5 +177,43 @@ describe("complianceSummaryFields", () => {
         key: "products.0.jan_mar_production",
       }),
     );
+  });
+});
+
+describe("operationFields", () => {
+  it("includes regulated_products when not EIO and not reporting only", () => {
+    const fields = operationFields(false, false);
+    const fieldKeys = fields
+      .filter((f: any) => f.key !== undefined)
+      .map((f: any) => f.key);
+
+    expect(fieldKeys).toContain("regulated_products");
+  });
+
+  it("excludes regulated_products when EIO", () => {
+    const fields = operationFields(true, false);
+    const fieldKeys = fields
+      .filter((f: any) => f.key !== undefined)
+      .map((f: any) => f.key);
+
+    expect(fieldKeys).not.toContain("regulated_products");
+  });
+
+  it("excludes regulated_products when reporting only", () => {
+    const fields = operationFields(false, true);
+    const fieldKeys = fields
+      .filter((f: any) => f.key !== undefined)
+      .map((f: any) => f.key);
+
+    expect(fieldKeys).not.toContain("regulated_products");
+  });
+
+  it("excludes regulated_products when both EIO and reporting only", () => {
+    const fields = operationFields(true, true);
+    const fieldKeys = fields
+      .filter((f: any) => f.key !== undefined)
+      .map((f: any) => f.key);
+
+    expect(fieldKeys).not.toContain("regulated_products");
   });
 });

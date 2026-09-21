@@ -161,7 +161,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
                 facilityData={val ?? {}}
                 isAdded={wholeFacility.change_type === "added"}
                 isRemoved={wholeFacility.change_type === "removed"}
-                showWhenNotReportingOnly={!isReportingOnly}
+                showProductionData={!isReportingOnly}
               />
             </Box>
           );
