@@ -1,5 +1,4 @@
 from typing import Literal
-from uuid import UUID
 from common.permissions import authorize
 
 from django.http import HttpRequest
@@ -39,5 +38,6 @@ def get_report_version_facility_report(request: HttpRequest, version_id: int, fa
     """
     Returns the facility_report data for the given report version and facility id, in the same format as the final review API.
     """
-    facility_uuid = UUID(facility_id)
-    return FacilityReport.objects.get(report_version_id=version_id, facility=facility_uuid)
+    return FacilityReport.objects.prefetch_related("report_products", "reportrawactivitydata_records").get(
+        report_version_id=version_id, facility_id=facility_id
+    )
