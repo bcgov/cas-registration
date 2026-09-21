@@ -12,13 +12,13 @@ import { ReportDownloadPdfButton } from "./templates/ReportDownloadPdfButton";
 interface Props {
   data: FacilityReport;
   backUrl: string;
-  showWhenNotReportingOnly?: boolean;
+  showProductionData?: boolean;
 }
 
 export default function FacilityReportFinalReviewContent({
   data,
   backUrl,
-  showWhenNotReportingOnly,
+  showProductionData,
 }: Readonly<Props>) {
   const router = useRouter();
 
@@ -61,7 +61,7 @@ export default function FacilityReportFinalReviewContent({
         <ReportDownloadPdfButton />
         <FacilityReportSection
           facilityData={data}
-          showWhenNotReportingOnly={showWhenNotReportingOnly}
+          showProductionData={showProductionData}
         />
         <Box
           display="flex"

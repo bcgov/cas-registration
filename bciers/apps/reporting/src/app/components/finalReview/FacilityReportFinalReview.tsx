@@ -28,7 +28,7 @@ export default async function FacilityReportFinalReview({
     <FacilityReportFinalReviewContent
       data={data}
       backUrl={backUrl}
-      showWhenNotReportingOnly={!isReportingOnly}
+      showProductionData={!isReportingOnly}
     />
   );
 }

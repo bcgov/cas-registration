@@ -124,7 +124,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
                 key={facilityKey}
                 facilityName={facilityReport.facility_name}
                 facilityData={facilityReport}
-                showWhenNotReportingOnly={!isReportingOnly}
+                showProductionData={!isReportingOnly}
               />
             ),
           )}
