@@ -46,3 +46,10 @@ If there is a "merge halt" (that is, **Lock Branch** has been enabled in the bra
 > The following is only true when _Branches_ > _Develop_ > _Branch protection rule_: **Do not allow bypassing the above settings** is _disabled_. We keep it enabled by default, but it can be changed by an admin if queue-jumping or bypassing is required.
 
 Developers with Admin permission on the repository can [jump their PRs to the top of the queue](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#jumping-to-the-top-of-the-queue), **but this will restart _all_ ci for every PR already in queue**. Use caution when doing this! Developers with Admin permission can also **completely bypass** the merge queue, even when a merge halt is active.
+
+### Further Reading
+
+- [How merge queues work](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#how-merge-queues-work)
+- [Successful CI](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#successful-ci)
+- [Failing CI](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#failing-ci)
+- [Jumping to the top of the queue](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#jumping-to-the-top-of-the-queue)
