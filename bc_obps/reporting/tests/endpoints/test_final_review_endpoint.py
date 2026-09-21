@@ -185,10 +185,7 @@ class TestReportFinalReview(CommonTestSetup):
         facility_reports = response_data["facility_reports"]
         assert len(facility_reports) == 1
 
-        print(facility_reports)
-
         facility_response = facility_reports["test facility name"]
-
         assert facility_response["facility_name"] == "test facility name"
 
         # Activity data
