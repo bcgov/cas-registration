@@ -23,7 +23,7 @@ class SubAccount(TimeStampedModel):
         db_comment="The registry account under which the sub-account falls.",
     )
     history = HistoricalRecords(
-        table_name='erc_history"."sub_account_history"', history_user_id_field=models.UUIDField(null=True, blank=True)
+        table_name='erc_history"."sub_account_history', history_user_id_field=models.UUIDField(null=True, blank=True)
     )
 
     class Meta(TimeStampedModel.Meta):
