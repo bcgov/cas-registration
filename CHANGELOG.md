@@ -1,5 +1,28 @@
 # Changelog
 
+# [5.22.0](https://github.com/bcgov/cas-registration/compare/v5.21.0...v5.22.0) (2026-09-22)
+
+### Bug Fixes
+
+- compliance summary page renders when a bccr connection error occurs ([90bdd2a](https://github.com/bcgov/cas-registration/commit/90bdd2a20ed1b9f3addecb734d5fc5e023a4e96d))
+- correct validation messages for oneOf const and opted-in required errors ([dd9489c](https://github.com/bcgov/cas-registration/commit/dd9489c058220bac4d380bcd322c530c942d650c))
+- **deps:** update dependency eslint-config-next to v16.3.4 ([c05358b](https://github.com/bcgov/cas-registration/commit/c05358b12400b065c308ba0d1c944323166cf70e))
+- **deps:** update node dependencies ([a9a0d3a](https://github.com/bcgov/cas-registration/commit/a9a0d3a60a8ccbc97a885961852e6f6b8d280cc1))
+- **deps:** update python dependencies ([3e9a1b8](https://github.com/bcgov/cas-registration/commit/3e9a1b80400e9fce0a96eb1908510c0526e1ea83))
+- ensure form data synchronization during deletions in OperationRepresentativeWidget and NewOperationRepresentativeForm ([a86354c](https://github.com/bcgov/cas-registration/commit/a86354cc80b35ab49665c23262c3afceafcc9939))
+- erroneous alert note on allocation of emissions page ([e203f71](https://github.com/bcgov/cas-registration/commit/e203f71c538c8263673288184fe45a03cb86eb42))
+- final review page only displays production data for regulated products ([3da91ae](https://github.com/bcgov/cas-registration/commit/3da91aea840c9615c783f7e2c3cb3ca287ef1281))
+- handle manual intervention for voided invoices with compliance units applied to them ([c62d724](https://github.com/bcgov/cas-registration/commit/c62d72482d0b7e23aac129a21cd15cc15bd94280))
+- remove rogue info_note on Verification page ([9b17dd3](https://github.com/bcgov/cas-registration/commit/9b17dd30706f7b2c186c778a3610b4421b0ff314))
+- restore saved operation type when registration purpose changes from EIO ([d755ab4](https://github.com/bcgov/cas-registration/commit/d755ab4d0515d5ca394691d7167ca7776b8ba651))
+- simplify backend function & fix duplicates in return values ([cb789bb](https://github.com/bcgov/cas-registration/commit/cb789bbb1e59f20d2b22c3578015a36a4bb479fe))
+- submit button is hidden from cas admin and view only ([ff1909f](https://github.com/bcgov/cas-registration/commit/ff1909f703ad0fdaaaf688fc53bfb5745a244260))
+- surface a required error on every opted-in operation question ([64b3baf](https://github.com/bcgov/cas-registration/commit/64b3bafd688c6e01443090d4bcefe73aafe118db))
+
+### Features
+
+- penalty calculator ([cb63707](https://github.com/bcgov/cas-registration/commit/cb637075c6f86a0f3582ee606353daaff1a4d3fc))
+
 # [5.21.0](https://github.com/bcgov/cas-registration/compare/v5.20.1...v5.21.0) (2026-09-09)
 
 ### Bug Fixes
