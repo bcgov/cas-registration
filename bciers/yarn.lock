@@ -2592,7 +2592,7 @@ __metadata:
     dayjs: "npm:^1.11.11"
     dotenv: "npm:^16.3.1"
     eslint: "npm:^9.39.2"
-    eslint-config-next: "npm:16.3.4"
+    eslint-config-next: "npm:16.3.5"
     eslint-config-prettier: "npm:^10.1.8"
     eslint-plugin-import: "npm:^2.32.0"
     eslint-plugin-jsx-a11y: "npm:^6.10.2"
@@ -3967,13 +3967,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/eslint-plugin-next@npm:16.3.4":
-  version: 16.3.4
-  resolution: "@next/eslint-plugin-next@npm:16.3.4"
+"@next/eslint-plugin-next@npm:16.3.5":
+  version: 16.3.5
+  resolution: "@next/eslint-plugin-next@npm:16.3.5"
   dependencies:
     "@eslint-community/eslint-utils": "npm:4.9.1"
     fast-glob: "npm:3.3.1"
-  checksum: 10c0/66ed6384cab5c13d09eff544a596e676b9ad7614a311f30366f273d29df569dfab007606a2e32ceba968bd1a61f505782b5aab1fd656b06503abf1912ec97573
+  checksum: 10c0/c5b9facd82c30d6fd37c5ff0c6ad137e0194963b9b0842a42746814d72c43e05289a6bf30384a180d5b22645a720e7f311e1073c9083db082ab3c524f39d76b6
   languageName: node
   linkType: hard
 
@@ -8204,11 +8204,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-next@npm:16.3.4":
-  version: 16.3.4
-  resolution: "eslint-config-next@npm:16.3.4"
+"eslint-config-next@npm:16.3.5":
+  version: 16.3.5
+  resolution: "eslint-config-next@npm:16.3.5"
   dependencies:
-    "@next/eslint-plugin-next": "npm:16.3.4"
+    "@next/eslint-plugin-next": "npm:16.3.5"
     eslint-import-resolver-node: "npm:^0.3.6"
     eslint-import-resolver-typescript: "npm:^3.5.2"
     eslint-plugin-import: "npm:^2.32.0"
@@ -8223,7 +8223,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/70d8a2e5232d14a2a56105a0957c57e57303f1d60746b4c2564fb52d39cb9b0c8ecef6fb8e97c2ec0c364ed2058818fd3385e5ad449b33a033e1f7c457284f33
+  checksum: 10c0/f806b5914b3782bdcb46c71a4b15b0fe54d462118af631fe6a81fc922c91d9276dbe2e2278cf5a18e01d874e5bcd640977bca7f64caccb34d8501ca474d3d65c
   languageName: node
   linkType: hard
 
