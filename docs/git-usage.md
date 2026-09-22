@@ -25,6 +25,9 @@ These facilitate the automated creation of [changelogs](../CHANGELOG.md), using 
 
 ## GitHub Merge Queue
 
+> [!IMPORTANT]
+> Because we use `release-it/conventional-changelog` to generate changelogs, PR titles must follow the [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/) message format.
+
 This repository had [Merge Queues](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#how-merge-queues-work) enabled, using [Squash & Merge](https://docs.github.com/en/pull-requests/reference/pull-request-merges#squash-and-merge-your-commits).
 
 [Merging a pull request with a merge queue](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/merging-a-pull-request-with-a-merge-queue)
