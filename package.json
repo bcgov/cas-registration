@@ -31,14 +31,5 @@
   "packageManager": "yarn@4.18.0",
   "resolutions": {
     "undici@npm:7.28.0": "^7.29.0"
-  },
-  "type": "module",
-  "scripts": {
-    "context:db": "npx repomix --include 'bc_obps/rls/**,bc_obps/registration/**,bc_obps/compliance/**' --style markdown --output .docs/context-source-database-schema.md",
-    "context:backend": "npx repomix --include 'bc_obps/bc_obps/**,bc_obps/service/**,bc_obps/manage.py' --style markdown --output .docs/context-source-backend-services.md",
-    "context:frontend": "npx repomix --include 'bciers/apps/**' --style markdown --output .docs/context-source-frontend-components.md",
-    "context:tests": "npx repomix --include 'bc_obps/tests/**' --style markdown --output .docs/context-source-test-framework.md",
-    "context:guidelines": "npx repomix --include 'bc_obps/Makefile,bc_obps/Dockerfile' --style markdown --output .docs/context-source-team-instructions.md",
-    "context:all": "npm run context:db && npm run context:backend && npm run context:frontend && npm run context:tests && npm run context:guidelines"
   }
 }
