@@ -1,0 +1,50 @@
+name: "AI User Story & Checklist Generator"
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  generate-story:
+    if: contains(github.event.issue.labels.*.name, 'AI User Story')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Checkout Repository Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Repomix
+        shell: bash
+        run: |
+          TOOL_DIR="${RUNNER_TEMP}/ai-tools"
+
+          mkdir -p "${TOOL_DIR}"
+
+          npm install \
+            --prefix "${TOOL_DIR}" \
+            --no-save \
+            --ignore-scripts \
+            repomix@1.11.1
+
+          echo "REPOMIX_BIN=${TOOL_DIR}/node_modules/.bin/repomix" >> "$GITHUB_ENV"
+
+      - name: Execute AI User Story Generator
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          REPOSITORY: ${{ github.repository }}
+          CONTEXT_DIR: ${{ runner.temp }}/ai-user-story
+        run: node scripts/ai-generate-user-story.mjs
