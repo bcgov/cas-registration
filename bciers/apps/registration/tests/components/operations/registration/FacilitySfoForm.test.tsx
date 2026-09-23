@@ -14,6 +14,7 @@ import {
   fillLatitudeLongitudeFields,
   toggleAndFillStartDate,
 } from "./utils";
+import userEvent from "@testing-library/user-event";
 
 useSessionRole.mockReturnValue("industry_user_admin");
 
@@ -155,4 +156,77 @@ describe("the FacilitySfoForm component", () => {
       );
     },
   );
+
+  it("displays an error message when the create request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(
+      <FacilitySfoForm
+        {...defaultProps}
+        formData={{
+          section1: {
+            name: "Test Operation",
+            type: "Single Facility",
+          },
+        }}
+      />,
+    );
+    await toggleAndFillStartDate(0, `${currentYear}0101`);
+    fillAddressFields(0);
+    fillLatitudeLongitudeFields(0);
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: "Save and Continue",
+      }),
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      "registration/facilities",
+      "POST",
+      `/registration/register-an-operation/${defaultProps.operationId}/${defaultProps.step}`,
+      expect.anything(),
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it("displays an error message when the update request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    const facilityId = "f486f2fb-62ed-438d-bb3e-0819b51e3aeb" as UUID;
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(
+      <FacilitySfoForm
+        {...defaultProps}
+        isCreating={false}
+        facilityId={facilityId}
+        formData={{
+          section1: {
+            name: "Test Operation",
+            type: "Single Facility",
+          },
+        }}
+      />,
+    );
+    await toggleAndFillStartDate(0, `${currentYear}0101`);
+    fillAddressFields(0);
+    fillLatitudeLongitudeFields(0);
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: "Save and Continue",
+      }),
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/facilities/${facilityId}`,
+      "PUT",
+      `/registration/register-an-operation/${defaultProps.operationId}/${defaultProps.step}`,
+      expect.anything(),
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+  });
 });

@@ -6,7 +6,6 @@ import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/R
 import { Box } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
-import FormAlerts from "@bciers/components/form/FormAlerts";
 import FormValidationError from "@bciers/components/form/components/FormValidationError";
 /**
  * Similar to the MultiStepFormWithTaskList,
@@ -67,7 +66,7 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
           {validationError && (
             <FormValidationError message={validationErrorMessage} />
           )}
-          <FormAlerts errors={errors} />
+          {errors}
           <ReportingStepButtons
             backUrl={backUrl}
             continueUrl={continueUrl}

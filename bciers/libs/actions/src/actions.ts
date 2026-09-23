@@ -18,11 +18,10 @@ import { captureException } from "@bciers/sentryConfig/sentry";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import isNonReportableError from "@bciers/utils/src/nonReportableErrors";
 
-const FORM_METHODS = ["POST", "PUT", "PATCH"] as const;
-
 const shouldReturnError = (method: string, status: number, res: any) => {
+  // For all non-GET methods (POST, PUT, PATCH, DELETE), return true for 4xx errors with an errors array
   if (
-    FORM_METHODS.includes(method as any) &&
+    method !== "GET" &&
     status >= 400 &&
     status < 500 &&
     Array.isArray(res?.errors)
@@ -33,6 +32,19 @@ const shouldReturnError = (method: string, status: number, res: any) => {
   // Dashboard/operator checks may return plain 401 when the user has no operator.
   if (method === "GET" && status === 401) {
     return true;
+  }
+
+  // For GET requests with 4xx errors and an errors array, check for "generic_error"
+  if (
+    method === "GET" &&
+    status >= 400 &&
+    status < 500 &&
+    Array.isArray(res?.errors)
+  ) {
+    const hasGenericError = res.errors.some(
+      (item: any) => item?.key === "generic_error",
+    );
+    return !hasGenericError;
   }
 
   return false;

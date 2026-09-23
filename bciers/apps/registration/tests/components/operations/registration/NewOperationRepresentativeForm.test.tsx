@@ -344,6 +344,7 @@ describe("the NewOperationRepresentativeForm component", () => {
       checkEmptyOperationRepresentativeForm();
     },
   );
+
   it("remove an operation representative", async () => {
     render(
       <NewOperationRepresentativeForm
@@ -425,4 +426,137 @@ describe("the NewOperationRepresentativeForm component", () => {
       });
     },
   );
+
+  it("displays generic error fallback when the server returns an unexpected error on submit", async () => {
+    const errorMessage =
+      "Unexpected database error occurred while saving representative.";
+
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    render(
+      <NewOperationRepresentativeForm
+        formData={{
+          operation_representatives: [],
+          new_operation_representative: [
+            {
+              first_name: "Isaac",
+              last_name: "Newton",
+              position_title: "Scientist",
+              email: "isaac.newton@email.com",
+              phone_number: "+16044014321",
+              street_address: "123 Under the Apple Tree",
+              municipality: "Gravityville",
+              province: "AB",
+              postal_code: "A1B 2C3",
+            },
+          ],
+        }}
+        operation={operationId}
+        step={5}
+        existingOperationRepresentatives={[]}
+        contacts={contactsMock}
+      />,
+    );
+
+    const saveButton = screen.getByRole("button", {
+      name: /save operation representative/i,
+    });
+    await userEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(errorMessage)).toBeVisible();
+    });
+  });
+
+  it("displays an error message when fetching the selected contact fails", async () => {
+    getContact.mockRejectedValueOnce(new Error("Failed to fetch contact"));
+    render(
+      <NewOperationRepresentativeForm
+        formData={{
+          operation_representatives: [3],
+        }}
+        operation={operationId}
+        step={5}
+        existingOperationRepresentatives={existingOperationRepresentativesMock}
+        contacts={contactsMock}
+      />,
+    );
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: /add new operation representative/i,
+      }),
+    );
+    await userEvent.click(
+      screen.getByRole("combobox", {
+        name: /select existing contact \(optional\)/i,
+      }),
+    );
+    await userEvent.click(
+      screen.getByRole("option", {
+        name: /henry ives/i,
+      }),
+    );
+    expect(
+      await screen.findByText("Failed to fetch contact data!"),
+    ).toBeVisible();
+    expect(getContact).toHaveBeenCalledTimes(1);
+    expect(getContact).toHaveBeenCalledWith(1);
+  });
+
+  it("displays an error message when the create request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(
+      <NewOperationRepresentativeForm
+        formData={{
+          operation_representatives: [],
+          new_operation_representative: [
+            {
+              first_name: "Isaac",
+              last_name: "Newton",
+              position_title: "Scientist",
+              email: "isaac.newton@email.com",
+              phone_number: "+16044014321",
+              street_address: "123 Under the Apple Tree",
+              municipality: "Gravityville",
+              province: "AB",
+              postal_code: "A1B 2C3",
+            },
+          ],
+        }}
+        operation={operationId}
+        step={5}
+        existingOperationRepresentatives={[]}
+        contacts={contactsMock}
+      />,
+    );
+
+    const saveButton = screen.getByRole("button", {
+      name: /save operation representative/i,
+    });
+    await userEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(errorMessage)).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledTimes(1);
+    });
+
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/operations/${operationId}/registration/operation-representative`,
+      "POST",
+      `/register-an-operation/${operationId}/5`,
+      expect.anything(),
+    );
+
+    expect(
+      screen.queryByText("Operation Representative saved successfully"),
+    ).not.toBeInTheDocument();
+  });
 });

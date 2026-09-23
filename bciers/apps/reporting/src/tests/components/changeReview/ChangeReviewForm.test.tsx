@@ -1,17 +1,12 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ChangeReviewForm from "@reporting/src/app/components/changeReview/ChangeReviewForm";
-import { actionHandler } from "@bciers/actions";
+import { actionHandler } from "@bciers/testConfig/mocks";
 import { HeaderStep } from "@reporting/src/app/components/taskList/types";
-import type { MockedFunction } from "vitest";
 
 const mockRouterPush = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockRouterPush }),
-}));
-
-vi.mock("@bciers/actions", () => ({
-  actionHandler: vi.fn(),
 }));
 
 vi.mock(
@@ -38,15 +33,7 @@ vi.mock("@bciers/components/form/MultiStepWrapperWithTaskList", () => ({
       >
         {isRedirecting ? "Saving..." : "Save & Continue"}
       </button>
-      {errors && (
-        <div data-testid="errors">
-          {errors.map((error: string, idx: number) => (
-            <div key={idx} data-testid={`error-${idx}`}>
-              {error}
-            </div>
-          ))}
-        </div>
-      )}
+      {errors}
       {isRedirecting && <div data-testid="redirecting">Redirecting...</div>}
       <div data-testid="no-save-button">{noSaveButton ? "true" : "false"}</div>
     </div>
@@ -72,10 +59,6 @@ vi.mock(
 );
 
 describe("ChangeReviewForm", () => {
-  const mockActionHandler = actionHandler as MockedFunction<
-    typeof actionHandler
-  >;
-
   const defaultProps = {
     versionId: 123,
     initialFormData: {
@@ -137,29 +120,37 @@ describe("ChangeReviewForm", () => {
   });
 
   it("handles successful submission", async () => {
-    mockActionHandler.mockResolvedValue({ success: true });
+    actionHandler.mockResolvedValue({
+      success: true,
+    });
     render(<ChangeReviewForm {...defaultProps} />);
     fireEvent.click(screen.getByTestId("submit-button"));
     await waitFor(() => {
-      expect(mockActionHandler).toHaveBeenCalledWith(
+      expect(actionHandler).toHaveBeenCalledWith(
         "reporting/report-version/123",
         "POST",
         "reporting/reports/123/review-changes",
         expect.any(Object),
       );
-      expect(mockRouterPush).toHaveBeenCalledWith("/continue");
     });
+    expect(mockRouterPush).toHaveBeenCalledWith("/continue");
   });
 
-  it("handles error submission", async () => {
-    const errorMessage = "Submission failed";
-    mockActionHandler.mockResolvedValue({ error: errorMessage });
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
     render(<ChangeReviewForm {...defaultProps} />);
     fireEvent.click(screen.getByTestId("submit-button"));
-    await waitFor(() => {
-      expect(screen.getByTestId("errors")).toBeInTheDocument();
-      expect(screen.getByTestId("error-0")).toHaveTextContent(errorMessage);
-      expect(mockRouterPush).not.toHaveBeenCalled();
-    });
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      "reporting/report-version/123",
+      "POST",
+      "reporting/reports/123/review-changes",
+      expect.anything(),
+    );
+    expect(mockRouterPush).not.toHaveBeenCalled();
   });
 });

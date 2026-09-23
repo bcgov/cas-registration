@@ -69,9 +69,6 @@ const FacilitySfoForm = ({
       },
     );
 
-    if (!response || response?.error) {
-      return { error: response.error };
-    }
     return response;
   };
 
