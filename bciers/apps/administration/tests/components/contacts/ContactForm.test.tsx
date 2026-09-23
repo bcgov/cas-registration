@@ -15,6 +15,7 @@ import { FrontendMessages } from "@bciers/utils/src/enums";
 import { ContactFormData } from "@/administration/app/components/contacts/types";
 
 const mockReplace = vi.fn();
+const mockHistoryReplaceState = vi.spyOn(global.history, "replaceState");
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
   query: {},
@@ -204,13 +205,11 @@ describe("ContactForm component", () => {
       />,
     );
 
-    expect(
-      container.querySelector("#root_section1_first_name"),
-    ).toHaveTextContent("John");
+    expect(container.querySelector("#root_first_name")).toHaveTextContent(
+      "John",
+    );
 
-    expect(
-      container.querySelector("#root_section1_last_name"),
-    ).toHaveTextContent("Doe");
+    expect(container.querySelector("#root_last_name")).toHaveTextContent("Doe");
 
     expect(screen.getByText(/Places Assigned/i)).toBeVisible();
     expect(screen.getByText(/Operation Representative/i)).toBeVisible();
@@ -219,33 +218,33 @@ describe("ContactForm component", () => {
       "/operations/c0743c09-82fa-4186-91aa-4b5412e3415c?operations_title=Operation 1&from_contacts=true",
     );
 
-    expect(
-      container.querySelector("#root_section2_position_title"),
-    ).toHaveTextContent("Senior Officer");
+    expect(container.querySelector("#root_position_title")).toHaveTextContent(
+      "Senior Officer",
+    );
 
-    expect(container.querySelector("#root_section3_email")).toHaveTextContent(
+    expect(container.querySelector("#root_email")).toHaveTextContent(
       "john.doe@example.com",
     );
 
-    expect(
-      container.querySelector("#root_section3_phone_number"),
-    ).toHaveTextContent("+16044011234");
+    expect(container.querySelector("#root_phone_number")).toHaveTextContent(
+      "+16044011234",
+    );
 
-    expect(
-      container.querySelector("#root_section4_street_address"),
-    ).toHaveTextContent("123 Main St");
+    expect(container.querySelector("#root_street_address")).toHaveTextContent(
+      "123 Main St",
+    );
 
-    expect(
-      container.querySelector("#root_section4_municipality"),
-    ).toHaveTextContent("Cityville");
+    expect(container.querySelector("#root_municipality")).toHaveTextContent(
+      "Cityville",
+    );
 
-    expect(
-      container.querySelector("#root_section4_province"),
-    ).toHaveTextContent("Ontario");
+    expect(container.querySelector("#root_province")).toHaveTextContent(
+      "Ontario",
+    );
 
-    expect(
-      container.querySelector("#root_section4_postal_code"),
-    ).toHaveTextContent("A1B 2C3");
+    expect(container.querySelector("#root_postal_code")).toHaveTextContent(
+      "A1B 2C3",
+    );
 
     expect(screen.getByRole("button", { name: /edit/i })).toBeEnabled();
     expect(
@@ -326,9 +325,14 @@ describe("ContactForm component", () => {
             body: JSON.stringify(createContactRequestBody),
           },
         );
-        expect(mockReplace).toHaveBeenCalledWith(
-          "/contacts/123?contacts_title=John Doe",
+        // The URL is rewritten in place so the page, and the success message on it,
+        // are not unmounted by a navigation
+        expect(mockHistoryReplaceState).toHaveBeenCalledWith(
+          null,
+          "",
+          "/administration/contacts/123?contacts_title=John Doe",
         );
+        expect(mockReplace).not.toHaveBeenCalled();
       });
 
       await waitFor(() => {
@@ -577,6 +581,72 @@ describe("ContactForm component", () => {
 
     await userEvent.click(modalDeleteButton);
     expect(archiveContact).toHaveBeenCalledWith("123");
+  });
+
+  it("keeps the success message visible after editing an existing contact", async () => {
+    render(
+      <ContactForm
+        schema={createContactSchema(contactsSchema)}
+        formData={contactFormData}
+        allowEdit
+      />,
+    );
+
+    actionHandler.mockResolvedValueOnce({
+      id: 123,
+      first_name: "John updated",
+      last_name: "Doe",
+      error: null,
+    });
+
+    await userEvent.click(screen.getByRole("button", { name: /edit/i }));
+    await editNameFields({ firstName: "John updated", lastName: "Doe" });
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),
+      ).toBeVisible();
+    });
+
+    // A router navigation would re-suspend the page and unmount the message
+    expect(mockHistoryReplaceState).toHaveBeenCalledWith(
+      null,
+      "",
+      "/administration/contacts/123?contacts_title=John updated Doe",
+    );
+    expect(mockReplace).not.toHaveBeenCalled();
+  });
+
+  it("shows an error on each address field when saving a contact that has no address", async () => {
+    const {
+      street_address: _street,
+      municipality: _municipality,
+      province: _province,
+      postal_code: _postalCode,
+      ...contactWithoutAddress
+    } = contactFormData;
+
+    render(
+      <ContactForm
+        schema={createContactSchema(contactsSchema)}
+        formData={contactWithoutAddress}
+        allowEdit
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /edit/i }));
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Business Mailing Address is required/i),
+      ).toBeVisible();
+    });
+    expect(screen.getByText(/Municipality is required/i)).toBeVisible();
+    expect(screen.getByText(/Province is required/i)).toBeVisible();
+    expect(screen.getByText(/Postal Code is required/i)).toBeVisible();
+    expect(actionHandler).not.toHaveBeenCalled();
   });
 
   it("does not allow deletion if industry user is a reporter", async () => {
