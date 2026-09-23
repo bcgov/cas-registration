@@ -9,9 +9,6 @@ import {
 
 const HELP_TEXT = /If this is a chemical pulp mill that recovered lime by kiln/;
 
-const REPORTING_YEAR_BEFORE_RULE = 2024;
-const REPORTING_YEAR_RULE_START = 2025;
-
 export const regulatedProductSchema = {
   type: "object",
   required: ["regulatedProducts"],
@@ -38,14 +35,14 @@ export const regulatedProductUiSchema = {
 
 const renderWidget = (
   regulatedProducts: number[] = [],
-  reportingYear = REPORTING_YEAR_RULE_START,
+  pulpAndPaperHelpActive = true,
 ) =>
   render(
     <FormBase
       schema={regulatedProductSchema}
       formData={{ regulatedProducts }}
       uiSchema={regulatedProductUiSchema}
-      formContext={{ reportingYear }}
+      formContext={{ pulpAndPaperHelpActive }}
     />,
   );
 
@@ -62,21 +59,34 @@ const expectHelpTextHidden = async () => {
 };
 
 describe("RegulatedProductMultiSelectWidget", () => {
-  describe("reporting year rule", () => {
-    it("does not show help text for 2024 reports when only chemical pulp is selected", async () => {
-      renderWidget([16], REPORTING_YEAR_BEFORE_RULE);
+  describe("pulpAndPaperHelpActive rule", () => {
+    it("does not show help text when the rule is inactive, even if only chemical pulp is selected", async () => {
+      renderWidget([16], false);
 
       await expectHelpTextHidden();
     });
 
-    it("shows help text starting in 2025 when only chemical pulp is selected", async () => {
-      renderWidget([16], REPORTING_YEAR_RULE_START);
+    it("shows help text when the rule is active and only chemical pulp is selected", async () => {
+      renderWidget([16], true);
+
+      await expectHelpTextVisible();
+    });
+
+    it("defaults to active when pulpAndPaperHelpActive is not provided in formContext", async () => {
+      render(
+        <FormBase
+          schema={regulatedProductSchema}
+          formData={{ regulatedProducts: [16] }}
+          uiSchema={regulatedProductUiSchema}
+          formContext={{}}
+        />,
+      );
 
       await expectHelpTextVisible();
     });
   });
 
-  describe("product selection rule for reports after 2024", () => {
+  describe("product selection rule when the rule is active", () => {
     it("does not show help text when no products are selected", async () => {
       renderWidget([]);
 
@@ -137,7 +147,7 @@ describe("RegulatedProductMultiSelectWidget", () => {
           schema={regulatedProductSchema}
           formData={{ regulatedProducts: [16] }}
           uiSchema={regulatedProductUiSchema}
-          formContext={{ reportingYear: REPORTING_YEAR_RULE_START }}
+          formContext={{ pulpAndPaperHelpActive: true }}
         />,
       );
 
@@ -154,7 +164,7 @@ describe("RegulatedProductMultiSelectWidget", () => {
           schema={regulatedProductSchema}
           formData={{ regulatedProducts: [16, 43] }}
           uiSchema={regulatedProductUiSchema}
-          formContext={{ reportingYear: REPORTING_YEAR_RULE_START }}
+          formContext={{ pulpAndPaperHelpActive: true }}
         />,
       );
 
