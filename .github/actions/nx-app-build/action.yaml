@@ -20,6 +20,9 @@ inputs:
   host_registration:
     description: "Host for registration - only used for e2e CI builds"
     required: false
+  host_registry:
+    description: "Host for registry - only used for e2e CI builds"
+    required: false
   host_reporting:
     description: "Host for reporting - only used for e2e CI builds"
     required: false
@@ -91,6 +94,7 @@ runs:
         HOST_ADMINISTRATION: ${{ inputs.host_administration }}
         HOST_COMPLIANCE: ${{ inputs.host_compliance }}
         HOST_REGISTRATION: ${{ inputs.host_registration }}
+        HOST_REGISTRY: ${{ inputs.host_registry }}
         HOST_REPORTING: ${{ inputs.host_reporting }}
         PROJECT: ${{ inputs.project }}
         NEXT_PUBLIC_APP_VERSION: ${{ steps.app_version.outputs.value }}
