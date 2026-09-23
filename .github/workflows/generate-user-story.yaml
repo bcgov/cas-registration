@@ -1,0 +1,43 @@
+# Name displayed in the GitHub Actions UI for this workflow
+name: "AI User Story & Checklist Generator"
+
+# Define the event that triggers this workflow
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  generate-story:
+    # Conditional gate: Only runs if the newly opened issue has the exact 'AI User Story' label attached
+    if: contains(github.event.issue.labels.*.name, 'AI User Story')
+    runs-on: ubuntu-latest
+
+    # Grants explicit permission to modify or write back to GitHub issues
+    permissions:
+      issues: write
+
+    steps:
+      - name: Checkout Repository Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci --ignore-scripts
+
+      # Generate and refresh local codebase markdown ai source context
+      - name: Refresh Codebase Context (Repomix)
+        run: npm run context:all
+
+      - name: Execute AI User Story Generator
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} # Secure API key for accessing Google Gemini
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Auto-provisioned token to authorize updating the issue body
+          ISSUE_NUMBER: ${{ github.event.issue.number }} # The ID of the current issue being processed
+          ISSUE_BODY: ${{ github.event.issue.body }} # The raw requirement text submitted in the issue
+          REPOSITORY: ${{ github.repository }} # The current repository identifier (owner/repo)
+        run: node scripts/generate-user-story.js
