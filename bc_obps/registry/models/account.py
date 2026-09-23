@@ -15,6 +15,14 @@ class Account(TimeStampedModel):
         CLOSED = "Closed"
         PENDING = "Pending"
 
+    class AccountType(models.TextChoices):
+        PROJECT_PROPONENT = "Project proponent"
+        GENERAL_PARTICIPANT = "General participant"
+
+    class Classification(models.TextChoices):
+        CORPORATE = "Corporate"
+        PROJECT_OWNER = "Project owner"
+
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the registry account"
     )
@@ -25,6 +33,10 @@ class Account(TimeStampedModel):
     status = models.CharField(
         max_length=50, choices=AccountStatus.choices, db_comment="Indicates whether the account is active or not."
     )
+    website = models.CharField(max_length=100, blank=True, null=True)
+    account_type = models.CharField(max_length=50, choices=AccountType.choices)
+    account_classification = models.CharField(max_length=50, choices=Classification.choices)
+    country = models.CharField(max_length=100)
     history = HistoricalRecords(
         table_name='erc_history"."account_history', history_user_id_field=models.UUIDField(null=True, blank=True)
     )

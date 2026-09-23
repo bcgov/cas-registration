@@ -2,7 +2,8 @@ from registration.models.time_stamped_model import TimeStampedModel
 from common.enums import Schemas
 from django.db import models
 from registry.enums.enums import RegistryTableNames
-from registry.models import SubAccount
+from simple_history.models import HistoricalRecords
+from registry.models import SubAccount, Issuance
 from registry.models.rls_configs.unit import Rls as UnitRls
 
 
@@ -41,6 +42,16 @@ class Unit(TimeStampedModel):
         db_comment="Foreign key reference to the sub-account that currently holds the unit/s",
     )
     vintage = models.CharField(max_length=10)
+    issuance = models.ForeignKey(
+        Issuance,
+        on_delete=models.PROTECT,
+        related_name="issuance",
+        db_comment="The record of the unit's issuance to a project",
+    )
+
+    history = HistoricalRecords(
+        table_name='erc_history"."registry_unit_history', history_user_id_field=models.UUIDField(null=True, blank=True)
+    )
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = ""
