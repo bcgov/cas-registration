@@ -6,6 +6,8 @@ In the event that a hotfix needs to be pushed to production ahead of the work cu
 2. Create a hotfix branch directly off of `main`
 3. Apply the fix and create a PR with `main` as the target branch
 4. Uncheck the `Lock branch` checkbox in the `main` branch settings in github
+   > [!NOTE]
+   > The lock can stay enabled and instead be bypassed by using `gh pr merge {PR_NUMBER} -r --admin`. See [GH CLI docs for more info](https://cli.github.com/manual/gh_pr_merge).
 5. Merge the fix to the `main` branch
 6. Re-check the `Lock branch` checkbox in the `main` branch settings in github
 7. Deploy the latest `main` to the `test` environment
