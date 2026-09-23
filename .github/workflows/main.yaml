@@ -13,6 +13,8 @@ on:
     types: [submitted]
   workflow_dispatch:
   merge_group:
+    # Merge queue uses the same "checks required" named jobs as PRs, but we disable the E2E/Happo required checks on merge_group events and the required checks are bypassed.
+    # We run identical jobs with different names so they are not required but still run for validation purposes.
     types: [checks_requested]
     branches: [develop]
 
@@ -105,6 +107,7 @@ jobs:
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'administration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
       nx_project: administration
     secrets: inherit
+  # See notes at the `on.merge_group` trigger about this duplicated job.
   test-administration-e2e-merge-group:
     if: github.event_name == 'merge_group'
     needs:
@@ -137,6 +140,7 @@ jobs:
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
       nx_project: registration
     secrets: inherit
+  # See notes at the `on.merge_group` trigger about this duplicated job.
   test-registration-e2e-merge-group:
     if: github.event_name == 'merge_group'
     needs:
@@ -173,6 +177,7 @@ jobs:
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
       nx_project: dashboard
     secrets: inherit
+  # See notes at the `on.merge_group` trigger about this duplicated job.
   test-dashboard-e2e-merge-group:
     if: github.event_name == 'merge_group'
     needs:
@@ -212,6 +217,7 @@ jobs:
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
       nx_project: compliance
     secrets: inherit
+  # See notes at the `on.merge_group` trigger about this duplicated job.
   test-compliance-e2e-merge-group:
     if: github.event_name == 'merge_group'
     needs:
@@ -242,6 +248,7 @@ jobs:
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
       nx_project: reporting
     secrets: inherit
+  # See notes at the `on.merge_group` trigger about this duplicated job.
   test-reporting-e2e-merge-queue:
     if: github.event_name == 'merge_group'
     needs:
