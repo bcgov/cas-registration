@@ -29,7 +29,7 @@ class Account(TimeStampedModel):
     name = models.CharField(
         max_length=1000, db_comment="The name of the account as it should be displayed in the frontend"
     )
-    operation_id = models.ForeignKey(Operation, on_delete=models.DO_NOTHING, related_name="registry_account")
+    operation = models.ForeignKey(Operation, on_delete=models.DO_NOTHING, related_name="registry_account")
     status = models.CharField(
         max_length=50, choices=AccountStatus.choices, db_comment="Indicates whether the account is active or not."
     )
