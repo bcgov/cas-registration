@@ -64,29 +64,44 @@ jobs:
         run: |
           RUN_ALL_CI="false"
           IS_MERGE_QUEUE="false"
+          REASON="No special conditions met, running default CI run."
 
           if [[ "$IS_MAIN_OR_DEV_BRANCH" == "true" ]]; then
             RUN_ALL_CI="true"
+            REASON="$EVENT_NAME triggered a full CI run due to being on the main or develop branch."
           elif [[ "$HAS_RUN_ALL_LABEL" == "true" ]]; then
             RUN_ALL_CI="true"
+            REASON="$EVENT_NAME triggered a full CI run due to having the `run_all_ci` label."
           elif [[ "$IS_APPROVED_REVIEW" == "true" ]]; then
             RUN_ALL_CI="true"
+            REASON="$EVENT_NAME triggered a full CI run due to being approved."
           elif [[ "$EVENT_NAME" == "pull_request" && "$GITHUB_ACTION" == "sync" ]]; then
             REVIEW_DECISION=$(gh pr view "$PR_NUMBER" --json reviewDecision --jq '.reviewDecision')
             if [[ "$REVIEW_DECISION" == "APPROVED" ]]; then
               RUN_ALL_CI="true"
+              REASON="$EVENT_NAME triggered a full CI run due to syncing after being approved."
             fi
           elif [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
             RUN_ALL_CI="true"
+            REASON="$EVENT_NAME triggered a full CI run due to being manually triggered."
           fi
 
           if [[ "$GITHUB_ACTION" == "merge_queue" ]]; then
             IS_MERGE_QUEUE="true"
             RUN_ALL_CI="false"
+            REASON="$GITHUB_ACTION triggered a partial CI run due to running through the merge queue."
           fi
 
           echo "RUN_ALL_CI=$RUN_ALL_CI" >> "$GITHUB_OUTPUT"
           echo "IS_MERGE_QUEUE=$IS_MERGE_QUEUE" >> "$GITHUB_OUTPUT"
+
+          cat << EOF >> "$GITHUB_STEP_SUMMARY"
+          # CI Run Evaluation Summary :twisted_rightwards_arrows:
+
+          **Run All CI**: \`$RUN_ALL_CI\`
+          $REASON
+
+          EOF
   check-nx-affected:
     # We guard this workflow to only run on non-pull request review events or only when the review state is 'approved'.
     if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
