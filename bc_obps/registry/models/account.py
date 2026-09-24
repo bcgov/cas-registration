@@ -4,7 +4,8 @@ from common.enums import Schemas
 from django.db import models
 from simple_history.models import HistoricalRecords
 from registry.enums.enums import RegistryTableNames
-from registration.models import Operation
+from registration.models import Operation, Address, Contact
+from registry.models import Program
 from registry.models.rls_configs.account import Rls as RegistryAccountRls
 
 
@@ -23,8 +24,11 @@ class Account(TimeStampedModel):
         CORPORATE = "Corporate"
         PROJECT_OWNER = "Project owner"
 
-    id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the registry account"
+    class TypeOfAccountHolder(models.TextChoices):
+        CORPORATION = "Corporation"
+
+    id = models.IntegerField(
+        primary_key=True, db_comment="Primary key to identify the registry account"
     )
     name = models.CharField(
         max_length=1000, db_comment="The name of the account as it should be displayed in the frontend"
@@ -36,7 +40,10 @@ class Account(TimeStampedModel):
     website = models.CharField(max_length=100, blank=True, null=True)
     account_type = models.CharField(max_length=50, choices=AccountType.choices)
     account_classification = models.CharField(max_length=50, choices=Classification.choices)
-    country = models.CharField(max_length=100)
+    address = models.ForeignKey(Address, on_delete=models.PROTECT)
+    primary_account_representative = models.ForeignKey(Contact, on_delete=models.PROTECT)
+    program = models.ForeignKey(Program, on_delete=models.PROTECT)
+    type_of_account_holder = models.CharField(max_length=100, choices=TypeOfAccountHolder.choices)
     history = HistoricalRecords(
         table_name='erc_history"."account_history', history_user_id_field=models.UUIDField(null=True, blank=True)
     )

@@ -1,3 +1,5 @@
+# ORDER OF IMPORTS MATTERS!
+from .program import Program
 from .account import Account
 from .sub_account import SubAccount
 from .verifier import Verifier
@@ -8,6 +10,7 @@ from .transfer import Transfer
 from .retirement import Retirement
 
 __all__ = [
+    "Program",
     "Account",
     "SubAccount",
     "Verifier",

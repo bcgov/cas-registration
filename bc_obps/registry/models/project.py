@@ -5,7 +5,7 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 from registry.enums.enums import RegistryTableNames
 from registration.models import Operation, Address, Contact
-from registry.models import Account, Verifier
+from registry.models import Account, Verifier, Program
 from registry.models.rls_configs.project import Rls as RegistryProjectRls
 
 
@@ -25,8 +25,8 @@ class Project(TimeStampedModel):
     class Category(models.TextChoices):
         CARBON = "Carbon"
 
-    id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the registry project"
+    id = models.PositiveBigIntegerField(
+        primary_key=True, db_comment="Primary key to identify the registry project"
     )
     name = models.CharField(max_length=1000, db_comment="The name of the project")
     account = models.ForeignKey(
@@ -58,6 +58,7 @@ class Project(TimeStampedModel):
     status = models.CharField(
         max_length=50, choices=ProjectStatus.choices, db_comment="Indicates whether the project is active or not."
     )
+    program = models.ForeignKey(Program, on_delete=models.PROTECT)
     contact = models.ForeignKey(
         Contact,
         on_delete=models.PROTECT,

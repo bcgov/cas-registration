@@ -3,7 +3,7 @@ from common.enums import Schemas
 from django.db import models
 from registry.enums.enums import RegistryTableNames
 from simple_history.models import HistoricalRecords
-from registry.models import SubAccount, Issuance
+from registry.models import SubAccount, Issuance, Program, Project
 from registry.models.rls_configs.unit import Rls as UnitRls
 
 
@@ -17,7 +17,8 @@ class Unit(TimeStampedModel):
         ACTIVE = "Active"
         RETIRED = "Retired"
         CANCELLED = "Cancelled"
-        PENDING = "Pending"
+        PENDING_PARTICIPANT = "Pending Transfer (Participant)"
+        PENDING_SYSTEM = "Pending Transfer (System)"
 
     id = models.UUIDField(primary_key=True)
     unit_type = models.CharField(
@@ -30,6 +31,8 @@ class Unit(TimeStampedModel):
         default=True,
         db_comment="Boolean value indicating whether the status and owning account of the unit should be visible to the public from the public-view of the registry",
     )
+    program = models.ForeignKey(Program, on_delete=models.PROTECT)
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
     status = models.CharField(
         max_length=50,
         choices=Status.choices,
@@ -41,6 +44,7 @@ class Unit(TimeStampedModel):
         on_delete=models.DO_NOTHING,
         db_comment="Foreign key reference to the sub-account that currently holds the unit/s",
     )
+    quantity = models.PositiveIntegerField()
     vintage = models.CharField(max_length=10)
     issuance = models.ForeignKey(
         Issuance,
@@ -48,6 +52,7 @@ class Unit(TimeStampedModel):
         related_name="issuance",
         db_comment="The record of the unit's issuance to a project",
     )
+    measurement = models.CharField()
 
     history = HistoricalRecords(
         table_name='erc_history"."registry_unit_history', history_user_id_field=models.UUIDField(null=True, blank=True)

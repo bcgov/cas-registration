@@ -5,26 +5,27 @@ from common.enums import Schemas
 from django.db import models
 from simple_history.models import HistoricalRecords
 from registry.enums.enums import RegistryTableNames
-from registry.models import SubAccount, Unit
+from registry.models import SubAccount, Unit, Project
 from registry.models.rls_configs.transfer import Rls as RegistryTransferRls
 
 
 class Transfer(TimeStampedModel):
     class Status(models.TextChoices):
-        PENDING = "Pending"
+        PENDING_SYSTEM = "Pending Transfer (System)"
+        PENDING_PARTICIPANT = "Pending Transfer (Participant)"
         CANCELLED = "Cancelled"
         COMPLETE = "Complete"
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    id = models.PositiveIntegerField(primary_key=True)
     effective_datetime = models.DateTimeField(db_comment="The date and time at which the transfer took effect.")
-    request_datetime = models.DateTimeField(db_comment="The date and time when the request to transfer was made.")
-    from_sub_account = models.ForeignKey(
+    initiated_date = models.DateField(db_comment="The date when the request to transfer was made.")
+    source_account = models.ForeignKey(
         SubAccount,
         related_name="transfers_from",
         on_delete=models.PROTECT,
         db_comment="The sub-account ID from which the units are transferring.",
     )
-    to_sub_account = models.ForeignKey(
+    destination_account = models.ForeignKey(
         SubAccount,
         related_name="transfers_to",
         on_delete=models.PROTECT,
@@ -37,7 +38,13 @@ class Transfer(TimeStampedModel):
         max_length=1000,
         db_comment="Free-form comment field to capture input from the internal user reviewing the transfer request.",
     )
-    unit = models.ForeignKey(Unit, on_delete=models.PROTECT, db_comment="Identifier of the unit(s) being transferred")
+    project = models.ForeignKey(Project, on_delete=models.PROTECT)
+    transfer_quantity = models.PositiveIntegerField()
+    vintage = models.CharField(max_length=100, blank=True, null=True)
+    price_per_unit = models.FloatField(blank=True, null=True)
+    measurement = models.CharField(max_length=100, blank=True, null=True)
+    unit_type = models.CharField(max_length=100, choices=Unit.UnitTypes.choices)
+    unit = models.ForeignKey(Unit, on_delete=models.PROTECT, db_comment="Identifier of the unit(s) being transferred", blank=True, null=True)
     requested_by = models.ForeignKey(
         User,
         on_delete=models.DO_NOTHING,
