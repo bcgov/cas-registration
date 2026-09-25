@@ -66,6 +66,8 @@ jobs:
           IS_MERGE_QUEUE="false"
           REASON="No special conditions met, running default CI run."
 
+          EVENT_NAME="merge_queue"
+
           if [[ "$IS_MAIN_OR_DEV_BRANCH" == "true" ]]; then
             RUN_ALL_CI="true"
             REASON="$EVENT_NAME triggered a full CI run due to being on the main or develop branch."
