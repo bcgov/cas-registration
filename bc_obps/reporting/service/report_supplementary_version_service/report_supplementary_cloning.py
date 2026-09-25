@@ -53,27 +53,42 @@ def clone_report_version_operation(old_report_version: ReportVersion, new_report
     report_version_operation_to_clone.regulated_products.set(original_regulated_products)
 
 
-def clone_report_version_representatives(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
-    # Retrieve all ReportOperationRepresentative instances associated with the old report version
-    representatives_to_clone = ReportOperationRepresentative.objects.filter(report_version=old_report_version)
+def clone_or_refresh_report_version_representatives(
+    old_report_version: ReportVersion, new_report_version: ReportVersion, is_operation_transferred: bool
+) -> None:
+    if is_operation_transferred:
+        # We recreate the options for operation representatives from the contacts on file
+        # User will need to save an update upon filing the supplementary report
 
-    # Clone each representative instance for the new report version
-    for representative_to_clone in representatives_to_clone:
-        representative_to_clone.pk = None  # Reset primary key to create a new instance
-        representative_to_clone.report_version = new_report_version
-        representative_to_clone.save()
+        contacts = Contact.objects.filter(
+            operator_id=new_report_version.report.operator_id, business_role_id="Operation Representative"
+        )
+        for c in contacts:
+            ReportOperationRepresentative.objects.create(
+                report_version=new_report_version, representative_name=c.get_full_name(), selected_for_report=False
+            )
+
+    else:
+        # Retrieve all ReportOperationRepresentative instances associated with the old report version
+        representatives_to_clone = ReportOperationRepresentative.objects.filter(report_version=old_report_version)
+
+        # Clone each representative instance for the new report version
+        for representative_to_clone in representatives_to_clone:
+            representative_to_clone.pk = None  # Reset primary key to create a new instance
+            representative_to_clone.report_version = new_report_version
+            representative_to_clone.save()
 
 
 def clone_report_version_person_responsible(
     old_report_version: ReportVersion,
     new_report_version: ReportVersion,
 ) -> None:
+
     # Retrieve the ReportPersonResponsible instance associated with the old report version
     report_person_responsible_to_clone = ReportPersonResponsible.objects.filter(
         report_version=old_report_version
     ).first()
 
-    # Do not clone if the report version has no Person Responsible
     if not report_person_responsible_to_clone:
         return
 
@@ -509,10 +524,10 @@ def reapply_emission_categories(report_version: ReportVersion) -> None:
         )
 
 
-def clone_all(source: ReportVersion, target: ReportVersion) -> None:
+def clone_all(source: ReportVersion, target: ReportVersion, is_operation_transferred: bool) -> None:
     """Copies all related data from source report version into target report version."""
     clone_report_version_operation(source, target)
-    clone_report_version_representatives(source, target)
+    clone_or_refresh_report_version_representatives(source, target, is_operation_transferred)
     clone_report_version_person_responsible(source, target)
     clone_electricity_import_data(source, target)
     clone_report_version_additional_data(source, target)

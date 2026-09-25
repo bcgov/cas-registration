@@ -220,4 +220,4 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             self.current_year_report_version.id
         )
 
-        mock_clone_all.assert_called_once_with(self.current_year_report_version, new_version)
+        mock_clone_all.assert_called_once_with(self.current_year_report_version, new_version, True)
