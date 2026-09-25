@@ -1,3 +1,5 @@
+import { EmissionSummaryFormData } from "../../utils/emissionSummaryTypes";
+
 export type ComplianceSummaryFormProduct = {
   name: string;
   annual_production: string;
@@ -24,4 +26,5 @@ export type ComplianceSummaryFormPayload = {
   };
   products: ComplianceSummaryFormProduct[];
   reporting_year: number;
+  emission_summary_data: EmissionSummaryFormData;
 };
