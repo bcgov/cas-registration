@@ -82,7 +82,7 @@ BCCR_CLIENT_SECRET = os.getenv("BCCR_CLIENT_SECRET")
 
 NON_PROD_ENVIRONMENT = ENVIRONMENT in ["CI", "local", "dev", "test"] or CI == "true"
 
-LOCAL_APPS = ["registration", "reporting", "common", "rls", "task_scheduler", "compliance"]
+LOCAL_APPS = ["registration", "reporting", "common", "rls", "task_scheduler", "compliance", "registry"]
 NON_PROD_APPS: list[str] = ["mocks"]
 
 RLS_GRANT_APPS = ["registration", "reporting", "compliance"]

@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cas-bciers.fullname" . }}-registry-frontend
+  labels:
+    component: registry-frontend
+    layer: frontend
+{{- include "cas-bciers.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.registryFrontend.autoscaling.enabled }}
+  replicas: {{ .Values.registryFrontend.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "cas-bciers.selectorLabels" . | nindent 6 }}
+      component: registry-frontend
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+{{- include "cas-bciers.selectorLabels" . | nindent 8 }}
+        component: registry-frontend
+        layer: frontend
+    spec:
+      serviceAccountName: {{ .Release.Name }}-pod-logger
+      containers:
+        - name: {{ template "cas-bciers.fullname" . }}-registry-frontend
+          env:
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-gold-client-secret
+                  key: kcClientSecret
+            - name: NEXTAUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: cas-bciers-nextauth
+                  key: nextauth-secret
+          envFrom:
+            - configMapRef:
+                name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
+          image: "{{ .Values.registryFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.registryFrontend.image.tag }}"
+          imagePullPolicy: {{ .Values.registryFrontend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.registryFrontend.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.registryFrontend.resources | nindent 12 }}
+          {{- $containerName := printf "%s-registry-frontend" (include "cas-bciers.fullname" .) }}
+        {{- include "cas-logging-sidecar.containers" (dict
+            "containerToSidecar" $containerName
+            "logName" (index .Values "cas-logging-sidecar" "logName")
+            "host" (index .Values "cas-logging-sidecar" "host")
+            "appName" "registry") | nindent 8 }}
+      restartPolicy: Always
+      volumes:
+             {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}

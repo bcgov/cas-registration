@@ -1,0 +1,46 @@
+{
+  "name": "registry",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/registry",
+  "projectType": "application",
+  "tags": ["layer:frontend"],
+  "targets": {
+    "build": {
+      "dependsOn": []
+    },
+    "dev": {
+      "options": {
+        "port": 8001
+      }
+    },
+    "start": {
+      "options": {
+        "port": 3000
+      }
+    },
+    "start:local": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "options": {
+        "cwd": "apps/registry",
+        "command": "next start --port=8001"
+      }
+    },
+    "container": {
+      "executor": "@nx-tools/nx-container:build",
+      "dependsOn": ["build"],
+      "defaultConfiguration": "dev",
+      "options": {
+        "engine": "docker",
+        "context": ".",
+        "file": "Dockerfile",
+        "build-args": ["application_path=registry"],
+        "tags": ["cas-registry:latest"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {}
+    }
+  }
+}

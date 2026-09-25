@@ -25,5 +25,6 @@ jobs:
           host_administration: http://localhost:4001
           host_compliance: http://localhost:7000
           host_registration: http://localhost:4000
+          host_registry: http://localhost:8001
           host_reporting: http://localhost:5000
           special_build_tag: ${{ inputs.special_build_tag }}

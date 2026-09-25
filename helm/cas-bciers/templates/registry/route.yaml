@@ -1,0 +1,40 @@
+{{- $keySecret := "Secret not found" }}
+{{- $certSecret := "Secret not found" }}
+{{- $CACertSecret := "Secret not found" }}
+
+{{- $existingSSLSecret := (lookup "v1" "Secret" .Release.Namespace "ssl-cert-bciers" ) }}
+{{- if $existingSSLSecret }}
+{{- $keySecret = index $existingSSLSecret.data "private-key" | b64dec | quote}}
+{{- $certSecret = index $existingSSLSecret.data "certificate" | b64dec | quote}}
+{{- $CACertSecret = index $existingSSLSecret.data "CACert" | b64dec | quote}}
+{{- end -}}
+
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ template "cas-bciers.fullname" . }}-registry-frontend
+  labels:
+{{ include "cas-bciers.labels" . | indent 4 }}
+  annotations:
+    haproxy.router.openshift.io/balance: roundrobin
+    haproxy.router.openshift.io/rewrite-target: {{ .Values.registryFrontend.route.path }}
+    haproxy.router.openshift.io/disable_cookies: 'true'
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  host: {{ .Values.registryFrontend.route.host }}
+  path: {{ .Values.registryFrontend.route.path }}
+  port:
+    targetPort: {{ template "cas-bciers.fullname" . }}-registry-frontend
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+{{- if hasSuffix "-prod" .Release.Namespace }}
+    key: {{ $keySecret }}
+    certificate: {{ $certSecret }}
+    caCertificate: {{ $CACertSecret }}
+{{- end }}
+  to:
+    kind: Service
+    name: {{ template "cas-bciers.fullname" . }}-registry-frontend
+    weight: 100

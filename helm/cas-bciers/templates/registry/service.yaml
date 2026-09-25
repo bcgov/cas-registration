@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cas-bciers.fullname" . }}-registry-frontend
+  labels:
+    layer: frontend
+    {{- include "cas-bciers.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.registryFrontend.service.type }}
+  ports:
+    - port: {{ .Values.registryFrontend.service.port }}
+      targetPort: 3000
+      protocol: TCP
+      name: {{ include "cas-bciers.fullname" . }}-registry-frontend
+  selector:
+    {{- include "cas-bciers.selectorLabels" . | nindent 4 }}
+    component: registry-frontend

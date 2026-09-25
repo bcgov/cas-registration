@@ -23,6 +23,7 @@
       "@/dashboard/*": ["apps/dashboard/*"],
       "@/dashboard-e2e/*": ["apps/dashboard-e2e/*"],
       "@/registration/*": ["apps/registration/*"],
+      "@/registry/*": ["apps/registry/*"],
       "@bciers/actions": ["libs/actions/src/index.ts"],
       "@bciers/actions/*": ["libs/actions/src/*"],
       "@bciers/actions/server": ["libs/actions/src/server.ts"],
