@@ -7,7 +7,7 @@ from reporting.tests.utils.report_access_validation import assert_report_version
 class TestReportProductV2Endpoints(CommonTestSetup):
     def setup_method(self):
         self.report_version = make_recipe(
-            "reporting.tests.utils.report_version", report__reporting_year__reporting_year=1222
+            "reporting.tests.utils.report_version", report__reporting_year__reporting_year=1922
         )
         self.facility_report = make_recipe(
             "reporting.tests.utils.facility_report",
@@ -27,6 +27,10 @@ class TestReportProductV2Endpoints(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=self.facility_report.report_version.report.operator
         )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.facility_report.report_version.report.operator,
+            operations=[self.facility_report.report_version.report.operation],
+        )
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
 
         assert response.json() == {
@@ -42,7 +46,7 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             },
             "report_data": {
                 "report_version_id": self.report_version.id,
-                "reporting_year": 1222,
+                "reporting_year": 1922,
             },
             "payload": {"report_products": [], "allowed_products": []},
         }
@@ -50,6 +54,10 @@ class TestReportProductV2Endpoints(CommonTestSetup):
     def test_get_returns_the_right_data_with_data(self):
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=self.facility_report.report_version.report.operator
+        )
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.facility_report.report_version.report.operator,
+            operations=[self.facility_report.report_version.report.operation],
         )
         self.report_operation.regulated_products.set(RegulatedProduct.objects.filter(id__in=[1, 2, 3]))
         rp1 = make_recipe(
@@ -101,7 +109,7 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             },
             "report_data": {
                 "report_version_id": self.report_version.id,
-                "reporting_year": 1222,
+                "reporting_year": 1922,
             },
             "payload": {
                 "report_products": [
