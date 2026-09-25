@@ -66,6 +66,8 @@ jobs:
           IS_MERGE_QUEUE="false"
           REASON="No special conditions met, running default CI run."
 
+          EVENT_NAME="merge_queue"
+
           if [[ "$IS_MAIN_OR_DEV_BRANCH" == "true" ]]; then
             RUN_ALL_CI="true"
             REASON="$EVENT_NAME triggered a full CI run due to being on the main or develop branch."
@@ -216,7 +218,7 @@ jobs:
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       compose_profiles: "registration"
-      is_nx_affected: ${{ (contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
+      is_nx_affected: ${{ contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true') && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
       nx_project: registration
     secrets: inherit
   # See notes at the `on.merge_group` trigger about this duplicated job.
@@ -254,7 +256,7 @@ jobs:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       # dashboard e2e clicks through to every app tile, so every app has to be up
       compose_profiles: "administration,compliance,registration,reporting"
-      is_nx_affected: ${{ (contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
+      is_nx_affected: ${{ contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true') && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
       nx_project: dashboard
     secrets: inherit
   # See notes at the `on.merge_group` trigger about this duplicated job.
@@ -295,7 +297,7 @@ jobs:
       # compliance e2e drives the reporting UI directly to seed its data
       # (its specs import @/reporting-e2e POMs), so reporting has to be up too
       compose_profiles: "compliance,reporting"
-      is_nx_affected: ${{ (contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
+      is_nx_affected: ${{ contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true') && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
       nx_project: compliance
     secrets: inherit
   # See notes at the `on.merge_group` trigger about this duplicated job.
@@ -326,7 +328,7 @@ jobs:
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       compose_profiles: "reporting"
-      is_nx_affected: ${{ (contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
+      is_nx_affected: ${{ contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true') && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
       nx_project: reporting
     secrets: inherit
   # See notes at the `on.merge_group` trigger about this duplicated job.
