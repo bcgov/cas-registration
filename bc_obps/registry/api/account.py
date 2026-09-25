@@ -1,20 +1,17 @@
-import json
 from typing import List, Literal, Optional
 from django.http import HttpRequest
 from registry.schema.account import AccountFilterSchema
 from service.account_service import AccountService
-from registry.models import Account, Unit, Project
+from registry.models import Account
 from registration.schema import Message
 from registry.api.router import router
 from registry.schema import AccountOut
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from common.permissions import authorize
 from django.db.models import QuerySet
-from common.api.utils import get_current_user_guid
 from ninja.pagination import paginate
 from ninja import Query
 from registration.utils import CustomPagination
-from typing import List
 
 @router.get(
     "/accounts",

@@ -1,0 +1,9 @@
+[
+  {
+    "model": "registry.program",
+    "pk": 1,
+    "fields": {
+      "name": "BC Carbon Registry"
+    }
+  }
+]

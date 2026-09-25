@@ -6,7 +6,7 @@ from common.enums import Schemas
 from django.db import models
 from simple_history.models import HistoricalRecords
 from registry.enums.enums import RegistryTableNames
-from registry.models import SubAccount, Unit
+from registry.models import Account, Unit
 from registry.models.rls_configs.retirement import Rls as RetirementRls
 
 
@@ -22,7 +22,7 @@ class Retirement(TimeStampedModel):
         on_delete=models.PROTECT,
     )
     from_account = models.ForeignKey(
-        SubAccount,
+        Account,
         on_delete=models.DO_NOTHING,
     )
     compliance_obligation = models.ForeignKey(

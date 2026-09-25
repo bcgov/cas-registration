@@ -1,4 +1,3 @@
-import uuid
 from registration.models.time_stamped_model import TimeStampedModel
 from common.enums import Schemas
 from django.db import models

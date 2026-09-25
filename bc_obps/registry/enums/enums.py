@@ -7,7 +7,6 @@ class RegistryTableNames(Enum):
     PROGRAM = "program"
     PROJECT = "project"
     RETIREMENT = "retirement"
-    SUB_ACCOUNT = "sub_account"
     TRANSFER = "transfer"
     UNIT = "unit"
     VERIFIER = "verifier"

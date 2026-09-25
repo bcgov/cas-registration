@@ -1,7 +1,6 @@
 # ORDER OF IMPORTS MATTERS!
 from .program import Program
 from .account import Account
-from .sub_account import SubAccount
 from .verifier import Verifier
 from .project import Project
 from .issuance import Issuance
@@ -12,7 +11,6 @@ from .retirement import Retirement
 __all__ = [
     "Program",
     "Account",
-    "SubAccount",
     "Verifier",
     "Project",
     "Issuance",

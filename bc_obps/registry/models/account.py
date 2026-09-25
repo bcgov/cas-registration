@@ -1,4 +1,3 @@
-import uuid
 from registration.models.time_stamped_model import TimeStampedModel
 from common.enums import Schemas
 from django.db import models
@@ -27,8 +26,14 @@ class Account(TimeStampedModel):
     class TypeOfAccountHolder(models.TextChoices):
         CORPORATION = "Corporation"
 
-    id = models.IntegerField(
-        primary_key=True, db_comment="Primary key to identify the registry account"
+    id = models.PositiveBigIntegerField(primary_key=True, db_comment="Primary key to identify the registry account")
+    parent_account = models.ForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        related_name="sub_accounts",
+        blank=True,
+        null=True,
+        db_comment="The registry account under which this account falls, if it is a sub-account.",
     )
     name = models.CharField(
         max_length=1000, db_comment="The name of the account as it should be displayed in the frontend"
