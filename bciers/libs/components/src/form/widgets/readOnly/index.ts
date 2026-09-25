@@ -6,3 +6,4 @@ export { default as ReadOnlyMultiSelectWidget } from "./ReadOnlyMultiSelectWidge
 export { default as ReadOnlyWidget } from "./ReadOnlyWidget";
 export { default as ReadOnlyRadioWidget } from "./ReadOnlyRadioWidget";
 export { default as ReadOnlyCurrencyWidget } from "./ReadOnlyCurrencyWidget";
+export { default as ReadOnlyComplianceEmissionFormula } from "./ReadOnlyComplianceEmissionFormula";
