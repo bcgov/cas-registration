@@ -36,6 +36,14 @@ const OperationInformationPage = async ({
   return (
     <>
       <NewTabBanner />
+      <div className="w-full flex justify-end pb-6">
+        <a
+          className="link-button-blue"
+          href={`../audit-log/operation/${operationId}`}
+        >
+          View Audit Log
+        </a>
+      </div>
       <OperationInformationForm
         formData={{
           ...operation,

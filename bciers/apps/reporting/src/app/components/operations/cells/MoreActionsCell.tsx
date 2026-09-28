@@ -199,6 +199,16 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
         {!pending && !reportId && (
           <MenuItem disabled={true}>Report history</MenuItem>
         )}
+        {!pending && reportId && (
+          <MenuItem
+            onClick={async () => router.push(`audit-log/report/${reportId}`)}
+          >
+            View Audit Log
+          </MenuItem>
+        )}
+        {!pending && !reportId && (
+          <MenuItem disabled={true}>View Audit Log</MenuItem>
+        )}
       </Menu>
 
       <Dialog open={Boolean(confirmAction)} onClose={cancelConfirmation}>
