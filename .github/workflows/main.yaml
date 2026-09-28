@@ -13,6 +13,10 @@ on:
     types: [submitted]
   workflow_dispatch:
   merge_group:
+    # Merge queue uses the same "checks required" named jobs as PRs, but we disable the E2E/Happo required checks on merge_group events and the required checks are bypassed.
+    # We run identical jobs with different names so they are not required but still run for validation purposes.
+    types: [checks_requested]
+    branches: [develop]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
@@ -22,9 +26,86 @@ env:
   PGUSER: postgres
 
 jobs:
-  check-nx-affected:
-    # We guard this workflow to only run on non-pull request review events or only when the review state is 'approved'.
+  evaluate-ci-conditions:
+    # We use this main.yaml for push to main & dev, PRs, PR approvals, on manual command, and the merge queue. The amount of CI run changes depending on the triggering event and whether
+    # the PR has the 'run-all-ci' label. This job is used to determine what parts of the CI runs based on those conditions.
+
+    # Since all other jobs depend on this one, it acts as a gate for the entire workflow. This job runs if any of the following conditions are met:
+    # - The event triggering is anything except a pull request review.
+    # - The event triggering is a pull request review and it is an approval.
+    #   - If the `run-all-ci` label is present on the pull request approval, it means all CI has already been run so we don't rerun it.
+
+    # If the workflow passes this gate, we evaluate other conditions to determine what other jobs to run. This is split between two groups, with any condition being met:
+    # - Should all CI be run?
+    #   - If the trigger is a push to main or dev, **YES**
+    #   - If the trigger is a pull_request (open, sync, reopen, labelling) and the `run-all-ci` label is present, **YES**
+    #   - If the trigger is a pull_request_review that is an approval (and the 'run-all-ci' is absent, checked in the job's `if` condition), **YES**
+    #   - If the trigger is a pull_request (sync) and the PR is approved, **YES**
+    #   - If the trigger is a manual dispatch/command, **YES**
+    #   - If the trigger is a merge queue, **NO**
+    # - Should E2E tests be run as a requirement?
+    #   - If the trigger is a merge queue, we run E2E tests with alternate names to bypass requirements.
     if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    runs-on: ubuntu-latest
+    outputs:
+      run_all_ci: ${{ steps.evaluate-conditions.outputs.RUN_ALL_CI }}
+      is_merge_queue: ${{ steps.evaluate-conditions.outputs.IS_MERGE_QUEUE }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - id: evaluate-conditions
+        env:
+          IS_MAIN_OR_DEV_BRANCH: ${{ github.ref_name == 'main' || github.head_ref == 'main' || github.ref_name == 'develop' || github.head_ref == 'develop' }}
+          HAS_RUN_ALL_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'run-all-ci') }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IS_APPROVED_REVIEW: ${{ github.event_name == 'pull_request_review' && github.event.pull_request_review.review.state == 'APPROVED' }}
+        run: |
+          RUN_ALL_CI="false"
+          IS_MERGE_QUEUE="false"
+          REASON="No special conditions met, running default CI run."
+
+          if [[ "$IS_MAIN_OR_DEV_BRANCH" == "true" ]]; then
+            RUN_ALL_CI="true"
+            REASON="$EVENT_NAME triggered a full CI run due to being on the main or develop branch."
+          elif [[ "$HAS_RUN_ALL_LABEL" == "true" ]]; then
+            RUN_ALL_CI="true"
+            REASON="$EVENT_NAME triggered a full CI run due to having the \`run_all_ci\` label."
+          elif [[ "$IS_APPROVED_REVIEW" == "true" ]]; then
+            RUN_ALL_CI="true"
+            REASON="$EVENT_NAME triggered a full CI run due to being approved."
+          elif [[ "$EVENT_NAME" == "pull_request" && "$GITHUB_ACTION" == "sync" ]]; then
+            REVIEW_DECISION=$(gh pr view "$PR_NUMBER" --json reviewDecision --jq '.reviewDecision')
+            if [[ "$REVIEW_DECISION" == "APPROVED" ]]; then
+              RUN_ALL_CI="true"
+              REASON="$EVENT_NAME triggered a full CI run due to syncing after being approved."
+            fi
+          elif [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            RUN_ALL_CI="true"
+            REASON="$EVENT_NAME triggered a full CI run due to being manually triggered."
+          fi
+
+          if [[ "$EVENT_NAME" == "merge_queue" ]]; then
+            IS_MERGE_QUEUE="true"
+            RUN_ALL_CI="false"
+            REASON="$EVENT_NAME triggered a partial CI run due to running through the merge queue."
+          fi
+
+          echo "RUN_ALL_CI=$RUN_ALL_CI" >> "$GITHUB_OUTPUT"
+          echo "IS_MERGE_QUEUE=$IS_MERGE_QUEUE" >> "$GITHUB_OUTPUT"
+
+          cat << EOF >> "$GITHUB_STEP_SUMMARY"
+          # CI Run Evaluation Summary :twisted_rightwards_arrows:
+
+          **Run All CI**: \`$RUN_ALL_CI\`
+          **Is the Merge Queue**: \`$IS_MERGE_QUEUE\`
+          $REASON
+
+          EOF
+  check-nx-affected:
+    # If evaluate-ci-conditions doesn't run due to it's base `job.if`, we skip all subsequent steps.
+    needs: [evaluate-ci-conditions]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
@@ -49,47 +130,48 @@ jobs:
         working-directory: ./bciers
         shell: bash
   check-backend-changes:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/check-backend-changes.yaml
   check-frontend-changes:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/check-frontend-changes.yaml
   build-administration:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-administration.yaml
   build-backend:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-backend.yaml
   build-compliance:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-compliance.yaml
   build-dashboard:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-dashboard.yaml
   build-dashboard-e2e:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-dashboard-e2e.yaml
   build-registration:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-registration.yaml
   build-reporting:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-reporting.yaml
   test-code:
-    needs: [check-nx-affected, check-backend-changes, check-frontend-changes]
+    needs: [evaluate-ci-conditions, check-nx-affected, check-backend-changes, check-frontend-changes]
     uses: ./.github/workflows/test-code.yaml
     with:
-      backend_has_changes: ${{ ((needs.check-backend-changes.outputs.has_changes == 'true') || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))) && 'true' || 'false' }}
-      frontend_has_changes: ${{ ((needs.check-frontend-changes.outputs.has_changes == 'true') || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))) && 'true' || 'false' }}
+      backend_has_changes: ${{ ((needs.check-backend-changes.outputs.has_changes == 'true') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && 'true' || 'false' }}
+      frontend_has_changes: ${{ ((needs.check-frontend-changes.outputs.has_changes == 'true') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && 'true' || 'false' }}
   test-backend:
-    needs: [check-backend-changes]
+    needs: [evaluate-ci-conditions, check-backend-changes]
     uses: ./.github/workflows/test-backend.yaml
     with:
-      backend_has_changes: ${{ ((needs.check-backend-changes.outputs.has_changes == 'true') || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))) && 'true' || 'false' }}
+      backend_has_changes: ${{ ((needs.check-backend-changes.outputs.has_changes == 'true') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && 'true' || 'false' }}
     secrets: inherit
   test-administration-e2e:
     needs:
       [
+        evaluate-ci-conditions,
         build-backend,
         build-dashboard-e2e,
         build-administration,
@@ -99,12 +181,32 @@ jobs:
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       compose_profiles: "administration"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'administration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
+      # Sub workflows still need to run to report results for "required" CI tasks, even if they're skipped
+      is_nx_affected: ${{ (contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'administration') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
+      nx_project: administration
+    secrets: inherit
+  # See notes at the `on.merge_group` trigger about this duplicated job.
+  test-administration-e2e-merge-group:
+    if: needs.evaluate-ci-conditions.is_merge_queue == 'true'
+    needs:
+      [
+        evaluate-ci-conditions,
+        build-backend,
+        build-dashboard-e2e,
+        build-administration,
+        check-nx-affected,
+      ]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
+      compose_profiles: "administration"
+      is_nx_affected: ${{ contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'administration') && true || false }}
       nx_project: administration
     secrets: inherit
   test-registration-e2e:
     needs:
       [
+        evaluate-ci-conditions,
         build-backend,
         build-dashboard-e2e,
         build-registration,
@@ -114,12 +216,31 @@ jobs:
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       compose_profiles: "registration"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
+      is_nx_affected: ${{ (contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
+      nx_project: registration
+    secrets: inherit
+  # See notes at the `on.merge_group` trigger about this duplicated job.
+  test-registration-e2e-merge-group:
+    if: needs.evaluate-ci-conditions.is_merge_queue == 'true'
+    needs:
+      [
+        evaluate-ci-conditions,
+        build-backend,
+        build-dashboard-e2e,
+        build-registration,
+        check-nx-affected,
+      ]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
+      compose_profiles: "registration"
+      is_nx_affected: ${{ contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') && true || false }}
       nx_project: registration
     secrets: inherit
   test-dashboard-e2e:
     needs:
       [
+        evaluate-ci-conditions,
         build-administration,
         build-backend,
         build-compliance,
@@ -133,12 +254,35 @@ jobs:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       # dashboard e2e clicks through to every app tile, so every app has to be up
       compose_profiles: "administration,compliance,registration,reporting"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
+      is_nx_affected: ${{ (contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
+      nx_project: dashboard
+    secrets: inherit
+  # See notes at the `on.merge_group` trigger about this duplicated job.
+  test-dashboard-e2e-merge-group:
+    if: needs.evaluate-ci-conditions.is_merge_queue == 'true'
+    needs:
+      [
+        evaluate-ci-conditions,
+        build-administration,
+        build-backend,
+        build-compliance,
+        build-dashboard-e2e,
+        build-registration,
+        build-reporting,
+        check-nx-affected,
+      ]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
+      # dashboard e2e clicks through to every app tile, so every app has to be up
+      compose_profiles: "administration,compliance,registration,reporting"
+      is_nx_affected: ${{ contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') && true || false }}
       nx_project: dashboard
     secrets: inherit
   test-compliance-e2e:
     needs:
       [
+        evaluate-ci-conditions,
         build-backend,
         build-compliance,
         build-dashboard-e2e,
@@ -151,22 +295,55 @@ jobs:
       # compliance e2e drives the reporting UI directly to seed its data
       # (its specs import @/reporting-e2e POMs), so reporting has to be up too
       compose_profiles: "compliance,reporting"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
+      is_nx_affected: ${{ (contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
+      nx_project: compliance
+    secrets: inherit
+  # See notes at the `on.merge_group` trigger about this duplicated job.
+  test-compliance-e2e-merge-group:
+    if: needs.evaluate-ci-conditions.is_merge_queue == 'true'
+    needs:
+      [
+        evaluate-ci-conditions,
+        build-backend,
+        build-compliance,
+        build-dashboard-e2e,
+        build-reporting,
+        check-nx-affected,
+      ]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
+      # compliance e2e drives the reporting UI directly to seed its data
+      # (its specs import @/reporting-e2e POMs), so reporting has to be up too
+      compose_profiles: "compliance,reporting"
+      is_nx_affected: ${{ contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') && true || false }}
       nx_project: compliance
     secrets: inherit
   test-reporting-e2e:
     needs:
-      [build-backend, build-dashboard-e2e, build-reporting, check-nx-affected]
+      [evaluate-ci-conditions, build-backend, build-dashboard-e2e, build-reporting, check-nx-affected]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       compose_profiles: "reporting"
-      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main' || contains(github.event.pull_request.labels.*.name, 'run-all-ci') || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci')) }}
+      is_nx_affected: ${{ (contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
+      nx_project: reporting
+    secrets: inherit
+  # See notes at the `on.merge_group` trigger about this duplicated job.
+  test-reporting-e2e-merge-queue:
+    if: needs.evaluate-ci-conditions.is_merge_queue == 'true'
+    needs:
+      [evaluate-ci-conditions, build-backend, build-dashboard-e2e, build-reporting, check-nx-affected]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
+      compose_profiles: "reporting"
+      is_nx_affected: ${{ contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') && true || false }}
       nx_project: reporting
     secrets: inherit
   trivy:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/trivy.yaml
   codeql:
-    if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
+    needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/codeql.yaml
