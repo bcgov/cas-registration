@@ -1,5 +1,10 @@
 from typing import List
+from uuid import UUID
+
+from ninja.types import DictStrAny
+
 from registry.models import Project
+
 
 class ProjectDataAccessService:
     # TODO: add prefetch_related to GET methods
@@ -12,6 +17,8 @@ class ProjectDataAccessService:
         return Project.objects.all()
 
     @classmethod
-    # TODO: finish this method
-    def create_project(cls, project_data) -> Project:
-        Project.objects.create(project_data)
+    def create_project(cls, user_guid: UUID, project_data: DictStrAny) -> Project:
+        return Project.objects.create(
+            **project_data,
+            created_by_id=user_guid,
+        )
