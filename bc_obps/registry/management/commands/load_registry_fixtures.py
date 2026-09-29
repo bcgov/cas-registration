@@ -14,6 +14,7 @@ class Command(BaseCommand):
         fixtures = [
             f'{self.fixture_base_dir}/program.json',
             f'{self.fixture_base_dir}/account.json',
+            f'{self.fixture_base_dir}/verifier.json',
             f'{self.fixture_base_dir}/project.json',
             f'{self.fixture_base_dir}/issuance.json',
             f'{self.fixture_base_dir}/unit.json',

@@ -15,9 +15,11 @@ class Transfer(TimeStampedModel):
         CANCELLED = "Cancelled"
         COMPLETE = "Complete"
 
-    id = models.PositiveIntegerField(primary_key=True)
-    effective_datetime = models.DateTimeField(db_comment="The date and time at which the transfer took effect.")
-    initiated_date = models.DateField(db_comment="The date when the request to transfer was made.")
+    id = models.PositiveBigIntegerField(primary_key=True)
+    completed_datetime = models.DateTimeField(
+        db_comment="The date and time at which the transfer was completed.", blank=True, null=True
+    )
+    initiated_datetime = models.DateTimeField(db_comment="The date when the request to transfer was made.")
     source_account = models.ForeignKey(
         Account,
         related_name="transfers_from",
@@ -36,6 +38,8 @@ class Transfer(TimeStampedModel):
     comment = models.CharField(
         max_length=1000,
         db_comment="Free-form comment field to capture input from the internal user reviewing the transfer request.",
+        blank=True,
+        null=True,
     )
     project = models.ForeignKey(Project, on_delete=models.PROTECT)
     transfer_quantity = models.PositiveIntegerField()

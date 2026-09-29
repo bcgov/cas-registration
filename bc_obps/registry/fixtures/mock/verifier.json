@@ -1,0 +1,16 @@
+[
+  {
+    "model": "registry.verifier",
+    "pk": "8e08e7ad-733f-4787-a09f-8241f1550bfa",
+    "fields": {
+      "name": "Veritas Verifiers"
+    }
+  },
+  {
+    "model": "registry.verifier",
+    "pk": "8628ef3f-bddd-42dd-9771-753656513662",
+    "fields": {
+      "name": "Acme Verifiers"
+    }
+  }
+]

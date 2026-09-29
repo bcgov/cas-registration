@@ -24,9 +24,7 @@ class Project(TimeStampedModel):
     class Category(models.TextChoices):
         CARBON = "Carbon"
 
-    id = models.PositiveBigIntegerField(
-        primary_key=True, db_comment="Primary key to identify the registry project"
-    )
+    id = models.PositiveBigIntegerField(primary_key=True, db_comment="Primary key to identify the registry project")
     name = models.CharField(max_length=1000, db_comment="The name of the project")
     account = models.ForeignKey(
         Account,
@@ -53,7 +51,7 @@ class Project(TimeStampedModel):
         db_comment="The anticipated end date of the project",
     )
     description = models.CharField(max_length=2000, blank=True, null=True, db_comment="A description of the project")
-    operation_id = models.ForeignKey(Operation, on_delete=models.DO_NOTHING, related_name="registry_project")
+    operation = models.ForeignKey(Operation, on_delete=models.DO_NOTHING, related_name="registry_project")
     status = models.CharField(
         max_length=50, choices=ProjectStatus.choices, db_comment="Indicates whether the project is active or not."
     )

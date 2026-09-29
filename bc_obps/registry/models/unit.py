@@ -3,7 +3,7 @@ from common.enums import Schemas
 from django.db import models
 from registry.enums.enums import RegistryTableNames
 from simple_history.models import HistoricalRecords
-from registry.models import Account, Issuance, Program, Project
+from registry.models import Issuance, Program, Project
 from registry.models.rls_configs.unit import Rls as UnitRls
 
 
@@ -38,14 +38,8 @@ class Unit(TimeStampedModel):
         choices=Status.choices,
         db_comment="Indicates whether the unit is active, retired, pending, cancelled, or issued.",
     )
-    account = models.ForeignKey(
-        Account,
-        related_name="units",
-        on_delete=models.DO_NOTHING,
-        db_comment="Foreign key reference to the account that currently holds the unit/s",
-    )
     quantity = models.PositiveIntegerField()
-    vintage = models.CharField(max_length=10)
+    vintage = models.CharField(max_length=20)
     issuance = models.ForeignKey(
         Issuance,
         on_delete=models.PROTECT,

@@ -10,7 +10,8 @@
       "type_of_account_holder": "Corporation",
       "primary_account_representative": 4,
       "address": 3,
-      "status": "Active"
+      "status": "Active",
+      "operation": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9"
     }
   },
   {
@@ -24,12 +25,13 @@
       "type_of_account_holder": "Corporation",
       "primary_account_representative": 3,
       "address": 3,
-      "status": "Active"
+      "status": "Active",
+      "operation": "aeeb781e-a97b-4ab2-9a6e-02e4522add1a"
     }
   },
   {
     "model": "registry.account",
-    "pj": 103200000064648,
+    "pk": 103200000064648,
     "fields": {
       "name": "Bugle SFO - Registered - name from admin 23-0001",
       "program": 1,
@@ -38,7 +40,8 @@
       "type_of_account_holder": "Corporation",
       "primary_account_representative": 3,
       "address": 3,
-      "status": "Active"
+      "status": "Active",
+      "operation": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9"
     }
   },
   {
@@ -52,7 +55,8 @@
       "type_of_account_holder": "Corporation",
       "primary_account_representative": 3,
       "address": 3,
-      "status": "Active"
+      "status": "Active",
+      "operation": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9"
     }
   },
   {
@@ -66,7 +70,8 @@
       "type_of_account_holder": "Corporation",
       "primary_account_representative": 3,
       "address": 3,
-      "status": "Active"
+      "status": "Active",
+      "operation": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488f"
     }
   },
   {
@@ -80,7 +85,8 @@
       "type_of_account_holder": "Corporation",
       "primary_account_representative": 3,
       "address": 3,
-      "status": "Active"
+      "status": "Active",
+      "operation": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488f"
     }
   },
   {
@@ -94,7 +100,8 @@
       "type_of_account_holder": "Corporation",
       "primary_account_representative": 3,
       "address": 3,
-      "status": "Active"
+      "status": "Active",
+      "operation": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488f"
     }
   },
   {
@@ -108,7 +115,8 @@
       "type_of_account_holder": "Corporation",
       "primary_account_representative": 3,
       "address": 3,
-      "status": "Active"
+      "status": "Active",
+      "operation": "c5b3643b-c143-42f3-8a2b-03ccc7319cd9"
     }
   },
   {
@@ -122,7 +130,8 @@
       "type_of_account_holder": "Corporation",
       "primary_account_representative": 3,
       "address": 3,
-      "status": "Active"
+      "status": "Active",
+      "operation": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488f"
     }
   },
   {
@@ -136,7 +145,8 @@
       "type_of_account_holder": "Corporation",
       "primary_account_representative": 3,
       "address": 3,
-      "status": "Active"
+      "status": "Active",
+      "operation": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488f"
     }
   },
   {
@@ -150,7 +160,8 @@
       "type_of_account_holder": "Corporation",
       "primary_account_representative": 3,
       "address": 3,
-      "status": "Active"
+      "status": "Active",
+      "operation": "3f47b2e1-9a4c-4d3f-8b21-7e9a0c5d2f6b"
     }
   },
   {
@@ -164,7 +175,53 @@
       "type_of_account_holder": "Corporation",
       "primary_account_representative": 3,
       "address": 3,
-      "status": "Active"
+      "status": "Active",
+      "operation": "0ac72fa9-2636-4f54-b378-af6b1a070787"
+    }
+  },
+  {
+    "model": "registry.account",
+    "pk": 103000000010592,
+    "fields": {
+      "name": "BC Govt Contingency Account",
+      "program": 1,
+      "account_type": "General participant",
+      "account_classification": "Corporate",
+      "type_of_account_holder": "Corporation",
+      "primary_account_representative": 4,
+      "address": 3,
+      "status": "Active",
+      "operation": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9"
+    }
+  },
+  {
+    "model": "registry.account",
+    "pk": 103000000010593,
+    "fields": {
+      "name": "BC Govt Retirement Account",
+      "program": 1,
+      "account_type": "General participant",
+      "account_classification": "Corporate",
+      "type_of_account_holder": "Corporation",
+      "primary_account_representative": 4,
+      "address": 3,
+      "status": "Active",
+      "operation": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9"
+    }
+  },
+  {
+    "model": "registry.account",
+    "pk": 202,
+    "fields": {
+      "name": "Test BC Account Project Proponent",
+      "program": 1,
+      "account_type": "General participant",
+      "account_classification": "Corporate",
+      "type_of_account_holder": "Corporation",
+      "primary_account_representative": 4,
+      "address": 3,
+      "status": "Active",
+      "operation": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9"
     }
   }
 ]
