@@ -1,8 +1,7 @@
 from typing import List, Literal, Optional
 from django.http import HttpRequest
-from registry.schema.account import AccountFilterSchema, AccountOut
-from service.account_service import AccountService
-from registry.models import Account
+from registry.schema.project import ProjectOut, ProjectFilterSchema
+from registry.models import Project
 from registration.schema import Message
 from registry.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -13,16 +12,16 @@ from ninja import Query
 from registration.utils import CustomPagination
 
 @router.get(
-    "/accounts",
-    response={200: List[AccountOut], custom_codes_4xx: Message},
+    "/projects",
+    response={200: List[ProjectOut], custom_codes_4xx: Message},
     auth=authorize("approved_authorized_roles"),
 )
 @paginate(CustomPagination)
-def list_accounts(
+def list_projects(
     request: HttpRequest,
-    filters: AccountFilterSchema = Query(...),
+    filters: ProjectFilterSchema = Query(...),
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     sort_field: Optional[str] = None,
-) -> QuerySet[Account]:
-    return AccountService.list_accounts(sort_field, sort_order, filters)
+) -> QuerySet[Project]:
+    return ProjectService.list_projects(sort_field, sort_order, filters)
     
