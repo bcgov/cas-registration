@@ -32,6 +32,8 @@ const ReadOnlyComplianceEmissionFormula: React.FC<WidgetProps> = ({
     registry.formContext.emission_summary_data.emission_categories
       .venting_non_useful;
 
+  const formula_table_data = registry.formContext.formula_explanation_data;
+
   return (
     <div id={id} className="block w-full">
       <div
@@ -72,49 +74,82 @@ const ReadOnlyComplianceEmissionFormula: React.FC<WidgetProps> = ({
           </div>
 
           {/* emissions attributable for reporting */}
-          {/* <div>
-            <div className="font-bold">Emissions attributable for reporting </div>
-            <div>
-              header
-            </div>
-            -
-          </div> */}
+          {/* simply every kind of emission */}
 
           {/* Excluded emissions by fuels */}
-          {/* <div>
-            <div className="font-bold">Excluded emissions by fuels </div>
-            <div>
-              header
+          <div className="mt-4 mb-3">
+            <div className="font-bold text-xl">Excluded emissions by fuels </div>
+            <div className="flex w-full font-bold">
+              <div className="flex-1">Activity</div>
+              <div className="flex-1">Source Type</div>
+              <div className="flex-1">Fuel Name</div>
+              <div className="flex-1">Emissions</div>
             </div>
-            -
-          </div> */}
+
+            {formula_table_data.excluded_emissions.map((item: any, index: number) => (
+              <div key={index} className="flex w-full mt-2">
+                <div className="flex-1">{item.activity ?? "-"}</div>
+                <div className="flex-1">{item.source_type ?? "-"}</div>
+                <div className="flex-1">{item.fuel_type ?? "-"}</div>
+                <div className="flex-1">{item.emission ?? "-"}</div>
+              </div>
+            ))}
+          </div>
 
           {/* Non-useful venting */}
-          {/* <div>
-            <div className="font-bold">Non-useful venting </div>
-            <div>
-              header
+          <div className="mt-4 mb-3">
+            <div className="font-bold text-xl">Non-useful venting </div>
+            <div className="flex w-full font-bold">
+              <div className="flex-1">Activity</div>
+              <div className="flex-1">Source Type</div>
+              <div className="flex-1">Fuel Name</div>
+              <div className="flex-1">Emissions</div>
             </div>
-            -
-          </div> */}
+
+            {formula_table_data.venting_non_useful.map((item: any, index: number) => (
+              <div key={index} className="flex w-full mt-2">
+                <div className="flex-1">{item.activity ?? "-"}</div>
+                <div className="flex-1">{item.source_type ?? "-"}</div>
+                <div className="flex-1">{item.fuel_type ?? "-"}</div>
+                <div className="flex-1">{item.emission ?? "-"}</div>
+              </div>
+            ))}
+          </div>
 
           {/* Fugitive emissions */}
-          {/* <div>
-            <div className="font-bold">Fugitive emissions</div>
-            <div>
-              header
+          <div className="mt-4 mb-3">
+            <div className="font-bold text-xl">Fugitive emissions </div>
+            <div className="flex w-full font-bold">
+              <div className="flex-1">Activity</div>
+              <div className="flex-1">Source Type</div>
+              <div className="flex-1">Fuel Name</div>
+              <div className="flex-1">Emissions</div>
             </div>
-            -
-          </div> */}
+
+            {formula_table_data.fugitive.map((item: any, index: number) => (
+              <div key={index} className="flex w-full mt-2">
+                <div className="flex-1">{item.activity ?? "-"}</div>
+                <div className="flex-1">{item.source_type ?? "-"}</div>
+                <div className="flex-1">{item.fuel_type ?? "-"}</div>
+                <div className="flex-1">{item.emission ?? "-"}</div>
+              </div>
+            ))}
+          </div>
 
           {/* Remaining NPNC */}
-          {/* <div>
-            <div className="font-bold">Remaining NPNC </div>
-            <div>
-              header
+          <div className="mt-4 mb-3">
+            <div className="font-bold text-xl">Remaining NPNC </div>
+            <div className="flex w-full font-bold">
+              <div className="flex-1">Activity</div>
+              <div className="flex-1">Source Type</div>
+              <div className="flex-1">Fuel Name</div>
+              <div className="flex-1">Emissions</div>
             </div>
-            -
-          </div> */}
+
+            <div className="flex w-full mt-2">
+              <p className="flex-1 text-red-500">Cannot currently be allocated to emissions</p>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -33,6 +33,7 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   const complianceSummaryUiSchema = createComplianceSummaryUiSchema(
     summaryFormData.reporting_year,
   );
+  console.log(summaryFormData);
 
   return (
     <Box sx={{ p: 3 }}>
