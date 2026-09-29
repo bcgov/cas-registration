@@ -8,7 +8,7 @@ import {
 } from "@reporting/src/app/components/taskList/types";
 import { ComplianceSummaryFormPayload } from "@reporting/src/app/components/complianceSummary/types";
 import { getOperationEmissionSummaryData } from "@bciers/actions/api/getOperationEmissionSummaryData";
-import { getFacilityReport } from "../../utils/getFacilityReport";
+import getOperationEmissionFormulaExplanationData from "@bciers/actions/api/getOperationEmissionFormulaExplanationData";
 
 export default async function ComplianceSummaryPage({
   version_id,
@@ -18,8 +18,7 @@ export default async function ComplianceSummaryPage({
   const { payload, report_data } = response;
 
   const emissionSummaryData = await getOperationEmissionSummaryData(version_id);
-  // const facilityReport = await getFacilityReport(version_id);
-  // console.log("ahh", facilityReport);
+  const formulaExplanationData = await getOperationEmissionFormulaExplanationData(version_id);
 
   const navInfo = await getNavigationInformation(
     HeaderStep.ComplianceSummary,
@@ -32,6 +31,7 @@ export default async function ComplianceSummaryPage({
     ...payload,
     reporting_year: report_data.reporting_year,
     emission_summary_data: emissionSummaryData,
+    formula_explanation_data: formulaExplanationData,
   };
 
   return (

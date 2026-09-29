@@ -27,4 +27,5 @@ export type ComplianceSummaryFormPayload = {
   products: ComplianceSummaryFormProduct[];
   reporting_year: number;
   emission_summary_data: EmissionSummaryFormData;
+  formula_explanation_data: any; // Replace 'any' with the actual type if known
 };
