@@ -85,7 +85,7 @@ NON_PROD_ENVIRONMENT = ENVIRONMENT in ["CI", "local", "dev", "test"] or CI == "t
 LOCAL_APPS = ["registration", "reporting", "common", "rls", "task_scheduler", "compliance", "registry"]
 NON_PROD_APPS: list[str] = ["mocks"]
 
-RLS_GRANT_APPS = ["registration", "reporting", "compliance"]
+RLS_GRANT_APPS = ["registration", "reporting", "compliance", "registry"]
 
 if NON_PROD_ENVIRONMENT:
     LOCAL_APPS += NON_PROD_APPS

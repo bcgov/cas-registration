@@ -9,6 +9,7 @@ import RetirementsPage from "@/registry/app/components/dashboard/RetirementsPage
 import CancellationsPage from "@/registry/app/components/dashboard/CancellationsPage";
 import TransfersPage from "@/registry/app/components/dashboard/TransfersPage";
 import AnalyticsPage from "@/registry/app/components/dashboard/AnalyticsPage";
+import type { ReactNode } from "react";
 
 const sections = [
   "accounts",
@@ -22,6 +23,9 @@ const sections = [
 ] as const;
 
 type RegistrySection = (typeof sections)[number];
+type RegistrySectionComponent = (props: {
+  searchParams: DashboardSearchParams;
+}) => ReactNode | Promise<ReactNode>;
 
 const sectionPages = {
   accounts: AccountsPage,
@@ -32,7 +36,7 @@ const sectionPages = {
   cancellations: CancellationsPage,
   transfers: TransfersPage,
   analytics: AnalyticsPage,
-} satisfies Record<RegistrySection, typeof AccountsPage>;
+} satisfies Record<RegistrySection, RegistrySectionComponent>;
 
 function getSectionIndex(section: string): number {
   const sectionIndex = sections.indexOf(section as RegistrySection);
