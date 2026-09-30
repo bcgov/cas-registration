@@ -14,7 +14,7 @@ class AccountService:
     @classmethod
     def list_accounts(cls, sort_field: Optional[str], sort_order: Optional[str], filters: AccountFilterSchema = Query(...),) -> QuerySet[Account]:
         sort_direction = "-" if sort_order == "desc" else ""
-        sort_by = f"{sort_direction}{sort_field}"
+        sort_by = f"{sort_direction}{sort_field or 'name'}"
         base_qs = AccountDataAccessService.get_all_accounts()
 
         return filters.filter(base_qs).order_by(sort_by)

@@ -14,9 +14,8 @@ class AccountOut(ModelSchema):
 
 class AccountFilterSchema(FilterSchema):
     name: Annotated[str | None, Field(q='name__icontains')] = None
-    status: Annotated[str | None, Field(q='status')] = None
+    status: Annotated[str | None, Field(q='status__icontains')] = None
     website: Annotated[str | None, Field(q='website__icontains')] = None
-    account_type: Annotated[str | None, Field(q='account_type')] = None
-    account_classification: Annotated[str | None, Field(q='account_classification')] = None
-    country: Annotated[str | None, Field(q='country__icontains')] = None
-    operation: Annotated[UUID | None, Field(q='operation_id')] = None
+    account_type: Annotated[str | None, Field(q='account_type__icontains')] = None
+    account_classification: Annotated[str | None, Field(q='account_classification__icontains')] = None
+    operation: Annotated[UUID | None, Field(q='operation_id__icontains')] = None

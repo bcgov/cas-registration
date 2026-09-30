@@ -32,7 +32,7 @@ class ProjectService:
     @classmethod
     def list_projects(cls, sort_field: Optional[str], sort_order: Optional[str], filters: ProjectFilterSchema = Query(...),) -> QuerySet[Project]:
         sort_direction = "-" if sort_order == "desc" else ""
-        sort_by = f"{sort_direction}{sort_field}"
+        sort_by = f"{sort_direction}{sort_field or 'name'}"
         base_qs = ProjectDataAccessService.get_all_projects()
 
         return filters.filter(base_qs).order_by(sort_by)
