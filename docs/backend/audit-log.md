@@ -219,3 +219,53 @@ audit log entries, most recent first:
     historical record to diff against, so `_resolve_changed_fields` treats it like a create and
     reports every watched field (`status`, `report_type`) as changed, even if only one actually
     did. It self-corrects from the second update onward, once a real `prev_record` exists.
+
+## How to incorporate Audit Log to a page
+
+Steps to add audit log support to a new entity/page, using the existing `operation` and `report`
+views as the template.
+
+### Backend
+
+1. **Confirm history tracking exists** on the model you're auditing -- it needs
+   `history = HistoricalRecords(...)`. See `reporting/migrations/0215_historicalreportversion.py`
+   for an example of adding this to a model that didn't have it before. If you add it fresh,
+   expect the same quirk described in [Known Limitations](#known-limitations): the first save
+   after deploy has no `prev_record` to diff against, so it reports every watched field as
+   changed even if only one did.
+2. **Add an entry to `AUDITED_VIEWS`** in `audit_log/config/registry.py` (see
+   [Adding a New Audited Entity Type](#adding-a-new-audited-entity-type)): pick an `entity_type`
+   string, write a `display_name_resolver`, and add one or more `AuditedSource` entries with the
+   fields you want watched. If the page needs to interleave changes from more than one model
+   (like `report` pulling from `ReportVersion`), add multiple `AuditedSource` entries under the
+   same view, each with a `root_id_resolver` that maps back to the same parent id.
+3. **No other backend changes are needed.** The signal receiver, service, and
+   `GET /audit-log/{entity_type}/{entity_id}` endpoint are all generic. Since this isn't a new
+   endpoint, there's nothing to add to the permission-testing `endpoints_to_test` dict either.
+4. Add/extend a test alongside the existing ones in `audit_log/tests/signals/test_receivers.py`
+   covering the new registry entry.
+
+### Frontend
+
+5. Add one thin route per authorized role folder, matching the existing pattern (see
+   `administration/app/idir/cas_admin/audit-log/[entityType]/[entityId]/page.tsx`):
+
+   ```tsx
+   import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+   import AuditLogView from "@bciers/components/auditLog/AuditLogView";
+
+   export default defaultPageFactory(AuditLogView);
+   ```
+
+   `getAuditLog` and `AuditLogView` are shared/generic -- no changes needed there.
+
+6. **Wire up an entry point** on the actual page you're adding this to -- a link/button that
+   navigates to `audit-log/{entityType}/{entityId}`. Two real examples:
+   `OperationInformationPage.tsx` uses a plain `href`; `MoreActionsCell.tsx` (in `reporting`)
+   uses `router.push`.
+7. **Manual smoke test**: make a change to the record, open the new audit log page, and confirm
+   the entry appears with correct labels and old-to-new values.
+
+Before adding this to a new page, weigh the [no-RLS limitation](#known-limitations) above --
+anyone with the role can view any entity's log by guessing its id, which may or may not be
+acceptable depending on how sensitive the page's data is.

@@ -12,7 +12,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Type
 from django.db.models import Model
 
 from registration.models import Operation
-from reporting.models import Report, ReportVersion
+from reporting.models import Report, ReportVersion, ReportOperation
 
 
 @dataclass(frozen=True)
@@ -34,6 +34,14 @@ class AuditedSource:
     model: Type[Model]
     root_id_resolver: Callable[[Any], Any]
     watched_fields: Dict[str, WatchedField]
+    # Optional {field_name: resolver} overrides applied only to DELETE events, for a watched field
+    # whose plain snapshot value -- the deleted instance's own last-known field value -- is
+    # misleading once you consider other rows tied to the same root entity. E.g. a deleted
+    # ReportVersion's own `status` is always "Draft" (submitted versions can't be deleted), which
+    # doesn't reflect what the parent Report's status should read as afterward. Each resolver
+    # receives (instance, root_id) and its return value replaces that field's plain value in the
+    # snapshot, keeping the WatchedField's existing label.
+    delete_field_overrides: Dict[str, Callable[[Any, Any], Any]] = field(default_factory=dict)
 
 
 def _resolve_operation_display_name(entity_id: str) -> str:
@@ -46,6 +54,26 @@ def _resolve_report_display_name(entity_id: str) -> str:
     if report is None:
         return entity_id
     return f"{report.operation.name} — {report.reporting_year.reporting_year}"
+
+
+def _resolve_report_status_after_delete(instance: Any, root_id: Any) -> str:
+    """
+    A deleted ReportVersion's own last-known `status` is always "Draft" -- a submitted version
+    can never be deleted (see the `no_delete_submitted_report_version` DB trigger) -- so showing
+    it verbatim misleadingly reads as "the report is still a draft" when what actually matters is
+    what's left of the Report after the deletion.
+
+    Since a submitted version can't be deleted, if the Report still has one, the deleted draft
+    must have been a supplementary edit on top of it, and the report reverts to "Submitted". If no
+    version remains at all, the deleted draft was the Report's only/original version, and it
+    reverts to "Not Started".
+    """
+    has_submitted_version = ReportVersion.objects.filter(
+        report_id=root_id,
+        status=ReportVersion.ReportVersionStatus.Submitted,
+        is_latest_submitted=True,
+    ).exists()
+    return "Submitted" if has_submitted_version else "Not Started"
 
 
 @dataclass(frozen=True)
@@ -104,6 +132,19 @@ AUDITED_VIEWS: Dict[str, AuditedView] = {
                 watched_fields={
                     "status": WatchedField(label="Status"),
                     "report_type": WatchedField(label="Report Type"),
+                },
+                delete_field_overrides={
+                    "status": _resolve_report_status_after_delete,
+                },
+            ),
+            AuditedSource(
+                model=ReportOperation,
+                root_id_resolver=lambda instance: instance.report_version.report_id,
+                watched_fields={
+                    "naics_code": WatchedField(
+                        label="NAICS Code",
+                        resolver=lambda v: v.naics_description if v else None,
+                    ),
                 },
             ),
         ],

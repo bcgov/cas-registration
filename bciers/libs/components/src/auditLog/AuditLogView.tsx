@@ -121,6 +121,7 @@ const AuditLogView = async ({
                       const previousField: AuditLogSnapshotField | undefined =
                         previousEntry?.snapshot[column.key];
                       const isChanged =
+                        entry.action === "update" &&
                         entry.changed_fields.includes(column.key) &&
                         previousField !== undefined;
 

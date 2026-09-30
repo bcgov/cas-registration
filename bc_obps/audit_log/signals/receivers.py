@@ -113,7 +113,7 @@ def handle_post_create_historical_record(sender: Any, **kwargs: Any) -> None:
         entity_id=str(root_id),
         action=action,
         changed_fields=changed_fields,
-        snapshot=_build_snapshot(history_instance.instance, source),
+        snapshot=_build_snapshot(history_instance.instance, source, action, root_id),
         timestamp=history_instance.history_date,
         reason=history_instance.history_change_reason,
         actor=actor,
@@ -152,9 +152,12 @@ def _buffer_and_schedule_flush(entry: _PendingAuditEntry) -> None:
     for field_name in entry.changed_fields:
         if field_name not in existing.changed_fields:
             existing.changed_fields.append(field_name)
-    # The latest snapshot already reflects every change made so far in this transaction, since
-    # all events for one entity in one transaction are built from the same mutated instance.
-    existing.snapshot = entry.snapshot
+    # Merge rather than replace: a view backed by more than one source (e.g. `report`, sourced
+    # from both ReportVersion and ReportOperation) can have each source fire its own event within
+    # the same transaction, and each event's snapshot only covers its own source's watched fields.
+    # Replacing wholesale would drop the earlier source's fields entirely. Where both events touch
+    # the same field name, the later event's value wins, since it's the more current state.
+    existing.snapshot = {**existing.snapshot, **entry.snapshot}
     existing.reason = existing.reason or entry.reason
     existing.history_record_content_type = entry.history_record_content_type
     existing.history_record_id = entry.history_record_id
@@ -255,10 +258,13 @@ def _resolve_changed_fields(history_instance: Any, action: str, source: AuditedS
     return list(delta.changed_fields)
 
 
-def _build_snapshot(instance: Any, source: AuditedSource) -> Dict[str, Dict[str, Any]]:
+def _build_snapshot(instance: Any, source: AuditedSource, action: str, root_id: Any) -> Dict[str, Dict[str, Any]]:
     """
     Build a {field_key: {"label": ..., "value": <resolved display value>}} snapshot covering
     ALL of the source's watched fields (not just the changed ones).
+
+    On a DELETE, a field named in `source.delete_field_overrides` has its plain value replaced
+    by that override's result instead -- see `AuditedSource.delete_field_overrides` for why.
     """
     snapshot = {}
     for field_name, watched_field in source.watched_fields.items():
@@ -267,4 +273,10 @@ def _build_snapshot(instance: Any, source: AuditedSource) -> Dict[str, Dict[str,
             "label": watched_field.label,
             "value": watched_field.resolve(raw_value),
         }
+
+    if action == AuditLog.Action.DELETE:
+        for field_name, override_resolver in source.delete_field_overrides.items():
+            if field_name in snapshot:
+                snapshot[field_name]["value"] = override_resolver(instance, root_id)
+
     return snapshot
