@@ -7,6 +7,7 @@ from uuid import UUID
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import connection, transaction
+from django.db.utils import IntegrityError
 from django.dispatch import receiver
 from simple_history.signals import post_create_historical_record
 
@@ -94,21 +95,13 @@ def handle_post_create_historical_record(sender: Any, **kwargs: Any) -> None:
         # Only unwatched fields changed on this update -- nothing worth logging.
         return
 
-    content_type = ContentType.objects.get_for_model(sender)
-    history_record_id = str(history_instance.pk)
-
-    if AuditLog.objects.filter(
-        history_record_content_type=content_type,
-        history_record_id=history_record_id,
-    ).exists():
-        # Defensive idempotency guard: the signal shouldn't double-fire under normal operation,
-        # but this keeps retries/test setups safe.
-        return
-
     root_id = source.root_id_resolver(history_instance.instance)
-    actor, actor_guid = _resolve_actor()
 
-    entry = _PendingAuditEntry(
+    # No existence check here: `AuditLog`'s `unique_audit_log_per_history_record` DB constraint
+    # already guarantees this historical record can never produce two rows, and actor resolution
+    # (a DB query) is deferred into `_buffer_and_schedule_flush` so it only runs for the first
+    # event in a coalescing group -- see both for why doing either here, per event, is wasted work.
+    _buffer_and_schedule_flush(
         entity_type=view.entity_type,
         entity_id=str(root_id),
         action=action,
@@ -116,15 +109,23 @@ def handle_post_create_historical_record(sender: Any, **kwargs: Any) -> None:
         snapshot=_build_snapshot(history_instance.instance, source, action, root_id),
         timestamp=history_instance.history_date,
         reason=history_instance.history_change_reason,
-        actor=actor,
-        actor_guid=actor_guid,
-        history_record_content_type=content_type,
-        history_record_id=history_record_id,
+        history_record_content_type=ContentType.objects.get_for_model(sender),
+        history_record_id=str(history_instance.pk),
     )
-    _buffer_and_schedule_flush(entry)
 
 
-def _buffer_and_schedule_flush(entry: _PendingAuditEntry) -> None:
+def _buffer_and_schedule_flush(
+    *,
+    entity_type: str,
+    entity_id: str,
+    action: str,
+    changed_fields: List[str],
+    snapshot: Dict[str, Dict[str, Any]],
+    timestamp: Any,
+    reason: Optional[str],
+    history_record_content_type: ContentType,
+    history_record_id: str,
+) -> None:
     """
     Coalesces AuditLog entries for the same entity within one DB transaction into a single row.
 
@@ -138,18 +139,35 @@ def _buffer_and_schedule_flush(entry: _PendingAuditEntry) -> None:
     merged until the current transaction commits, at which point the merged result is written
     as one row. If there's no open transaction, `transaction.on_commit` runs the callback
     immediately, so single-write updates behave exactly as before.
+
+    Actor resolution (a DB query) only happens for the *first* event in a group -- timestamp,
+    actor, and actor_guid are always taken from that first event (see below), so resolving it
+    again for every later event in the same group would be pure waste.
     """
     pending = _pending_groups()
-    key = (entry.entity_type, entry.entity_id)
+    key = (entity_type, entity_id)
     existing = pending.get(key)
 
     if existing is None:
-        pending[key] = entry
+        actor, actor_guid = _resolve_actor()
+        pending[key] = _PendingAuditEntry(
+            entity_type=entity_type,
+            entity_id=entity_id,
+            action=action,
+            changed_fields=changed_fields,
+            snapshot=snapshot,
+            timestamp=timestamp,
+            reason=reason,
+            actor=actor,
+            actor_guid=actor_guid,
+            history_record_content_type=history_record_content_type,
+            history_record_id=history_record_id,
+        )
         transaction.on_commit(lambda: _flush_pending_entry(key))
         return
 
-    existing.action = _merge_action(existing.action, entry.action)
-    for field_name in entry.changed_fields:
+    existing.action = _merge_action(existing.action, action)
+    for field_name in changed_fields:
         if field_name not in existing.changed_fields:
             existing.changed_fields.append(field_name)
     # Merge rather than replace: a view backed by more than one source (e.g. `report`, sourced
@@ -157,10 +175,10 @@ def _buffer_and_schedule_flush(entry: _PendingAuditEntry) -> None:
     # the same transaction, and each event's snapshot only covers its own source's watched fields.
     # Replacing wholesale would drop the earlier source's fields entirely. Where both events touch
     # the same field name, the later event's value wins, since it's the more current state.
-    existing.snapshot = {**existing.snapshot, **entry.snapshot}
-    existing.reason = existing.reason or entry.reason
-    existing.history_record_content_type = entry.history_record_content_type
-    existing.history_record_id = entry.history_record_id
+    existing.snapshot = {**existing.snapshot, **snapshot}
+    existing.reason = existing.reason or reason
+    existing.history_record_content_type = history_record_content_type
+    existing.history_record_id = history_record_id
     # timestamp/actor/actor_guid are left as-is, from the first event in the group.
 
 
@@ -178,30 +196,35 @@ def _flush_pending_entry(key: Tuple[str, str]) -> None:
     callback on the *first* event for a given key, and by the time callbacks run (after all
     application code in the transaction has executed), the group holds every event's merged
     data, so only that first-registered callback needs to do anything.
+
+    No pre-flight existence check: `AuditLog`'s `unique_audit_log_per_history_record` DB
+    constraint already guarantees this historical record can never produce two rows (e.g. if the
+    signal somehow re-fires for a record flushed in an earlier transaction), so it's cheaper to
+    just attempt the write and swallow the rare resulting `IntegrityError`. `transaction.atomic()`
+    scopes that error to its own savepoint so it can't poison whatever transaction this on_commit
+    callback happens to run inside.
     """
     entry = _pending_groups().pop(key, None)
     if entry is None:
         return
 
-    if AuditLog.objects.filter(
-        history_record_content_type=entry.history_record_content_type,
-        history_record_id=entry.history_record_id,
-    ).exists():
-        return
-
-    AuditLog.objects.create(
-        entity_type=entry.entity_type,
-        entity_id=entry.entity_id,
-        action=entry.action,
-        actor=entry.actor,
-        actor_guid=entry.actor_guid,
-        timestamp=entry.timestamp,
-        snapshot=entry.snapshot,
-        changed_fields=entry.changed_fields,
-        reason=entry.reason,
-        history_record_content_type=entry.history_record_content_type,
-        history_record_id=entry.history_record_id,
-    )
+    try:
+        with transaction.atomic():
+            AuditLog.objects.create(
+                entity_type=entry.entity_type,
+                entity_id=entry.entity_id,
+                action=entry.action,
+                actor=entry.actor,
+                actor_guid=entry.actor_guid,
+                timestamp=entry.timestamp,
+                snapshot=entry.snapshot,
+                changed_fields=entry.changed_fields,
+                reason=entry.reason,
+                history_record_content_type=entry.history_record_content_type,
+                history_record_id=entry.history_record_id,
+            )
+    except IntegrityError:
+        pass
 
 
 def _resolve_actor() -> Tuple[Optional[User], Optional[UUID]]:
