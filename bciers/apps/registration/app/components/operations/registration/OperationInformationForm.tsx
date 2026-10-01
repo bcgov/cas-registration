@@ -118,6 +118,9 @@ const OperationInformationForm = ({
     } else {
       setSchema(initialSchema);
     }
+    // Remount the form so RJSF picks up the new schema immediately. Otherwise, RJSF discards the schema swap
+    // (e.g. the EIO type default) because it happens while it is still processing the purpose change
+    resetKey();
     updateUiSchemaWithHelpText(
       newConfirmedFormState.section1
         .registration_purpose as RegistrationPurposes,
@@ -125,20 +128,26 @@ const OperationInformationForm = ({
     setIsConfirmPurposeChangeModalOpen(false);
   }
 
-  function customValidate(formData: Dict, errors: Dict) {
-    const section2Schema = schema?.properties?.section2;
+  function customValidate(_formData: Dict, errors: Dict) {
+    const section2Schema = schema?.properties?.section2 as
+      RJSFSchema | undefined;
     const requiredOperationProperties: string[] =
-      typeof section2Schema === "object" &&
-      section2Schema !== null &&
-      "required" in section2Schema
-        ? (section2Schema as RJSFSchema).required || []
-        : [];
+      section2Schema?.required || [];
 
-    const isOperationInformationComplete = requiredOperationProperties.every(
-      (el: string) => formData.section2[el],
+    // Check the controlled form state rather than the validation formData: RJSF fills anyOf fields
+    // (e.g. NAICS codes) with their first option in the validation formData even when nothing is selected.
+    // Also ignore values that match the schema default (e.g. EIO operation type), since the user didn't enter them.
+    const isAddingNewOperation = requiredOperationProperties.some(
+      (el: string) => {
+        const value = confirmedFormState?.section2?.[el];
+        const defaultValue = (
+          section2Schema?.properties?.[el] as RJSFSchema | undefined
+        )?.default;
+        return Boolean(value) && value !== defaultValue;
+      },
     );
 
-    if (!selectedOperation && !isOperationInformationComplete) {
+    if (!selectedOperation && !isAddingNewOperation) {
       errors.section1.operation.addError(
         "Select an operation or add a new operation in the form below",
       );

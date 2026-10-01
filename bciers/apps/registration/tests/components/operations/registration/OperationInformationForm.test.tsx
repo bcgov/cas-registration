@@ -453,6 +453,39 @@ describe("the OperationInformationForm component", () => {
     },
   );
 
+  it("should only show the EIO operation fields as soon as EIO is selected as the purpose", async () => {
+    fetchFormEnums(Apps.REGISTRATION);
+    const schemaData = await createRegistrationOperationInformationSchemas();
+    render(
+      <OperationInformationForm
+        rawFormData={{}}
+        schema={schemaData.schema}
+        uiSchema={schemaData.uiSchema}
+        step={1}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+
+    expect(screen.getByPlaceholderText(/primary naics+/i)).toBeVisible();
+
+    const purposeInput = screen.getByRole("combobox", {
+      name: /The purpose of this registration+/i,
+    });
+    await fillComboboxWidgetField(purposeInput, "Electricity Import Operation");
+
+    await waitFor(() => {
+      expect(
+        screen.queryByPlaceholderText(/primary naics+/i),
+      ).not.toBeInTheDocument();
+    });
+    expect(screen.queryByLabelText(/process flow+/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/boundary map+/i)).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/Operation Name/i)).toBeVisible();
+    expect(screen.getByLabelText(/Operation Type/i)).toHaveValue(
+      "Electricity Import Operation",
+    );
+  });
+
   it("should submit a new EIO operation", async () => {
     fetchFormEnums(Apps.REGISTRATION);
     actionHandler.mockResolvedValueOnce({
@@ -562,8 +595,15 @@ describe("the OperationInformationForm component", () => {
         screen.getByText(RegistrationPurposeHelpText["Reporting Operation"]),
       ).toBeVisible();
     });
-    await userEvent.clear(purposeInput);
-    await fillComboboxWidgetField(purposeInput, "OBPS Regulated Operation");
+    // the form remounts when the purpose changes, so query the input again
+    const remountedPurposeInput = screen.getByRole("combobox", {
+      name: /The purpose of this registration+/i,
+    });
+    await userEvent.clear(remountedPurposeInput);
+    await fillComboboxWidgetField(
+      remountedPurposeInput,
+      "OBPS Regulated Operation",
+    );
     await waitFor(() => {
       expect(
         screen.getByText(
@@ -650,6 +690,32 @@ describe("the OperationInformationForm component", () => {
         /Select an operation or add a new operation in the form below/i,
       ),
     ).toBeVisible();
+  });
+  it("should not raise the select operation error when a new operation is being added with missing fields", async () => {
+    fetchFormEnums(Apps.REGISTRATION);
+    const schemaData = await createRegistrationOperationInformationSchemas();
+    render(
+      <OperationInformationForm
+        rawFormData={{}}
+        schema={schemaData.schema}
+        uiSchema={schemaData.uiSchema}
+        step={1}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+
+    // add a new operation without the required attachments
+    await userEvent.type(screen.getByLabelText(/Operation Name/i), "Op Name");
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /save and continue/i }),
+    );
+    expect(screen.getAllByRole("alert").length).toBeGreaterThan(0);
+    expect(
+      screen.queryByText(
+        /Select an operation or add a new operation in the form below/i,
+      ),
+    ).not.toBeInTheDocument();
   });
   it("should not raise an error when we pass an empty array to anyOf (operation has empty array in response)", async () => {
     // listen for console warnings
