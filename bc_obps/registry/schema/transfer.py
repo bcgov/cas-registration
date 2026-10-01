@@ -9,6 +9,8 @@ from registry.models.transfer import Transfer
 
 class TransferOut(ModelSchema):
     id: int
+    source_account_name: str = Field(..., alias="source_account.name")
+    destination_account_name: str = Field(..., alias="destination_account.name")
 
     class Meta:
         model = Transfer

@@ -1,49 +1,23 @@
 from uuid import UUID
-from typing import List
 
-from django.db.models import IntegerField, Q, QuerySet, Sum
-from django.db.models.functions import Coalesce
+from django.db.models import QuerySet
 from ninja.types import DictStrAny
 
-from registry.models import Account, Unit
+from registry.models import Account
+from service.data_access_service.unit_service import UnitDataAccessService
 
 
 class AccountDataAccessService:
     @classmethod
     def get_by_id(cls, account_id: UUID) -> Account:
-        return cls._with_unit_quantities(Account.objects.filter(id=account_id)).get()
+        return UnitDataAccessService.with_unit_quantities(
+            Account.objects.filter(id=account_id), "issuance__issuance"
+        ).get()
 
     @classmethod
     def get_all_accounts(cls) -> QuerySet[Account]:
-        return cls._with_unit_quantities(Account.objects.all())
-
-    @staticmethod
-    def _with_unit_quantities(accounts: QuerySet[Account]) -> QuerySet[Account]:
-        return accounts.annotate(
-            issued_quantity=Coalesce(
-                Sum(
-                    "issuance__issuance__quantity",
-                    filter=Q(issuance__issuance__status=Unit.Status.ISSUED),
-                ),
-                0,
-                output_field=IntegerField(),
-            ),
-            active_quantity=Coalesce(
-                Sum(
-                    "issuance__issuance__quantity",
-                    filter=Q(issuance__issuance__status=Unit.Status.ACTIVE),
-                ),
-                0,
-                output_field=IntegerField(),
-            ),
-            retired_quantity=Coalesce(
-                Sum(
-                    "issuance__issuance__quantity",
-                    filter=Q(issuance__issuance__status=Unit.Status.RETIRED),
-                ),
-                0,
-                output_field=IntegerField(),
-            ),
+        return UnitDataAccessService.with_unit_quantities(
+            Account.objects.all(), "issuance__issuance"
         )
 
     @classmethod

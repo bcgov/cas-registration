@@ -35,6 +35,9 @@ class ProjectService:
         sort_by = f"{sort_direction}{sort_field or 'name'}"
         base_qs = ProjectDataAccessService.get_all_projects()
 
+        for project in base_qs:
+            print(project.__dict__)
+
         return filters.filter(base_qs).order_by(sort_by)
 
     @classmethod

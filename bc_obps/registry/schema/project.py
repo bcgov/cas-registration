@@ -7,6 +7,13 @@ from registry.models.project import Project
 
 class ProjectOut(ModelSchema):
     id: int
+    account_id: int
+    account_name: str = Field(..., alias="account.name")
+    operation_name: str = Field(..., alias="operation.name")
+    verifier_name: str = Field(..., alias="verifier.name")
+    issued_quantity: int = 0
+    active_quantity: int = 0
+    retired_quantity: int = 0
 
     class Meta:
         model = Project

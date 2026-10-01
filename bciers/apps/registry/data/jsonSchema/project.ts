@@ -5,13 +5,14 @@ export const projectSchema: RJSFSchema = {
   properties: {
     id: { type: "integer", title: "Project ID" },
     name: { type: "string", title: "Project name" },
-    account_id: { type: "integer", title: "Account Name" },
+    account_name: { type: "string", title: "Account Name" },
+    operation_name: { type: "string", title: "Operation Name" },
     project_type: { type: "string", title: "Project Type" },
     category: { type: "string", title: "Category" },
-    verifier_id: { type: "string", title: "Verifier ID" },
+    verifier_name: { type: "string", title: "Verifier Name" },
     status: { type: "string", title: "Status" },
-    issued_units: { type: "number", title: "Issued units" },
-    active_units: { type: "number", title: "Active units" },
-    retired_units: { type: "number", title: "Retired units" }
+    issued_quantity: { type: "number", title: "Issued units" },
+    active_quantity: { type: "number", title: "Active units" },
+    retired_quantity: { type: "number", title: "Retired units" }
   },
 };
