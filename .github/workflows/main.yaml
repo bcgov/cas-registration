@@ -86,7 +86,7 @@ jobs:
             REASON="$EVENT_NAME triggered a full CI run due to being manually triggered."
           fi
 
-          if [[ "$EVENT_NAME" == "merge_queue" ]]; then
+          if [[ "$EVENT_NAME" == "merge_group" ]]; then
             IS_MERGE_QUEUE="true"
             RUN_ALL_CI="false"
             REASON="$EVENT_NAME triggered a partial CI run due to running through the merge queue."
