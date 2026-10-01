@@ -10,8 +10,6 @@ interface TransferRow extends Record<string, unknown> {
 async function getTransfers(searchParams: DashboardSearchParams) {
   return fetchRegistryPageData<TransferRow>("transfers", {
     ...searchParams,
-    source_account: searchParams.account_name,
-    destination_account: searchParams.account_type,
     project: searchParams.project_name,
     vintage: searchParams.serial_number,
     sort_field: searchParams.sort_field ?? "initiated_datetime",

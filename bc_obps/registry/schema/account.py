@@ -7,6 +7,9 @@ from registry.models.account import Account
 
 class AccountOut(ModelSchema):
     id: int
+    issued_quantity: int = 0
+    active_quantity: int = 0
+    retired_quantity: int = 0
 
     class Meta:
         model = Account

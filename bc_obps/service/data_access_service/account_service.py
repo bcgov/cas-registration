@@ -1,19 +1,50 @@
 from uuid import UUID
 from typing import List
 
+from django.db.models import IntegerField, Q, QuerySet, Sum
+from django.db.models.functions import Coalesce
 from ninja.types import DictStrAny
 
-from registry.models import Account
+from registry.models import Account, Unit
 
 
 class AccountDataAccessService:
     @classmethod
     def get_by_id(cls, account_id: UUID) -> Account:
-        return Account.objects.get(id=account_id)
+        return cls._with_unit_quantities(Account.objects.filter(id=account_id)).get()
 
     @classmethod
-    def get_all_accounts(cls) -> List[Account]:
-        return Account.objects.all()
+    def get_all_accounts(cls) -> QuerySet[Account]:
+        return cls._with_unit_quantities(Account.objects.all())
+
+    @staticmethod
+    def _with_unit_quantities(accounts: QuerySet[Account]) -> QuerySet[Account]:
+        return accounts.annotate(
+            issued_quantity=Coalesce(
+                Sum(
+                    "issuance__issuance__quantity",
+                    filter=Q(issuance__issuance__status=Unit.Status.ISSUED),
+                ),
+                0,
+                output_field=IntegerField(),
+            ),
+            active_quantity=Coalesce(
+                Sum(
+                    "issuance__issuance__quantity",
+                    filter=Q(issuance__issuance__status=Unit.Status.ACTIVE),
+                ),
+                0,
+                output_field=IntegerField(),
+            ),
+            retired_quantity=Coalesce(
+                Sum(
+                    "issuance__issuance__quantity",
+                    filter=Q(issuance__issuance__status=Unit.Status.RETIRED),
+                ),
+                0,
+                output_field=IntegerField(),
+            ),
+        )
 
     @classmethod
     def create_account(cls, user_guid: UUID, account_data: DictStrAny) -> Account:
