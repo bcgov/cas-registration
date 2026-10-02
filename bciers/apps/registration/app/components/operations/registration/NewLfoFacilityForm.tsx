@@ -1,21 +1,24 @@
 "use client";
 
 import { IChangeEvent } from "@rjsf/core";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import type { FC } from "react";
-import { Button, Alert } from "@mui/material";
+import { Button } from "@mui/material";
 import FormBase, { FormPropsWithTheme } from "@bciers/components/form/FormBase";
 import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import { RJSFSchema } from "@rjsf/utils";
-import { useCallback } from "react";
 import { FacilityInformationFormData } from "apps/registration/app/components/operations/registration/types";
 import { createUnnestedFormData } from "@bciers/components/form/formDataUtils";
 import {
   facilitiesLfoSchema,
   facilitiesLfoUiSchema,
 } from "@/administration/app/data/jsonSchema/facilitiesLfo";
+import {
+  useValidationErrors,
+  handleApiResponse,
+} from "@bciers/components/validationErrors";
 
 interface NewLfoFacilityFormProps extends Omit<
   FormPropsWithTheme<any>,
@@ -37,17 +40,16 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
     onSuccess, // 📌 Callback to update parent grid data
   } = props;
 
-  const [error, setError] = useState(undefined);
   const [formState, setFormState] = useState(formData);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [showForm, setShowForm] = useState(false);
+
+  const { setErrors, renderedErrors } = useValidationErrors();
 
   // Get the list of sections in the LFO schema - used to unnest the formData
   const formSectionListLfo = Object.keys(
     facilitiesLfoSchema.properties as RJSFSchema,
   );
-
-  // Unnest the formData objects inside facility_information_array which is split into sections
 
   const handleFormChange = useCallback(
     (e: IChangeEvent) => {
@@ -58,10 +60,9 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
 
   const handleSubmit = async (e: IChangeEvent) => {
     setFacilityFormIsSubmitting(true);
-    // Clear any old errors
-    setError(undefined);
-    const method = "POST";
+    setErrors(undefined);
 
+    const method = "POST";
     const endpoint = "registration/facilities";
 
     const body = [
@@ -70,6 +71,7 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
         operation_id: operationId,
       },
     ];
+
     const response = await actionHandler(
       endpoint,
       method,
@@ -78,9 +80,12 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
         body: JSON.stringify(body),
       },
     );
-    if (!response || response?.error) {
-      setError(response.error);
-      return { error: response.error };
+
+    setFacilityFormIsSubmitting(false);
+
+    const isSuccess = handleApiResponse(response, setErrors);
+    if (!isSuccess) {
+      return;
     }
 
     // 🔔 Notify parent via callback
@@ -88,16 +93,12 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
 
     setIsSnackbarOpen(true);
     setShowForm(false);
-    setFacilityFormIsSubmitting(false);
     setFormState({}); // reset form state
-    return response;
   };
 
   return (
     <>
-      <div
-        className={`w-full form-group field field-object form-heading-label`}
-      >
+      <div className="w-full form-group field field-object form-heading-label">
         <div className="form-heading">Facility Information</div>
       </div>
       {showForm ? (
@@ -115,9 +116,7 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
                 Save
               </Button>
 
-              <div className="min-h-[48px] box-border">
-                {error && <Alert severity="error">{error}</Alert>}
-              </div>
+              <div className="min-h-[48px] box-border">{renderedErrors}</div>
             </div>
           </FormBase>
         </>

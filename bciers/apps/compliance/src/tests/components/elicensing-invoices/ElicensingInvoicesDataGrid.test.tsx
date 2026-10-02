@@ -156,7 +156,7 @@ describe("ElicensingInvoicesDataGrid component", () => {
 
     const generateInvoiceSpy = vi
       .spyOn(generateInvoice, "default")
-      .mockResolvedValue(undefined);
+      .mockResolvedValue({ success: true });
 
     render(
       <ElicensingInvoicesDataGrid

@@ -839,6 +839,65 @@ describe("FacilityForm component", () => {
       await assertFormPut();
     },
   );
+
+  it("displays an error message when the create request fails", async () => {
+    const errorMessage = "A facility with this name already exists.";
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(
+      <FacilityForm
+        isCreating
+        schema={facilitiesSfoSchema}
+        uiSchema={facilitiesSfoUiSchema}
+        formData={{
+          name: "test facility name",
+          type: "Single Facility",
+        }}
+      />,
+    );
+    await fillMandatoryFields(facilitiesSfoSchema);
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      "registration/facilities",
+      "POST",
+      `/operations/${operationId}/facilities`,
+      expect.anything(),
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(mockReplace).not.toHaveBeenCalled();
+  });
+
+  it("displays an error message when the update request fails", async () => {
+    const errorMessage = "A facility with this name already exists.";
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    render(
+      <FacilityForm
+        schema={facilitiesSfoSchema}
+        uiSchema={facilitiesSfoUiSchema}
+        formData={sfoFormData}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: /edit/i }));
+    await editFormFields(facilitiesSfoSchema);
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `registration/facilities/${sfoFormData.id}`,
+      "PUT",
+      `/operations/${operationId}/facilities/${sfoFormData.id}`,
+      expect.anything(),
+    );
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(
+      screen.queryByText(FrontendMessages.SUBMIT_CONFIRMATION),
+    ).not.toBeInTheDocument();
+    expect(mockReplace).not.toHaveBeenCalled();
+  });
+
   it("redirects to the operation's facilities grid on back", async () => {
     render(
       <FacilityForm

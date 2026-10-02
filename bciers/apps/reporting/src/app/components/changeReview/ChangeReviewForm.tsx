@@ -10,9 +10,11 @@ import ReasonForChangeForm from "@reporting/src/app/components/changeReview/temp
 import { getChangeReviewData } from "../../utils/getReviewChangesData";
 import Loading from "@bciers/components/loading/SkeletonForm";
 import AlertNote from "@bciers/components/form/components/AlertNote";
-import { handleApiResponse } from "@reporting/src/app/utils/handleApiResponse";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  setClientError,
+} from "@bciers/components/validationErrors";
 
 interface ChangeReviewProps {
   versionId: number;
@@ -31,7 +33,7 @@ export default function ChangeReviewForm({
 }: ChangeReviewProps) {
   const router = useRouter();
   const [formData, setFormData] = useState(initialFormData);
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
   const [reasonForChange, setReasonForChange] = useState(
     initialFormData.reason_for_change || "",
@@ -56,10 +58,10 @@ export default function ChangeReviewForm({
   }, [versionId, displayChanges]);
 
   const handleSubmit = async (canContinue: boolean) => {
+    setErrors(undefined);
     if (!reasonForChange) {
-      setErrors([
-        createGenericReportValidationError("Reason for change is required."),
-      ]);
+      const message = "Reason for change is required.";
+      setClientError(message, setErrors);
       return false;
     }
     const payload = {
@@ -78,15 +80,15 @@ export default function ChangeReviewForm({
       },
     );
 
-    const isValid = handleApiResponse(response, setErrors);
+    const isSuccess = handleApiResponse(response, setErrors);
 
-    if (isValid && canContinue) {
+    if (isSuccess && canContinue) {
       setIsRedirecting(true);
       router.push(navigationInformation.continueUrl);
     }
 
     setIsSaving(false);
-    return isValid;
+    return isSuccess;
   };
 
   return (

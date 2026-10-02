@@ -10,6 +10,11 @@ import {
   DARK_GREY_BG_COLOR,
   BC_GOV_SEMANTICS_RED,
 } from "@bciers/styles/colors";
+import {
+  useValidationErrors,
+  handleApiResponse,
+  setClientError,
+} from "@bciers/components/validationErrors";
 
 const OperatorSearchWidget: React.FC<WidgetProps> = ({
   disabled,
@@ -24,7 +29,7 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
   const { formContext } = registry;
   const [options, setOptions] = useState<string[]>([]);
   const [isSearchAttempted, setIsSearchAttempted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { errors, setErrors } = useValidationErrors();
 
   const handleSelect = (_e: SyntheticEvent, option: string | null) => {
     onChange(option);
@@ -32,13 +37,12 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
     setIsSearchAttempted(false);
   };
 
-  // Fetch suggestions (called by debounced wrapper below)
   const fetchOperators = useCallback(
     async (val: string) => {
       if (!val) {
         setIsSearchAttempted(false);
         setOptions([]);
-        setError(null);
+        setErrors(undefined);
         return;
       }
 
@@ -46,8 +50,14 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       const url = `${endpoint}?legal_name=${encodeURIComponent(val)}`;
 
       try {
-        setError(null); // Clear previous errors on new fetch
+        setErrors(undefined);
         const response = await actionHandler(url, "GET");
+        const isSuccess = handleApiResponse(response, setErrors);
+        if (!isSuccess) {
+          setOptions([]);
+          setIsSearchAttempted(true);
+          return;
+        }
 
         const results = (response as Array<{ legal_name: string }>).map(
           (item) => item.legal_name,
@@ -55,20 +65,15 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
 
         setOptions(results);
         setIsSearchAttempted(true);
-      } catch (err: any) {
-        // Handle caught rejections/exceptions
-        setError(
-          err?.message ||
-            "An internal server error has occurred. Please contact support.",
-        );
+      } catch (error: any) {
+        setClientError(error, setErrors);
         setOptions([]);
         setIsSearchAttempted(true);
       }
     },
-    [formContext],
+    [formContext, setErrors],
   );
 
-  // Create ONE debounced function and pass it to MUI directly
   const debouncedOnInputChange = useMemo(
     () =>
       debounce((_event: SyntheticEvent, val: string) => {
@@ -82,7 +87,9 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
     setIsSearchAttempted(false);
   };
 
-  const isError = !!(rawErrors && rawErrors.length > 0);
+  const errorMessage = errors?.[0]?.error?.message;
+  const isError =
+    Boolean(errorMessage) || !!(rawErrors && rawErrors.length > 0);
   const borderColor = isError ? BC_GOV_SEMANTICS_RED : DARK_GREY_BG_COLOR;
 
   const styles = {
@@ -102,10 +109,10 @@ const OperatorSearchWidget: React.FC<WidgetProps> = ({
       options={options}
       sx={styles}
       noOptionsText={
-        error ? `${error}` : "No results found. Retry or create an operator."
+        errorMessage || "No results found. Retry or create an operator."
       }
       open={
-        Boolean(error) ||
+        Boolean(errorMessage) ||
         (options.length > 0 && !options.includes(value as string)) ||
         (options.length === 0 && isSearchAttempted)
       }

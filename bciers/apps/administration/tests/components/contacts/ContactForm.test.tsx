@@ -587,4 +587,70 @@ describe("ContactForm component", () => {
     });
     expect(deleteButton).not.toBeInTheDocument();
   });
+
+  it(
+    "displays an error message when the create request fails",
+    { timeout: 100000 },
+    async () => {
+      const errorMessage = "A contact with the email already exists.";
+      actionHandler.mockResolvedValueOnce({
+        error: errorMessage,
+      });
+      render(
+        <ContactForm
+          schema={createContactSchema(contactsSchema, true)}
+          formData={{}}
+          isCreating
+          allowEdit
+        />,
+      );
+      await fillContactForm();
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
+      expect(actionHandler).toHaveBeenCalledTimes(1);
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/contacts",
+        "POST",
+        "/contacts",
+        expect.anything(),
+      );
+      expect(await screen.findByText(errorMessage)).toBeVisible();
+      expect(mockReplace).not.toHaveBeenCalled();
+    },
+  );
+
+  it(
+    "displays an error message when the update request fails",
+    { timeout: 100000 },
+    async () => {
+      const errorMessage = "Unable to update contact.";
+      actionHandler.mockResolvedValueOnce({
+        error: errorMessage,
+      });
+      render(
+        <ContactForm
+          schema={createContactSchema(contactsSchema, false)}
+          formData={contactFormData}
+          allowEdit
+        />,
+      );
+      await userEvent.click(screen.getByRole("button", { name: /edit/i }));
+      await editNameFields({
+        firstName: "John updated",
+        lastName: "Doe updated",
+      });
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
+      expect(actionHandler).toHaveBeenCalledTimes(1);
+      expect(actionHandler).toHaveBeenCalledWith(
+        "registration/contacts/123",
+        "PUT",
+        "/contacts/123",
+        expect.anything(),
+      );
+      expect(await screen.findByText(errorMessage)).toBeVisible();
+      expect(
+        screen.queryByText(FrontendMessages.SUBMIT_CONFIRMATION),
+      ).not.toBeInTheDocument();
+      expect(mockReplace).not.toHaveBeenCalled();
+    },
+  );
 });

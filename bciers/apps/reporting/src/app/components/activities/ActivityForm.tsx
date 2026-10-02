@@ -24,8 +24,10 @@ import { NavigationInformation } from "@reporting/src/app/components/taskList/ty
 import { Dict } from "@bciers/types/dictionary";
 import useKey from "@bciers/utils/src/useKey";
 import { getActivitySchema } from "@reporting/src/app/utils/getActivitySchema";
-import { useFormErrors } from "@reporting/src/hooks/useFormErrors";
-import { createGenericReportValidationError } from "@reporting/src/app/components/shared/validation/utils";
+import {
+  setClientError,
+  useValidationErrors,
+} from "@bciers/components/validationErrors";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -67,7 +69,7 @@ export default function ActivityForm({
   reportingYear,
   activityIndex,
 }: Readonly<Props>) {
-  const { setErrors, renderedErrors } = useFormErrors();
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [formState, setFormState] = useState(activityFormData);
   const [key, resetKey] = useKey();
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
@@ -133,7 +135,8 @@ export default function ActivityForm({
     if (!arrayEquals(selectedSourceTypes, selectedSourceTypeIds)) {
       const schemaData = await fetchSchemaData(selectedSourceTypes);
       if (schemaData.error) {
-        setErrors([createGenericReportValidationError(schemaData.error)]);
+        const message = schemaData.error;
+        setClientError(message, setErrors);
         return;
       }
       setJsonSchema(safeJsonParse(schemaData).schema);
@@ -182,11 +185,10 @@ export default function ActivityForm({
 
     // Validate that at least one source type is selected
     if (selectedSourceTypeDataFiltered.length === 0) {
-      setErrors([
-        createGenericReportValidationError(
-          "At least one source type must be selected to report for that activity.",
-        ),
-      ]);
+      const message =
+        "At least one source type must be selected to report for that activity.";
+      setClientError(message, setErrors);
+
       return false;
     }
 
@@ -212,7 +214,8 @@ export default function ActivityForm({
     });
 
     if (response.error) {
-      setErrors([createGenericReportValidationError(response.error)]);
+      const message = response.error;
+      setClientError(message, setErrors);
       return false;
     }
     if (response) {

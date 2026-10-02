@@ -402,6 +402,58 @@ describe("The TransferDetailForm component", () => {
     },
   );
 
+  it(
+    "displays an error message when the update request fails",
+    { timeout: 10000 },
+    async () => {
+      const errorMessage = "Unable to complete the request.";
+      actionHandler.mockResolvedValueOnce({
+        error: errorMessage,
+      });
+      fetchOperationsPageData.mockResolvedValue(mockOperations);
+      await renderOperationEntityTransferDetailForm();
+      await userEvent.click(
+        screen.getByRole("button", {
+          name: /edit details/i,
+        }),
+      );
+      await userEvent.type(
+        screen.getByRole("combobox", {
+          name: /operation\*/i,
+        }),
+        "op",
+      );
+      await waitFor(() => {
+        expect(
+          screen.getByRole("option", {
+            name: /operation 2/i,
+          }),
+        ).toBeVisible();
+      });
+      await userEvent.click(
+        screen.getByRole("option", {
+          name: /operation 2/i,
+        }),
+      );
+      await userEvent.click(
+        screen.getByRole("button", {
+          name: /transfer entity/i,
+        }),
+      );
+      expect(await screen.findByText(errorMessage)).toBeVisible();
+      expect(actionHandler).toHaveBeenCalledTimes(1);
+      expect(actionHandler).toHaveBeenCalledWith(
+        `registration/transfer-events/${transferId}`,
+        "PATCH",
+        `/transfers/${transferId}`,
+        expect.anything(),
+      );
+      expect(
+        screen.queryByText(/all changes have been successfully saved/i),
+      ).not.toBeInTheDocument();
+    },
+  );
+
   it("should not render the edit details and cancel transfer buttons for a user with a role other than CAS_ANALYST", async () => {
     const userAppRole = FrontEndRoles.CAS_ADMIN;
     useSessionRole.mockReturnValue(userAppRole);

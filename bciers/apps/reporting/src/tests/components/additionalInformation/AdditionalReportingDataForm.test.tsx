@@ -1,19 +1,8 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { useRouter } from "next/navigation";
-import { actionHandler } from "@bciers/actions";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import AdditionalReportingDataForm from "@reporting/src/app/components/additionalInformation/additionalReportingData/AdditionalReportingDataForm";
-import { vi } from "vitest";
-import { dummyNavigationInformation } from "../taskList/utils";
-
-vi.mock("next/navigation", () => ({
-  useRouter: vi.fn(),
-  useSearchParams: vi.fn(),
-}));
-
-vi.mock("@bciers/actions", () => ({
-  actionHandler: vi.fn(),
-}));
+import { dummyNavigationInformation } from "@reporting/src/tests/components/taskList/utils";
+import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 
 vi.mock("@reporting/src/app/utils/getRegistrationPurpose", () => ({
   getRegistrationPurpose: vi.fn(),
@@ -24,7 +13,7 @@ describe("AdditionalReportingData Component", () => {
   const mockPush = vi.fn();
 
   beforeEach(() => {
-    (useRouter as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+    useRouter.mockReturnValue({
       push: mockPush,
       replace: vi.fn(),
       prefetch: vi.fn(),
@@ -32,7 +21,7 @@ describe("AdditionalReportingData Component", () => {
       refresh: vi.fn(),
     });
 
-    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValue({
+    actionHandler.mockResolvedValue({
       success: true,
     });
   });
@@ -50,9 +39,11 @@ describe("AdditionalReportingData Component", () => {
         navigationInformation={dummyNavigationInformation}
       />,
     );
+
     const capturedEmissionsText = await screen.findByText(
       "Captured emissions (If applicable)",
     );
+
     expect(capturedEmissionsText).toBeInTheDocument();
   });
 
@@ -78,6 +69,7 @@ describe("AdditionalReportingData Component", () => {
     (getRegistrationPurpose as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       registration_purpose: "OBPS Regulated Operation",
     });
+
     render(
       <AdditionalReportingDataForm
         versionId={versionId}
@@ -88,6 +80,7 @@ describe("AdditionalReportingData Component", () => {
     );
 
     const element = await screen.findByText("Electricity Generated");
+
     expect(element).toBeInTheDocument();
   });
 
@@ -111,10 +104,14 @@ describe("AdditionalReportingData Component", () => {
     const submitButton = screen.getByRole("button", {
       name: /Save & Continue/i,
     });
+
     fireEvent.click(submitButton);
 
-    await waitFor(() => expect(actionHandler).toHaveBeenCalled());
-    expect(mockPush).toHaveBeenCalledWith(`continue`);
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalled();
+    });
+
+    expect(mockPush).toHaveBeenCalledWith("continue");
   });
 
   it("renders No selected when initialFormData.capture_emissions is false", async () => {
@@ -157,5 +154,40 @@ describe("AdditionalReportingData Component", () => {
 
     expect(yesRadioButton).toBeChecked();
     expect(noRadioButton).not.toBeChecked();
+  });
+
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+
+    render(
+      <AdditionalReportingDataForm
+        versionId={versionId}
+        includeElectricityGenerated={false}
+        initialFormData={{}}
+        navigationInformation={dummyNavigationInformation}
+      />,
+    );
+
+    const submitButton = await screen.findByRole("button", {
+      name: /Save & Continue/i,
+    });
+
+    fireEvent.click(submitButton);
+
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      `reporting/report-version/${versionId}/additional-data`,
+      "POST",
+      `reporting/report-version/${versionId}/additional-data`,
+      expect.anything(),
+    );
+
+    expect(mockPush).not.toHaveBeenCalled();
   });
 });
