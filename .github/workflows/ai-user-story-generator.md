@@ -1,26 +1,21 @@
 ---
-description: >
-  Converts raw, unstructured business requirements into structured user stories,
-  acceptance criteria, technical execution guides, and implementation checklists,
-  and updates the issue body with the generated content.
-
 on:
   issues:
     types: [labeled]
-
-if: >
-  contains(github.event.issue.labels.*.name, 'AI User Story')
-
-engine: copilot
-
 permissions:
   contents: read
   pull-requests: read
+if: >
+  contains(github.event.issue.labels.*.name, 'AI User Story')
 
 safe-outputs:
   threat-detection: true
   update-issue:
     max: 1
+description: >
+  Converts raw, unstructured business requirements into structured user stories, acceptance criteria, technical execution guides, and implementation checklists, and updates the issue body with the generated content.
+
+engine: copilot
 ---
 
 # AI User Story Generator
