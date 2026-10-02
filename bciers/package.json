@@ -132,7 +132,7 @@
     "eslint-plugin-playwright": "^2.10.4",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "7.1.1",
-    "globals": "^16.5.0",
+    "globals": "^17.0.0",
     "happo": "6.16.0",
     "jiti": "2.7.0",
     "jsdom": "~26.1.0",
