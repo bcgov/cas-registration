@@ -7,13 +7,14 @@ export interface RegistryPageData<Row> {
   row_count: number;
 }
 
-export type RegistryResource = "accounts" | "projects" | "transfers" | "units";
+export type RegistryResource = "accounts" | "projects" | "transfers" | "units" | "issuances";
 
 const defaultSort: Record<RegistryResource, { field: string; order: string }> = {
   accounts: { field: "name", order: "asc" },
   projects: { field: "name", order: "asc" },
   transfers: { field: "initiated_datetime", order: "desc" },
   units: { field: "vintage", order: "desc" },
+  issuances: { field: "account_name", order: "asc" }
 };
 
 export default async function fetchRegistryPageData<Row>(

@@ -52,6 +52,7 @@ class UnitDataAccessService:
                 "project",
                 "issuance",
                 "issuance__account",
+                "issuance__verifier",
             )
             .all()
         )
