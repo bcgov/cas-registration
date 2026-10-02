@@ -67,6 +67,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IS_APPROVED_REVIEW: ${{ github.event_name == 'pull_request_review' && github.event.review.state == 'APPROVED' }}
         run: |
+          # Forcing MQ for workflow testing
+          EVENT_NAME="merge_group"
+
           RUN_ALL_CI="false"
           IS_MERGE_QUEUE="false"
           REASON="No special conditions met, running default CI run."
