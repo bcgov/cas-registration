@@ -13,8 +13,13 @@ on:
     types: [submitted]
   workflow_dispatch:
   merge_group:
-    # Merge queue uses the same "checks required" named jobs as PRs, but we disable the E2E/Happo required checks on merge_group events and the required checks are bypassed.
-    # We run identical jobs with different names so they are not required but still run for validation purposes.
+    # Merge queue disables the E2E/Happo required checks on merge_group events and the required checks are bypassed.
+    # Merge queue runs a reduced set of jobs to decrease time-to-merge. It's flanked on both sides (an approved PR, and the merge commit into the `develop` branch) by a full CI run.
+    # - Runs only Nx affected projects for frontend tests.
+    # - On run backend tests if there were backend changes.
+    # - Doesn't run Trivy or CodeQL, both of which don't work with multiple commits in a merge group.
+    # - No E2E tests.
+    # - Doesn't build any containers. They're built for E2E, container checks (which are run by the full CI run), and for deployments (which never happen from the merge queue)..
     types: [checks_requested]
     branches: [develop]
 
@@ -60,8 +65,11 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          IS_APPROVED_REVIEW: ${{ github.event_name == 'pull_request_review' && github.event.pull_request_review.review.state == 'APPROVED' }}
+          IS_APPROVED_REVIEW: ${{ github.event_name == 'pull_request_review' && github.event.review.state == 'APPROVED' }}
         run: |
+          # Forcing MQ for workflow testing
+          EVENT_NAME="merge_group"
+
           RUN_ALL_CI="false"
           IS_MERGE_QUEUE="false"
           REASON="No special conditions met, running default CI run."
@@ -136,24 +144,31 @@ jobs:
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/check-frontend-changes.yaml
   build-administration:
+    if: needs.evaluate-ci-conditions.is_merge_queue != true
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-administration.yaml
   build-backend:
+    if: needs.evaluate-ci-conditions.is_merge_queue != true
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-backend.yaml
   build-compliance:
+    if: needs.evaluate-ci-conditions.is_merge_queue != true
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-compliance.yaml
   build-dashboard:
+    if: needs.evaluate-ci-conditions.is_merge_queue != true
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-dashboard.yaml
   build-dashboard-e2e:
+    if: needs.evaluate-ci-conditions.is_merge_queue != true
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-dashboard-e2e.yaml
   build-registration:
+    if: needs.evaluate-ci-conditions.is_merge_queue != true
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-registration.yaml
   build-reporting:
+    if: needs.evaluate-ci-conditions.is_merge_queue != true
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-reporting.yaml
   test-code:
@@ -185,24 +200,6 @@ jobs:
       is_nx_affected: ${{ (contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'administration') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
       nx_project: administration
     secrets: inherit
-  # See notes at the `on.merge_group` trigger about this duplicated job.
-  test-administration-e2e-merge-group:
-    if: needs.evaluate-ci-conditions.is_merge_queue == 'true'
-    needs:
-      [
-        evaluate-ci-conditions,
-        build-backend,
-        build-dashboard-e2e,
-        build-administration,
-        check-nx-affected,
-      ]
-    uses: ./.github/workflows/test-nx-project-e2e.yaml
-    with:
-      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
-      compose_profiles: "administration"
-      is_nx_affected: ${{ contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'administration') && true || false }}
-      nx_project: administration
-    secrets: inherit
   test-registration-e2e:
     needs:
       [
@@ -217,24 +214,6 @@ jobs:
       all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
       compose_profiles: "registration"
       is_nx_affected: ${{ (contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
-      nx_project: registration
-    secrets: inherit
-  # See notes at the `on.merge_group` trigger about this duplicated job.
-  test-registration-e2e-merge-group:
-    if: needs.evaluate-ci-conditions.is_merge_queue == 'true'
-    needs:
-      [
-        evaluate-ci-conditions,
-        build-backend,
-        build-dashboard-e2e,
-        build-registration,
-        check-nx-affected,
-      ]
-    uses: ./.github/workflows/test-nx-project-e2e.yaml
-    with:
-      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
-      compose_profiles: "registration"
-      is_nx_affected: ${{ contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'registration') && true || false }}
       nx_project: registration
     secrets: inherit
   test-dashboard-e2e:
@@ -257,28 +236,6 @@ jobs:
       is_nx_affected: ${{ (contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
       nx_project: dashboard
     secrets: inherit
-  # See notes at the `on.merge_group` trigger about this duplicated job.
-  test-dashboard-e2e-merge-group:
-    if: needs.evaluate-ci-conditions.is_merge_queue == 'true'
-    needs:
-      [
-        evaluate-ci-conditions,
-        build-administration,
-        build-backend,
-        build-compliance,
-        build-dashboard-e2e,
-        build-registration,
-        build-reporting,
-        check-nx-affected,
-      ]
-    uses: ./.github/workflows/test-nx-project-e2e.yaml
-    with:
-      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
-      # dashboard e2e clicks through to every app tile, so every app has to be up
-      compose_profiles: "administration,compliance,registration,reporting"
-      is_nx_affected: ${{ contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'dashboard') && true || false }}
-      nx_project: dashboard
-    secrets: inherit
   test-compliance-e2e:
     needs:
       [
@@ -298,27 +255,6 @@ jobs:
       is_nx_affected: ${{ (contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
       nx_project: compliance
     secrets: inherit
-  # See notes at the `on.merge_group` trigger about this duplicated job.
-  test-compliance-e2e-merge-group:
-    if: needs.evaluate-ci-conditions.is_merge_queue == 'true'
-    needs:
-      [
-        evaluate-ci-conditions,
-        build-backend,
-        build-compliance,
-        build-dashboard-e2e,
-        build-reporting,
-        check-nx-affected,
-      ]
-    uses: ./.github/workflows/test-nx-project-e2e.yaml
-    with:
-      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
-      # compliance e2e drives the reporting UI directly to seed its data
-      # (its specs import @/reporting-e2e POMs), so reporting has to be up too
-      compose_profiles: "compliance,reporting"
-      is_nx_affected: ${{ contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'compliance') && true || false }}
-      nx_project: compliance
-    secrets: inherit
   test-reporting-e2e:
     needs:
       [evaluate-ci-conditions, build-backend, build-dashboard-e2e, build-reporting, check-nx-affected]
@@ -329,21 +265,13 @@ jobs:
       is_nx_affected: ${{ (contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && (needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true') && true || false }}
       nx_project: reporting
     secrets: inherit
-  # See notes at the `on.merge_group` trigger about this duplicated job.
-  test-reporting-e2e-merge-queue:
-    if: needs.evaluate-ci-conditions.is_merge_queue == 'true'
-    needs:
-      [evaluate-ci-conditions, build-backend, build-dashboard-e2e, build-reporting, check-nx-affected]
-    uses: ./.github/workflows/test-nx-project-e2e.yaml
-    with:
-      all_happo_browsers: ${{ github.ref_name == 'main' || github.head_ref == 'main' || contains(github.ref_name, 'release') || contains(github.head_ref, 'release') }}
-      compose_profiles: "reporting"
-      is_nx_affected: ${{ contains(needs.check-nx-affected.outputs.nx_affected_e2e, 'reporting') && true || false }}
-      nx_project: reporting
-    secrets: inherit
   trivy:
+    # Trivy does not currently work with merge groups. See https://github.com/github/codeql-action/issues/1537
+    if: needs.evaluate-ci-conditions.is_merge_queue != true
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/trivy.yaml
   codeql:
     needs: [evaluate-ci-conditions]
+    # CodeQL does not currently work with merge groups. See https://github.com/github/codeql-action/issues/1537
+    if: needs.evaluate-ci-conditions.is_merge_queue != true
     uses: ./.github/workflows/codeql.yaml
