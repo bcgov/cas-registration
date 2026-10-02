@@ -15,6 +15,10 @@ on:
   merge_group:
     # Merge queue uses the same "checks required" named jobs as PRs, but we disable the E2E/Happo required checks on merge_group events and the required checks are bypassed.
     # We run identical jobs with different names so they are not required but still run for validation purposes.
+    # Merge queue runs a reduced set of jobs to decrease time-to-merge. It's flanked on both sides (an approved PR, and the merge commit into the `develop` branch) by a full CI run.
+    # - Runs only Nx affected projects for frontend tests.
+    # - On run backend tests if there were backend changes.
+    # - Doesn't run Trivy or CodeQL, both of which don't work with multiple commits in a merge group.
     types: [checks_requested]
     branches: [develop]
 
@@ -60,7 +64,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          IS_APPROVED_REVIEW: ${{ github.event_name == 'pull_request_review' && github.event.pull_request_review.review.state == 'APPROVED' }}
+          IS_APPROVED_REVIEW: ${{ github.event_name == 'pull_request_review' && github.event.review.state == 'APPROVED' }}
         run: |
           RUN_ALL_CI="false"
           IS_MERGE_QUEUE="false"
@@ -342,8 +346,12 @@ jobs:
       nx_project: reporting
     secrets: inherit
   trivy:
+    # Trivy does not currently work with merge groups. See https://github.com/github/codeql-action/issues/1537
+    if: needs.evaluate-ci-conditions.is_merge_queue != true
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/trivy.yaml
   codeql:
     needs: [evaluate-ci-conditions]
+    # CodeQL does not currently work with merge groups. See https://github.com/github/codeql-action/issues/1537
+    if: needs.evaluate-ci-conditions.is_merge_queue != true
     uses: ./.github/workflows/codeql.yaml

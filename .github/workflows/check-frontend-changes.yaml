@@ -24,9 +24,10 @@ jobs:
       - name: Check for frontend changes
         id: check-frontend-changes
         run: |
-          # For PRs, compare against base branch. For pushes to develop/main, always report changes
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            BASE_REF="origin/${{ github.base_ref }}"
+          # For PRs and Merge Queue, compare against base branch. For pushes to develop/main, always report changes
+          if [[ "${{ github.event_name }}" = "pull_request" || "${{ github.event_name }}" = "merge_group" ]]; then
+            # For the merge queue, `github.base_ref` is empty, so use merge_queue event payload.
+            BASE_REF="origin/${{ github.base_ref || github.event.merge_group.base_ref }}"
 
             # Debug: show what we're comparing
             echo "BASE_REF: $BASE_REF"
