@@ -1,26 +1,22 @@
 ---
-description: >
-  Vets business requirements against the existing codebase and identifies
-  assumptions, gaps, edge cases, and implementation considerations.
-
 on:
   issues:
     types: [labeled]
-
-if: >
-  contains(github.event.issue.labels.*.name, 'AI Business Requirements')
-
-engine: copilot
-
 permissions:
   contents: read
   issues: read
   pull-requests: read
+if: >
+  contains(github.event.issue.labels.*.name, 'AI Business Requirements')
 
 safe-outputs:
-  threat-detection: true
   add-comment:
     max: 1
+  threat-detection: true
+description: >
+  Vets business requirements against the existing codebase and identifies assumptions, gaps, edge cases, and implementation considerations.
+
+engine: copilot
 ---
 
 # AI Business Requirements Vetting
