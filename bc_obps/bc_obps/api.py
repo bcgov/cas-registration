@@ -6,6 +6,7 @@ from registration.api import router as registration_router
 from reporting.api import router as reporting_router
 from reporting.api_v2 import router as reporting_router_v2
 from compliance.api import router as compliance_router
+from audit_log.api import router as audit_log_router
 from service.error_service.handle_exception import handle_exception
 from registration.utils import generate_useful_error
 
@@ -30,3 +31,4 @@ api.add_router("/registration/", registration_router, tags=["V1"])
 api.add_router("/reporting/v2/", reporting_router_v2, tags=["V2"])
 api.add_router("/reporting/", reporting_router, tags=["V1"])
 api.add_router("/compliance/", compliance_router, tags=["V1"])
+api.add_router("/audit-log/", audit_log_router, tags=["V1"])
