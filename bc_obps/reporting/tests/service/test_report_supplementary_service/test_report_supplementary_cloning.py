@@ -3,12 +3,13 @@ from unittest.mock import MagicMock, patch
 from model_bakery.baker import make_recipe
 from django.core.files.base import ContentFile
 from django.utils import timezone
+from model_bakery.utils import seq
 from registration.models import Operation
 from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.tests.service.test_report_activity_save_service import data
 from reporting.service.report_supplementary_version_service.report_supplementary_cloning import (
+    clone_or_refresh_report_version_representatives,
     clone_report_version_operation,
-    clone_report_version_representatives,
     clone_report_version_person_responsible,
     clone_report_version_additional_data,
     clone_report_version_new_entrant_data,
@@ -199,7 +200,7 @@ class ReportSupplementaryCloningTests(TestCase):
         new_activities_ids = set(new_operation.activities.values_list('id', flat=True))
         self.assertEqual(old_activities_ids, new_activities_ids)
 
-    def test_clone_report_version_representatives(self):
+    def test_clone_report_version_representatives_no_transfer(self):
         """
         Test that the clone_report_version_representatives method copies all representatives
         from the old report version to the new report version, preserving their field values.
@@ -213,7 +214,9 @@ class ReportSupplementaryCloningTests(TestCase):
         )
 
         # ACT: Clone the representatives.
-        clone_report_version_representatives(self.old_report_version, self.new_report_version)
+        clone_or_refresh_report_version_representatives(
+            self.old_report_version, self.new_report_version, is_operation_transferred=False
+        )
 
         # ASSERT: Verify that two new representatives have been created.
         new_reps = ReportOperationRepresentative.objects.filter(report_version=self.new_report_version)
@@ -227,6 +230,34 @@ class ReportSupplementaryCloningTests(TestCase):
         for new_rep in new_reps:
             self.assertIn(new_rep.representative_name, old_reps)
             self.assertEqual(new_rep.selected_for_report, old_reps[new_rep.representative_name].selected_for_report)
+
+    def test_clone_report_version_representatives_with_transfer(self):
+        self.assertEqual(
+            ReportOperationRepresentative.objects.filter(report_version=self.new_report_version).count(), 0
+        )
+
+        make_recipe(
+            "registration.tests.utils.contact",
+            first_name="John",
+            last_name=seq("Doe"),
+            operator_id=self.new_report_version.report.operator_id,
+            business_role_id="Operation Representative",
+            _quantity=4,
+        )
+
+        clone_or_refresh_report_version_representatives(
+            self.old_report_version, self.new_report_version, is_operation_transferred=True
+        )
+        self.assertEqual(
+            ReportOperationRepresentative.objects.filter(report_version=self.new_report_version).count(), 4
+        )
+        self.assertQuerySetEqual(
+            ReportOperationRepresentative.objects.filter(report_version=self.new_report_version).values_list(
+                "representative_name", flat=True
+            ),
+            ["John Doe1", "John Doe2", "John Doe3", "John Doe4"],
+            ordered=False,
+        )
 
     def test_clone_report_version_person_responsible(self):
         """
@@ -547,7 +578,7 @@ class ReportSupplementaryCloningTests(TestCase):
         cloning = "reporting.service.report_supplementary_version_service.report_supplementary_cloning"
         with (
             patch(f"{cloning}.clone_report_version_operation") as mock_op,
-            patch(f"{cloning}.clone_report_version_representatives") as mock_reps,
+            patch(f"{cloning}.clone_or_refresh_report_version_representatives") as mock_reps,
             patch(f"{cloning}.clone_report_version_person_responsible") as mock_person,
             patch(f"{cloning}.clone_electricity_import_data") as mock_electricity,
             patch(f"{cloning}.clone_report_version_additional_data") as mock_additional,
@@ -557,10 +588,10 @@ class ReportSupplementaryCloningTests(TestCase):
             patch(f"{cloning}.clone_report_version_facilities") as mock_facilities,
             patch(f"{cloning}.reapply_emission_categories") as mock_reapply,
         ):
-            clone_all(self.old_report_version, self.new_report_version)
+            clone_all(self.old_report_version, self.new_report_version, True)
 
             mock_op.assert_called_once_with(self.old_report_version, self.new_report_version)
-            mock_reps.assert_called_once_with(self.old_report_version, self.new_report_version)
+            mock_reps.assert_called_once_with(self.old_report_version, self.new_report_version, True)
             mock_person.assert_called_once_with(self.old_report_version, self.new_report_version)
             mock_electricity.assert_called_once_with(self.old_report_version, self.new_report_version)
             mock_additional.assert_called_once_with(self.old_report_version, self.new_report_version)
