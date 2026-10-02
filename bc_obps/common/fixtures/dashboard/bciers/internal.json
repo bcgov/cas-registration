@@ -13,6 +13,17 @@
         ],
         "tiles": [
           {
+            "title": "Registry",
+            "icon": "Layers",
+            "content": "View and manage registry information for B.C. industrial operations.",
+            "links": [
+              {
+                "title": "Registry",
+                "href": "/registry"
+              }
+            ]
+          },
+          {
             "title": "Administration",
             "icon": "Layers",
             "content": "View information of any operator, operation, facility, contact.",

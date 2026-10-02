@@ -2,6 +2,7 @@
 const {
   HOST_ADMINISTRATION,
   HOST_REGISTRATION,
+  HOST_REGISTRY,
   HOST_REPORTING,
   HOST_COMPLIANCE,
 } = process.env;
@@ -50,6 +51,18 @@ const nextConfig = {
           },
         ]
       : [];
+    const registryRoutes = HOST_REGISTRY
+      ? [
+          {
+            source: "/registry",
+            destination: `${HOST_REGISTRY}/registry`,
+          },
+          {
+            source: "/registry/:path*",
+            destination: `${HOST_REGISTRY}/registry/:path*`,
+          },
+        ]
+      : [];
     const complianceRoutes = HOST_COMPLIANCE
       ? [
           {
@@ -65,6 +78,7 @@ const nextConfig = {
     const localRoutes = [
       ...adminRoutes,
       ...registrationRoutes,
+      ...registryRoutes,
       ...reportingRoutes,
       ...complianceRoutes,
     ];

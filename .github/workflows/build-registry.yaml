@@ -1,0 +1,25 @@
+name: Build Registry Docker container
+
+on:
+  workflow_call:
+    inputs:
+      special_build_tag:
+        description: "Extra tag to use for the image (e.g. nightly, latest)"
+        required: false
+        type: string
+        default: latest
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Build registry container
+        uses: ./.github/actions/nx-app-build
+        with:
+          project: registry
+          image_url: ghcr.io/bcgov/cas-registry-frontend
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          special_build_tag: ${{ inputs.special_build_tag }}

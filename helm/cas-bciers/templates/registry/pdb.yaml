@@ -1,0 +1,12 @@
+{{- if .Values.enable_pdb }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "cas-bciers.fullname" . }}-registry-frontend-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: cas-bciers
+      component: registry-frontend
+{{- end }}

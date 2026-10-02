@@ -9,6 +9,7 @@ export enum DashboardTiles {
 }
 
 export const InternalDashboardTiles: ReadonlyArray<DashboardTiles> = [
+  DashboardTiles.REGISTRY,
   DashboardTiles.ADMINISTRATION,
   DashboardTiles.TRANSFERS,
   DashboardTiles.REPORTING,
@@ -50,6 +51,7 @@ export enum ExternalDashboardLinks {
 }
 
 export enum InternalDashboardLinks {
+  REGISTRY = "Registry",
   OPERATORS = "Operators",
   OPERATIONS = "Operations",
   OPERATOR_ADMIN_ACCESS_REQUEST = "Operator Administrators and Access Requests",
