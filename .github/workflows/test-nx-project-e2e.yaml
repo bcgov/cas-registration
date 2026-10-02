@@ -214,7 +214,7 @@ jobs:
           CAS_REPORTING_HAPPO_API_KEY: ${{ secrets.CAS_REPORTING_HAPPO_API_KEY }}
           CAS_REPORTING_HAPPO_API_SECRET: ${{ secrets.CAS_REPORTING_HAPPO_API_SECRET }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
-          COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           cd bciers
           node libs/e2e/src/utils/happo-skip.js
