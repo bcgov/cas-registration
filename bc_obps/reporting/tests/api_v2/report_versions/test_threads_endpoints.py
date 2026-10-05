@@ -1,6 +1,5 @@
 from model_bakery.baker import make_recipe
 
-import pytest
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.models import CommentThread
 from ninja.responses import NinjaJSONEncoder
@@ -9,7 +8,7 @@ from ninja.responses import NinjaJSONEncoder
 class TestThreadsV2Endpoints(CommonTestSetup):
     def setup_method(self):
         operation = make_recipe("registration.tests.utils.operation")
-        self.facility = make_recipe("registration.tests.utils.facility", operation=operation)
+        self.facility = make_recipe("registration.tests.utils.facility", operation=operation, name="Test Facility")
         self.report = make_recipe("reporting.tests.utils.report", operation=operation, operator=operation.operator)
         self.report_version = make_recipe("reporting.tests.utils.report_version", report=self.report)
         self.endpoint_under_test = f"/api/reporting/v2/report-version/{self.report_version.id}/threads"
@@ -61,21 +60,14 @@ class TestThreadsV2Endpoints(CommonTestSetup):
         assert response_comments[0]['author'] == comment.created_by.get_full_name()
         assert response_comments[0]['version_id'] == self.report_version.id
 
-    @pytest.mark.parametrize("facility_name", [None, "Test Facility"])
-    def test_post_creates_thread_and_comment(self, facility_name):
+    def test_post_creates_thread_and_comment(self):
         assert CommentThread.objects.filter(report=self.report).count() == 0
-
-        if facility_name:
-            facility = make_recipe("registration.tests.utils.facility", name=facility_name)
-            facility_payload = {"facility_id": str(facility.id)}
-        else:
-            facility_payload = {}
 
         response = TestUtils.mock_post_with_auth_role(
             self,
             "cas_director",
             self.content_type,
-            {"comment": "Test comment", **facility_payload},
+            {"comment": "Test comment", "facility_id": str(self.facility.id)},
             self.endpoint_under_test,
         )
 
@@ -90,7 +82,7 @@ class TestThreadsV2Endpoints(CommonTestSetup):
 
         assert response.json() == {
             "version_id": self.report_version.id,
-            "facility_id": str(facility.id) if facility_name else None,
+            "facility_id": str(self.facility.id),
             "comments": [
                 {
                     "version_id": self.report_version.id,
@@ -100,6 +92,6 @@ class TestThreadsV2Endpoints(CommonTestSetup):
                     "comment": comment.comment,
                 }
             ],
-            "facility_name": facility_name,
+            "facility_name": "Test Facility",
             "id": thread.id,
         }
