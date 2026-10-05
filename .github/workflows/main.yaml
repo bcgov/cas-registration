@@ -141,31 +141,31 @@ jobs:
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/check-frontend-changes.yaml
   build-administration:
-    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != true
+    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true'
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-administration.yaml
   build-backend:
-    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != true
+    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true'
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-backend.yaml
   build-compliance:
-    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != true
+    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true'
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-compliance.yaml
   build-dashboard:
-    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != true
+    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true'
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-dashboard.yaml
   build-dashboard-e2e:
-    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != true
+    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true'
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-dashboard-e2e.yaml
   build-registration:
-    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != true
+    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true'
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-registration.yaml
   build-reporting:
-    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != true
+    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true'
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-reporting.yaml
   test-code:
@@ -264,11 +264,11 @@ jobs:
     secrets: inherit
   trivy:
     # Trivy does not currently work with merge groups. See https://github.com/github/codeql-action/issues/1537
-    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != true
+    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true'
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/trivy.yaml
   codeql:
     needs: [evaluate-ci-conditions]
     # CodeQL does not currently work with merge groups. See https://github.com/github/codeql-action/issues/1537
-    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != true
+    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true'
     uses: ./.github/workflows/codeql.yaml
