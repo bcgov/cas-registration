@@ -213,7 +213,10 @@ export default function OperationReviewForm({
             },
           }),
         }}
-        formContext={{ reportingYear }}
+        formContext={{
+          reportingYear,
+          pulpAndPaperHelpActive: Number(reportingYear) > 2024,
+        }}
         formData={formDataState}
         saveButtonDisabled={!hasReps}
         submitButtonDisabled={!hasReps}

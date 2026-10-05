@@ -7,8 +7,13 @@ import { WidgetProps } from "@rjsf/utils";
 
 export const CHEMICAL_PULP_NAME = "Pulp and paper: chemical pulp";
 export const LIME_RECOVERED_NAME = "Pulp and paper: lime recovered by kiln";
+
+// Consuming modules (registration, administration, reporting) each decide
+// whether the rule is active for their context and pass the result here.
+// Modules that don't set this (e.g. registration, administration) default
+// to the rule always being active.
 interface RegulatedProductFormContext {
-  reportingYear?: number;
+  pulpAndPaperHelpActive?: boolean;
 }
 
 const RegulatedProductMultiSelectWidget = ({
@@ -35,11 +40,13 @@ const RegulatedProductMultiSelectWidget = ({
     limeRecoveredByKilnProductId !== undefined &&
     selectedIds.includes(Number(limeRecoveredByKilnProductId));
 
-  // Show the warning only for > 2024 reports when exactly one of the
+  const { pulpAndPaperHelpActive = true } =
+    registry.formContext as RegulatedProductFormContext;
+
+  // Show the warning only when the rule is active and exactly one of the
   // Chemical Pulp or Lime Recovered by Kiln products is selected.
-  const { reportingYear } = registry.formContext as RegulatedProductFormContext;
   const showPulpPaperHelp =
-    Number(reportingYear) > 2024 && hasChemicalPulp !== hasLimeRecovered;
+    pulpAndPaperHelpActive && hasChemicalPulp !== hasLimeRecovered;
   const helpText = showPulpPaperHelp ? (
     <>
       <strong>Note: </strong>If this is a chemical pulp mill that recovered lime
