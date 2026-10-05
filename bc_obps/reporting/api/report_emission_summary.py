@@ -45,6 +45,15 @@ def get_emission_summary_totals(request: HttpRequest, version_id: int, facility_
 def get_operation_emission_summary_totals(request: HttpRequest, version_id: int) -> Tuple[int, dict]:
     return 200, EmissionCategoryService.get_operation_emission_summary_form_data(version_id)
 
+@router.get(
+    "/report-version/{version_id}/emission-summary/formula-explanation",
+    response={200: dict, custom_codes_4xx: Message},
+    url_name="get_compliance_summary_form_formula_explanation",
+    auth=approved_authorized_roles_report_version_composite_auth,
+)
+def get_compliance_summary_form_formula_explanation(request: HttpRequest, version_id: int) -> Tuple[int, dict]:
+    return 200, EmissionCategoryService.get_compliance_summary_form_formula_explanation_data(version_id)
+
 
 # Endpoint is for handling a pulp & paper edge case when industrial emissions overlap with excluded emissions
 @router.get(

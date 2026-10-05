@@ -4,6 +4,7 @@ import {
   ArrayFieldTemplate,
   ArrayFieldItemTemplate,
 } from "@bciers/components/form/fields/ArrayFieldTemplate";
+import { readOnlyStringField } from "@/compliance/src/app/data/jsonSchema/helpers";
 
 export const complianceSummarySchema2025 = (
   displayJanMarProduction: boolean,
@@ -24,6 +25,7 @@ export const complianceSummarySchema2025 = (
         type: "number",
         title: "Emissions attributable for compliance",
       },
+      how_was_this_calculated: readOnlyStringField(),
       emissions_limit: {
         type: "number",
         title: "Emissions limit",
@@ -109,6 +111,14 @@ export const complianceSummaryUiSchema2025 = {
   emissions_attributable_for_compliance: {
     "ui:options": {
       displayUnit: "tCO2e",
+    },
+  },
+  how_was_this_calculated: {
+    "ui:widget": "ReadOnlyComplianceEmissionFormula",
+    "ui:classNames": "w-full",
+    "ui:options": {
+      label: false,
+      inline: true,
     },
   },
   emissions_limit: {

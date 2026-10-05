@@ -1,7 +1,7 @@
 from reporting.models import EmissionCategory
 from reporting.models.report_emission import ReportEmission
 from decimal import Decimal
-from django.db.models import Sum, OuterRef, Subquery
+from django.db.models import F, Sum, OuterRef, Subquery
 from typing import Dict, List
 
 # Fugitive, venting non-useful, fuel_excluded, other_excluded
@@ -126,6 +126,59 @@ class EmissionCategoryService:
         total_reporting_only = records.aggregate(emission_sum=Sum('emission'))
         return total_reporting_only['emission_sum'] or 0
 
+
+    # Just like get_total_emissions_by_emission_category_and_version, but returns emissions for a given category
+    @staticmethod
+    def get_emissions_by_emission_category_and_version(
+        version_id: int, emission_category_id: int
+    ) -> Decimal | int:
+        records = (
+            ReportEmission.objects_with_decimal_emissions
+            .filter(
+                report_version_id=version_id,
+                emission_categories__id=emission_category_id,
+            )
+            .annotate(
+                source_type=F("report_source_type__source_type__name"),
+                fuel_type=F("report_fuel__fuel_type__name"),
+                activity=F(
+                    "report_source_type__report_activity__activity__regulated_name"
+                ),
+            )
+            .values(
+                "emission",
+                "source_type",
+                "fuel_type",
+                "activity",
+            )
+        )
+
+        return list(records)
+
+    # For the emissions calculation formula display on the compliance summary page
+    @staticmethod
+    def get_category_emissions_for_breakdown_by_version(version_id: int) -> Dict[str, Decimal | int]:
+        # BASIC
+        fugitive = EmissionCategoryService.get_emissions_by_emission_category_and_version(version_id, 2)
+        venting_non_useful = EmissionCategoryService.get_emissions_by_emission_category_and_version(
+            version_id, 7
+        )
+        # FUEL EXCLUDED
+        woody_biomass = EmissionCategoryService.get_emissions_by_emission_category_and_version(
+            version_id, 10
+        )
+        excluded_biomass = EmissionCategoryService.get_emissions_by_emission_category_and_version(
+            version_id, 11
+        )
+        excluded_non_biomass = EmissionCategoryService.get_emissions_by_emission_category_and_version(
+            version_id, 12
+        )
+        return {
+            "fugitive": fugitive,
+            "venting_non_useful": venting_non_useful,
+            "excluded_emissions": woody_biomass + excluded_biomass + excluded_non_biomass,
+        }
+
     @staticmethod
     def get_all_category_totals_by_version(version_id: int) -> Dict[str, Decimal | int]:
         totals = EmissionCategory.objects.annotate(
@@ -225,6 +278,11 @@ class EmissionCategoryService:
     def get_operation_emission_summary_form_data(cls, version_id: int) -> dict:
         emission_totals = EmissionCategoryService.get_all_category_totals_by_version(version_id)
         return EmissionCategoryService.transform_category_totals_to_summary_form_data(emission_totals)
+
+    @classmethod
+    def get_compliance_summary_form_formula_explanation_data(cls, version_id: int) -> dict:
+        category_details = EmissionCategoryService.get_category_emissions_for_breakdown_by_version(version_id)
+        return category_details
 
     @classmethod
     def get_facility_emission_summary_form_data(cls, facility_report_id: int) -> dict:
