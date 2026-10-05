@@ -2,6 +2,12 @@ name: Trivy Scan Code
 
 on:
   workflow_call:
+    inputs:
+      is_merge_queue:
+        description: "Whether the workflow is running as part of a merge queue. Skip analysis if true."
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   analyze:
@@ -9,8 +15,10 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout code
+        if: ${{ !inputs.is_merge_queue }}
         uses: actions/checkout@v7
       - name: Run Trivy vulnerability scanner in repo mode
+        if: ${{ !inputs.is_merge_queue }}
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: fs
@@ -23,11 +31,13 @@ jobs:
           timeout: 10m0s
           scanners: vuln,secret,config
       - name: Upload Trivy scan results to GitHub Security tab
+        if: ${{ !inputs.is_merge_queue }}
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trivy-results.sarif
           category: trivy-code-scan
       - name: Upload Trivy scan results as artifact
+        if: ${{ !inputs.is_merge_queue }}
         uses: actions/upload-artifact@v7
         with:
           name: trivy-results
