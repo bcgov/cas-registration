@@ -346,12 +346,14 @@ jobs:
       nx_project: reporting
     secrets: inherit
   trivy:
-    # Trivy does not currently work with merge groups. See https://github.com/github/codeql-action/issues/1537
-    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true'
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/trivy.yaml
+    with:
+      # Trivy does not currently work with merge groups. See https://github.com/github/codeql-action/issues/1537
+      is_merge_queue: ${{ needs.evaluate-ci-conditions.outputs.is_merge_queue == 'true' }}
   codeql:
     needs: [evaluate-ci-conditions]
-    # CodeQL does not currently work with merge groups. See https://github.com/github/codeql-action/issues/1537
-    if: needs.evaluate-ci-conditions.outputs.is_merge_queue != 'true'
     uses: ./.github/workflows/codeql.yaml
+    with:
+      # CodeQL does not currently work with merge groups. See https://github.com/github/codeql-action/issues/1537
+      is_merge_queue: ${{ needs.evaluate-ci-conditions.outputs.is_merge_queue == 'true' }}
