@@ -23,6 +23,8 @@ from reporting.models import (
     ReportActivity,
     ReportAdditionalData,
     ReportAttachment,
+    EmissionCategoryMapping,
+    Methodology,
     ReportEmission,
     ReportMethodology,
     ReportNewEntrant,
@@ -503,6 +505,7 @@ class ReportSupplementaryCloningTests(TestCase):
         fake_emission.report_source_type = MagicMock()
         fake_emission.report_fuel = MagicMock()
         fake_emission.report_methodology = fake_methodology
+        fake_methodology.methodology.name = "Replacement Methodology"
 
         # Patch the queryset
         with (
@@ -510,17 +513,9 @@ class ReportSupplementaryCloningTests(TestCase):
             patch(
                 "reporting.service.report_supplementary_version_service.report_supplementary_cloning.EmissionCategoryMappingService.apply_emission_categories"
             ) as mock_apply,
-            patch(
-                "reporting.service.report_supplementary_version_service.report_supplementary_cloning.model_to_dict"
-            ) as mock_model_to_dict,
         ):
 
             mock_filter.return_value.select_related.return_value = [fake_emission]
-            mock_model_to_dict.return_value = {
-                'report_source_type': fake_emission.report_source_type,
-                'report_fuel': fake_emission.report_fuel,
-                'report_methodology': fake_methodology,
-            }
 
             # Act
             reapply_emission_categories(fake_version)
@@ -531,12 +526,44 @@ class ReportSupplementaryCloningTests(TestCase):
                 report_source_type=fake_emission.report_source_type,
                 report_fuel=fake_emission.report_fuel,
                 report_emission=fake_emission,
-                methodology_data={
-                    'report_source_type': fake_emission.report_source_type,
-                    'report_fuel': fake_emission.report_fuel,
-                    'report_methodology': fake_methodology,
-                },
+                methodology_data={"methodology": "Replacement Methodology"},
             )
+
+    def test_reapply_emission_categories_applies_woody_biomass_to_pulp_and_paper_solids_hhv(self):
+        woody_biomass_category_id = 10
+        mapping = EmissionCategoryMapping.objects.filter(
+            activity__slug="pulp_and_paper", emission_category_id=woody_biomass_category_id
+        ).first()
+        facility_report = make_recipe("reporting.tests.utils.facility_report", report_version=self.new_report_version)
+        report_activity = make_recipe(
+            "reporting.tests.utils.report_activity",
+            facility_report=facility_report,
+            report_version=self.new_report_version,
+            activity=mapping.activity,
+        )
+        report_source_type = make_recipe(
+            "reporting.tests.utils.report_source_type",
+            report_activity=report_activity,
+            report_version=self.new_report_version,
+            source_type=mapping.source_type,
+        )
+        report_emission = make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_source_type=report_source_type,
+            report_version=self.new_report_version,
+            report_fuel=None,
+        )
+        make_recipe(
+            "reporting.tests.utils.report_methodology",
+            report_emission=report_emission,
+            report_version=self.new_report_version,
+            methodology=Methodology.objects.get(name="Solids-HHV"),
+            json_data={},
+        )
+
+        reapply_emission_categories(self.new_report_version)
+
+        self.assertIn(woody_biomass_category_id, report_emission.emission_categories.values_list("id", flat=True))
 
     def test_clone_all(self):
         """
