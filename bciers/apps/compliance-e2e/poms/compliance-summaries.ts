@@ -177,14 +177,24 @@ export class ComplianceSummariesPOM {
     await this.waitForGridReady({ timeout });
   }
 
-  async getRowByOperationName(operationName: string): Promise<Locator> {
+  async getRowByOperationName(
+    operationName: string,
+    penaltyStatus?: string,
+  ): Promise<Locator> {
     await this.waitForGridReady({ timeout: 30_000 });
 
+    const getRowLocator = () => {
+      let row = this.grid().getByRole("row").filter({ hasText: operationName });
+
+      if (penaltyStatus) {
+        row = row.filter({ hasText: penaltyStatus });
+      }
+
+      return row.first();
+    };
+
     await expect(async () => {
-      const row = this.grid()
-        .getByRole("row")
-        .filter({ hasText: operationName })
-        .first();
+      const row = getRowLocator();
 
       const matchingRowCount = await row.count();
       const totalRowCount = await this.grid().getByRole("row").count();
@@ -197,17 +207,15 @@ export class ComplianceSummariesPOM {
       expect(cellCount).toBeGreaterThan(0);
     }).toPass({ timeout: 30_000 });
 
-    return this.grid()
-      .getByRole("row")
-      .filter({ hasText: operationName })
-      .first();
+    return getRowLocator();
   }
 
   async getCellTextForOperation(
     operationName: string,
     field: ComplianceSummariesGridHeaders,
+    penaltyStatus?: string,
   ): Promise<string> {
-    const row = await this.getRowByOperationName(operationName);
+    const row = await this.getRowByOperationName(operationName, penaltyStatus);
     const cell = row.locator(`[role="gridcell"][data-field="${field}"]`);
 
     await expect(cell).toBeVisible();
@@ -247,14 +255,29 @@ export class ComplianceSummariesPOM {
     }).toPass({ timeout: 30_000 });
   }
 
+  async assertPenaltyStatusForOperation(
+    operationName: string,
+    expectedStatus: string,
+  ): Promise<void> {
+    await expect(async () => {
+      const status = await this.getCellTextForOperation(
+        operationName,
+        ComplianceSummariesGridHeaders.PENALTY_STATUS,
+        expectedStatus,
+      );
+      expect(status).toBe(expectedStatus);
+    }).toPass({ timeout: 30_000 });
+  }
+
   async openActionForOperation(options: {
     operationName: string;
     linkName: string | RegExp;
     urlPattern?: string | RegExp;
+    penaltyStatus?: string;
   }) {
-    const { operationName, linkName, urlPattern } = options;
+    const { operationName, linkName, urlPattern, penaltyStatus } = options;
 
-    const row = await this.getRowByOperationName(operationName);
+    const row = await this.getRowByOperationName(operationName, penaltyStatus);
     const actionLink = row.getByRole("link", { name: linkName });
 
     await expect(async () => {
