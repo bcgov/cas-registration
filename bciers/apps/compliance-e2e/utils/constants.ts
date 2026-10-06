@@ -61,6 +61,8 @@ export const DOWNLOAD_PAYMENT_INSTRUCTIONS_URL_PATTERN = new RegExp(
 export const PAY_OBLIGATION_TRACK_PAYMENTS_URL_PATTERN = new RegExp(
   `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/pay-obligation-track-payments$`,
 );
+export const PENALTY_CALCULATOR_URL_PATTERN =
+  /.*\/compliance-summaries\/\d+\/penalty-calculator.*/;
 
 // Industry / earned credits / request issuance of earned credits url
 export const REQUEST_ISSUANCE_CREDITS_URL_PATTERN = new RegExp(
@@ -119,3 +121,8 @@ export const AMOUNT_DUE_AFTER_DECREASE_OBLIGATION_MET = new RegExp(
   `${AMOUNT_DUE_LABEL.source}\\$0\\.00`,
   "i",
 );
+
+// --- Penalty Calculation
+
+export const DEFAULT_DAYS_OVERDUE = 45;
+export const OVERDUE_PENALTY_CRV_ID = 2;
