@@ -10,8 +10,10 @@ function BasicFieldTemplate({
   style,
   children,
 }: FieldTemplateProps) {
+  // Tailwind utilities are `!important` and would override a marginBottom passed in through ui:options.style
+  const marginClasses = style?.marginBottom === undefined ? "mb-4 md:mb-2" : "";
   return (
-    <div style={style} className={`w-full mb-4 md:mb-2 ${classNames}`}>
+    <div style={style} className={`w-full ${marginClasses} ${classNames}`}>
       {children}
     </div>
   );

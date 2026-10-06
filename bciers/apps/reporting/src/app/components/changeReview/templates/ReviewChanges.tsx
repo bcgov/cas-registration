@@ -115,7 +115,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
       : items;
     return (
       <Box mb={4}>
-        <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue">
+        <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-0">
           {title}
         </Typography>
         <Divider sx={{ mb: 2 }} />

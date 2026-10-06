@@ -19,7 +19,7 @@ const AdditionalReportingData: React.FC<{ changes: ChangeItem[] }> = ({
   if (!changes.length) return null;
   return (
     <Box mb={4}>
-      <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue">
+      <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-0">
         Additional Reporting Data
       </Typography>
       <Divider sx={{ mb: 2 }} />

@@ -22,7 +22,7 @@ export default async function SelectOperatorReceivedPage({
 
     const adminRequestJSX: ReactNode = (
       <div data-testid="access-request-message">
-        <div style={{ fontSize: "16px" }}>
+        <div className="text-base leading-8">
           <p>
             Your access request as administrator for{" "}
             <b>{operator.legal_name}</b> has been received by ministry staff and
