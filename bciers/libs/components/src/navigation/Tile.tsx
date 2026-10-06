@@ -30,7 +30,7 @@ const Tile = ({
 }: ContentItem) => {
   return (
     <div
-      className="dashboard-tile-container p-0 min-h-[240px] h-fit py-6"
+      className="dashboard-tile-container p-0 min-h-60 h-fit py-6"
       aria-label={title} // Added ARIA label for screen reader accessibility
     >
       <a

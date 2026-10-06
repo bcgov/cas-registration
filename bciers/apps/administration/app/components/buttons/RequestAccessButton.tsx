@@ -63,8 +63,7 @@ export default function RequestAccessButton({
     <>
       <div className="min-h-6 flex justify-center w-full">{renderedErrors}</div>
       <Button
-        className="my-10"
-        sx={{ textTransform: "none" }} // to remove uppercase text
+        className="my-10 normal-case" //to remove uppercase text
         aria-label={label}
         color="primary"
         variant="contained"

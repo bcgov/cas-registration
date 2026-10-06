@@ -17,24 +17,19 @@ export default function InternalUserStatusColumnCell(
   const status = params?.row.status || inferStatus(role, archivedAt);
   const statusColor = status ? colorMap.get(status) : "primary";
 
-  const fontSize = "16px";
-
   return (
     <Chip
       label={
         <div
-          style={{ color: status ? colorMap.get(status) : "primary", fontSize }}
+          className="text-[16px]"
+          style={{ color: status ? colorMap.get(status) : "primary" }}
         >
           {status}
         </div>
       }
       variant="outlined"
       color={statusColor}
-      sx={{
-        width: 100,
-        height: 40,
-        borderRadius: "20px",
-      }}
+      className="w-25 h-10 rounded-[20px]"
     />
   );
 }

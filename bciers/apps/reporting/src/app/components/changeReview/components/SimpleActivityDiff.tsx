@@ -28,9 +28,9 @@ export const SimpleActivityDiff: React.FC<SimpleActivityDiffProps> = ({
   return (
     <div>
       {Object.entries(grouped).map(([facilityName, activities]) => (
-        <Box key={facilityName} mb={4}>
+        <Box className="mb-8" key={facilityName}>
           {!hideFacilityHeaders && (
-            <Typography variant="h6" fontWeight={700}>
+            <Typography className="font-bold" variant="h6">
               {facilityName}
             </Typography>
           )}

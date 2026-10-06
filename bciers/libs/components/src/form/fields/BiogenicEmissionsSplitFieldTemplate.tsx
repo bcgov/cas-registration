@@ -15,12 +15,7 @@ const BiogenicEmissionsSplitFieldTemplate = ({
 }: FieldTemplateProps) => {
   return (
     <div
-      className={`min-w-full rounded-md p-2 pl-4 ${classNames}`}
-      style={{
-        backgroundColor: "#f2f2f2",
-        marginTop: "1rem",
-        marginBottom: "1rem",
-      }}
+      className={`min-w-full rounded-md p-2 pl-4 bg-bc-bg-grey my-4 ${classNames}`}
     >
       <div className="font-semibold mb-2">
         Enter the proportion of industrial process emissions that are biogenic

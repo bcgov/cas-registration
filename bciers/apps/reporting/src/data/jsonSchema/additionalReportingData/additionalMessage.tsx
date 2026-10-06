@@ -6,10 +6,10 @@ export const CapturedEmmissionsInfo = (
       Captured emissions (If applicable)
     </h2>
     <Typography
+      className="text-[16px]"
       variant="body2"
       color={BC_GOV_BACKGROUND_COLOR_BLUE}
       fontStyle="italic"
-      fontSize={16}
     >
       Captured emissions means the emissions that otherwise would be released
       into the atmosphere, that is captured instead for further applications

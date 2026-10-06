@@ -1,18 +1,13 @@
 import InfoIcon from "@mui/icons-material/Info";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Box, Link, Paper, Tooltip, Typography } from "@mui/material";
-import {
-  BC_GOV_LINKS_COLOR,
-  BC_GOV_TEXT,
-  LIGHT_BLUE_BG_COLOR,
-} from "@bciers/styles";
 export const purposeNote = (
   operationId: string = "",
   operationName: string = "",
 ) => (
-  <Paper sx={{ p: 2, mb: 3, bgcolor: LIGHT_BLUE_BG_COLOR, color: BC_GOV_TEXT }}>
-    <Box sx={{ display: "flex", alignItems: "center" }}>
-      <InfoIcon sx={{ mr: 1 }} />
+  <Paper className="p-4 mb-6 bg-bc-light-blue text-bc-text">
+    <Box className="flex items-center">
+      <InfoIcon className="mr-2" />
       <Typography variant="body2">
         Any edits to operation information made here will only apply to this
         report. You can{" "}
@@ -22,18 +17,10 @@ export const purposeNote = (
               href={`/administration/operations/${operationId}?operations_title=${operationName}&isNewTab=true`}
               target="_blank"
               rel="noopener noreferrer"
-              sx={{
-                color: "inherit",
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center",
-              }}
+              className="text-inherit no-underline inline-flex items-center"
             >
               update operation information
-              <OpenInNewIcon
-                fontSize="inherit"
-                style={{ marginLeft: ".1rem" }}
-              />
+              <OpenInNewIcon fontSize="inherit" className="ml-[0.1rem]" />
             </Link>{" "}
           </span>
         </Tooltip>
@@ -48,23 +35,20 @@ export const operationRepresentativeLink = (
   operationName: string = "",
 ) => {
   const href = `/administration/operations/${operationId}?operations_title=${operationName}&isNewTab=true`;
-  const commonSx = {
-    color: BC_GOV_LINKS_COLOR,
-    textDecoration: "underline",
-    display: "inline-flex",
-    alignItems: "center",
-    "& .MuiSvgIcon-root": {
-      color: BC_GOV_LINKS_COLOR,
-      marginLeft: ".1rem",
-    },
-  } as const;
-
   return (
     <>
       Before you can continue, you must{" "}
-      <Link href={href} target="_blank" rel="noopener noreferrer" sx={commonSx}>
+      <Link
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-bc-link-blue underline inline-flex items-center"
+      >
         add an operation representative for this operation
-        <OpenInNewIcon fontSize="inherit" />
+        <OpenInNewIcon
+          fontSize="inherit"
+          className="text-bc-link-blue ml-[0.1rem]"
+        />
       </Link>{" "}
       then return to this report
     </>

@@ -14,7 +14,6 @@ import {
 import { FormMode, FrontendMessages } from "@bciers/utils/src/enums";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import SubmitButton from "@bciers/components/button/SubmitButton";
-import { BC_GOV_SEMANTICS_RED } from "@bciers/styles";
 
 interface SingleStepTaskListFormProps {
   disabled?: boolean;
@@ -179,7 +178,7 @@ const SingleStepTaskListForm = ({
               <Button
                 variant="outlined"
                 color="error"
-                style={{ color: BC_GOV_SEMANTICS_RED }}
+                className="text-bc-error-red"
                 startIcon={<DeleteOutlineIcon />}
                 onClick={handleDelete}
               >

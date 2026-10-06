@@ -57,13 +57,7 @@ export default function Page() {
   // Using breakpoints for responsive design, grid items will display in two columns on laptop & desktop and a single column on mobile & tablet,
   // Using the order prop for stacking order, grid item 1 and 2 will be reverse order on mobile & tablet,
   return (
-    <Grid
-      container
-      spacing={2}
-      sx={{
-        marginBottom: "24px",
-      }}
-    >
+    <Grid container spacing={2} className="mb-6">
       <Grid
         item
         xs={12}
@@ -166,7 +160,7 @@ export default function Page() {
           </h2>
           <Button
             variant="contained"
-            className="w-full md:max-w-[70%] bg-bc-bg-blue"
+            className="w-full md:max-w-7/10 bg-bc-bg-blue"
             onClick={handleBceidLogin}
           >
             Log in with Business BCeID
@@ -184,8 +178,8 @@ export default function Page() {
         <h2 className={`${headerStyle} mt-2`}>Key Dates</h2>
         <table className={`table-auto w-full border-collapse ${tableBorder}`}>
           <colgroup>
-            <col className="w-[30%]" />
-            <col className="w-[70%]" />
+            <col className="w-3/10" />
+            <col className="w-7/10" />
           </colgroup>
           <thead>
             <tr>
@@ -214,7 +208,7 @@ export default function Page() {
           </h2>
           <Button
             variant="outlined"
-            className="w-full md:max-w-[70%]"
+            className="w-full md:max-w-7/10"
             onClick={handleIdirLogin}
           >
             Log in with IDIR

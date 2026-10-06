@@ -16,7 +16,7 @@ const TotalsSection = ({ changes }: { changes: DisplayChangeItem[] }) => (
     <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-4">
       Totals in tCO2e
     </Typography>
-    <Divider sx={{ mb: 2 }} />
+    <Divider className="mb-4" />
     {changes.map((change, idx) => (
       <ChangeItemDisplay key={`${change.field}-${idx}`} item={change} />
     ))}
@@ -376,14 +376,14 @@ export const EmissionAllocationChangeView: React.FC<
   return (
     <Box>
       {categorizedChanges.length > 0 && (
-        <Box mb={4}>
+        <Box className="mb-8">
           <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-0">
             Allocation of Emissions
           </Typography>
           {generalFields.map((change) => (
             <ChangeItemDisplay key={change.field} item={change} />
           ))}
-          <Divider sx={{ mb: 2 }} />
+          <Divider className="mb-4" />
           {categorizedChanges
             .filter((c) => c.changes.length > 0)
             .map((category) => (
@@ -395,7 +395,7 @@ export const EmissionAllocationChangeView: React.FC<
         </Box>
       )}
       {totalChanges.length > 0 && (
-        <Box mb={4}>
+        <Box className="mb-8">
           <TotalsSection changes={totalChanges} />
         </Box>
       )}

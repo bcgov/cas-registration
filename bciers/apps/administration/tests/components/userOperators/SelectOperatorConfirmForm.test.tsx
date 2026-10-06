@@ -61,10 +61,7 @@ describe("Select Operator Confirm Form", () => {
     await userEvent.click(
       screen.getByRole("button", { name: /Yes this is my operator/i }),
     );
-    expectIcon("WarningRoundedIcon", {
-      color: "#FCBA19",
-      fontSize: "40px",
-    });
+    expectIcon("WarningRoundedIcon", ["text-bc-yellow", "text-[40px]"]);
     expectMessage(
       "has-admin-message",
       `You do not currently have access to ${operatorJSON.legal_name}.Please request access below. An administrator will need to approve your access request.Request access`,
@@ -79,10 +76,7 @@ describe("Select Operator Confirm Form", () => {
     await userEvent.click(
       screen.getByRole("button", { name: /Yes this is my operator/i }),
     );
-    expectIcon("WarningRoundedIcon", {
-      color: "#FCBA19",
-      fontSize: "40px",
-    });
+    expectIcon("WarningRoundedIcon", ["text-bc-yellow", "text-[40px]"]);
     expectMessage(
       "has-no-admin-message",
       `The operator ${operatorJSON.legal_name} does not have an administrator yet.Request administrator access if you would like to be the administrator for this operator. Ministry staff will review your request.As an administrator, you can approve any additional users requesting access to the operator and assign additional administrators.Request administrator access`,

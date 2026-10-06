@@ -12,7 +12,7 @@ export default function Profile() {
       <Link
         data-testid="nav-user-profile"
         href="/administration/profile"
-        sx={{ color: "white", marginRight: "10px" }}
+        className="text-white mr-2.5"
       >
         <div
           data-testid={`${session?.user?.app_role}`}
@@ -21,7 +21,7 @@ export default function Profile() {
           {userFullName}
         </div>
       </Link>
-      <Link href="#" sx={{ color: "white", marginLeft: "8px" }}>
+      <Link href="#" className="text-white ml-2">
         <Button
           aria-label="Log out"
           color="inherit"

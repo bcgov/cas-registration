@@ -182,7 +182,7 @@ const NewOperationRepresentativeForm: FC<
               Save Operation Representative
             </Button>
           )}
-          <div className="min-h-[48px] box-border">{renderedErrors}</div>
+          <div className="min-h-12 box-border">{renderedErrors}</div>
         </div>
       </FormBase>
       <SnackBar

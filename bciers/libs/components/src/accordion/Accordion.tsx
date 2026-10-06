@@ -5,7 +5,6 @@ import MuiAccordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles/colors";
 
 interface Props {
   children: React.ReactNode;
@@ -41,39 +40,17 @@ const Accordion = ({
   return (
     <MuiAccordion
       disableGutters
-      sx={{
-        // This removes a small shadow that appears when the accordions are stacked
-        position: "initial",
-      }}
+      className="static"
       expanded={isExpanded}
       onChange={() => setIsExpanded(!isExpanded)}
     >
       <AccordionSummary
-        expandIcon={
-          <ArrowDropDownIcon
-            sx={{
-              color: "white",
-              // expandIcon size is changed using fontSize
-              fontSize: "48px",
-            }}
-          />
-        }
-        sx={{
-          backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
-          color: "white",
-          fontSize: "24px",
-          fontWeight: "bold",
-        }}
+        expandIcon={<ArrowDropDownIcon className="text-white text-[48px]" />}
+        className="bg-bc-bg-blue text-white text-[24px] font-bold"
       >
         {title}
       </AccordionSummary>
-      <AccordionDetails
-        sx={{
-          paddingY: "16px",
-        }}
-      >
-        {children}
-      </AccordionDetails>
+      <AccordionDetails className="py-4">{children}</AccordionDetails>
     </MuiAccordion>
   );
 };

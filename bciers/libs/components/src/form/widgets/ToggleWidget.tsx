@@ -173,22 +173,16 @@ const ToggleWidget: React.FC<
     <SwitchContainer style={{ width: totalWidth }}>
       {/* left label (trueLabel) */}
       <SwitchLabel
-        style={{
-          left: 8,
-          opacity: value ? 1 : 0, // hide when OFF
-          transition: "opacity 200ms",
-        }}
+        // hide when OFF
+        className={`left-2 transition-opacity duration-200 ease-[ease] ${value ? "opacity-100" : "opacity-0"}`}
       >
         {trueLabel}
       </SwitchLabel>
 
       {/* right label (falseLabel) */}
       <SwitchLabel
-        style={{
-          right: 8,
-          opacity: value ? 0 : 1, // hide when ON
-          transition: "opacity 200ms",
-        }}
+        // hide when ON
+        className={`right-2 transition-opacity duration-200 ease-[ease] ${value ? "opacity-0" : "opacity-100"}`}
       >
         {falseLabel}
       </SwitchLabel>

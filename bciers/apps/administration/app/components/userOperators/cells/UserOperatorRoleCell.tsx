@@ -17,7 +17,7 @@ export default function UserOperatorRoleCell(params: GridRenderCellParams) {
   const roleColor = colorMap.get(params.value) || "primary";
 
   return (
-    <span style={{ color: roleColor, textTransform: "capitalize" }}>
+    <span className="capitalize" style={{ color: roleColor }}>
       {role}
     </span>
   );

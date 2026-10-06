@@ -77,7 +77,7 @@ export const createPenaltyCalculatorUiSchema = (): UiSchema => ({
   final_day_of_penalty_accrual: {
     "ui:widget": "DateWidget",
     "ui:FieldTemplate": FieldTemplate,
-    "ui:classNames": "text-bc-bg-blue [&>div]:max-w-[200px]",
+    "ui:classNames": "text-bc-bg-blue [&>div]:max-w-50",
     "ui:options": {
       ...numberedSectionOptions,
       simpleDateFormat: true,

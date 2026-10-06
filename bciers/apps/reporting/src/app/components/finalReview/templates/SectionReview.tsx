@@ -61,14 +61,7 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
                 onClick={() => setIsExpanded((prev) => !prev)}
                 aria-expanded={isExpanded}
                 aria-label={isExpanded ? "Collapse section" : "Expand section"}
-                className="ml-2 text-bc-bg-blue"
-                style={{
-                  cursor: "pointer",
-                  border: "none",
-                  background: "none",
-                  fontSize: "1.25rem",
-                  lineHeight: 1,
-                }}
+                className="ml-2 text-bc-bg-blue cursor-pointer border-none bg-transparent text-xl/none"
                 type="button"
               >
                 {isExpanded ? "▼" : "►"}

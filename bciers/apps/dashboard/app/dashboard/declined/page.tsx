@@ -9,7 +9,7 @@ export default function Page() {
       <span>
         <AlertIcon />
       </span>
-      <div style={{ fontSize: "16px" }}>
+      <div className="text-base leading-8">
         <p>Your access request was declined.</p>
         <p>
           If you believe this is an error and you should be granted access,

@@ -18,11 +18,11 @@ const AdditionalReportingData: React.FC<{ changes: ChangeItem[] }> = ({
 }) => {
   if (!changes.length) return null;
   return (
-    <Box mb={4}>
+    <Box className="mb-8">
       <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-0">
         Additional Reporting Data
       </Typography>
-      <Divider sx={{ mb: 2 }} />
+      <Divider className="mb-4" />
       {changes.map((item, idx) => {
         const key = item.field.match(/\['([^']+)'\]$/)?.[1] ?? "unknown";
         const label = FIELD_LABELS[key];

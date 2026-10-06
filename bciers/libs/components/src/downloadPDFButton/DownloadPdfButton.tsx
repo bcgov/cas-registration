@@ -24,19 +24,11 @@ const DownloadPdfButton: React.FC<Props> = ({
         variant="outlined"
         startIcon={<PrintIcon />}
         onClick={handlePrint}
-        // hide the button itself when printing
-        sx={{ "@media print": { display: "none" } }}
+        // hide the button itself when printing className="print:hidden"
       >
         {label}
       </Button>
-      <Typography
-        variant="body2"
-        sx={{
-          mt: 2,
-          mb: 2,
-          "@media print": { display: "none" },
-        }}
-      >
+      <Typography variant="body2" className="mt-4 mb-4 print:hidden">
         {description ||
           "Or use your browser’s print function (Control/Command + P) to save this report as PDF."}
       </Typography>

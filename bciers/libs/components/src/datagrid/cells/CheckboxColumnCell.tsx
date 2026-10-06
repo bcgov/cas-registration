@@ -28,9 +28,7 @@ const getCheckboxColumnCell = (
     };
 
     return (
-      <FormControl
-        sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
-      >
+      <FormControl className="flex flex-row items-center">
         <Checkbox
           checked={Boolean(params.row.is_completed)}
           onChange={handleCheckboxChange}
