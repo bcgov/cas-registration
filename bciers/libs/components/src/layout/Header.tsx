@@ -26,7 +26,7 @@ export default function Header() {
                 preload
               />
             </Link>
-            <h1 className="text-white font-bold cursor-default ml-6 grow text-xs p-1 sm:text-xl md:text-[28px] md:p-0">
+            <h1 className="text-white font-bold cursor-default ml-6 grow text-xs p-1 sm:text-xl md:text-[28px] md:leading-7 md:p-0">
               B.C. Industrial Emissions Reporting System
             </h1>
             <div className="hidden md:flex">
