@@ -15,10 +15,9 @@ const BiogenicEmissionsSplitFieldTemplate = ({
 }: FieldTemplateProps) => {
   return (
     <div
-      className={`min-w-full rounded-md p-2 ${classNames}`}
+      className={`min-w-full rounded-md p-2 pl-4 ${classNames}`}
       style={{
         backgroundColor: "#f2f2f2",
-        paddingLeft: "1rem",
         marginTop: "1rem",
         marginBottom: "1rem",
       }}

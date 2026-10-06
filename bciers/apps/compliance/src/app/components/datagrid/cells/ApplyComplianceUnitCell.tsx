@@ -52,7 +52,7 @@ export const ApplyComplianceUnitCell = (
               value={quantity_to_be_applied ?? 0}
               onChange={handleChange}
               aria-label={props.field}
-              className="w-full p-[14px] border-solid rounded-md border-bc-bg-dark-grey hover:border-bc-bg-blue focus:border-bc-bg-blue outline-none"
+              className="w-full p-[14px] border-solid rounded-md border-bc-bg-dark-grey hover:border-bc-bg-blue focus:border-bc-bg-blue outline-hidden"
               style={{
                 font: "inherit",
               }}

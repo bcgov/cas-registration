@@ -15,7 +15,7 @@ const AttachmentDownloadCell = (params: GridRenderCellParams) => {
       variant="outlined"
       endIcon={<CloudDownload />}
       onClick={handleDownload}
-      className="h-10 w-full max-w-full rounded border border-bc-link-blue"
+      className="h-10 w-full max-w-full rounded-sm border border-bc-link-blue"
       title={params.row.attachment_name}
     >
       <span className="min-w-0 flex-1 truncate text-left">

@@ -185,7 +185,7 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
       {/* Error Display */}
       {errors.length > 0 && (
         <div
-          className="mt-4 p-3 border border-red-500 rounded bg-red-50 text-red-700"
+          className="mt-4 p-3 border border-red-500 rounded-sm bg-red-50 text-red-700"
           role="alert"
         >
           {errors.map((error, idx) => (

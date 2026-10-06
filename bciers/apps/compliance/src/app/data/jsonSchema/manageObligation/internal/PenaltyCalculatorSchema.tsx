@@ -54,10 +54,10 @@ export const penaltyCalculatorSchema: RJSFSchema = {
   },
 };
 
-// !block overrides FieldTemplate's inline-block label, which otherwise leaves MUI's
+// block! overrides FieldTemplate's inline-block label, which otherwise leaves MUI's
 // inline-flex picker sitting beside its header rather than below it
 const numberedSectionOptions = {
-  labelOverrideStyle: "!block mb-4 font-normal text-bc-bg-blue",
+  labelOverrideStyle: "block! mb-4 font-normal text-bc-bg-blue",
 };
 
 // A factory, so minDate resolves when the page renders rather than at module load
@@ -92,7 +92,7 @@ export const createPenaltyCalculatorUiSchema = (): UiSchema => ({
       label: false,
       inline: true,
     },
-    "ui:classNames": "!block [&>div]:!w-full [&>div]:!max-w-none",
+    "ui:classNames": "block! [&>div]:w-full! [&>div]:max-w-none!",
   },
   accrual_data: {
     "ui:field": PenaltyAccrualDataGrid,
