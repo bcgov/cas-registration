@@ -51,7 +51,6 @@ const ReasonForChangeForm: React.FC<ReasonForChangeProps> = ({
               onReasonChange((e.target as HTMLTextAreaElement).value)
             }
             minRows={4}
-            className="w-2/3"
             style={styles}
           />
         </div>

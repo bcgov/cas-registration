@@ -1,9 +1,41 @@
-/* includes the tailwind classes. */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/*
+ * Tailwind CSS v4 entry point, shared by every BCIERS app.
+ *
+ * - Preflight (Tailwind's base reset) is intentionally not imported; MUI's CssBaseline handles resets.
+ * - Utilities are marked `important` so they win over MUI's Emotion styles, which are injected outside of any
+ *   cascade layer (unlayered styles always beat layered ones). This replaces v3's `important: "#__next"`.
+ * See: https://tailwindcss.com/docs/preflight#disabling-preflight
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) important source(none);
 
-@layer components {
+/* Files scanned for class names */
+@source "../../../apps";
+@source "../../../libs";
+@source not "../../../apps/*-e2e";
+
+/* Keep in sync with libs/styles/src/colors.js, which is used by the MUI theme */
+@theme {
+  --color-bc-text: #313132;
+  --color-bc-primary-blue: #003366;
+  --color-bc-bg-blue: #38598a;
+  --color-bc-link-blue: #1a5a96;
+  --color-bc-yellow: #fcba19;
+  --color-bc-light-yellow: #f8f1cb;
+  --color-bc-bg-dark-grey: #e5e5e5;
+  --color-bc-bg-light-grey: #fafafc;
+  --color-bc-light-grey-200: #f5f5f5;
+  --color-bc-light-grey-300: #f0f0f0;
+  --color-bc-bg-grey: #f2f2f2;
+  --color-bc-component-grey: #606060;
+  --color-bc-success-green: #2e8540;
+  --color-bc-error-red: #d8292f;
+  --color-bc-light-blue: #dce9f6;
+  --color-bc-white: #ffffff;
+}
+
+@layer base {
   html,
   body {
     @apply text-bc-text;
@@ -11,56 +43,66 @@
   a {
     @apply text-bc-link-blue underline;
   }
-  .max-w-page {
-    @apply max-w-[1440px];
-  }
-  .padding-page {
-    @apply p-4 sm:px-6;
-  }
-  .button-link {
-    /* Style a button as a link */
-    @apply p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline text-bc-link-blue;
-  }
-  .link-button-blue {
-    /* Style a link as a button */
-    @apply w-fit no-underline text-lg text-white py-[6px] px-[16px] rounded flex items-center bg-bc-bg-blue;
-  }
-  .form-heading {
-    @apply text-2xl py-2 w-full font-bold border-solid text-bc-bg-blue border-bc-bg-blue border-l-0 border-r-0 mb-4;
-  }
-  .form-heading-label {
-    /* Selecting label child element so we can pass it in using ui:classNames in the form schema */
-    @apply [&>label]:text-2xl [&>label]:py-2 [&>label]:w-full [&>label]:font-bold [&>label]:border-solid [&>label]:text-bc-bg-blue [&>label]:border-bc-bg-blue [&>label]:border-l-0 [&>label]:border-r-0 [&>label]:mb-4 [&>label]:border-2;
-  }
-  .dashboard-tile-container {
-    @apply flex flex-col justify-between border border-bc-component-grey border-solid rounded-md min-w-full min-h-full sm:min-w-[400px] sm:max-w-[400px] p-6 hover:box-shadow-tile hover:transition-shadow;
-  }
-  .box-shadow-tile {
-    @apply shadow-[1px_11px_15px_0px_#00000040];
-  }
-  .read-only-widget {
-    @apply w-full px-[14px] py-4 flex items-center min-h-[56px] box-border;
-  }
-  .emission-array-header {
-    @apply text-base py-2 w-full font-bold text-bc-bg-blue;
-  }
-  .action-cell-text {
-    @apply no-underline text-bc-link-blue whitespace-normal;
-  }
-  /* Use the following classes to style links as buttons */
-  .link-button-base {
-    @apply w-fit no-underline text-lg py-[5px] px-[15px] rounded flex items-center text-base leading-7;
-  }
-  .link-button-blue {
-    @apply link-button-base text-white bg-bc-bg-blue hover:bg-bc-primary-blue;
-  }
-  .link-button-outlined {
-    @apply link-button-base text-bc-primary-blue border border-solid border-bc-bg-blue hover:bg-bc-bg-blue hover:bg-gray-100;
-  }
-  .section-heading-label {
-    /* Selecting label child element so we can pass it in using ui:classNames in the form schema */
-    @apply [&>label]:py-2 [&>label]:w-full [&>label]:font-bold [&>label]:text-bc-bg-blue [&>label]:mb-4;
-  }
+}
+
+@utility max-w-page {
+  @apply max-w-[1440px];
+}
+
+@utility padding-page {
+  @apply p-4 sm:px-6;
+}
+
+@utility button-link {
+  /* Style a button as a link */
+  @apply p-0 decoration-solid border-0 text-lg bg-transparent cursor-pointer underline text-bc-link-blue;
+}
+
+@utility form-heading {
+  @apply text-2xl py-2 w-full font-bold border-solid text-bc-bg-blue border-bc-bg-blue border-l-0 border-r-0 mb-4;
+}
+
+@utility form-heading-label {
+  /* Selecting label child element so we can pass it in using ui:classNames in the form schema */
+  @apply [&>label]:text-2xl [&>label]:py-2 [&>label]:w-full [&>label]:font-bold [&>label]:border-solid [&>label]:text-bc-bg-blue [&>label]:border-bc-bg-blue [&>label]:border-l-0 [&>label]:border-r-0 [&>label]:mb-4 [&>label]:border-2;
+}
+
+@utility dashboard-tile-container {
+  @apply flex flex-col justify-between border border-bc-component-grey border-solid rounded-md min-w-full min-h-full sm:min-w-[400px] sm:max-w-[400px] p-6 hover:box-shadow-tile hover:transition-shadow;
+}
+
+@utility box-shadow-tile {
+  @apply shadow-[1px_11px_15px_0px_#00000040];
+}
+
+@utility read-only-widget {
+  @apply w-full px-[14px] py-4 flex items-center min-h-[56px] box-border;
+}
+
+@utility emission-array-header {
+  @apply text-base py-2 w-full font-bold text-bc-bg-blue;
+}
+
+@utility action-cell-text {
+  @apply no-underline text-bc-link-blue whitespace-normal;
+}
+
+/* Use the following classes to style links as buttons */
+@utility link-button-base {
+  @apply w-fit no-underline py-[5px] px-[15px] rounded-sm flex items-center text-base leading-7;
+}
+
+@utility link-button-blue {
+  @apply link-button-base text-white bg-bc-bg-blue hover:bg-bc-primary-blue;
+}
+
+@utility link-button-outlined {
+  @apply link-button-base text-bc-primary-blue border border-solid border-bc-bg-blue hover:bg-gray-100;
+}
+
+@utility section-heading-label {
+  /* Selecting label child element so we can pass it in using ui:classNames in the form schema */
+  @apply [&>label]:py-2 [&>label]:w-full [&>label]:font-bold [&>label]:text-bc-bg-blue [&>label]:mb-4;
 }
 
 /* CSS resets */

@@ -4,7 +4,7 @@ type MainProps = {
 
 const Main = ({ children }: MainProps) => {
   return (
-    <main className="w-full flex flex-col flex-grow max-w-page mx-auto padding-page">
+    <main className="w-full flex flex-col grow max-w-page mx-auto padding-page">
       {children}
     </main>
   );

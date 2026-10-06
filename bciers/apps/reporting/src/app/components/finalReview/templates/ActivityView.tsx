@@ -37,7 +37,10 @@ export default function ActivityView({
     <div>
       {activitiesArray.map((activityItem, activityIndex) => (
         <section key={activityIndex} style={{ marginBottom: 30 }}>
-          <h2 className="py-2 font-bold text-bc-bg-blue" style={deletedStyles}>
+          <h2
+            className={`py-2 font-bold ${activityIsDeleted ? "" : "text-bc-bg-blue"}`}
+            style={deletedStyles}
+          >
             {activityItem.activity}
             {activityIsAdded && <StatusLabel type="added" />}
             {activityIsDeleted && <StatusLabel type="removed" />}

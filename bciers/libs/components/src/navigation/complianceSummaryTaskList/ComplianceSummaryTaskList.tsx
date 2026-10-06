@@ -11,7 +11,7 @@ interface Props {
 const ComplianceSummaryTaskList: React.FC<Props> = ({ elements }) => {
   return (
     <nav
-      className={`w-fit mr-4 h-fit border-solid border-0 border-r-2 border-bc-light-grey-300`}
+      className={`mr-4 h-fit border-solid border-0 border-r-2 border-bc-light-grey-300`}
       style={{ width: "320px" }}
     >
       <List component="div" disablePadding>

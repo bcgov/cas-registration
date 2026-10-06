@@ -108,7 +108,7 @@ export const renderHeading = (
   deletedStyles: React.CSSProperties,
 ) => (
   <strong
-    className="text-bc-bg-blue relative flex items-center"
+    className={`${deletedStyles.color ? "" : "text-bc-bg-blue"} relative flex items-center`}
     style={deletedStyles}
   >
     {title}
