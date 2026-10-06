@@ -8,6 +8,7 @@ export enum ComplianceOperations {
   NO_OBLIGATION = "Compliance SFO - No obligation or earned credits",
   EARNED_CREDITS = "Compliance SFO - Earned credits",
   OBLIGATION_NOT_MET = "Compliance SFO - Obligation not met",
+  BANANA_LFO_REGISTERED = "Banana LFO - Registered",
 }
 
 export enum ComplianceDisplayStatus {
@@ -30,11 +31,23 @@ export enum ComplianceTaskTitles {
   REQUEST_ISSUANCE = "Request Issuance of Earned Credits",
   REVIEW_REQUEST_ISSUANCE = "Review Credits Issuance Request",
   REVIEW_BY_DIRECTOR = "Review by Director",
+  PENALTY_CALCULATOR = "Penalty calculator",
 }
 
 // Grid Columns
 export enum ComplianceSummariesGridHeaders {
   DISPLAY_STATUS = "display_status",
+  PENALTY_STATUS = "penalty_status",
+}
+
+/**
+ * Mirrors backend PenaltyStatus(models.TextChoices)
+ */
+export enum PenaltyStatus {
+  NONE = "NONE",
+  ACCRUING = "ACCRUING",
+  PAID = "PAID",
+  NOT_PAID = "NOT PAID",
 }
 
 // Grid Action Text
