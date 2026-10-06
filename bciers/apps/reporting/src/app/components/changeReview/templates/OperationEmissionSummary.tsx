@@ -90,7 +90,7 @@ const OperationEmissionSummary: React.FC<OperationEmissionSummaryProps> = ({
 
   return (
     <Box mb={4}>
-      <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue">
+      <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-0">
         Operation Emission Summary (In tCO₂e)
       </Typography>
       <Divider sx={{ mb: 2 }} />

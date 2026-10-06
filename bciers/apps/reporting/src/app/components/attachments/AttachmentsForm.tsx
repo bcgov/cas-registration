@@ -266,7 +266,7 @@ const AttachmentsForm: React.FC<Props> = ({
         </li>
       </ul>{" "}
       {isSupplementaryReport && (
-        <div className="mt-4 border-t pt-4">
+        <div className="mt-4 pt-4">
           <p>
             Before clicking &apos;Save & Continue&apos;, please confirm that you
             understand and agree with the following statements:

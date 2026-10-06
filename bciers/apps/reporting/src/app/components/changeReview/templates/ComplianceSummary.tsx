@@ -69,7 +69,7 @@ const ComplianceSummary: React.FC<{ changes: ChangeItem[] }> = ({
 
   return (
     <Box mb={4}>
-      <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue">
+      <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-0">
         Compliance Summary
       </Typography>
       <Divider sx={{ mb: 2 }} />

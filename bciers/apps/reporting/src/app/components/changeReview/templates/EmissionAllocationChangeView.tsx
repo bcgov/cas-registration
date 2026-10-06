@@ -377,7 +377,7 @@ export const EmissionAllocationChangeView: React.FC<
     <Box>
       {categorizedChanges.length > 0 && (
         <Box mb={4}>
-          <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue">
+          <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-0">
             Allocation of Emissions
           </Typography>
           {generalFields.map((change) => (
