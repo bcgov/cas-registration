@@ -220,8 +220,7 @@ const FileWidget: React.FC<WidgetProps> = (props) => {
         <button
           type="button"
           onClick={handleClick}
-          className={`p-0 decoration-solid border-0 text-base md:text-lg bg-transparent cursor-pointer underline shrink-0 ${disabledColour}`}
-          style={{ whiteSpace: "nowrap" }}
+          className={`p-0 decoration-solid border-0 text-base md:text-lg bg-transparent cursor-pointer underline shrink-0 whitespace-nowrap ${disabledColour}`}
         >
           {value ? reuploadLabel : uploadLabel}
         </button>
@@ -233,7 +232,6 @@ const FileWidget: React.FC<WidgetProps> = (props) => {
         ref={hiddenFileInput}
         data-testid={id}
         onChange={handleChange}
-        style={{ display: "none" }}
         type="file"
         required={required}
         className="hidden"

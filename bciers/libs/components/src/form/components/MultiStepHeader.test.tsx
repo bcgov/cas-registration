@@ -39,7 +39,7 @@ describe("The MultiStepHeader component", () => {
     render(<MultiStepHeader {...defaultProps} />);
     expect(screen.getByText(/2/i)).toHaveClass("bg-bc-bg-blue");
     expect(screen.getByText(/3/i)).toHaveClass("bg-bc-bg-blue");
-    expect(screen.getByText(/1/i)).toHaveClass("text-bg-bc-bg-blue");
+    expect(screen.getByText(/1/i)).toHaveClass("text-bc-text");
     expect(screen.getByText(/2/i)).toHaveClass("text-white");
     expect(screen.getByText(/3/i)).toHaveClass("text-white");
   });

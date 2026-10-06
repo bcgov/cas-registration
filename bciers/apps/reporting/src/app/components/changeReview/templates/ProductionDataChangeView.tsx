@@ -240,7 +240,7 @@ export const ProductionDataChangeView: React.FC<
 
   if (processedProducts.length === 0) {
     return (
-      <Box mb={4}>
+      <Box className="mb-8">
         <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-4">
           Production Data
         </Typography>
@@ -250,7 +250,7 @@ export const ProductionDataChangeView: React.FC<
   }
 
   return (
-    <Box mb={4}>
+    <Box className="mb-8">
       <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-4">
         Production Data
       </Typography>
@@ -260,7 +260,7 @@ export const ProductionDataChangeView: React.FC<
           {(product.changeType === "added" ||
             product.changeType === "removed") &&
           product.productData ? (
-            <Box mb={3}>
+            <Box className="mb-6">
               <SectionReview
                 data={product.productData}
                 fields={productionDataFields(product.productData).map(
@@ -269,7 +269,7 @@ export const ProductionDataChangeView: React.FC<
                       ? {
                           ...field,
                           heading: (
-                            <Box display="flex" alignItems="center" gap={1}>
+                            <Box className="flex items-center gap-2">
                               <span>{field.heading}</span>
                               <StatusLabel type={product.changeType} />
                             </Box>
@@ -284,13 +284,13 @@ export const ProductionDataChangeView: React.FC<
           ) : (
             /* For modified products or individual field changes, display as before */
             <>
-              <Box mb={2}>
+              <Box className="mb-4">
                 <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-2">
                   {product.productName}
                 </Typography>
                 {(product.changeType === "added" ||
                   product.changeType === "removed") && (
-                  <Box mb={2}>
+                  <Box className="mb-4">
                     <StatusLabel type={product.changeType} />
                   </Box>
                 )}
@@ -307,7 +307,7 @@ export const ProductionDataChangeView: React.FC<
 
           {/* Add separator between products except for the last one */}
           {productIndex < processedProducts.length - 1 && (
-            <Divider sx={{ my: 3 }} />
+            <Divider className="my-6" />
           )}
         </React.Fragment>
       ))}

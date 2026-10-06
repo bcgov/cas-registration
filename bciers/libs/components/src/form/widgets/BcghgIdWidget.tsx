@@ -129,11 +129,11 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
       </div>
     </div>
   ) : (
-    <div data-testid="edit-bcghg-id-text" style={{ marginLeft: "8px" }}>
+    <div data-testid="edit-bcghg-id-text" className="ml-2">
       or click {""}
       <Link
         href="#"
-        style={{ cursor: "pointer" }}
+        className="cursor-pointer"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -151,7 +151,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
     <div className="flex flex-col w-full">
       <div className="flex items-center w-full">
         {formContext?.isCasDirector && !bcghgId && !formContext?.isSfo ? (
-          <div style={{ paddingLeft: "14px" }}>
+          <div className="pl-3.5">
             <Button
               variant="outlined"
               disabled={editBcghgId}
@@ -169,7 +169,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
           <Button
             variant="outlined"
             disabled={editBcghgId}
-            sx={{ ml: "14px" }}
+            className="ml-3.5"
             onClick={() => handleClearBcghgId()}
           >
             Clear BCGHG ID

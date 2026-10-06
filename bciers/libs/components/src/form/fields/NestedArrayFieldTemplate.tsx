@@ -6,7 +6,6 @@ import {
 import Button from "@mui/material/Button";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import AddIcon from "@mui/icons-material/Add";
-import { BC_GOV_BACKGROUND_COLOR_GREY } from "@bciers/styles";
 
 function BasicFieldTemplate({ children }: FieldTemplateProps) {
   return <>{children}</>;
@@ -24,24 +23,13 @@ export function NestedArrayFieldItemTemplate(
   const verticalBorder = parentUiSchema?.["ui:options"]?.verticalBorder;
   return (
     <div className="rjsf-array-item">
-      <div
-        style={{
-          display: "block",
-          marginTop: "1rem",
-          marginBottom: "1rem",
-        }}
-      />
-      <div
-        style={{
-          marginLeft: verticalBorder ? "1rem" : "0",
-        }}
-      >
+      <div className="block my-4" />
+      <div className={verticalBorder ? "ml-4" : "ml-0"}>
         <div
-          style={{
-            borderLeft: verticalBorder ? "6px solid #003366" : "none",
-            backgroundColor: bgColor,
-          }}
-          className={`min-w-full rounded-md ${padding} pl-4`}
+          style={{ backgroundColor: bgColor }}
+          className={`min-w-full rounded-md ${padding} pl-4 ${
+            verticalBorder ? "border-l-6 border-bc-primary-blue" : ""
+          }`}
         >
           {customTitleName && (
             <span className="emission-array-header">
@@ -72,11 +60,7 @@ export function NestedArrayFieldItemTemplate(
             },
           }}
         </div>
-        {showSeparator && (
-          <hr
-            style={{ color: BC_GOV_BACKGROUND_COLOR_GREY, margin: "1px 0" }}
-          />
-        )}
+        {showSeparator && <hr className="text-bc-bg-grey my-px mx-0" />}
       </div>
     </div>
   );
@@ -93,9 +77,8 @@ export function NestedArrayFieldTemplate(props: ArrayFieldTemplateProps) {
         <Button
           disabled={disabled}
           variant="outlined"
-          className="w-fit my-8 normal-case"
+          className="w-fit my-8 normal-case px-2 py-0"
           onClick={onAddClick}
-          sx={{ p: 1, pt: 0, pb: 0 }}
         >
           <AddIcon />
           &nbsp;{arrayAddLabel}

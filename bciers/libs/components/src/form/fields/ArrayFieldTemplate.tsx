@@ -117,15 +117,14 @@ export function ArrayFieldTemplate(props: ArrayFieldTemplateProps) {
         <Button
           disabled={disabled}
           variant="outlined"
-          className="w-fit my-8 normal-case"
+          className="w-fit my-8 normal-case px-2 py-0"
           onClick={onAddClick}
-          sx={{ p: 1, pt: 0, pb: 0 }}
         >
           {arrayAddLabel}
         </Button>
       )}
       {note && (
-        <div className="w-full px-[14px] py-4 items-center">
+        <div className="w-full px-3.5 py-4 items-center">
           <b>Note:</b> {note}
         </div>
       )}

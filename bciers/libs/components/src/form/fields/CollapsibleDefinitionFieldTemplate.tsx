@@ -27,9 +27,9 @@ function CollapsibleDefinitionFieldTemplate({
   const hasErrors = (errors?.props as any)?.errors;
 
   return (
-    <Paper className={classNames} sx={{ marginBottom: "1rem" }}>
-      <Card style={{ textAlign: "left" }}>
-        <Grid container spacing={1} sx={{ justifyContent: "space-between" }}>
+    <Paper className={`mb-4 ${classNames}`}>
+      <Card className="text-left">
+        <Grid container spacing={1} className="justify-between">
           <Grid item xs={"auto"}>
             <CardHeader
               title={label}
@@ -38,12 +38,12 @@ function CollapsibleDefinitionFieldTemplate({
                   ? { variant: "h6", color: "#DC2626" }
                   : { variant: "h6", color: "#38598A" }
               }
-              sx={{ color: "blue" }}
+              className="text-[blue]"
             />
           </Grid>
           {!readonly && (
             <Grid item xs={1}>
-              <CardActions sx={{ justifyContent: "flex-end" }}>
+              <CardActions className="justify-end">
                 <IconButton onClick={() => setExpandCollapse(!expandCollapse)}>
                   {!expandCollapse ? <ExpandMoreIcon /> : <ExpandLessIcon />}
                 </IconButton>

@@ -40,14 +40,7 @@ export default function ErrorBoundary({ error }: Props) {
   return (
     <div className="flex flex-col items-center text-bc-gov-links-color">
       <h2>Something went wrong...</h2>
-      <Alert
-        severity="error"
-        sx={{
-          width: "100%",
-          maxWidth: "600px",
-          marginBottom: "1rem",
-        }}
-      >
+      <Alert severity="error" className="w-full max-w-150 mb-4">
         <AlertTitle>
           <strong>Error</strong>
         </AlertTitle>

@@ -12,7 +12,7 @@ import {
   isDisplayableSourceType,
   getDisplayName,
 } from "@reporting/src/app/components/changeReview/utils/activityViewHelpers";
-import { dataCardStyle } from "@reporting/src/app/components/changeReview/constants/styles";
+import { dataCardClasses } from "@reporting/src/app/components/changeReview/constants/styles";
 import { ActivitiesViewProps } from "@reporting/src/app/components/finalReview/reportTypes";
 
 export default function ActivityView({
@@ -36,7 +36,7 @@ export default function ActivityView({
   return (
     <div>
       {activitiesArray.map((activityItem, activityIndex) => (
-        <section key={activityIndex} style={{ marginBottom: 30 }}>
+        <section key={activityIndex} className="mb-7.5">
           <h2
             className={`py-2 font-bold ${activityIsDeleted ? "line-through text-[#666]" : "text-bc-bg-blue"}`}
           >
@@ -86,7 +86,7 @@ export default function ActivityView({
                   key={sourceTypeIndex}
                   classNames="source-type-box"
                   label={displayName}
-                  description={<div style={dataCardStyle}>{content}</div>}
+                  description={<div className={dataCardClasses}>{content}</div>}
                   readonly={false}
                   isDeleted={stIsDeleted}
                   sourceTypeChange={stChange}

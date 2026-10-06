@@ -1,6 +1,5 @@
 import { TaskListItemProps } from "../types";
 import { ListItem, ListItemButton, Typography } from "@mui/material";
-import { BC_GOV_PRIMARY_BRAND_COLOR_BLUE } from "@bciers/styles";
 import BackIcon from "@bciers/components/icons/BackIcon";
 
 const LinkTaskListItem: React.FC<TaskListItemProps> = ({ item }) => {
@@ -9,24 +8,15 @@ const LinkTaskListItem: React.FC<TaskListItemProps> = ({ item }) => {
   }
 
   return (
-    <ListItem sx={{ pl: 5, pb: 2 }}>
+    <ListItem className="pl-10 pb-4">
       <ListItemButton
         component="a"
         href={item.link}
         rel="noopener noreferrer"
-        sx={{
-          "& svg": {
-            flexShrink: 0, // Prevent the icon from shrinking when the text is long
-          },
-        }}
+        className="[&_svg]:shrink-0"
       >
         <BackIcon />
-        <Typography
-          sx={{
-            color: BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-            textDecoration: "underline",
-          }}
-        >
+        <Typography className="text-bc-primary-blue underline">
           {item.text}
         </Typography>
       </ListItemButton>

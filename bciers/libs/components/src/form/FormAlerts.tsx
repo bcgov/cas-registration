@@ -18,7 +18,7 @@ const FormAlerts: React.FC<FormAlertsProps> = ({ errors }) => {
   }
 
   return (
-    <div className="min-h-[48px] box-border mt-4">
+    <div className="min-h-12 box-border mt-4">
       {errors.map((error, index) => (
         <Alert
           key={index}

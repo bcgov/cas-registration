@@ -7,7 +7,7 @@ import {
   SegmentedChange,
   SourceTypeGroup,
 } from "../utils/activityViewHelpers";
-import { dataCardStyle } from "../constants/styles";
+import { dataCardClasses } from "../constants/styles";
 import { renderObject } from "../utils/activityRenderUtils";
 import { Box } from "@mui/material";
 
@@ -40,7 +40,7 @@ export const WholeSourceTypeDiffView: React.FC<
       }}
       isDeleted={change.change_type === "removed"}
       description={
-        <div style={dataCardStyle}>
+        <div className={dataCardClasses}>
           {renderObject(value, "", change.change_type === "removed")}
         </div>
       }
@@ -62,7 +62,9 @@ export const PartialSourceTypeDiffView: React.FC<
   return (
     <SourceTypeBoxTemplate
       {...props}
-      description={<Box ml={1}>{renderDiffTree(segmentedChanges)}</Box>}
+      description={
+        <Box className="ml-2">{renderDiffTree(segmentedChanges)}</Box>
+      }
     />
   );
 };

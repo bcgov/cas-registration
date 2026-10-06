@@ -1,4 +1,3 @@
-import { BC_GOV_LINKS_COLOR } from "@bciers/styles";
 import Button from "@mui/material/Button";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
@@ -13,12 +12,7 @@ const ViewReportCell = (params: GridRenderCellParams) => {
 
   return (
     <Button
-      sx={{
-        width: 180,
-        height: 40,
-        borderRadius: "5px",
-        border: `1px solid ${BC_GOV_LINKS_COLOR}`,
-      }}
+      className="w-45 h-10 rounded-[5px] border border-solid border-bc-link-blue"
       color="primary"
       onClick={handleClick}
     >

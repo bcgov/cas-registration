@@ -121,37 +121,16 @@ const Review = ({
 
   return (
     <Box
-      sx={{
-        // 🛠️ to prevent leaving extra space when there is no content
-        minHeight: "auto",
-        width: "100%",
-        marginBottom: isReviewButtons ? "16px" : "0",
-      }}
+      // 🛠️ min-h-auto to prevent leaving extra space when there is no content
+      className={`min-h-auto w-full ${isReviewButtons ? "mb-4" : "mb-0"}`}
     >
       <Modal
         title="Please confirm"
         open={Boolean(modalState)}
         onClose={handleCloseModal}
       >
-        <Box
-          sx={{
-            fontSize: "20px",
-            minWidth: "100%",
-            margin: "8px 0",
-          }}
-        >
-          {confirmMessage}
-        </Box>
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: "24px",
-          }}
-        >
+        <Box className="text-[20px] min-w-full my-2 mx-0">{confirmMessage}</Box>
+        <Box className="w-full flex flex-row justify-center items-center mt-6">
           <Button
             onClick={
               modalState === "approve"
@@ -161,10 +140,7 @@ const Review = ({
             color="primary"
             variant="contained"
             aria-label="Confirm"
-            sx={{
-              marginRight: "12px",
-              textTransform: "capitalize",
-            }}
+            className="mr-3 capitalize"
           >
             {modalState || "Approve"}
           </Button>
@@ -201,24 +177,13 @@ const Review = ({
             </span>
           )}
           {
-            <Box
-              sx={{
-                width: "fit-content",
-                minWidth: "fit-content",
-                height: "fit-content",
-              }}
-            >
+            <Box className="w-fit min-w-fit h-fit">
               <Button
                 onClick={handleApprove}
-                className="mr-2"
+                className="mr-2 border border-solid border-current font-bold"
                 color="success"
                 variant="outlined"
                 aria-label="Approve application"
-                sx={{
-                  marginRight: "12px",
-                  border: "1px solid",
-                  fontWeight: "bold",
-                }}
               >
                 Approve as Administrator <RecommendIcon />
               </Button>
@@ -227,10 +192,7 @@ const Review = ({
                 color="error"
                 variant="outlined"
                 aria-label="Reject application"
-                sx={{
-                  border: "1px solid",
-                  fontWeight: "bold",
-                }}
+                className="border border-solid border-current font-bold"
               >
                 Decline Access <DoNotDisturbIcon />
               </Button>

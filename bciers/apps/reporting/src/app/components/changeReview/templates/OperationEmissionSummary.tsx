@@ -89,11 +89,11 @@ const OperationEmissionSummary: React.FC<OperationEmissionSummaryProps> = ({
   });
 
   return (
-    <Box mb={4}>
+    <Box className="mb-8">
       <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-0">
         Operation Emission Summary (In tCO₂e)
       </Typography>
-      <Divider sx={{ mb: 2 }} />
+      <Divider className="mb-4" />
 
       {/* Main fields */}
       {groupedChanges.main.map((item, idx) => {
@@ -108,7 +108,7 @@ const OperationEmissionSummary: React.FC<OperationEmissionSummaryProps> = ({
 
       {/* Emission Categories */}
       {groupedChanges.emissionCategories.length > 0 && (
-        <Box mt={3} mb={2}>
+        <Box className="mt-6 mb-4">
           <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-4">
             Emission Categories
           </Typography>
@@ -126,7 +126,7 @@ const OperationEmissionSummary: React.FC<OperationEmissionSummaryProps> = ({
 
       {/* Emissions excluded by fuel type */}
       {groupedChanges.fuelExcluded.length > 0 && (
-        <Box mt={3} mb={2}>
+        <Box className="mt-6 mb-4">
           <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-4">
             Emissions excluded by fuel type
           </Typography>
@@ -144,7 +144,7 @@ const OperationEmissionSummary: React.FC<OperationEmissionSummaryProps> = ({
 
       {/* Other emissions excluded */}
       {groupedChanges.otherExcluded.length > 0 && (
-        <Box mt={3} mb={2}>
+        <Box className="mt-6 mb-4">
           <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-4">
             Other emissions excluded
           </Typography>

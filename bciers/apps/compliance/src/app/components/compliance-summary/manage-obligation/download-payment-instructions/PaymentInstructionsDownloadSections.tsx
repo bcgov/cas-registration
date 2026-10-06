@@ -77,10 +77,7 @@ export const PaymentRemarks = () => {
               className="inline-flex items-center"
             >
               penalties
-              <OpenInNewIcon
-                fontSize="inherit"
-                style={{ marginLeft: ".1rem" }}
-              />
+              <OpenInNewIcon fontSize="inherit" className="ml-[0.1rem]" />
             </a>
           </Tooltip>{" "}
           and/or{" "}
@@ -92,10 +89,7 @@ export const PaymentRemarks = () => {
               className="inline-flex items-center"
             >
               interests
-              <OpenInNewIcon
-                fontSize="inherit"
-                style={{ marginLeft: ".1rem" }}
-              />
+              <OpenInNewIcon fontSize="inherit" className="ml-[0.1rem]" />
             </a>
           </Tooltip>
         </li>

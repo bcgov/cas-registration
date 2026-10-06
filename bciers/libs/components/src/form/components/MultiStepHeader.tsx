@@ -13,7 +13,8 @@ const MultiStepHeader = ({ stepIndex, steps }: MultiStepHeaderProps) => {
         const isLastStep = index === steps.length - 1;
         const isActiveStep = index === stepIndex;
         const bgColor = isActiveStep ? "bg-bc-yellow" : "bg-bc-bg-blue";
-        const fontColor = isActiveStep ? "bg-bc-bg-blue" : "white";
+        // Full class names so Tailwind can detect them
+        const fontColor = isActiveStep ? "text-bc-text" : "text-white";
 
         return (
           <div
@@ -24,7 +25,7 @@ const MultiStepHeader = ({ stepIndex, steps }: MultiStepHeaderProps) => {
           >
             <div
               key={title}
-              className={`leading-12 text-center rounded-full min-w-12 min-h-12 w-12 h-12 text-${fontColor} font-bold ${bgColor}`}
+              className={`leading-12 text-center rounded-full min-w-12 min-h-12 w-12 h-12 ${fontColor} font-bold ${bgColor}`}
             >
               {index + 1}
             </div>

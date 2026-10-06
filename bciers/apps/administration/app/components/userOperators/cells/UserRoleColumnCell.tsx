@@ -24,11 +24,7 @@ const UserRoleColumnCell = (params: AccessRequestGridRenderCellParams) => {
     return <span className="capitalize">{userRole}</span>;
 
   return (
-    <FormControl
-      style={{
-        minWidth: 120,
-      }}
-    >
+    <FormControl className="min-w-30">
       <Select
         labelId={id}
         id={id}

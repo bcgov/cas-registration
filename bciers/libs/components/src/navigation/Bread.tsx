@@ -204,10 +204,7 @@ export default function Bread({
                   <li
                     key={crumb.link}
                     data-testid="breadcrumb-last-item"
-                    className={liStyle}
-                    style={{
-                      fontWeight: "bold",
-                    }}
+                    className={`${liStyle} font-bold`}
                   >
                     {crumb.content}
                   </li>

@@ -1,6 +1,5 @@
 import { Paper, Typography, Box } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
-import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
 
 interface ReportingYearHeaderProps {
   reportingYear: number;
@@ -41,16 +40,9 @@ export default function ReportingYearHeader({
         Reports due <b>May 31, {reportDueYear}</b>
       </p>
       {showInfoBox && (
-        <Paper
-          sx={{
-            p: 2,
-            mb: 3,
-            bgcolor: LIGHT_BLUE_BG_COLOR,
-            color: BC_GOV_TEXT,
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <InfoIcon sx={{ mr: 1 }} />
+        <Paper className="p-4 mb-6 bg-bc-light-blue text-bc-text">
+          <Box className="flex items-center">
+            <InfoIcon className="mr-2" />
             <Typography variant="body2">
               Ensure operation information is up to date before reporting.
             </Typography>

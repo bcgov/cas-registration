@@ -40,7 +40,7 @@ const TransferSuccess = ({
   return (
     <>
       <h2 className="text-bc-bg-blue">Transfer Entity</h2>
-      <section className="flex flex-col items-center justify-center max-w-[600px] mx-auto mt-4">
+      <section className="flex flex-col items-center justify-center max-w-150 mx-auto mt-4">
         <div className="flex flex-col items-center justify-center text-center">
           <Check />
           {entityTransferred ? (

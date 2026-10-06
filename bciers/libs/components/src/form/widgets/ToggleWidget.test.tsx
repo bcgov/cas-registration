@@ -129,11 +129,11 @@ describe("RJSF ToggleWidget", () => {
 
     // OFF by default
     expect(screen.getByText("Cat")).toBeVisible();
-    expect(screen.getByText("Dog")).toHaveStyle({ opacity: "0" });
+    expect(screen.getByText("Dog")).toHaveClass("opacity-0");
 
     checkbox.click();
 
-    expect(screen.getByText("Dog")).toBeVisible();
+    expect(await screen.findByText("Dog")).toHaveClass("opacity-100");
   });
 
   it("does not toggle when disabled", async () => {

@@ -1,10 +1,6 @@
 import React from "react";
 import { Typography } from "@mui/material";
-import {
-  BC_GOV_SEMANTICS_GREEN,
-  BC_GOV_SEMANTICS_RED,
-  WHITE,
-} from "@bciers/styles";
+import { BC_GOV_SEMANTICS_GREEN, BC_GOV_SEMANTICS_RED } from "@bciers/styles";
 
 interface StatusLabelProps {
   type: "added" | "deleted" | "modified" | "removed";
@@ -29,16 +25,8 @@ export const StatusLabel: React.FC<StatusLabelProps> = ({ type }) => {
   return (
     <Typography
       component="span"
-      sx={{
-        ml: 2,
-        px: 2,
-        py: 0.5,
-        borderRadius: 1,
-        fontSize: "0.875rem",
-        fontWeight: "bold",
-        color: WHITE,
-        bgcolor: getBgColor(),
-      }}
+      className="ml-4 px-4 py-1 rounded-sm text-[0.875rem] font-bold text-white"
+      sx={{ bgcolor: getBgColor() }}
     >
       ({label})
     </Typography>

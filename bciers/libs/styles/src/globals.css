@@ -32,7 +32,11 @@
   --color-bc-success-green: #2e8540;
   --color-bc-error-red: #d8292f;
   --color-bc-light-blue: #dce9f6;
+  --color-bc-light-red: #fbeaea;
+  --color-bc-light-red-border: #f1b5b8;
   --color-bc-white: #ffffff;
+
+  --font-inter: Inter, sans-serif;
 }
 
 @layer base {
@@ -46,7 +50,7 @@
 }
 
 @utility max-w-page {
-  @apply max-w-[1440px];
+  @apply max-w-360;
 }
 
 @utility padding-page {
@@ -68,7 +72,7 @@
 }
 
 @utility dashboard-tile-container {
-  @apply flex flex-col justify-between border border-bc-component-grey border-solid rounded-md min-w-full min-h-full sm:min-w-[400px] sm:max-w-[400px] p-6 hover:box-shadow-tile hover:transition-shadow;
+  @apply flex flex-col justify-between border border-bc-component-grey border-solid rounded-md min-w-full min-h-full sm:min-w-100 sm:max-w-100 p-6 hover:box-shadow-tile hover:transition-shadow;
 }
 
 @utility box-shadow-tile {
@@ -76,7 +80,7 @@
 }
 
 @utility read-only-widget {
-  @apply w-full px-[14px] py-4 flex items-center min-h-[56px] box-border;
+  @apply w-full px-3.5 py-4 flex items-center min-h-14 box-border;
 }
 
 @utility emission-array-header {
@@ -89,7 +93,7 @@
 
 /* Use the following classes to style links as buttons */
 @utility link-button-base {
-  @apply w-fit no-underline py-[5px] px-[15px] rounded-sm flex items-center text-base leading-7;
+  @apply w-fit no-underline py-1.25 px-3.75 rounded-sm flex items-center text-base leading-7;
 }
 
 @utility link-button-blue {

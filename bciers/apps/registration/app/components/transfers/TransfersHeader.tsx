@@ -21,7 +21,7 @@ export default async function TransfersHeader() {
           <div className="text-right mb-4">
             <Link href={"/transfers/transfer-entity"}>
               {/* textTransform to remove uppercase text */}
-              <Button variant="contained" sx={{ textTransform: "none" }}>
+              <Button variant="contained" className="normal-case">
                 Make a Transfer
               </Button>
             </Link>

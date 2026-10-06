@@ -101,17 +101,17 @@ const NewEntrantChanges: React.FC<NewEntrantChangesProps> = ({ changes }) => {
   const standaloneEmissions = emissions.filter((c) => !getProductName(c.field));
 
   return (
-    <Box mb={4}>
+    <Box className="mb-8">
       <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-0">
         Report New Entrant Information
       </Typography>
-      <Divider sx={{ mb: 2 }} />
+      <Divider className="mb-4" />
 
       {basicFields.map((item: any) => {
         const key = item.field.match(/\['([a-zA-Z0-9_]+)'\]$/)?.[1];
         const fmt = (v: any) => (v ? formatDate(v, "YYYY-MM-DD") : v);
         return (
-          <Box key={item.field} mb={1}>
+          <Box className="mb-2" key={item.field}>
             <ChangeItemDisplay
               item={{
                 ...item,
@@ -125,12 +125,12 @@ const NewEntrantChanges: React.FC<NewEntrantChangesProps> = ({ changes }) => {
       })}
 
       {Object.entries(products).map(([productName, data]) => (
-        <Box key={productName} mb={3}>
+        <Box className="mb-6" key={productName}>
           <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-2">
             Product: {productName}
           </Typography>
           {data.production && (
-            <Box mb={1}>
+            <Box className="mb-2">
               <ChangeItemDisplay
                 item={{
                   ...data.production,
@@ -140,7 +140,7 @@ const NewEntrantChanges: React.FC<NewEntrantChangesProps> = ({ changes }) => {
             </Box>
           )}
           {data.emissions.map((item) => (
-            <Box key={item.field} mb={1}>
+            <Box className="mb-2" key={item.field}>
               {renderEmission(item)}
             </Box>
           ))}
@@ -148,12 +148,12 @@ const NewEntrantChanges: React.FC<NewEntrantChangesProps> = ({ changes }) => {
       ))}
 
       {standaloneEmissions.length > 0 && (
-        <Box mb={3}>
+        <Box className="mb-6">
           <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-2">
             Emissions
           </Typography>
           {standaloneEmissions.map((item) => (
-            <Box key={item.field} mb={1}>
+            <Box className="mb-2" key={item.field}>
               {renderEmission(item)}
             </Box>
           ))}
