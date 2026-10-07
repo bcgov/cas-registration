@@ -103,13 +103,9 @@ export const renderField = (
 };
 
 /** Renders a blue "N+1" section heading. */
-export const renderHeading = (
-  title: string,
-  deletedStyles: React.CSSProperties,
-) => (
+export const renderHeading = (title: string, isDeleted: boolean) => (
   <strong
-    className={`${deletedStyles.color ? "" : "text-bc-bg-blue"} relative flex items-center`}
-    style={deletedStyles}
+    className={`${isDeleted ? "line-through text-[#666]" : "text-bc-bg-blue"} relative flex items-center`}
   >
     {title}
   </strong>
@@ -158,7 +154,7 @@ export const renderObject = (
 
         return (
           <div key={`${labelPrefix}-${index}`} style={{ marginBottom: 12 }}>
-            {renderHeading(`Source sub-type ${index + 1}:`, deletedStyles)}
+            {renderHeading(`Source sub-type ${index + 1}:`, isDeleted)}
 
             <div style={{ marginLeft: 10 }}>
               {renderObject(
@@ -190,7 +186,7 @@ export const renderObject = (
 
       return (
         <div key={`${labelPrefix}-${index}`} style={containerStyle}>
-          {title && renderHeading(title, deletedStyles)}
+          {title && renderHeading(title, isDeleted)}
 
           <div style={{ marginLeft: 10 }}>
             {renderObject(item, labelPrefix, isDeleted, fieldDisplayTitles)}
@@ -244,7 +240,7 @@ export const renderObject = (
                   >
                     {renderHeading(
                       `${getFieldLabel(pKey, methodologyFieldDisplayTitles)}:`,
-                      deletedStyles,
+                      isDeleted,
                     )}
 
                     <div style={{ marginLeft: 16 }}>
