@@ -206,7 +206,7 @@ Material-UI has been configured for Next.js app router using a theme registry co
 
 [Tailwind CSS](https://tailwindcss.com/) is a popular utility-first CSS framework that is designed to simplify and streamline the process of building modern, responsive web interfaces. It focuses on providing a set of highly reusable utility classes that you can apply directly to your HTML elements to style and structure.
 
-Tailwind has been configured to work with MUI within bciers/apps/registration/tailwind.config.js as per [integration documentation](https://mui.com/material-ui/guides/interoperability/#tailwind-css)
+Tailwind (v4) is configured in bciers/libs/styles/src/globals.css. To work with MUI, Preflight is disabled and utilities are imported with the `important` flag, so Tailwind classes override MUI's Emotion styles. See the [CSS theming guide](./css-theme-guide.md).
 
 You can use Tailwind CSS classes to style Material-UI components by applying the classes directly to the Material-UI components in your JSX.
 
@@ -219,15 +219,6 @@ function MyComponent() {
       <Button className="bg-blue-500 hover:bg-blue-700 text-white">Click Me</Button>
     </Paper>
   );
-}
-```
-
-**Optional:** It is best practice while using Tailwind and MUI together to add a prefix in the tailwind class and by setting tailwind to important so that class conflicts are reduced between these two libraries.
-
-```js
-// tailwind.config.js
-module.exports = {
-  prefix: 'tw-',   👈 Use your desired prefix
 }
 ```
 
