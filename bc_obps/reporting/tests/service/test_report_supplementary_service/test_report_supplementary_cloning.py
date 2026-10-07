@@ -529,7 +529,7 @@ class ReportSupplementaryCloningTests(TestCase):
                 methodology_data={"methodology": "Replacement Methodology"},
             )
 
-    def test_reapply_emission_categories_applies_woody_biomass_to_pulp_and_paper_solids_hhv(self):
+    def test_reapply_emission_categories_pulp_and_paper_woody_biomass(self):
         woody_biomass_category_id = 10
         mapping = EmissionCategoryMapping.objects.filter(
             activity__slug="pulp_and_paper", emission_category_id=woody_biomass_category_id
@@ -547,23 +547,33 @@ class ReportSupplementaryCloningTests(TestCase):
             report_version=self.new_report_version,
             source_type=mapping.source_type,
         )
-        report_emission = make_recipe(
-            "reporting.tests.utils.report_emission",
-            report_source_type=report_source_type,
-            report_version=self.new_report_version,
-            report_fuel=None,
-        )
-        make_recipe(
-            "reporting.tests.utils.report_methodology",
-            report_emission=report_emission,
-            report_version=self.new_report_version,
-            methodology=Methodology.objects.get(name="Solids-HHV"),
-            json_data={},
-        )
 
-        reapply_emission_categories(self.new_report_version)
+        cases = [
+            ("Solids-HHV", {}, True),
+            ("Alternative Parameter Measurement Methodology", {"isWoodyBiomass": True}, True),
+            ("Replacement Methodology", {"isWoodyBiomass": True}, True),
+            ("Replacement Methodology", {}, False),
+        ]
+        for methodology_name, json_data, expected in cases:
+            with self.subTest(methodology=methodology_name, json_data=json_data):
+                report_emission = make_recipe(
+                    "reporting.tests.utils.report_emission",
+                    report_source_type=report_source_type,
+                    report_version=self.new_report_version,
+                    report_fuel=None,
+                )
+                make_recipe(
+                    "reporting.tests.utils.report_methodology",
+                    report_emission=report_emission,
+                    report_version=self.new_report_version,
+                    methodology=Methodology.objects.get(name=methodology_name),
+                    json_data=json_data,
+                )
 
-        self.assertIn(woody_biomass_category_id, report_emission.emission_categories.values_list("id", flat=True))
+                reapply_emission_categories(self.new_report_version)
+
+                category_ids = report_emission.emission_categories.values_list("id", flat=True)
+                self.assertEqual(woody_biomass_category_id in category_ids, expected)
 
     def test_clone_all(self):
         """
