@@ -17,7 +17,7 @@ export const purposeNote = (
               href={`/administration/operations/${operationId}?operations_title=${operationName}&isNewTab=true`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-inherit no-underline inline-flex items-center"
+              className="text-bc-link-blue no-underline inline-flex items-center"
             >
               update operation information
               <OpenInNewIcon fontSize="inherit" className="ml-[0.1rem]" />
