@@ -2,7 +2,6 @@ import copy
 from typing import Optional
 
 from django.core.files.storage import default_storage
-from django.forms import model_to_dict
 
 from reporting.service.emission_category_mapping_service import EmissionCategoryMappingService
 from reporting.models import (
@@ -498,14 +497,18 @@ def reapply_emission_categories(report_version: ReportVersion) -> None:
     This ensures that the emission categories are applied to the report correctly, in case changes to emission categories
     have occurred in the database since the report was last updated.
     """
-    report_emissions = ReportEmission.objects.filter(report_version=report_version).select_related("report_methodology")
+    report_emissions = ReportEmission.objects.filter(report_version=report_version).select_related(
+        "report_methodology__methodology"
+    )
 
     for report_emission in report_emissions:
+        report_methodology = report_emission.report_methodology
         EmissionCategoryMappingService.apply_emission_categories(
             report_source_type=report_emission.report_source_type,
             report_fuel=report_emission.report_fuel if report_emission.report_fuel else None,
             report_emission=report_emission,
-            methodology_data=model_to_dict(report_emission.report_methodology),
+            # Same shape as the activity form payload: methodology name plus its json fields
+            methodology_data={"methodology": report_methodology.methodology.name, **report_methodology.json_data},
         )
 
 
