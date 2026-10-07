@@ -1,15 +1,11 @@
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from registration.utils import custom_reverse_lazy
 from reporting.models import ReportAttachment, ReportVersion
 
 
 class TestReportAttachmentInternalEndpoints(CommonTestSetup):
-    def setup_method(self):
-        self.report_version = make_recipe("reporting.tests.utils.report_version")
-        self.endpoint_under_test = "/api/reporting/attachments"
-
-        super().setup_method()
-        TestUtils.save_app_role(self, "cas_analyst")
+    endpoint_under_test = custom_reverse_lazy("get_all_attachments")
 
     def test_gets_only_submitted_attachments(self):
         # Create a report version with attachments
@@ -49,7 +45,7 @@ class TestReportAttachmentInternalEndpoints(CommonTestSetup):
         ReportVersion.objects.filter(id=report_version.id).update(status="Submitted")
 
         # Call the endpoint
-        response = TestUtils.client.get(self.endpoint_under_test, HTTP_AUTHORIZATION=self.auth_header_dumps)
+        response = TestUtils.mock_get_with_auth_role(self, "cas_analyst", self.endpoint_under_test)
 
         # Assert the response
         assert response.status_code == 200
@@ -76,3 +72,31 @@ class TestReportAttachmentInternalEndpoints(CommonTestSetup):
                 },
             ],
         }
+
+    def test_numeric_filters_accept_free_text(self):
+        report_version = make_recipe("reporting.tests.utils.report_version", status="Draft")
+        make_recipe("reporting.tests.utils.report_attachment", report_version=report_version)
+        ReportVersion.objects.filter(id=report_version.id).update(status="Submitted")
+        reporting_year = report_version.report.reporting_year.reporting_year
+
+        # Non-numeric input returns no rows instead of a 422
+        for param in ["reporting_year_id", "report_version_id"]:
+            response = TestUtils.mock_get_with_auth_role(
+                self, "cas_analyst", f"{self.endpoint_under_test}?{param}=not-a-number"
+            )
+            assert response.status_code == 200
+            assert response.json()["count"] == 0
+
+        # Numeric input (full or partial) still filters
+        for value in [reporting_year, str(reporting_year)[:3]]:
+            response = TestUtils.mock_get_with_auth_role(
+                self, "cas_analyst", f"{self.endpoint_under_test}?reporting_year_id={value}"
+            )
+            assert response.status_code == 200
+            assert response.json()["count"] == 1
+
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_analyst", f"{self.endpoint_under_test}?report_version_id={report_version.id}"
+        )
+        assert response.status_code == 200
+        assert response.json()["count"] == 1

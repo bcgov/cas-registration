@@ -128,10 +128,10 @@ class TestReportAttachmentService:
         result = ReportAttachmentService.get_all_attachments()
         assert list(result) == [a2, a1]
 
-        # now filter by report_version_id
-        filters = InternalReportAttachmentFilterSchema(report_version_id=rv1.id)
+        # now filter by report_version_id (icontains match, so use rv2's larger id, which rv1's id can't contain)
+        filters = InternalReportAttachmentFilterSchema(report_version_id=str(rv2.id))
         result = ReportAttachmentService.get_all_attachments(filters=filters)
-        assert list(result) == [a1]
+        assert list(result) == [a2]
 
     def test_get_all_attachments_default_sort_by_report_version_id(self):
         # ARRANGE
