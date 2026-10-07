@@ -43,9 +43,10 @@ class InternalReportAttachmentOut(ModelSchema):
 class InternalReportAttachmentFilterSchema(FilterSchema):
     operator: Annotated[str | None, Field(q="report_version__report__operator__legal_name__icontains")] = None
     operation: Annotated[str | None, Field(q="report_version__report__operation__name__icontains")] = None
-    report_version_id: Annotated[int | None, Field(q="report_version__id")] = None
+    # Typed as str since the grid's header search boxes accept free text; icontains casts the int columns to text
+    report_version_id: Annotated[str | None, Field(q="report_version__id__icontains")] = None
     reporting_year_id: Annotated[
-        int | None, Field(q="report_version__report__reporting_year__reporting_year__icontains")
+        str | None, Field(q="report_version__report__reporting_year__reporting_year__icontains")
     ] = None
     attachment_type: Annotated[str | None, Field(q="attachment_type__icontains")] = None
     attachment_name: Annotated[str | None, Field(q="attachment_name__icontains")] = None
