@@ -46,7 +46,7 @@ const Modal: React.FC<Props> = ({
           </IconButton>
         ) : null}
       </DialogTitle>
-      <DialogContent className="p-4">{children}</DialogContent>
+      <DialogContent className="px-4 pt-0 pb-4">{children}</DialogContent>
     </Dialog>
   );
 };
