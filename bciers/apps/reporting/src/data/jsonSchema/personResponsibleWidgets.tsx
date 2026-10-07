@@ -18,7 +18,7 @@ export const infoNote = (
             href="/administration/contacts?isNewTab=true"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-inherit no-underline inline-flex items-center"
+            className="text-bc-link-blue no-underline inline-flex items-center"
           >
             Contacts
             <OpenInNewIcon fontSize="inherit" className="ml-[0.1rem]" />.

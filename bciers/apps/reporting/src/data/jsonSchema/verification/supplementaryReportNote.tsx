@@ -13,7 +13,7 @@ export const infoNote = () => (
         }
         target="_blank"
         rel="noopener noreferrer"
-        className="text-inherit no-underline"
+        className="text-bc-link-blue no-underline"
       >
         verification guidance webpage.
       </Link>

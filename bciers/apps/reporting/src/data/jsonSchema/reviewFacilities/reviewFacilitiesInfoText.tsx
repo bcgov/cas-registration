@@ -19,7 +19,7 @@ export const getInfoNote = (operationId: string) => (
               href={`/administration/operations/${operationId}/facilities/add-facility?isNewTab=true`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-inherit no-underline inline-flex items-center"
+              className="text-bc-link-blue no-underline inline-flex items-center"
             >
               <u>Add it here</u>
               <OpenInNewIcon fontSize="inherit" className="ml-[0.1rem]" />

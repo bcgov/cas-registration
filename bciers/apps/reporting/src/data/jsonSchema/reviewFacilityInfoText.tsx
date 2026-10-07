@@ -12,7 +12,7 @@ export const infoNote = (operation_id: string, facility_id: string) => (
               href={`/administration/operations/${operation_id}/facilities/${facility_id}?isNewTab=true`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-inherit no-underline inline-flex items-center"
+              className="text-bc-link-blue no-underline inline-flex items-center"
             >
               Edit facility information
               <OpenInNewIcon fontSize="inherit" className="ml-[0.1rem]" />
