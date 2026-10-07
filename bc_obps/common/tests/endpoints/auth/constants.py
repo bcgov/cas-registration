@@ -455,6 +455,11 @@ ENDPOINTS = {
         {"method": "get", "endpoint_name": "get_elicensing_invoice_list"},
         {
             "method": "get",
+            "endpoint_name": "get_audit_log",
+            "kwargs": {"entity_type": "operation", "entity_id": MOCK_UUID},
+        },
+        {
+            "method": "get",
             "endpoint_name": "get_facility_report_list",
             "kwargs": {"version_id": MOCK_INT},
         },
