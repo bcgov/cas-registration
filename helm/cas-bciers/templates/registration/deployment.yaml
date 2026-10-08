@@ -23,7 +23,6 @@ spec:
         component: registration-frontend
         layer: frontend
     spec:
-      serviceAccountName: {{ .Release.Name }}-pod-logger
       containers:
         - name: {{ template "cas-bciers.fullname" . }}-registration-frontend
           env:
@@ -47,15 +46,13 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.registrationFrontend.resources | nindent 12 }}
-          {{- $containerName := printf "%s-registration-frontend" (include "cas-bciers.fullname" .) }}
-        {{- include "cas-logging-sidecar.containers" (dict
-            "containerToSidecar" $containerName
-            "logName" (index .Values "cas-logging-sidecar" "logName")
-            "host" (index .Values "cas-logging-sidecar" "host")
-            "appName" "registration") | nindent 8 }}
+          volumeMounts:
+            {{- include "vector-collector.loggingVolumes" . | nindent 12 }}
+      initContainers:
+        {{- include "vector-collector.container" (dict "Values" .Values "appName" "registration") | nindent 8 }}
       restartPolicy: Always
       volumes:
-        {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
+        {{- include "vector-collector.loggingVolumes" . | nindent 8 }}
       affinity:
         {
           podAntiAffinity: {
