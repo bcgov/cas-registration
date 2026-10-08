@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { act, render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 
-const defaultStyle = "border-color: rgba(0, 0, 0, 0.23)";
+const defaultStyle = "border-color: #e5e5e5";
 const errorStyle = "border-color: #d8292f";
 
 export const checkTextWidgetValidationStyles = async (

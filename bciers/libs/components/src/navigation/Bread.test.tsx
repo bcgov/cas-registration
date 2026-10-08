@@ -188,7 +188,7 @@ describe("The Breadcrumb component", () => {
       />,
     );
     const lastItem = screen.getByTestId("breadcrumb-last-item");
-    expect(lastItem).toHaveStyle("font-weight: bold");
+    expect(lastItem).toHaveStyle("font-weight: 700");
   });
   it("should not capitalize links when capitalizeLinks is false", () => {
     setupMocks("http://localhost:3000/administration/add-contact");
