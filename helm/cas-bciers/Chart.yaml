@@ -2,7 +2,7 @@ apiVersion: v2
 name: cas-bciers
 description: A Helm chart for the CAS BCIERS applications.
 type: application
-version: 0.2.1
+version: 0.2.2
 appVersion: "5.22.0"
 
 dependencies:
@@ -37,4 +37,4 @@ dependencies:
     condition: run-reset-data-dag-on-upgrade.enabled
   - name: cas-logging-sidecar
     repository: https://bcgov.github.io/cas-pipeline/
-    version: 0.5.0
+    version: 0.7.0
