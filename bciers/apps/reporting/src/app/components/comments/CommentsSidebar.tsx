@@ -20,7 +20,7 @@ const CommentsSidebar: React.FC<Props> = ({
   const [isCreating, setIsCreating] = useState(false);
   const [commentThreads, setCommentThreads] = useState(threads);
 
-  const handleCreate = async (newThread: Thread) => {
+  const handleCreate = (newThread: Thread) => {
     setCommentThreads((prevThreads) => [newThread, ...prevThreads]);
     setIsCreating(false);
   };
