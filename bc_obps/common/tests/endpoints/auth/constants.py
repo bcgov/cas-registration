@@ -706,6 +706,11 @@ ENDPOINTS = {
             "endpoint_name": "create_thread",
             "kwargs": {"version_id": MOCK_INT},
         },
+        {
+            "method": "post",
+            "endpoint_name": "create_comment",
+            "kwargs": {"version_id": MOCK_INT, "thread_id": MOCK_INT},
+        },
     ],
     "cas_admin": [
         {"method": "patch", "endpoint_name": "update_user_role", "kwargs": {"user_id": MOCK_UUID}},

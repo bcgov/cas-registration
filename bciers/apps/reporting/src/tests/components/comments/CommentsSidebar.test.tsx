@@ -42,6 +42,7 @@ describe("The Comments Sidebar", () => {
                 id: 11,
                 version_id: 42,
                 author: "Test Author",
+                user_id: "00000000-0000-0000-0000-000000000001",
                 timestamp: "2026-09-10T12:00:00Z",
                 comment: "Existing comment",
               },
@@ -78,6 +79,7 @@ describe("The Comments Sidebar", () => {
             author: "New Author",
             timestamp: "2026-09-10T12:01:00Z",
             comment: "New comment",
+            user_id: "00000000-0000-0000-0000-000000000001",
           },
         ],
       });
@@ -86,7 +88,7 @@ describe("The Comments Sidebar", () => {
     expect(await screen.findByText("New comment")).toBeVisible();
     expect(
       screen.queryByRole("textbox", { name: "Comment" }),
-    ).not.toBeInTheDocument();
+    ).toBeInTheDocument();
     newThreadComponentSpy.mockRestore();
   });
 });
