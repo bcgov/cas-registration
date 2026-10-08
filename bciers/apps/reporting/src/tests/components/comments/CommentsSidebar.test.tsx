@@ -1,17 +1,34 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import CommentsSidebar from "@reporting/src/app/components/comments/CommentsSidebar";
 import * as NewThreadComponentModule from "@reporting/src/app/components/comments/NewThreadComponent";
 import { InternalFrontEndRoles } from "@bciers/utils/src/enums";
+import { actionHandler } from "@bciers/testConfig/mocks";
+
+const userId = "00000000-0000-0000-0000-000000000001";
 
 describe("The Comments Sidebar", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("shows a comments title and a new comment button", () => {
     render(
+      
       <CommentsSidebar
+        userId={userId}
         version_id={42}
         threads={[]}
         facilities={[]}
         userRole={InternalFrontEndRoles.CAS_DIRECTOR}
+     
       />,
+    ,
     );
 
     expect(screen.getByRole("heading", { name: "Comments" })).toBeVisible();
@@ -23,6 +40,7 @@ describe("The Comments Sidebar", () => {
   it("renders the new thread component when pressing new comment", () => {
     render(
       <CommentsSidebar
+        userId={userId}
         version_id={42}
         threads={[]}
         facilities={[]}
@@ -45,6 +63,7 @@ describe("The Comments Sidebar", () => {
   it("renders existing comment threads", () => {
     render(
       <CommentsSidebar
+        userId={userId}
         version_id={42}
         facilities={[]}
         userRole={InternalFrontEndRoles.CAS_DIRECTOR}
@@ -60,6 +79,7 @@ describe("The Comments Sidebar", () => {
                 author: "Test Author",
                 timestamp: "2026-09-10T12:00:00Z",
                 comment: "Existing comment",
+                user_id: userId,
               },
             ],
           },
@@ -80,6 +100,7 @@ describe("The Comments Sidebar", () => {
 
     render(
       <CommentsSidebar
+        userId={userId}
         version_id={42}
         threads={[]}
         facilities={[]}
@@ -102,6 +123,7 @@ describe("The Comments Sidebar", () => {
             author: "New Author",
             timestamp: "2026-09-10T12:01:00Z",
             comment: "New comment",
+            user_id: userId,
           },
         ],
       });
@@ -119,11 +141,109 @@ describe("The Comments Sidebar", () => {
         version_id={42}
         threads={[]}
         facilities={[]}
+        userId={userId}
         userRole={InternalFrontEndRoles.CAS_VIEW_ONLY}
       />,
     );
     expect(
       screen.queryByRole("button", { name: "Add internal Comment" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("preserves the comment and thread when deletion fails", async () => {
+    const message = "You do not have permission to delete this comment.";
+    actionHandler.mockResolvedValueOnce({ error: message });
+    render(
+      <CommentsSidebar
+        userId={userId}
+        version_id={42}
+        facilities={[]}
+        userRole={InternalFrontEndRoles.CAS_DIRECTOR}
+        threads={[
+          {
+            id: 10,
+            version_id: 42,
+            facility_name: "Facility One",
+            comments: [
+              {
+                id: 11,
+                version_id: 42,
+                author: "Test Author",
+                timestamp: "2026-09-10T12:00:00Z",
+                comment: "Comment 11",
+                user_id: userId,
+              },
+            ],
+          },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete comment" }));
+
+    expect(await screen.findByText("Failed to delete comment.")).toBeVisible();
+    expect(screen.getByText("Comment 11")).toBeVisible();
+    expect(screen.getByText(/Facility Name:.*Facility One/)).toBeVisible();
+    expect(screen.getByRole("button", { name: "Reply" })).toBeVisible();
+  });
+
+  it("removes comments on success and removes the thread after its last comment is deleted", async () => {
+    actionHandler.mockResolvedValueOnce(200).mockResolvedValueOnce(200);
+    render(
+      <CommentsSidebar
+        version_id={42}
+        userId={userId}
+        userRole={InternalFrontEndRoles.CAS_DIRECTOR}
+        facilities={[]}
+        threads={[
+          {
+            id: 10,
+            version_id: 42,
+            facility_name: "Facility One",
+            comments: [11, 12].map((id) => ({
+              id,
+              version_id: 42,
+              author: "Test Author",
+              timestamp: "2026-09-10T12:00:00Z",
+              comment: `Comment ${id}`,
+              user_id: userId,
+            })),
+          },
+          {
+            id: 20,
+            version_id: 42,
+            facility_name: "Facility Two",
+            comments: [
+              {
+                id: 21,
+                version_id: 42,
+                author: "Another Author",
+                timestamp: "2026-09-10T12:00:00Z",
+                comment: "Unaffected comment",
+                user_id: "00000000-0000-0000-0000-000000000002",
+              },
+            ],
+          },
+        ]}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "Delete comment" })[0],
+    );
+    await waitFor(() => {
+      expect(screen.queryByText("Comment 11")).not.toBeInTheDocument();
+    });
+    expect(screen.getByText("Comment 12")).toBeVisible();
+    expect(screen.getAllByRole("button", { name: "Reply" })).toHaveLength(2);
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete comment" }));
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/Facility Name:.*Facility One/),
+      ).not.toBeInTheDocument();
+    });
+    expect(screen.getByText("Unaffected comment")).toBeVisible();
+    expect(screen.getAllByRole("button", { name: "Reply" })).toHaveLength(1);
   });
 });
