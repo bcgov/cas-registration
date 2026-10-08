@@ -63,7 +63,11 @@ const CommentsSidebar: React.FC<Props> = ({
         />
       )}
       {commentThreads.map((thread) => (
-        <ThreadComponent key={`thread-${thread.id}`} thread={thread} />
+        <ThreadComponent
+          key={`thread-${thread.id}`}
+          initialThread={thread}
+          version_id={version_id}
+        />
       ))}
     </Paper>
   );

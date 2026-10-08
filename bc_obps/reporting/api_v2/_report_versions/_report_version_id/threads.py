@@ -24,7 +24,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 @router.get(
     "report-version/{version_id}/threads",
     response={200: ReportingResponseSchema[CommentThreadsOut]},
-    tags=[],
+    tags=[*EMISSIONS_REPORT_TAGS, *REPORT_COMMENTS_TAGS],
     description="Retrieves all the comment threads for a specific report, accessed by the provided report version.",
     auth=authorize("authorized_irc_user"),
 )
@@ -69,5 +69,26 @@ def create_thread(
         report_version_id=version_id,
         comment=payload.comment,
     )
+
+    return 201, thread
+
+
+@router.post(
+    "report-version/{version_id}/threads/{thread_id}/comment",
+    response={201: CommentThreadSchema, custom_codes_4xx: Message},
+    tags=[*EMISSIONS_REPORT_TAGS, *REPORT_COMMENTS_TAGS],
+    description="Adds a new comment to an existing comment thread.",
+    auth=authorize("authorized_irc_user"),
+)
+@transaction.atomic
+def add_comment(
+    request: HttpRequest, version_id: str, thread_id: str, payload: CommentThreadIn
+) -> Tuple[Literal[201], CommentThread]:
+    Comment.objects.create(
+        comment_thread_id=thread_id,
+        report_version_id=version_id,
+        comment=payload.comment,
+    )
+    thread = CommentThread.objects.get(id=thread_id)
 
     return 201, thread
