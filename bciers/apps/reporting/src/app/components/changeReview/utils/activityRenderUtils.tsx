@@ -174,7 +174,7 @@ export const renderObject = (
         lower === "emissions" ? `mb-2 ${verticalBorderClasses}` : "ml-5 mb-2";
 
       return (
-        <div key={`${labelPrefix}-${index}`} style={containerStyle}>
+        <div key={`${labelPrefix}-${index}`} className={containerClasses}>
           {title && renderHeading(title, isDeleted)}
           <div className="ml-2.5">
             {renderObject(item, labelPrefix, isDeleted, fieldDisplayTitles)}
