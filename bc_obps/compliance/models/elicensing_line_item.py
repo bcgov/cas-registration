@@ -18,7 +18,11 @@ class ElicensingLineItem(TimeStampedModel):
 
     object_id = models.IntegerField(db_comment="The objectId of the line item from elicensing")
 
-    guid = models.UUIDField(db_comment="The guid of the line item from elicensing")
+    guid = models.UUIDField(
+        null=True,
+        blank=True,
+        db_comment="The guid of the line item from elicensing. Automatically generated interest records will have an empty guid.",
+    )
 
     elicensing_invoice = models.ForeignKey(
         ElicensingInvoice,
