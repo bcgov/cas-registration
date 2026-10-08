@@ -35,16 +35,14 @@ spec:
               set -euo pipefail;
               .venv/bin/python manage.py check_document_file_status -r 0 -d 30
           volumeMounts:
+            {{- include "vector-collector.loggingVolumes" . | nindent 12 }}
             - mountPath: "/attachment-credentials"
               name: gcs-attachment-credentials
               readOnly: true
-        {{- include "cas-logging-sidecar.containers" (dict
-            "containerToSidecar" "check-document-file-status"
-            "logName" (index .Values "cas-logging-sidecar" "logName")
-            "host" (index .Values "cas-logging-sidecar" "host")
-            "appName" "check-document-file-status") | nindent 8 }}
+      initContainers:
+        {{- include "vector-collector.container" (dict "Values" .Values "appName" "check-document-file-status") | nindent 8 }}
       volumes:
-        {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
+        {{- include "vector-collector.loggingVolumes" . | nindent 8 }}
         - name: gcs-attachment-credentials
           secret:
             secretName: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key

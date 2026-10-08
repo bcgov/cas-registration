@@ -21,7 +21,6 @@ spec:
 {{- include "cas-bciers.selectorLabels" . | nindent 8 }}
         component: backend
     spec:
-      serviceAccountName: {{ .Release.Name }}-pod-logger
       containers:
         - name: {{ .Release.Name }}-backend
           image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
@@ -78,17 +77,14 @@ spec:
             timeoutSeconds: 5
           resources: {{ toYaml .Values.backend.resources | nindent 12 }}
           volumeMounts:
+            {{- include "vector-collector.loggingVolumes" . | nindent 12 }}
             - mountPath: "/attachment-credentials"
               name: gcs-attachment-credentials
               readOnly: true
-        {{- $containerName := printf "%s-backend" (include "cas-bciers.fullname" .) }}
-      {{- include "cas-logging-sidecar.containers" (dict
-          "containerToSidecar" $containerName
-          "logName" (index .Values "cas-logging-sidecar" "logName")
-          "host" (index .Values "cas-logging-sidecar" "host")
-          "appName" "backend") | nindent 8 }}
+      initContainers:
+        {{- include "vector-collector.container" (dict "Values" .Values "appName" "backend") | nindent 8 }}
       volumes:
-        {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
+        {{- include "vector-collector.loggingVolumes" . | nindent 8 }}
         - name: gcs-attachment-credentials
           secret:
             secretName: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
