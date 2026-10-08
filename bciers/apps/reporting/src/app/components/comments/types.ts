@@ -1,13 +1,16 @@
+import { UUID } from "crypto";
+
 export type Comment = {
-  id?: number;
+  id: number;
   version_id: number;
-  author?: string;
-  timestamp?: string;
+  author: string;
+  timestamp: string;
   comment: string;
+  user_id: UUID;
 };
 
 export type Thread = {
-  id?: number;
+  id: number;
   version_id: number;
   facility_name?: string;
   facility_id?: string;

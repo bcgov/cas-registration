@@ -5,17 +5,20 @@ import { Thread, FacilityItem } from "./types";
 import ThreadComponent from "./ThreadComponent";
 import NewThreadComponent from "./NewThreadComponent";
 import { useState } from "react";
+import { UUID } from "crypto";
 
 interface Props {
   version_id: number;
   threads: Thread[];
   facilities: FacilityItem[];
+  userId: UUID;
 }
 
 const CommentsSidebar: React.FC<Props> = ({
   version_id,
   threads,
   facilities,
+  userId,
 }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [commentThreads, setCommentThreads] = useState(threads);
@@ -23,6 +26,18 @@ const CommentsSidebar: React.FC<Props> = ({
   const handleCreate = async (newThread: Thread) => {
     setCommentThreads((prevThreads) => [newThread, ...prevThreads]);
     setIsCreating(false);
+  };
+
+  const handleCommentDeleted = (threadId: number, commentId: number) => {
+    setCommentThreads((prevThreads) =>
+      prevThreads.flatMap((thread) => {
+        if (thread.id !== threadId) return [thread];
+        const comments = thread.comments.filter(
+          (comment) => comment.id !== commentId,
+        );
+        return comments.length > 0 ? [{ ...thread, comments }] : [];
+      }),
+    );
   };
 
   return (
@@ -63,7 +78,12 @@ const CommentsSidebar: React.FC<Props> = ({
         />
       )}
       {commentThreads.map((thread) => (
-        <ThreadComponent key={`thread-${thread.id}`} thread={thread} />
+        <ThreadComponent
+          key={`thread-${thread.id}`}
+          thread={thread}
+          userId={userId}
+          onCommentDeleted={handleCommentDeleted}
+        />
       ))}
     </Paper>
   );
