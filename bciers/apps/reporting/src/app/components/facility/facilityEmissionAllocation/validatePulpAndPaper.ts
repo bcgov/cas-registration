@@ -58,7 +58,7 @@ const validatePulpAndPaper = (
       0
   )
     errors.push(
-      `Invalid allocation: Industrial Process quantity allocated betwen 'Pulp and paper:
+      `Invalid allocation: Industrial Process quantity allocated between 'Pulp and paper:
         chemical pulp' and 'Pulp and paper: lime recovered by kiln' is too low`,
     );
 
