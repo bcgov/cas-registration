@@ -40,9 +40,8 @@ export function NestedArrayFieldItemTemplate(
           style={{
             borderLeft: verticalBorder ? "6px solid #003366" : "none",
             backgroundColor: bgColor,
-            paddingLeft: "1rem",
           }}
-          className={`min-w-full rounded-md ${padding}`}
+          className={`min-w-full rounded-md ${padding} pl-4`}
         >
           {customTitleName && (
             <span className="emission-array-header">

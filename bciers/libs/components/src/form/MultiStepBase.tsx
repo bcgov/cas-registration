@@ -111,7 +111,7 @@ const MultiStepBase = ({
       {beforeForm}
       <FormBase
         schema={schema}
-        className="flex flex-col flex-grow"
+        className="flex flex-col grow"
         uiSchema={uiSchema}
         disabled={isDisabled}
         readonly={isDisabled}
@@ -124,7 +124,7 @@ const MultiStepBase = ({
         formContext={formContext}
       >
         {children}
-        <div className="flex flex-col flex-grow justify-end">
+        <div className="flex flex-col grow justify-end">
           <div className="min-h-[48px] box-border">
             {error && <Alert severity="error">{error}</Alert>}
           </div>

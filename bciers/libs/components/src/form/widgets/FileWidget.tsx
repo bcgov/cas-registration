@@ -220,7 +220,7 @@ const FileWidget: React.FC<WidgetProps> = (props) => {
         <button
           type="button"
           onClick={handleClick}
-          className={`p-0 decoration-solid border-0 text-base md:text-lg bg-transparent cursor-pointer underline flex-shrink-0 ${disabledColour}`}
+          className={`p-0 decoration-solid border-0 text-base md:text-lg bg-transparent cursor-pointer underline shrink-0 ${disabledColour}`}
           style={{ whiteSpace: "nowrap" }}
         >
           {value ? reuploadLabel : uploadLabel}
@@ -245,7 +245,7 @@ const FileWidget: React.FC<WidgetProps> = (props) => {
       {localFile ? (
         <FileElement fileInfo={localFile} preview={options.filePreview} />
       ) : (
-        <span className="text-base md:text-lg flex-shrink-0">
+        <span className="text-base md:text-lg shrink-0">
           No attachment was uploaded.
         </span>
       )}
