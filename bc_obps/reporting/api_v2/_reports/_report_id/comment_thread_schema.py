@@ -11,6 +11,7 @@ class CommentSchema(ModelSchema):
     version_id: int | None = None
     author: str | None = None
     timestamp: datetime.datetime | None = None
+    user_id: UUID | None = None
 
     class Meta:
         model = Comment
@@ -29,6 +30,10 @@ class CommentSchema(ModelSchema):
     @staticmethod
     def resolve_timestamp(obj: Comment) -> datetime.datetime | None:
         return obj.created_at
+
+    @staticmethod
+    def resolve_user_id(obj: Comment) -> UUID | None:
+        return obj.created_by_id
 
 
 class CommentThreadSchema(ModelSchema):
