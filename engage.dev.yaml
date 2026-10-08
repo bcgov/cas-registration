@@ -1,0 +1,11 @@
+deploy:
+  file: deploy.sh
+  timeout: 1800
+
+ci:
+  allow_failures:
+    - "test-code / yarn-audit"
+    - "Happo (cas-administration)"
+    - "Happo (cas-compliance)"
+    - "Happo (cas-registration)"
+    - "Happo (cas-reporting)"
