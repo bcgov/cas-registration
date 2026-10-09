@@ -3,6 +3,7 @@ PAGE_SIZE = 20
 
 # API Tags
 EMISSIONS_REPORT_TAGS = ["Emissions Report"]
+REPORT_COMMENTS_TAGS = ["Report Comments"]
 DASHBOARD_TAGS = ["Dashboard"]
 
 # Max upload size
