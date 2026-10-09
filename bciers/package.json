@@ -136,7 +136,7 @@
     "happo": "6.21.0",
     "jiti": "2.7.0",
     "jsdom": "~26.1.0",
-    "jsonc-eslint-parser": "^2.1.0",
+    "jsonc-eslint-parser": "^3.0.0",
     "nx": "23.2.1",
     "pdf-parse": "^2.4.5",
     "playwright-core": "1.63.0",
