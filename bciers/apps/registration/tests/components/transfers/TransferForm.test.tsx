@@ -295,8 +295,8 @@ describe("The TransferForm component", () => {
         error: errorMessage,
       });
       renderTransferForm();
-      selectOperator(/current operator\*/i, "Operator 1");
-      selectOperator(/select the new operator\*/i, "Operator 2");
+      await selectOperator(/current operator\*/i, "Operator 1");
+      await selectOperator(/select the new operator\*/i, "Operator 2");
       await selectEntityAndAssertFields("Operation");
       await selectOperation(/operation\*/i, "Operation 1");
       await selectDateOfTransfer("2022-12-31");
