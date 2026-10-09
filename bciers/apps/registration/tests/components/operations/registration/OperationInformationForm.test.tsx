@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import {
   useSessionRole,
@@ -339,7 +339,9 @@ describe("the OperationInformationForm component", () => {
       });
       await userEvent.click(operationType);
       await userEvent.click(
-        await screen.findByRole("option", { name: "Single Facility Operation" }),
+        await screen.findByRole("option", {
+          name: "Single Facility Operation",
+        }),
       );
 
       // naics
@@ -638,7 +640,9 @@ describe("the OperationInformationForm component", () => {
 
     await userEvent.click(operationType);
     await userEvent.click(
-      await screen.findByRole("option", { name: "Linear Facilities Operation" }),
+      await screen.findByRole("option", {
+        name: "Linear Facilities Operation",
+      }),
     );
 
     await waitFor(() => {
