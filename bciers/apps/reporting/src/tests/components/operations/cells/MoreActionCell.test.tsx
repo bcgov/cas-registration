@@ -246,13 +246,11 @@ describe("MoreActionCell / ActionCell", () => {
       );
 
       expect(consoleWarn).toHaveBeenCalledWith(
-
         expect.any(String),
 
         "An error occurred in the <ActionCell> component.",
 
         expect.any(String),
-
       );
 
       consoleError.mockRestore();

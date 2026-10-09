@@ -474,9 +474,7 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
     // ruleRunner logs the caught error before redirecting; keep it out of the test output
     let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
     beforeEach(() => {
-      consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
+      consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     });
     afterEach(() => {
       consoleErrorSpy.mockRestore();
