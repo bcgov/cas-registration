@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies*/
 import type { ReactNode } from "react";
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 
 const defaultStyle = "border-color: #e5e5e5";
@@ -23,10 +23,8 @@ export const checkTextWidgetValidationStyles = async (
   // The input should have the default border color
   expect(inputBorderElement).toHaveStyle(defaultStyle);
 
-  await act(async () => {
-    // Trigger empty field validation
-    await userEvent.click(submitButton);
-  });
+  // Trigger empty field validation
+  await userEvent.click(submitButton);
 
   // The input should have the error border color
   expect(inputBorderElement).toHaveStyle(errorStyle);

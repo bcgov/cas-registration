@@ -388,9 +388,7 @@ describe("OperatorForm component", () => {
     actionHandler.mockReturnValueOnce(res);
 
     const saveButton = screen.getByRole("button", { name: /save/i });
-    act(() => {
-      saveButton.click();
-    });
+    await userEvent.click(saveButton);
 
     expect(actionHandler).toHaveBeenNthCalledWith(
       1,
@@ -429,9 +427,7 @@ describe("OperatorForm component", () => {
     actionHandler.mockReturnValueOnce(response);
 
     const saveButton = screen.getByRole("button", { name: /save/i });
-    act(() => {
-      saveButton.click();
-    });
+    await userEvent.click(saveButton);
 
     expect(actionHandler).toHaveBeenNthCalledWith(
       1,
@@ -560,7 +556,7 @@ describe("OperatorForm component", () => {
 
     // SUBMIT
     const saveButton = screen.getByRole("button", { name: /save/i });
-    userEvent.click(saveButton);
+    await userEvent.click(saveButton);
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
