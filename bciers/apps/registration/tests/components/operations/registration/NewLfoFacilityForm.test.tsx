@@ -60,7 +60,7 @@ describe("the NewLfoFacilityForm component", () => {
         name: "Add New Facility",
       });
 
-      act(() => {
+      await act(async () => {
         fireEvent.click(addButton);
       });
 
@@ -80,7 +80,7 @@ describe("the NewLfoFacilityForm component", () => {
           error: null,
         },
       ]);
-      act(() => {
+      await act(async () => {
         fireEvent.click(saveButton);
       });
 

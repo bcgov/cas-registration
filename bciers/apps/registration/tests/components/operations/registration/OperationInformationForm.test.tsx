@@ -337,15 +337,10 @@ describe("the OperationInformationForm component", () => {
       const operationType = screen.getByRole("combobox", {
         name: /Operation Type+/i,
       });
-      act(() => {
-        userEvent.click(operationType);
-      });
-
-      await waitFor(() => {
-        userEvent.click(
-          screen.getByRole("option", { name: "Single Facility Operation" }),
-        );
-      });
+      await userEvent.click(operationType);
+      await userEvent.click(
+        await screen.findByRole("option", { name: "Single Facility Operation" }),
+      );
 
       // naics
       const primaryNaicsInput = screen.getByPlaceholderText(/primary naics+/i);
@@ -641,15 +636,10 @@ describe("the OperationInformationForm component", () => {
       name: /Operation Type+/i,
     });
 
-    act(() => {
-      userEvent.click(operationType);
-    });
-
-    await waitFor(() => {
-      userEvent.click(
-        screen.getByRole("option", { name: "Linear Facilities Operation" }),
-      );
-    });
+    await userEvent.click(operationType);
+    await userEvent.click(
+      await screen.findByRole("option", { name: "Linear Facilities Operation" }),
+    );
 
     await waitFor(() => {
       expect(

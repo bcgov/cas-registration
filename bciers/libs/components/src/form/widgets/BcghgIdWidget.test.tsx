@@ -1,5 +1,5 @@
 import { userEvent } from "@testing-library/user-event";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import { actionHandler } from "@bciers/testConfig/mocks";
@@ -336,8 +336,8 @@ describe("RJSF bcghgIdWidget", () => {
         formData={{ bcghgIdTestField: bcghgIdValue }}
       />,
     );
-    await act(async () =>
-      userEvent.click(screen.getByRole("button", { name: "Clear BCGHG ID" })),
+    await userEvent.click(
+      screen.getByRole("button", { name: "Clear BCGHG ID" }),
     );
 
     expect(actionHandler).toHaveBeenCalledWith(

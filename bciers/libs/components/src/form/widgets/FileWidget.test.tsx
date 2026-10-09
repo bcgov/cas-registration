@@ -41,6 +41,8 @@ const formContext = { onFileSelected: vi.fn() };
 describe("RJSF FileWidget", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    // jsdom doesn't implement alert() and logs a warning when it's called
+    alertMock.mockImplementation(() => {});
     useSessionRole.mockReturnValue("industry_user_admin");
   });
 

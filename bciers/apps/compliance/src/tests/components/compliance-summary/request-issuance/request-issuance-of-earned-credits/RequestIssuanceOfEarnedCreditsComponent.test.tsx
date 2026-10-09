@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  act,
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
 import RequestIssuanceOfEarnedCreditsComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsComponent";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
@@ -109,7 +115,10 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
       />,
     );
     const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
-    fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
+    // let the (rejected) account lookup settle before asserting
+    await act(async () => {
+      fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
+    });
     expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();
   });
 

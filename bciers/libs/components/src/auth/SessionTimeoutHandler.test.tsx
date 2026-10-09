@@ -1,5 +1,11 @@
 import { expect, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { useSession, signOut } from "next-auth/react";
 import SessionTimeoutHandler, {
   ACTIVITY_THROTTLE_SECONDS,
@@ -120,6 +126,9 @@ describe("SessionTimeoutHandler", () => {
   });
 
   it("refreshes session on user activity when modal is not shown", async () => {
+    mockUpdate.mockResolvedValue({
+      expires: new Date(Date.now() + 180 * 1000).toISOString(),
+    });
     let capturedRefreshSession: (event: Event) => Promise<void> = () =>
       Promise.resolve();
 
@@ -131,7 +140,9 @@ describe("SessionTimeoutHandler", () => {
     renderWithSession();
 
     // Manually invoke the refreshSession to simulate activity
-    await capturedRefreshSession(new Event("mousemove"));
+    await act(async () => {
+      await capturedRefreshSession(new Event("mousemove"));
+    });
 
     await waitFor(() => expect(mockUpdate).toHaveBeenCalled());
   });
@@ -206,7 +217,7 @@ describe("SessionTimeoutHandler", () => {
       },
     );
 
-    screen.getByText("Extend").click();
+    fireEvent.click(screen.getByText("Extend"));
     await waitFor(() => {
       expect(postMessage).toHaveBeenCalledWith("extend-session");
       expect(mockUpdate).toHaveBeenCalled();
@@ -233,7 +244,7 @@ describe("SessionTimeoutHandler", () => {
         timeout: 2000,
       },
     );
-    screen.getByText("Logout").click();
+    fireEvent.click(screen.getByText("Logout"));
 
     await waitFor(() => {
       expect(postMessage).toHaveBeenCalledWith("logout");
@@ -244,6 +255,9 @@ describe("SessionTimeoutHandler", () => {
   });
 
   it("handles session refresh failure by logging out", async () => {
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
     renderWithSession({
       data: {
         expires: new Date(
@@ -260,16 +274,24 @@ describe("SessionTimeoutHandler", () => {
       },
     );
 
-    screen.getByText("Extend").click();
+    fireEvent.click(screen.getByText("Extend"));
 
     await waitFor(() => {
       expect(mockSignOut).toHaveBeenCalled();
       expect(mockGetEnvValue).toHaveBeenCalledTimes(1);
       expect(window.location.href).toBe("http://logout.url");
     });
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Session refresh error:",
+      expect.any(Error),
+    );
+    consoleErrorSpy.mockRestore();
   });
 
   it("handles session refresh failure with no logoutUrl by logging out and redirecting to fallback logoutUrl", async () => {
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
     mockGetEnvValue.mockReturnValue(undefined); // Simulate no logout URL
 
     renderWithSession({
@@ -288,12 +310,17 @@ describe("SessionTimeoutHandler", () => {
       },
     );
 
-    screen.getByText("Extend").click();
+    fireEvent.click(screen.getByText("Extend"));
 
     await waitFor(() => {
       expect(mockSignOut).toHaveBeenCalled();
       expect(window.location.href).toBe("/");
     });
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Session refresh error:",
+      expect.any(Error),
+    );
+    consoleErrorSpy.mockRestore();
   });
 
   it("do not refresh session when user is in a non-app tab", async () => {
