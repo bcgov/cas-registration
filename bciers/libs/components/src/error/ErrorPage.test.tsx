@@ -7,7 +7,6 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import ErrorPage from "./ErrorPage";
 
-
 describe("ErrorPage", () => {
   /**
    * Test to ensure that the ErrorPage component renders the ErrorBoundary component

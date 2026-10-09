@@ -34,7 +34,9 @@ describe("The ComponentAccordion component", () => {
 
   it("collapses and expands all when buttons are clicked", async () => {
     render(<ComponentAccordion {...defaultProps} />);
-    await userEvent.click(screen.getByRole("button", { name: /Collapse All/i }));
+    await userEvent.click(
+      screen.getByRole("button", { name: /Collapse All/i }),
+    );
     await waitFor(() => {
       expect(screen.queryByText(/Hello!/i)).not.toBeVisible();
       expect(screen.queryByText(/Goodbye!/i)).not.toBeVisible();
