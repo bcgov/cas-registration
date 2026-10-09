@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies*/
 import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
 import * as matchers from "@testing-library/jest-dom/matchers";
-import { expect, vi } from "vitest";
+import { afterAll, expect, vi } from "vitest";
 import {
   actionHandler,
   auth,
@@ -154,6 +154,21 @@ vi.mock("@bciers/actions/api/handleInternalAccessRequest", () => ({
 vi.mock("apps/compliance/src/app/utils/getElicensingInvoices.ts", () => ({
   getElicensingInvoices,
 }));
+
+// MUI DataGrid debounces row-height measurement (`rowPositionsDebounceMs`, 166ms) and doesn't cancel that
+// timer on unmount. If a file's last grid test finishes just before the environment is torn down, the timer
+// fires without jsdom ("ReferenceError: window is not defined"), failing the run. Files that load the grid
+// wait for it to flush before teardown.
+const muiDataGrid = vi.hoisted(() => ({ loaded: false }));
+vi.mock("@mui/x-data-grid", async (importOriginal) => {
+  muiDataGrid.loaded = true;
+  return importOriginal();
+});
+afterAll(async () => {
+  if (muiDataGrid.loaded) {
+    await new Promise((resolve) => setTimeout(resolve, 200));
+  }
+});
 
 // jsdom has no canvas implementation and logs "Not implemented" on every call; return null like it does, silently
 HTMLCanvasElement.prototype.getContext = (() =>
