@@ -1,7 +1,6 @@
 /// <reference types='vitest' />
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
-import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
 import path from "node:path";
 
 interface CreateVitestConfigOptions {
@@ -22,7 +21,10 @@ export function createVitestConfig({
   return defineConfig({
     root: rootDir,
     cacheDir: `../../node_modules/.vite/apps/${appName}`,
-    plugins: [react(), nxViteTsPaths()],
+    plugins: [react()],
+    resolve: {
+      tsconfigPaths: true,
+    },
     test: {
       globals: true,
       environment: "jsdom",

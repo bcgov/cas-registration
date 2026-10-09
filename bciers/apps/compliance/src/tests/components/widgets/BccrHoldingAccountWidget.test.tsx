@@ -1,5 +1,11 @@
 import BccrHoldingAccountWidget from "@/compliance/src/app/widgets/BccrHoldingAcountWidget";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  act,
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
 import { WidgetProps } from "@rjsf/utils";
 import { vi } from "vitest";
 
@@ -34,7 +40,7 @@ describe("BccrHoldingAccountWidget", () => {
     expect(input).not.toBeDisabled();
   });
 
-  it("allows only numeric input up to 15 digits", () => {
+  it("allows only numeric input up to 15 digits", async () => {
     render(<BccrHoldingAccountWidget {...defaultProps} />);
     const input = screen.getByRole("textbox");
 
@@ -47,7 +53,10 @@ describe("BccrHoldingAccountWidget", () => {
     expect(mockOnChange).not.toHaveBeenCalledWith("abc");
 
     // Test input longer than 15 digits
-    fireEvent.change(input, { target: { value: "1234567890123456" } });
+    // (truncated to 15 digits, which kicks off async account validation)
+    await act(async () => {
+      fireEvent.change(input, { target: { value: "1234567890123456" } });
+    });
     expect(mockOnChange).not.toHaveBeenCalledWith("1234567890123456");
   });
 

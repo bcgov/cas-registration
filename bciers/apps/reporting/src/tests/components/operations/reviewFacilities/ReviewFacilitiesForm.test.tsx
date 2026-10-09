@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { vi, Mock, it, expect } from "vitest";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import ReviewFacilitiesForm from "@reporting/src/app/components/operations/reviewFacilities/ReviewFacilitiesForm";
@@ -260,7 +266,9 @@ describe("ReviewFacilitiesForm", () => {
     const saveButton = screen.getByRole("button", {
       name: config.buttons.save,
     });
-    fireEvent.click(saveButton);
+    await act(async () => {
+      fireEvent.click(saveButton);
+    });
 
     expect(mockRouterPush).toHaveBeenCalledTimes(0);
   });
