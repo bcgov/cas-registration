@@ -12,11 +12,12 @@ class Rls:
     schema = "erc"
     table = ComplianceTableNames.ELICENSING_CLIENT_OPERATOR
     using_statement = """
-        operator_id IN (
-            SELECT uo.operator_id
+        exists (
+            SELECT 1
             FROM erc.user_operator uo
             WHERE uo.user_id = current_setting('my.guid', true)::uuid
             AND uo.status = 'Approved'
+            AND uo.operator_id = elicensing_client_operator.operator_id
         )
     """
     role_grants_mapping = {

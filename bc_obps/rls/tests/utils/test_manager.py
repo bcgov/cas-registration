@@ -168,11 +168,15 @@ class TestRlsManager(TestCase):
         mock_cursor_instance = mock_cursor.return_value.__enter__.return_value
 
         mock_policy = MagicMock()
+        mock_m2m_policy = MagicMock()
+        mock_m2m_rls = MagicMock(policies=[mock_m2m_policy])
         mock_all_models['app1']['contact'].Rls.policies = [mock_policy]
+        mock_all_models['app1']['contact'].Rls.m2m_rls_list = [mock_m2m_rls]
 
         RlsManager.drop_policies_for_model('app1', 'contact')
 
         mock_policy.drop_policy.assert_called_once_with(mock_cursor_instance)
+        mock_m2m_policy.drop_policy.assert_called_once_with(mock_cursor_instance)
 
     @patch.object(RlsManager, 'drop_policies')
     @patch.object(RlsManager, 'reset_privileges_for_roles')

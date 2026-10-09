@@ -68,6 +68,10 @@ class TestRlsOperations(TestCase):
         if not hasattr(rls, "grants"):
             raise NotImplementedError(f"Model `{table_name}` must implement a 'grants' attribute in 'Rls' class.")
 
+        enable_rls = getattr(rls, "enable_rls", False)
+        if enable_rls and not hasattr(rls, "policies"):
+            raise NotImplementedError(f"Model `{table_name}` must implement a 'policies' attribute in 'Rls' class.")
+
         if model._meta.many_to_many:
             m2m_rls_list = getattr(rls, "m2m_rls_list", None)
             if not m2m_rls_list or len(model._meta.many_to_many) != len(m2m_rls_list):
@@ -81,7 +85,7 @@ class TestRlsOperations(TestCase):
         Actions are lambda functions that perform the operation to be tested.
 
         NOTE: Using Django ORM functions for SELECT and UPDATE operations to keep the testing as close to the actual implementation as possible.
-        For the INSERT operation, we use raw SQL to avoid the ORM's insert cascade adn for the DELETE operation, we use raw SQL to avoid the ORM's delete cascade.
+        For the INSERT operation, we use raw SQL to avoid the ORM's insert cascade and for the DELETE operation, we use raw SQL to avoid the ORM's delete cascade.
         (For instance, if a model has a foreign key constraint, the ORM will try to create/delete the related objects first)
         """
 
@@ -138,6 +142,13 @@ class TestRlsOperations(TestCase):
         for table_name, role_grants_mapping in rls.m2m_models_grants_mapping.items():
             user_grants = role_grants_mapping.get(role, [])
             through_model = self._get_through_model(model, table_name.value)
+            through_model_name = self._get_table_name(through_model)
+            if hasattr(model, 'Rls'):
+                with connection.cursor() as cursor:
+                    cursor.execute("set role postgres")
+                with connection.cursor() as cursor:
+                    cursor.execute(f'ALTER TABLE erc.{through_model_name} DISABLE ROW LEVEL SECURITY')
+            self._set_role(self.users[role])
             self._check_permissions(through_model, user_grants, table_name.value)
 
     def test_all_user_roles_grants(self):
