@@ -57,7 +57,7 @@ export default async function SelectOperatorReceivedPage({
     return (
       <section className="text-center my-auto text-2xl flex flex-col gap-3">
         <span>
-          <AccessTimeFilledIcon sx={{ color: "#FFCC00", fontSize: 50 }} />
+          <AccessTimeFilledIcon className="text-[#FFCC00] text-[50px]" />
         </span>
         {content}
         {content && (

@@ -40,7 +40,7 @@ const SectionTaskListItem: React.FC<TaskListItemProps> = ({
         </ListItemButton>
       </ListItem>
       <Collapse in={open}>
-        <List component="div" disablePadding sx={{ pl: 2 }}>
+        <List component="div" disablePadding className="pl-4">
           {item.elements &&
             item.elements.map((elt) => {
               const TaskListChildItem = elementFactory(elt);

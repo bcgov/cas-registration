@@ -141,7 +141,7 @@ const MultiStepBase = ({
       >
         {children}
         <div className="flex flex-col grow justify-end">
-          <div className="min-h-[48px] box-border">{renderedErrors}</div>
+          <div className="min-h-12 box-border">{renderedErrors}</div>
           <MultiStepButtons
             disabled={isDisabled}
             isSubmitting={isSubmitting}

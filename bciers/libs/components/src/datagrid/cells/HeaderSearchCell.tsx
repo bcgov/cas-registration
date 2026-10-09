@@ -75,7 +75,7 @@ const SearchCell = ({
     <div className="w-full pt-2">
       <OutsideClickHandler onOutsideClick={handleResetFocus}>
         <TextField
-          className="w-full px-2 py-1"
+          className="w-full px-2 py-1 [&_input]:p-2"
           placeholder="Search"
           onChange={handleChange}
           onClick={() => setLastFocusedField(field)}
@@ -96,11 +96,6 @@ const SearchCell = ({
               e.currentTarget.value.length,
               e.currentTarget.value.length,
             );
-          }}
-          sx={{
-            input: {
-              padding: "8px",
-            },
           }}
         />
       </OutsideClickHandler>

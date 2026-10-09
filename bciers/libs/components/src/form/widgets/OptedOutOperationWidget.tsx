@@ -5,7 +5,6 @@ import ComboBox from "./ComboBox";
 import { actionHandler } from "@bciers/actions";
 import { useState, useLayoutEffect } from "react";
 import ToggleWidget from "./ToggleWidget";
-import { BC_GOV_COMPONENTS_GREY } from "@bciers/styles";
 import {
   useValidationErrors,
   handleApiResponse,
@@ -60,13 +59,11 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   const { errors, setErrors, renderedErrors } = useValidationErrors();
 
   // Sync status when value changes from outside (e.g., initial load)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useLayoutEffect(() => {
     if (finalReportingYear !== undefined && finalReportingYear !== null) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatus("Opted-out");
     } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatus("Opted-in");
     }
   }, [finalReportingYear]);
@@ -159,7 +156,7 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
             Year that final report is expected
           </label>
           <div className="flex flex-col gap-2">
-            <div style={{ width: 300, minWidth: "12rem" }}>
+            <div className="w-75 min-w-48">
               <ComboBox
                 id={`${id}-final-reporting-year`}
                 schema={
@@ -185,10 +182,7 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
             </div>
             {renderedErrors}
             {pendingFinalReportingYear !== undefined && (
-              <div
-                className="text-sm leading-relaxed"
-                style={{ color: BC_GOV_COMPONENTS_GREY }}
-              >
+              <div className="text-sm leading-relaxed text-bc-component-grey">
                 Operation will not report for {pendingFinalReportingYear + 1}{" "}
                 reporting year and subsequent years
               </div>

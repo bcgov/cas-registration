@@ -19,7 +19,7 @@ export default function EndOfFacilityForm({
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box className="p-6">
       <div className="container mx-auto p-4" data-testid="facility-review">
         <MultiStepHeader
           stepIndex={navigationInformation.headerStepIndex}

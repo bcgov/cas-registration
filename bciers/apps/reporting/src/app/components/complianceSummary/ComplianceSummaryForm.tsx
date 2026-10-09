@@ -35,7 +35,7 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   );
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box className="p-6">
       <div className="container mx-auto p-4" data-testid="compliance-summary">
         <MultiStepHeader
           stepIndex={navigationInformation.headerStepIndex}
@@ -44,7 +44,7 @@ const ComplianceSummaryForm: React.FC<Props> = ({
       </div>
       <div className="w-full flex">
         <ReportingTaskList elements={navigationInformation.taskList} />
-        <div className="w-full md:max-w-[60%]">
+        <div className="w-full md:max-w-3/5">
           <FormBase
             data-testid="compliance-summary-form"
             schema={complianceSummarySchema}

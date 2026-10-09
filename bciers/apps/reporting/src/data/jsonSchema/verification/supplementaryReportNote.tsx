@@ -1,6 +1,6 @@
 import { Box, Link, Typography } from "@mui/material";
 export const infoNote = () => (
-  <Box sx={{ display: "flex", alignItems: "center" }}>
+  <Box className="flex items-center">
     <Typography variant="body2">
       <strong>Note:</strong> If you are submitting an updated report to correct
       an error in a previous report, and were required to have this updated
@@ -13,7 +13,7 @@ export const infoNote = () => (
         }
         target="_blank"
         rel="noopener noreferrer"
-        sx={{ color: "inherit", textDecoration: "none" }}
+        className="text-bc-link-blue no-underline"
       >
         verification guidance webpage.
       </Link>

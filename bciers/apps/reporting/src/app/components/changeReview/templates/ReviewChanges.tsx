@@ -114,11 +114,11 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
       ? groupPersonResponsibleChanges(items)
       : items;
     return (
-      <Box mb={4}>
+      <Box className="mb-8">
         <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-0">
           {title}
         </Typography>
-        <Divider sx={{ mb: 2 }} />
+        <Divider className="mb-4" />
         {processedItems.map((item: any, idx: number) => (
           <ChangeItemDisplay key={item.field + idx} item={item} />
         ))}
@@ -155,7 +155,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
               ? (wholeFacility.oldValue ?? wholeFacility.old_value)
               : (wholeFacility.newValue ?? wholeFacility.new_value);
           return (
-            <Box key={facilityName} mb={4}>
+            <Box className="mb-8" key={facilityName}>
               <FacilityReportSection
                 facilityName={facilityName}
                 facilityData={val ?? {}}
@@ -188,7 +188,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
         );
 
         return (
-          <Box key={facilityName} mb={4}>
+          <Box className="mb-8" key={facilityName}>
             <SectionReview
               title={`Report Information - ${facilityName}`}
               fields={[]}
@@ -197,7 +197,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
             >
               {/* Facility name change */}
               {facilityNameChange && (
-                <Box ml={2}>
+                <Box className="ml-4">
                   <ChangeItemDisplay
                     item={{
                       ...facilityNameChange,
@@ -209,7 +209,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
 
               {/* Activity data */}
               {activityChanges.length > 0 && (
-                <Box mb={3}>
+                <Box className="mb-6">
                   <SimpleActivityDiff
                     changes={activityChanges}
                     hideFacilityHeaders
@@ -219,21 +219,21 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
 
               {/* Emission summary */}
               {emissionSummaryChanges.length > 0 && (
-                <Box mb={3}>
+                <Box className="mb-6">
                   <EmissionSummaryChangeView data={emissionSummaryChanges} />
                 </Box>
               )}
 
               {/* Production data */}
               {!isReportingOnly && productionDataChanges.length > 0 && (
-                <Box mb={3}>
+                <Box className="mb-6">
                   <ProductionDataChangeView data={productionDataChanges} />
                 </Box>
               )}
 
               {/* Emission allocation */}
               {!isReportingOnly && emissionAllocationChanges.length > 0 && (
-                <Box mb={3}>
+                <Box className="mb-6">
                   <EmissionAllocationChangeView
                     data={emissionAllocationChanges}
                   />
@@ -242,13 +242,13 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
 
               {/* Non-attributable emissions */}
               {nonAttributableChanges.length > 0 && (
-                <Box mb={3}>
+                <Box className="mb-6">
                   <SectionReview
                     title="Non-Attributable Emissions"
                     data={{}}
                     fields={[]}
                   >
-                    <Box ml={2}>
+                    <Box className="ml-4">
                       <FieldDisplay
                         label="Did your non-attributable emissions exceed 100 tCO2e?"
                         value={nonAttributableChanges.some(

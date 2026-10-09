@@ -17,10 +17,7 @@ const Note = ({
   showNotePrefix = true,
 }: Props) => {
   return (
-    <div
-      className={classNames}
-      style={{ display: "flex", alignItems: "center" }}
-    >
+    <div className={`flex items-center ${classNames ?? ""}`}>
       <div className={"mr-4"}>
         {showAlertIcon && <AlertIcon width={"30"} height={"30"} />}
         {showNotePrefix && <strong>Note: </strong>}

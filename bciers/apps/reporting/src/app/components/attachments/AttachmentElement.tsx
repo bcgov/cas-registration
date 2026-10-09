@@ -74,7 +74,6 @@ const AttachmentElement: React.FC<Props> = ({
       <input
         ref={hiddenFileInput}
         onChange={handleChange}
-        style={{ display: "none" }}
         type="file"
         className="hidden"
         value=""

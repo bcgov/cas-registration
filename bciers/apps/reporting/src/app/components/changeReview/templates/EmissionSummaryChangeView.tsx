@@ -85,7 +85,7 @@ export const EmissionSummaryChangeView: React.FC<{ data: ChangeItem[] }> = ({
   if (!sections.length) return null;
 
   return (
-    <Box mb={4}>
+    <Box className="mb-8">
       <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-4">
         Emissions Summary (in tCO2e)
       </Typography>
@@ -99,7 +99,7 @@ export const EmissionSummaryChangeView: React.FC<{ data: ChangeItem[] }> = ({
           {section.changes.map((change, cIdx) => (
             <ChangeItemDisplay key={`${change.field}-${cIdx}`} item={change} />
           ))}
-          {idx < sections.length - 1 && <Divider sx={{ my: 3 }} />}
+          {idx < sections.length - 1 && <Divider className="my-6" />}
         </React.Fragment>
       ))}
     </Box>

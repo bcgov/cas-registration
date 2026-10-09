@@ -2,7 +2,6 @@
 import Check from "@bciers/components/icons/Check";
 import Link from "next/link";
 import { Button, Box, Typography } from "@mui/material";
-import { BC_GOV_LINKS_COLOR } from "@bciers/styles";
 
 interface Props {
   submissionDate: string;
@@ -20,44 +19,31 @@ export default function SubmissionSuccess({
     : "You successfully submitted your report.";
 
   return (
-    <Box display="flex" justifyContent="center" mt={10}>
+    <Box className="flex justify-center mt-20">
       <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
+        className="flex flex-col items-center"
         maxWidth={600}
         minHeight="20vh"
       >
-        <Box display="flex" flexDirection="column" alignItems="center">
+        <Box className="flex flex-col items-center">
           <Check />
         </Box>
-        <Box mt={3} textAlign="center">
-          <Typography
-            gutterBottom
-            sx={{ fontFamily: "Inter, sans-serif", fontWeight: 600 }}
-          >
+        <Box className="mt-6 text-center">
+          <Typography gutterBottom className="font-inter font-semibold">
             Successful Submission
           </Typography>
           <Typography>{successMessage}</Typography>
-          <Typography mt={1}>Submission time: {submissionDate}</Typography>
+          <Typography className="mt-2">
+            Submission time: {submissionDate}
+          </Typography>
         </Box>
-        <Box
-          mt={3}
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          gap={2}
-        >
+        <Box className="mt-6 flex flex-col items-center gap-4">
           {isSupplementaryReport && (
             <Button
               variant="outlined"
               component={Link}
               href={`/reports/report-history/${reportId}`}
-              sx={{
-                width: 200,
-                color: BC_GOV_LINKS_COLOR,
-                fontFamily: "Inter, sans-serif",
-              }}
+              className="w-50 text-bc-link-blue font-inter"
             >
               View report history
             </Button>
@@ -66,11 +52,7 @@ export default function SubmissionSuccess({
             variant="outlined"
             component={Link}
             href="/reports/current-reports"
-            sx={{
-              width: 200,
-              color: BC_GOV_LINKS_COLOR,
-              fontFamily: "Inter, sans-serif",
-            }}
+            className="w-50 text-bc-link-blue font-inter"
           >
             Return to report table
           </Button>

@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 export const CustomHelpText = (
   <Box>
-    <Typography variant="body1" sx={{ mb: 2 }}>
+    <Typography variant="body1" className="mb-4">
       This activity form is currently not available in BCIERS.
     </Typography>
     <Typography variant="body1">

@@ -30,15 +30,11 @@ const CheckboxWidget: React.FC<WidgetProps> = ({
           onChange={(event: { target: { checked: any } }) =>
             onChange(event.target.checked)
           }
-          sx={{
-            ...(alignment === "top" && { paddingTop: "2px" }), // Apply alignment style if top
-          }}
+          className={alignment === "top" ? "pt-0.5" : ""}
         />
       }
       label={checkboxLabel} // Render the custom label or fallback label
-      style={{
-        alignItems: alignment === "top" ? "flex-start" : "center", // Handle alignment for label
-      }}
+      className={alignment === "top" ? "items-start" : "items-center"}
     />
   );
 };

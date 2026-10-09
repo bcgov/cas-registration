@@ -1,15 +1,14 @@
 import InfoIcon from "@mui/icons-material/Info";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Box, Paper, Typography, Button, Link, Tooltip } from "@mui/material";
-import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
 import { FieldTemplateProps } from "@rjsf/utils";
 import React from "react";
 import LoopIcon from "@mui/icons-material/Loop";
 
 export const getInfoNote = (operationId: string) => (
-  <Paper sx={{ p: 2, mb: 3, bgcolor: LIGHT_BLUE_BG_COLOR, color: BC_GOV_TEXT }}>
-    <Box sx={{ display: "flex", alignItems: "center" }}>
-      <InfoIcon sx={{ mr: 1 }} />
+  <Paper className="p-4 mb-6 bg-bc-light-blue text-bc-text">
+    <Box className="flex items-center">
+      <InfoIcon className="mr-2" />
       <Typography variant="body2">
         Linear Facilities Operations must register and report for all large and
         medium facilities, as well as a small aggregate, if applicable.{" "}
@@ -20,18 +19,10 @@ export const getInfoNote = (operationId: string) => (
               href={`/administration/operations/${operationId}/facilities/add-facility?isNewTab=true`}
               target="_blank"
               rel="noopener noreferrer"
-              sx={{
-                color: "inherit",
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center",
-              }}
+              className="text-bc-link-blue no-underline inline-flex items-center"
             >
               <u>Add it here</u>
-              <OpenInNewIcon
-                fontSize="inherit"
-                style={{ marginLeft: ".1rem" }}
-              />
+              <OpenInNewIcon fontSize="inherit" className="ml-[0.1rem]" />
             </Link>{" "}
           </span>
         </Tooltip>

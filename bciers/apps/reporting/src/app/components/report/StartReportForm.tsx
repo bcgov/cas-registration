@@ -72,7 +72,7 @@ export default function StartReportForm({
         <Button
           variant="outlined"
           onClick={() => router.push(`/reports/previous-years`)}
-          className="min-w-[82px] border-bc-blue px-6 py-2.5 text-bc-links hover:border-bc-primary-blue"
+          className="min-w-20.5 border-bc-blue px-6 py-2.5 text-bc-links hover:border-bc-primary-blue"
         >
           Cancel
         </Button>
@@ -80,7 +80,7 @@ export default function StartReportForm({
         <Button
           variant="contained"
           type="submit"
-          className="min-w-[82px] bg-bc-blue px-6 py-2.5 hover:bg-bc-primary-blue"
+          className="min-w-20.5 bg-bc-blue px-6 py-2.5 hover:bg-bc-primary-blue"
         >
           Start
         </Button>

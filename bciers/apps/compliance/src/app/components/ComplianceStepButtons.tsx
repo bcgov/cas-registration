@@ -56,7 +56,7 @@ export const ComplianceStepButtons: React.FC<ComplianceStepButtonsProps> = ({
             variant="outlined"
             onClick={onBackClick ?? (() => navigate(backUrl))}
             disabled={backButtonDisabled}
-            className="py-2.5 min-w-[120px] border-bc-blue text-bc-links hover:border-bc-primary-blue disabled:border-bc-grey disabled:text-bc-grey-bg"
+            className="py-2.5 min-w-30 border-bc-blue text-bc-links hover:border-bc-primary-blue disabled:border-bc-grey disabled:text-bc-grey-bg"
           >
             {backButtonText}
           </Button>
@@ -68,7 +68,7 @@ export const ComplianceStepButtons: React.FC<ComplianceStepButtonsProps> = ({
             variant={middleButtonDisabled ? "contained" : "outlined"}
             onClick={onMiddleButtonClick}
             disabled={middleButtonDisabled}
-            className="py-2.5 min-w-[120px] border-bc-blue text-bc-links hover:border-bc-primary-blue disabled:border-bc-grey disabled:text-bc-grey-bg"
+            className="py-2.5 min-w-30 border-bc-blue text-bc-links hover:border-bc-primary-blue disabled:border-bc-grey disabled:text-bc-grey-bg"
           >
             {middleButtonText}
           </Button>
@@ -81,7 +81,7 @@ export const ComplianceStepButtons: React.FC<ComplianceStepButtonsProps> = ({
             variant="contained"
             onClick={onContinueClick ?? (() => navigate(continueUrl))}
             disabled={submitButtonDisabled}
-            className="py-2.5 min-w-[120px] bg-bc-blue hover:bg-bc-primary-blue disabled:bg-bc-grey disabled:text-bc-grey-bg"
+            className="py-2.5 min-w-30 bg-bc-blue hover:bg-bc-primary-blue disabled:bg-bc-grey disabled:text-bc-grey-bg"
             type={continueButtonType}
           >
             {continueButtonText}

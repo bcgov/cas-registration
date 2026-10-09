@@ -1,16 +1,15 @@
 import InfoIcon from "@mui/icons-material/Info";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Box, Paper, Typography, Link, Button, Tooltip } from "@mui/material";
-import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
 import { FieldTemplateProps } from "@rjsf/utils";
 import React from "react";
 import LoopIcon from "@mui/icons-material/Loop";
 import ErrorCircle from "@bciers/components/icons/ErrorCircle";
 
 export const infoNote = (
-  <Paper sx={{ p: 2, mb: 3, bgcolor: LIGHT_BLUE_BG_COLOR, color: BC_GOV_TEXT }}>
-    <Box sx={{ display: "flex", alignItems: "center" }}>
-      <InfoIcon sx={{ mr: 1 }} />
+  <Paper className="p-4 mb-6 bg-bc-light-blue text-bc-text">
+    <Box className="flex items-center">
+      <InfoIcon className="mr-2" />
       <Typography variant="body2">
         See that information is incorrect or need to add a new contact? Update
         it here in{" "}
@@ -19,16 +18,10 @@ export const infoNote = (
             href="/administration/contacts?isNewTab=true"
             target="_blank"
             rel="noopener noreferrer"
-            sx={{
-              color: "inherit",
-              textDecoration: "none",
-              display: "inline-flex",
-              alignItems: "center",
-            }}
+            className="text-bc-link-blue no-underline inline-flex items-center"
           >
             Contacts
-            <OpenInNewIcon fontSize="inherit" style={{ marginLeft: ".1rem" }} />
-            .
+            <OpenInNewIcon fontSize="inherit" className="ml-[0.1rem]" />.
           </Link>
         </Tooltip>
       </Typography>
@@ -66,22 +59,14 @@ export const AddressErrorWidget = (props: any) => {
   return (
     <Paper
       variant="outlined"
-      sx={{
-        p: 1.5,
-        mt: 0,
-        mb: 1,
-        bgcolor: "#EFDFDE",
-        border: "1px solid #E6CDD1",
-        borderRadius: 1.5,
-        width: "100%",
-      }}
+      className="p-3 mt-0 mb-2 bg-[#EFDFDE] border border-[#E6CDD1] rounded-md w-full"
       elevation={0}
     >
-      <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+      <Box className="flex items-center w-full">
         <ErrorCircle />
         <Typography
           variant="body2"
-          sx={{ width: "100%", display: "flex", alignItems: "center" }}
+          className="w-full flex items-center"
           component="div"
         >
           <span dangerouslySetInnerHTML={{ __html: value }} />

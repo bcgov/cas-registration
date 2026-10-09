@@ -16,4 +16,6 @@ export const LIGHT_GREY_BG_COLOR = "#fafafc";
 export const LIGHT_GREY_COLOR_200 = "#f5f5f5";
 export const LIGHT_GREY_COLOR_300 = "#f0f0f0";
 export const LIGHT_BLUE_BG_COLOR = "#DCE9F6";
+export const LIGHT_RED_BG_COLOR = "#FBEAEA";
+export const LIGHT_RED_BORDER_COLOR = "#F1B5B8";
 export const WHITE = "#ffffff";

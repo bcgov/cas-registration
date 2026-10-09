@@ -54,15 +54,8 @@ export function SourceTypeBoxTemplate({
   const changeLabel = sourceTypeChange ? (
     <Typography
       component="span"
+      className="ml-4 px-4 py-1 rounded-sm text-[0.875rem] font-bold text-white"
       sx={{
-        ml: 2,
-        px: 2,
-        py: 0.5,
-        borderRadius: 1,
-        fontSize: "0.875rem",
-        fontWeight: "bold",
-        color: "white",
-
         bgcolor:
           sourceTypeChange?.type === "deleted" ||
           sourceTypeChange?.type === "removed"
@@ -80,15 +73,15 @@ export function SourceTypeBoxTemplate({
   ) : null;
 
   return (
-    <Paper className={classNames} sx={{ marginBottom: "10px" }}>
-      <Card style={{ textAlign: "left" }}>
-        <Grid container spacing={1} sx={{ justifyContent: "space-between" }}>
+    <Paper className={`mb-2.5 ${classNames}`}>
+      <Card className="text-left">
+        <Grid container spacing={1} className="justify-between">
           <Grid item xs={10}>
             <CardHeader
-              sx={{ color: "blue" }}
+              className="text-[blue]"
               titleTypographyProps={{ variant: "h6", color: "#38598A" }}
               title={
-                <div style={{ display: "flex", alignItems: "center" }}>
+                <div className="flex items-center">
                   {label}
                   {changeLabel}
                 </div>
@@ -97,9 +90,7 @@ export function SourceTypeBoxTemplate({
           </Grid>
           {!readonly && (
             <Grid item xs={1}>
-              <CardActions
-                sx={{ justifyContent: "flex-end", marginRight: "30px" }}
-              >
+              <CardActions className="justify-end mr-7.5">
                 <IconButton onClick={() => setExpand(!expand)}>
                   {expand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </IconButton>
@@ -107,15 +98,7 @@ export function SourceTypeBoxTemplate({
             </Grid>
           )}
         </Grid>
-        <Collapse
-          in={expand}
-          sx={{
-            marginLeft: "30px",
-            marginRight: "30px",
-            marginTop: "10px",
-            marginBottom: "10px",
-          }}
-        >
+        <Collapse in={expand} className="mx-7.5 my-2.5">
           <div style={contentStyles}>
             {description}
             {children}

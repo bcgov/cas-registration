@@ -64,7 +64,7 @@ const PenaltyTypeRadioWidget = ({
     row
     value={value ?? ""}
     onChange={(_, selected) => onChange(selected)}
-    sx={{ flexWrap: "nowrap", gap: 0 }}
+    className="flex-nowrap gap-0"
   >
     {(options.enumOptions ?? []).map((option, index) => (
       <FormControlLabel

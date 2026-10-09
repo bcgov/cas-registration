@@ -6,10 +6,6 @@ import { createReportVersion } from "@reporting/src/app/utils/createReportVersio
 import { getReportingYear } from "@bciers/actions/api";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import {
-  BC_GOV_LINKS_COLOR,
-  BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-} from "@bciers/styles";
 import { ReportOperationStatus } from "@bciers/utils/src/enums";
 
 interface ActionCellProps extends GridRenderCellParams {
@@ -77,13 +73,7 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
   // Show "Available Soon" for all actions if reporting is not open or row is restricted
   if (!isReportingOpen || row.restricted) {
     return (
-      <div
-        style={{
-          whiteSpace: "normal",
-          fontSize: "16px",
-          color: BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-        }}
-      >
+      <div className="whitespace-normal text-[16px] text-bc-primary-blue">
         Available Soon
       </div>
     );
@@ -116,13 +106,9 @@ const ActionCell: React.FC<ActionCellProps> = ({ row, isReportingOpen }) => {
 
   return (
     <Button
-      sx={{
-        width: 120,
-        height: 40,
-        borderRadius: "5px",
-        border: `1px solid ${BC_GOV_LINKS_COLOR}`,
-        cursor: pending ? "not-allowed" : "pointer",
-      }}
+      className={`w-30 h-10 rounded-[5px] border border-solid border-bc-link-blue ${
+        pending ? "cursor-not-allowed" : "cursor-pointer"
+      }`}
       color="primary"
       disabled={pending}
       onClick={buttonAction}

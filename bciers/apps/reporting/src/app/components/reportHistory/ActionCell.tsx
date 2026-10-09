@@ -2,7 +2,6 @@ import { GridRenderCellParams } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
-import { BC_GOV_LINKS_COLOR } from "@bciers/styles";
 import { ReportOperationStatus } from "@bciers/utils/src/enums";
 
 const ReportHistoryActionCell = ({
@@ -40,13 +39,9 @@ const ReportHistoryActionCell = ({
 
   return (
     <Button
-      sx={{
-        width: 120,
-        height: 40,
-        borderRadius: "5px",
-        border: `1px solid ${BC_GOV_LINKS_COLOR}`,
-        cursor: buttonConfig.disabled ? "not-allowed" : "pointer",
-      }}
+      className={`w-30 h-10 rounded-[5px] border border-solid border-bc-link-blue ${
+        buttonConfig.disabled ? "cursor-not-allowed" : "cursor-pointer"
+      }`}
       color="primary"
       disabled={buttonConfig.disabled || hasClicked}
       onClick={async () => {

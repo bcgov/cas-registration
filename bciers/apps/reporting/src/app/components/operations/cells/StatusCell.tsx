@@ -25,11 +25,8 @@ export default function StatusCell(params: GridRenderCellParams) {
   const statusColor = colorMap.get(status) || "primary";
   return (
     <div
-      style={{
-        whiteSpace: "normal",
-        fontSize: "16px",
-        color: statusColor,
-      }}
+      className="whitespace-normal text-[16px]"
+      style={{ color: statusColor }}
     >
       {status}
     </div>

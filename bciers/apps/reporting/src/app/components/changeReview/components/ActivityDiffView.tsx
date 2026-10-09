@@ -2,7 +2,6 @@ import { Box, Typography } from "@mui/material";
 import { ActivityGroup, getChangeValue } from "../utils/activityViewHelpers";
 import ActivityView from "../../finalReview/templates/ActivityView";
 import { ChangeItem } from "../constants/types";
-import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles/colors";
 import { SourceTypeDiffView } from "./SourceTypeDiffView";
 
 interface WholeActivityDiffViewProps {
@@ -21,7 +20,7 @@ export const WholeActivityDiffView: React.FC<WholeActivityDiffViewProps> = ({
 }) => {
   const value = getChangeValue(changeItem);
   return (
-    <Box key={activityName} mt={2}>
+    <Box className="mt-4" key={activityName}>
       <ActivityView
         activity_data={[
           {
@@ -41,15 +40,8 @@ export const PartialActivityDiffView: React.FC<ActivityDiffViewProps> = ({
 }) => {
   // Only some source types (or their fields) changed
   return (
-    <Box key={activityName} mt={2}>
-      <Typography
-        sx={{
-          fontSize: "1.2rem",
-          color: BC_GOV_BACKGROUND_COLOR_BLUE,
-          fontWeight: "bold",
-          mb: 1,
-        }}
-      >
+    <Box className="mt-4" key={activityName}>
+      <Typography className="text-[1.2rem] text-bc-bg-blue font-bold mb-2">
         {activityName}
       </Typography>
 

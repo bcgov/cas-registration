@@ -12,15 +12,10 @@ export const infoNote = (
         href="/administration/operations?isNewTab=true"
         target="_blank"
         rel="noopener noreferrer"
-        sx={{
-          color: "inherit",
-          textDecoration: "underline",
-          display: "inline-flex",
-          alignItems: "center",
-        }}
+        className="text-inherit underline inline-flex items-center"
       >
         Register a missing operation.
-        <OpenInNewIcon fontSize="inherit" sx={{ ml: 0.25 }} />
+        <OpenInNewIcon fontSize="inherit" className="ml-0.5" />
       </Link>
     </Tooltip>{" "}
   </>

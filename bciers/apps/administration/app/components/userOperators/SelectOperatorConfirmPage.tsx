@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import WarningIcon from "@mui/icons-material/Warning";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import { Operator } from "../userOperators/types";
 import SelectOperatorConfirmForm from "./SelectOperatorConfirmForm";
 import getOperatorHasAdmin from "../operators/getOperatorHasAdmin";
@@ -57,14 +56,13 @@ export default async function SelectOperatorConfirmPage({
       return (
         <section className="text-center my-auto flex flex-col gap-3">
           <span>
-            <WarningIcon sx={{ color: "#D8292F", fontSize: 50 }} />
+            <WarningIcon className="text-bc-error-red text-[50px]" />
           </span>
           {hasAdmin ? declinedHasAdminJSX : declinedNoAdminJSX}
           <span className="text-sm">
             <Link
               href="/select-operator"
-              className="underline hover:no-underline text-sm"
-              style={{ color: BC_GOV_LINKS_COLOR }}
+              className="underline hover:no-underline text-sm text-bc-link-blue"
             >
               Select another operator
             </Link>
