@@ -147,9 +147,7 @@ describe("RJSF OperatorSearchWidget", () => {
     });
 
     act(() => {
-
       searchField.blur();
-
     });
 
     await waitFor(async () => {
