@@ -80,7 +80,8 @@ jobs:
         working-directory: ./bciers/apps/${{ inputs.nx_project }}-e2e
 
       - name: 🔑 Set Happo credentials
-        if: ${{ github.event_name != 'schedule' }}
+        # Happo shouldn't run on fully hands-off automation in our Nightlies or Merge Queue
+        if: ${{ github.event_name != 'schedule' && github.event_name != 'merge_group' }}
         shell: bash
         env:
           NX_PROJECT: ${{ inputs.nx_project }}
@@ -152,7 +153,7 @@ jobs:
           HAPPO_ALL_BROWSERS: ${{ inputs.all_happo_browsers && 'true' || 'false' }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
-        run: DEBUG=pw:api yarn nx run "$NX_PROJECT":${{ github.event_name == 'schedule' && 'e2e' || 'e2e:ci' }} -- --project=chromium
+        run: DEBUG=pw:api yarn nx run "$NX_PROJECT":${{ (github.event_name == 'schedule' || github.event_name == 'merge_group') && 'e2e' || 'e2e:ci' }} -- --project=chromium
         working-directory: ./bciers
 
 #      #     Reports weren't being used regularly though leaving this in here for debugging purposes.
