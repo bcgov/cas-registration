@@ -1,6 +1,8 @@
 import dataclasses
 from decimal import Decimal
+from unittest.mock import patch
 from django.test import TestCase
+from reporting.models.report_operation import ReportOperation
 from reporting.schema.report_emission_allocation import ReportEmissionAllocationsSchemaIn
 from reporting.models.emission_category import EmissionCategory
 from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
@@ -352,6 +354,26 @@ class TestReportEmissionAllocationService(TestCase):
                 expected_product_total['allocated_quantity'], retrieved_product_total['allocated_quantity']
             )
 
+    def test_get_report_emission_allocation_creates_empty_report_products_for_unregulated_products(self):
+
+        report_operation = ReportOperation.objects.get(report_version=self.test_infrastructure.report_version)
+
+        new_product = make_recipe("registration.tests.utils.regulated_product", is_regulated=False)
+        report_operation.regulated_products.add(new_product)
+
+        assert not ReportProduct.objects.filter(
+            report_version=self.test_infrastructure.report_version, product_id=new_product.id
+        ).exists()
+
+        ReportEmissionAllocationService.get_emission_allocation_data(
+            self.test_infrastructure.report_version.id,
+            self.test_infrastructure.facility_report.facility_id,
+        )
+
+        assert ReportProduct.objects.filter(
+            report_version=self.test_infrastructure.report_version, product_id=new_product.id
+        ).exists()
+
     def test_save_emission_allocation(self):
         # Act:  Use the service to save some emission allocation data (payload includes data for 2 allocations)
         ReportEmissionAllocationService.save_emission_allocation_data(
@@ -423,7 +445,10 @@ class TestReportEmissionAllocationService(TestCase):
 
         assert retrieved_emission_allocations_data.has_missing_products
 
-    def test_has_missing_products_missing_non_regulated_products(self):
+    @patch(
+        "reporting.service.report_emission_allocation_service.ReportProductService.update_empty_records_for_unregulated_products"
+    )
+    def test_has_missing_products_missing_non_regulated_products(self, _):
 
         product = make_recipe("registration.tests.utils.regulated_product", is_regulated=False)
         self.test_infrastructure.report_version.report_operation.regulated_products.add(product)
