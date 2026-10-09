@@ -125,7 +125,7 @@ describe("InternalReviewByDirectorComponent", () => {
   it("hides action buttons when issuance status is not actionable", () => {
     const dataWithDifferentStatus = {
       ...mockData,
-      issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
+      issuance_status: IssuanceStatus.DECLINED,
     };
 
     render(

@@ -146,7 +146,7 @@ describe("TrackStatusOfIssuanceComponent", () => {
   it("handles back button navigation for other statuses", () => {
     const otherStatusData = {
       ...mockData,
-      issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
+      issuance_status: IssuanceStatus.CHANGES_REQUIRED,
     };
 
     render(
