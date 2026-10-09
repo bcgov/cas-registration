@@ -190,7 +190,7 @@ class InvoiceFee:
     paymentBaseAmount: Decimal
     paymentTotal: Decimal
     invoiceNumber: str
-    feeType: Optional[str] = None
+    feeType: Literal["Regular", "Interest"]
     payments: List[Payment] = field(default_factory=list)
     adjustments: List[FeeAdjustment] = field(default_factory=list)
 
