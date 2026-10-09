@@ -86,9 +86,7 @@ describe("RJSF OperatorSearchWidget", () => {
 
     const searchField = screen.getByRole("combobox");
 
-    await act(async () => {
-      await userEvent.type(searchField, "Operator");
-    });
+    await userEvent.type(searchField, "Operator");
 
     actionHandler.mockResolvedValue([
       {
@@ -131,9 +129,7 @@ describe("RJSF OperatorSearchWidget", () => {
 
     const searchField = screen.getByRole("combobox");
 
-    await act(async () => {
-      await userEvent.type(searchField, "Operator");
-    });
+    await userEvent.type(searchField, "Operator");
 
     actionHandler.mockResolvedValue([
       {
@@ -150,7 +146,9 @@ describe("RJSF OperatorSearchWidget", () => {
       expect(screen.getByText("Operator 1")).toBeVisible();
     });
 
-    searchField.blur();
+    act(() => {
+      searchField.blur();
+    });
 
     await waitFor(async () => {
       expect(screen.queryByText("Operator 1")).not.toBeInTheDocument();
@@ -167,9 +165,7 @@ describe("RJSF OperatorSearchWidget", () => {
 
     const searchField = screen.getByRole("combobox");
 
-    await act(async () => {
-      await userEvent.type(searchField, "Operator");
-    });
+    await userEvent.type(searchField, "Operator");
 
     actionHandler.mockResolvedValue([]);
 
@@ -194,9 +190,7 @@ describe("RJSF OperatorSearchWidget", () => {
 
     const searchField = screen.getByRole("combobox");
 
-    await act(async () => {
-      await userEvent.type(searchField, "Operator");
-    });
+    await userEvent.type(searchField, "Operator");
 
     actionHandler.mockResolvedValue([
       {
@@ -215,9 +209,7 @@ describe("RJSF OperatorSearchWidget", () => {
 
     const operator1 = screen.getByText("Operator 1");
 
-    await act(async () => {
-      await userEvent.click(operator1);
-    });
+    await userEvent.click(operator1);
 
     expect(searchField).toHaveValue("Operator 1");
 
@@ -235,9 +227,7 @@ describe("RJSF OperatorSearchWidget", () => {
 
     const searchField = screen.getByRole("combobox");
 
-    await act(async () => {
-      await userEvent.type(searchField, "Operator");
-    });
+    await userEvent.type(searchField, "Operator");
 
     actionHandler.mockResolvedValue([]);
 
@@ -261,9 +251,7 @@ describe("RJSF OperatorSearchWidget", () => {
 
     const submitButton = screen.getByRole("button", { name: "Submit" });
 
-    await act(async () => {
-      await userEvent.click(submitButton);
-    });
+    await userEvent.click(submitButton);
 
     expect(screen.getByText(/^.* is required/i)).toBeVisible();
   });

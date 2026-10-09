@@ -134,10 +134,18 @@ describe("safeFetchApi function", () => {
     captureExceptionMock.mockImplementationOnce(() => {
       throw new Error("Sentry server unreachable");
     });
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
 
     const result = await safeFetchApi("/endpoint", fallbackValue, "GET");
 
     expect(result).toEqual(fallbackValue);
     expect(captureExceptionMock).toHaveBeenCalledOnce();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Failed to report exception to Sentry:",
+      expect.any(Error),
+    );
+    consoleErrorSpy.mockRestore();
   });
 });

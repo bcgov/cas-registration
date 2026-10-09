@@ -58,15 +58,20 @@ const renderTransferForm = () => {
   );
 };
 
-const selectOperator = (label: RegExp, operatorName: string) => {
+// Selecting an operator triggers an async fetch + state update, so let act() flush it
+const selectOperator = async (label: RegExp, operatorName: string) => {
   fireEvent.change(screen.getByLabelText(label), {
     target: { value: "Operator" },
   });
-  fireEvent.click(screen.getByRole("option", { name: operatorName }));
+  await act(async () => {
+    fireEvent.click(screen.getByRole("option", { name: operatorName }));
+  });
 };
 
 const selectEntityAndAssertFields = async (entity: string) => {
-  fireEvent.click(screen.getByLabelText(entity));
+  await act(async () => {
+    fireEvent.click(screen.getByLabelText(entity));
+  });
   if (entity === "Operation") {
     expect(screen.getByLabelText(/operation\*/i)).toBeVisible();
     expect(
@@ -154,8 +159,8 @@ describe("The TransferForm component", () => {
 
   it("should enable the submit button when the form is valid", async () => {
     renderTransferForm();
-    selectOperator(/current operator\*/i, "Operator 1");
-    selectOperator(/select the new operator\*/i, "Operator 2");
+    await selectOperator(/current operator\*/i, "Operator 1");
+    await selectOperator(/select the new operator\*/i, "Operator 2");
     await selectEntityAndAssertFields("Operation");
     await selectOperation(/operation\*/i, "Operation 1");
     await selectDateOfTransfer("2022-12-31");
@@ -164,8 +169,8 @@ describe("The TransferForm component", () => {
 
   it("displays error when same operator is selected", async () => {
     renderTransferForm();
-    selectOperator(/current operator\*/i, "Operator 1");
-    selectOperator(/select the new operator\*/i, "Operator 1");
+    await selectOperator(/current operator\*/i, "Operator 1");
+    await selectOperator(/select the new operator\*/i, "Operator 1");
     await selectEntityAndAssertFields("Operation");
     // make sure the operation field is disabled and the error message is displayed
     expect(
@@ -176,7 +181,7 @@ describe("The TransferForm component", () => {
 
   it("calls fetchOperationsPageData with new operator id when operator changes", async () => {
     renderTransferForm();
-    selectOperator(/current operator\*/i, "Operator 1");
+    await selectOperator(/current operator\*/i, "Operator 1");
     expect(fetchOperationsPageData).toHaveBeenCalledTimes(1);
     expect(fetchOperationsPageData).toHaveBeenCalledWith({
       operator_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",
@@ -186,7 +191,7 @@ describe("The TransferForm component", () => {
       end_date: true,
       status: "Active",
     });
-    selectOperator(/current operator\*/i, "Operator 2");
+    await selectOperator(/current operator\*/i, "Operator 2");
     expect(fetchOperationsPageData).toHaveBeenCalledTimes(2);
     expect(fetchOperationsPageData).toHaveBeenCalledWith({
       operator_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea064",
@@ -200,8 +205,8 @@ describe("The TransferForm component", () => {
 
   it("displays fields related to Facility entity", async () => {
     renderTransferForm();
-    selectOperator(/current operator\*/i, "Operator 1");
-    selectOperator(/select the new operator\*/i, "Operator 2");
+    await selectOperator(/current operator\*/i, "Operator 1");
+    await selectOperator(/select the new operator\*/i, "Operator 2");
     await selectEntityAndAssertFields("Facility");
   });
 
@@ -210,8 +215,8 @@ describe("The TransferForm component", () => {
     { timeout: 10000 },
     async () => {
       renderTransferForm();
-      selectOperator(/current operator\*/i, "Operator 1");
-      selectOperator(/select the new operator\*/i, "Operator 2");
+      await selectOperator(/current operator\*/i, "Operator 1");
+      await selectOperator(/select the new operator\*/i, "Operator 2");
       await selectEntityAndAssertFields("Facility");
       await selectOperation(
         /select the operation that the facility\(s\) currently belongs to\*/i,
@@ -231,8 +236,8 @@ describe("The TransferForm component", () => {
   it("submits the form and shows success screen", async () => {
     actionHandler.mockResolvedValueOnce({});
     renderTransferForm();
-    selectOperator(/current operator\*/i, "Operator 1");
-    selectOperator(/select the new operator\*/i, "Operator 2");
+    await selectOperator(/current operator\*/i, "Operator 1");
+    await selectOperator(/select the new operator\*/i, "Operator 2");
     await selectEntityAndAssertFields("Operation");
     await selectOperation(/operation\*/i, "Operation 1");
     await selectDateOfTransfer("2022-12-31");
@@ -290,8 +295,8 @@ describe("The TransferForm component", () => {
         error: errorMessage,
       });
       renderTransferForm();
-      selectOperator(/current operator\*/i, "Operator 1");
-      selectOperator(/select the new operator\*/i, "Operator 2");
+      await selectOperator(/current operator\*/i, "Operator 1");
+      await selectOperator(/select the new operator\*/i, "Operator 2");
       await selectEntityAndAssertFields("Operation");
       await selectOperation(/operation\*/i, "Operation 1");
       await selectDateOfTransfer("2022-12-31");

@@ -3,14 +3,9 @@
  * @description Unit tests for the ErrorPage and ErrorBoundary components.
  */
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import ErrorPage from "./ErrorPage";
-
-// Mock the Sentry module to avoid actual error logging during tests
-vi.mock("@sentry/nextjs", () => ({
-  captureException: vi.fn(),
-}));
 
 describe("ErrorPage", () => {
   /**

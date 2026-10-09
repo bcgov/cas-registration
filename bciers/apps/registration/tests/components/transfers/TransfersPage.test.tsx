@@ -8,6 +8,7 @@ import {
 } from "@bciers/testConfig/mocks";
 import TransfersDataGridPage from "@/registration/app/components/transfers/TransfersPage";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
+import { formatTransferRows } from "@/registration/app/components/transfers/fetchTransferEventsPageData";
 
 useRouter.mockReturnValue({
   query: {},
@@ -20,15 +21,17 @@ useSearchParams.mockReturnValue({
 
 vi.mock(
   "apps/registration/app/components/transfers/fetchTransferEventsPageData",
-  () => ({
+  async (importOriginal) => ({
+    ...(await importOriginal<object>()),
     default: fetchTransferEventsPageData,
   }),
 );
 
 useSessionRole.mockReturnValue(FrontEndRoles.CAS_ADMIN);
 
+// fetchTransferEventsPageData returns formatted rows (with `transfer_id`), which the grid uses for row ids
 const mockResponse = {
-  rows: [
+  rows: formatTransferRows([
     {
       operation__id: "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
       operation__name: "Operation 3",
@@ -69,7 +72,7 @@ const mockResponse = {
       status: "Completed",
       created_at: "2024-07-05T23:25:37.892Z",
     },
-  ],
+  ]),
   row_count: 4,
 };
 

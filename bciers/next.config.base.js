@@ -10,6 +10,10 @@ const baseConfig = {
     // Set the root directory to the bciers folder to avoid parent lockfile confusion
     root: path.join(__dirname),
   },
+  typescript: {
+    // Type-check only app code during `next build`; tests are checked by the `typecheck` target
+    tsconfigPath: "tsconfig.app.json",
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: "25mb",

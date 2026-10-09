@@ -329,21 +329,18 @@ const assertFormPost = async (
 
   // Find and click the submit button
   const saveButton = screen.getByRole("button", { name: /save/i });
-  act(() => {
-    userEvent.click(saveButton);
-  });
-
-  // Add some delay to allow async processes to complete
-  await new Promise((r) => setTimeout(r, 100));
+  await userEvent.click(saveButton);
 
   // Assertion to check if actionHandler was called correctly
-  expect(actionHandler).toHaveBeenCalledWith(
-    endPoint,
-    "POST",
-    revalidatePathPost,
-    {
-      body: JSON.stringify(responseData),
-    },
+  await waitFor(() =>
+    expect(actionHandler).toHaveBeenCalledWith(
+      endPoint,
+      "POST",
+      revalidatePathPost,
+      {
+        body: JSON.stringify(responseData),
+      },
+    ),
   );
 
   await waitFor(() => {
@@ -357,10 +354,8 @@ const assertFormPost = async (
 const assertFormPut = async (): Promise<void> => {
   // Submit valid form data
   const saveButton = screen.getByRole("button", { name: /save/i });
-  act(() => {
-    userEvent.click(saveButton);
-  });
   actionHandler.mockReturnValue({ error: null });
+  await userEvent.click(saveButton);
   await waitFor(() => {
     expect(
       screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),
@@ -540,7 +535,7 @@ describe("FacilityForm component", () => {
       <FacilityForm
         schema={facilitiesLfoSchema}
         uiSchema={facilitiesLfoUiSchema}
-        formData={{ name: "Smagg Facility", type: "Small Aggregrate" }}
+        formData={{ name: "Smagg Facility", type: "Small Aggregate" }}
       />,
     );
     // form fields
@@ -548,7 +543,7 @@ describe("FacilityForm component", () => {
       "Smagg Facility",
     );
     expect(container.querySelector("#root_section1_type")).toHaveTextContent(
-      "Small Aggregrate",
+      "Small Aggregate",
     );
     expect(
       screen.queryByText("BC Energy Regulator Well Authorization Number(s)"),

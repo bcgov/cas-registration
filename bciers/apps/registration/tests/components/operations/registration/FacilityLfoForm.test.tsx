@@ -170,7 +170,7 @@ describe("the FacilityLfoForm component", () => {
       name: "Continue",
     });
 
-    act(() => {
+    await act(async () => {
       fireEvent.click(submitButton);
     });
 
@@ -199,7 +199,7 @@ describe("the FacilityLfoForm component", () => {
         name: /add new facility/i,
       });
 
-      act(() => {
+      await act(async () => {
         fireEvent.click(addButton);
       });
 
@@ -227,7 +227,7 @@ describe("the FacilityLfoForm component", () => {
         },
       ]);
 
-      act(() => {
+      await act(async () => {
         fireEvent.click(saveButton);
       });
 
@@ -262,7 +262,7 @@ describe("the FacilityLfoForm component", () => {
         name: "Continue",
       });
 
-      act(() => {
+      await act(async () => {
         fireEvent.click(continueButton);
       });
 
@@ -286,7 +286,7 @@ describe("the FacilityLfoForm component", () => {
         name: /add new facility/i,
       });
 
-      act(() => {
+      await act(async () => {
         fireEvent.click(addButton);
       });
 
@@ -309,7 +309,7 @@ describe("the FacilityLfoForm component", () => {
         name: "Save",
       });
 
-      act(() => {
+      await act(async () => {
         fireEvent.click(saveButton);
       });
       expect(actionHandler).toHaveBeenCalledWith(
@@ -326,7 +326,12 @@ describe("the FacilityLfoForm component", () => {
           ]),
         },
       );
-      expect(screen.getAllByRole("row")).toHaveLength(4); // 2 existing facilities + the new one + header
+      // 2 existing facilities + the new one (data rows only; DataGrid also renders header rows)
+      const dataRows = screen
+        .getAllByRole("row")
+        .filter((row) => row.hasAttribute("data-id"));
+      expect(dataRows).toHaveLength(3);
+      expect(dataRows[2]).toHaveTextContent("Test Facility");
     },
   );
 });

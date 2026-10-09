@@ -1,10 +1,4 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import userEvent from "@testing-library/user-event";
@@ -38,9 +32,7 @@ async function clickSubmitButton(text: string) {
   const submitButton = screen.getByRole("button", { name: text });
   expect(submitButton).toHaveAttribute("type", "submit");
   expect(submitButton).toBeEnabled();
-  await act(async () => {
-    userEvent.click(submitButton);
-  });
+  await userEvent.click(submitButton);
 }
 // ⛏️ Helper function to click radio button search by...
 async function selectSearchByCRANumber() {
@@ -95,32 +87,22 @@ describe("Select Operator Form", () => {
   it("selects operator by legal name, submits form, and navigates on success", async () => {
     // Get the search field for entering the operator's legal name
     const searchField = screen.getByPlaceholderText(placeHolderLegalName);
-    // Enter text into the search by input field - legal_name
-    userEvent.type(searchField, operatorLegalName);
     // Mock the response of the action handler to return the search response array
-    actionHandler.mockResolvedValueOnce([responseLegalName]);
+    actionHandler.mockResolvedValue([responseLegalName]);
+    // Enter text into the search by input field - legal_name
+    await userEvent.type(searchField, operatorLegalName);
     // Wait for the operator's legal name to appear in the dropdown options
-    await waitFor(async () => {
-      expect(searchField).toHaveValue("Operator");
-    });
-    await waitFor(async () => {
-      expect(screen.getByText(operatorLegalName)).toBeVisible();
-    });
-    await waitFor(async () => {
-      expect(screen.getByText("Operator 1")).toBeVisible();
-    });
+    const operator1 = await screen.findByText(operatorLegalName);
+    expect(operator1).toBeVisible();
     // Select the operator from the dropdown
-    const operator1 = screen.getByText(operatorLegalName);
-    await act(async () => {
-      await userEvent.click(operator1);
-    });
+    await userEvent.click(operator1);
     // Verify that the search field contains the operator's legal name
     expect(searchField).toHaveValue(operatorLegalName);
 
     // Mock the actionHandler to return an operator on submit
     actionHandler.mockResolvedValueOnce(responseLegalName);
     // Submit the form
-    clickSubmitButton(buttonLegalName);
+    await clickSubmitButton(buttonLegalName);
 
     // Verify navigation to confirm operator page
     await waitFor(() => {
@@ -139,7 +121,7 @@ describe("Select Operator Form", () => {
     // Mock the actionHandler to return an operator on submit
     actionHandler.mockResolvedValueOnce(responseLegalName);
     // Submit the form
-    clickSubmitButton(buttonCRANumber);
+    await clickSubmitButton(buttonCRANumber);
     // Verify the required field alert is not trigered
     const requiredFieldError = screen.queryByText(requiredCRANumber);
     expect(requiredFieldError).not.toBeInTheDocument();

@@ -219,6 +219,10 @@ describe("ActionCell", () => {
       const consoleError = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
+      // React reports the uncaught error to console.warn before re-throwing it
+      const consoleWarn = vi
+        .spyOn(console, "warn")
+        .mockImplementation(() => {});
 
       const unhandledErrorPromise = new Promise<Error>((resolve) => {
         const handler = (event: ErrorEvent) => {
@@ -239,7 +243,17 @@ describe("ActionCell", () => {
         "We couldn't create a report for operation ID '100' and reporting year '2025': Creation Failed.",
       );
 
+      expect(consoleWarn).toHaveBeenCalledWith(
+        expect.any(String),
+
+        "An error occurred in the <ActionCell> component.",
+
+        expect.any(String),
+      );
+
       consoleError.mockRestore();
+
+      consoleWarn.mockRestore();
     });
   });
 });

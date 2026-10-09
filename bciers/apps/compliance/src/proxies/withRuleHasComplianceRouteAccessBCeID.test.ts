@@ -471,6 +471,15 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
   });
 
   describe("API failure / exception handling", () => {
+    // ruleRunner logs the caught error before redirecting; keep it out of the test output
+    let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+    beforeEach(() => {
+      consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    });
+    afterEach(() => {
+      consoleErrorSpy.mockRestore();
+    });
+
     it("redirects to error route when getUserComplianceAccessStatus throws an error", async () => {
       (getUserComplianceAccessStatus as Mock).mockRejectedValueOnce(
         new Error("Database connection error"),
@@ -479,6 +488,10 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
       const { res } = await runProxy(applyUnitsPath);
       expect(res!.status).toBe(307);
       expect(getPathname(res)).toBe(`${DashboardRoutes.ERROR}`);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "RuleRunner error:",
+        expect.any(Error),
+      );
     });
 
     it("redirects to error route when getComplianceSummary throws an error", async () => {
@@ -490,6 +503,10 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
       const { res } = await runProxy(pathForSeg(moPenaltyPaths[0]));
       expect(res!.status).toBe(307);
       expect(getPathname(res)).toBe(`${DashboardRoutes.ERROR}`);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "RuleRunner error:",
+        expect.any(Error),
+      );
     });
 
     it("redirects to error route when getComplianceAppliedUnits throws an error", async () => {
@@ -501,6 +518,10 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
       const { res } = await runProxy(applyUnitsPath);
       expect(res!.status).toBe(307);
       expect(getPathname(res)).toBe(`${DashboardRoutes.ERROR}`);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "RuleRunner error:",
+        expect.any(Error),
+      );
     });
 
     it("redirects to error route when getRequestIssuanceComplianceSummaryData throws an error", async () => {
@@ -512,6 +533,10 @@ describe("withRuleHasComplianceRouteAccess proxy", () => {
       const { res } = await runProxy(`${requestIssuanceReviewPath}/`);
       expect(res!.status).toBe(307);
       expect(getPathname(res)).toBe(`${DashboardRoutes.ERROR}`);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "RuleRunner error:",
+        expect.any(Error),
+      );
     });
   });
 

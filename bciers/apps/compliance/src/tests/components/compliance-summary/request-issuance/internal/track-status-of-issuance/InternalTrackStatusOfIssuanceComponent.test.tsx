@@ -222,6 +222,11 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
   });
 
   it("handles back button navigation for other statuses", () => {
+    // The schema only branches on APPROVED/DECLINED (the IDIR proxy redirects other statuses away
+    // from this page), so RJSF warns that no oneOf branch matches
+    const consoleWarnSpy = vi
+      .spyOn(console, "warn")
+      .mockImplementation(() => {});
     const otherStatusData = {
       ...mockData,
       issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
@@ -239,6 +244,10 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     expect(mockPush).toHaveBeenCalledWith(
       `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
     );
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("ignoring oneOf in dependencies"),
+    );
+    consoleWarnSpy.mockRestore();
   });
 
   it("displays approved note for approved status", () => {
