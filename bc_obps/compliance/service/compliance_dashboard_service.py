@@ -77,7 +77,7 @@ class ComplianceDashboardService:
             # Internal users: filter
             qs = filters.filter(compliance_report_version_queryset)
             if sort_by:
-                qs = qs.order_by(sort_by)
+                qs = qs.order_by(sort_by, "id")
             compliance_report_versions = qs
         else:
             operations = (
