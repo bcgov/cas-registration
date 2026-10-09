@@ -26,33 +26,26 @@ class AutomaticOverduePenaltyScenario(ScenarioHandler):
     DEFAULT_DAYS_OVERDUE = 45
     DEFAULT_PENALTY_AMOUNT = "3800.00"
 
-    @staticmethod
-    def _get_line_item_fee_choice() -> str:
-        """Inspects model field choices to dynamically return the valid 'fee' enum key."""
-        field_choices = dict(ElicensingLineItem._meta.get_field("line_item_type").choices)
-        return next(
-            (key for key in field_choices if str(key).lower() == "fee"),
-            "FEE",
-        )
-
     def execute(self, request: HttpRequest, data: ScenarioPayload) -> Dict[str, Any]:
         crv_id = data.compliance_report_version_id or 2
         payload = data.payload or {}
         days_overdue = int(payload.get("days_overdue", self.DEFAULT_DAYS_OVERDUE))
         penalty_status = payload.get("penalty_status", ComplianceObligation.PenaltyStatus.ACCRUING)
-        cap_reached = payload.get("cap_reached", False)
-        fee_choice = self._get_line_item_fee_choice()
+        fee_choice = ElicensingLineItem.LineItemType.FEE
 
         with RlsManager.bypass_rls():
-            # 1. Clean up earned credits for this version
+            # Clean up earned credits for this version
             ComplianceEarnedCredit.objects.filter(compliance_report_version_id=crv_id).delete()
 
-            # 2. Set report version status
+            # Set report version status
             crv = ComplianceReportVersion.objects.get(id=crv_id)
             crv.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
-            crv.save(update_fields=["status"])
+            # Reset to an original report, since scenarios that make it supplementary share this version
+            crv.is_supplementary = False
+            crv.previous_version = None
+            crv.save(update_fields=["status", "is_supplementary", "previous_version"])
 
-            # 3. Seed operator
+            # Seed Elicensing operator
             client_operator, _ = ElicensingClientOperator.objects.get_or_create(
                 client_object_id=1,
                 defaults={
@@ -61,7 +54,7 @@ class AutomaticOverduePenaltyScenario(ScenarioHandler):
                 },
             )
 
-            # 4. Seed invoice with overdue date
+            # Seed Elicensing invoice with overdue date
             past_due_date = timezone.now().date() - timedelta(days=days_overdue)
             invoice, _ = ElicensingInvoice.objects.update_or_create(
                 invoice_number="inv001",
@@ -76,7 +69,7 @@ class AutomaticOverduePenaltyScenario(ScenarioHandler):
                 },
             )
 
-            # 5. Seed line item with model-validated choice
+            # Seed Elicensing line item
             ElicensingLineItem.objects.update_or_create(
                 object_id=1,
                 elicensing_invoice=invoice,
@@ -88,7 +81,7 @@ class AutomaticOverduePenaltyScenario(ScenarioHandler):
                 },
             )
 
-            # 6. Seed / update compliance obligation
+            # Seed / update compliance obligation
             obligation, _ = ComplianceObligation.objects.update_or_create(
                 compliance_report_version_id=crv_id,
                 defaults={
@@ -101,9 +94,9 @@ class AutomaticOverduePenaltyScenario(ScenarioHandler):
                 },
             )
 
-            # 7. Seed penalty record when capped or marked unpaid
+            # Seed penalty record once the penalty has been invoiced (unpaid or paid)
             penalty_invoice_number = None
-            if cap_reached or penalty_status == ComplianceObligation.PenaltyStatus.NOT_PAID:
+            if penalty_status in (ComplianceObligation.PenaltyStatus.NOT_PAID, ComplianceObligation.PenaltyStatus.PAID):
                 penalty_amount = Decimal(str(payload.get("penalty_amount", self.DEFAULT_PENALTY_AMOUNT)))
 
                 penalty, _ = CompliancePenalty.objects.update_or_create(
@@ -115,7 +108,9 @@ class AutomaticOverduePenaltyScenario(ScenarioHandler):
                             if penalty_status == ComplianceObligation.PenaltyStatus.PAID
                             else CompliancePenalty.Status.NOT_PAID
                         ),
-                        "total_penalty_amount": penalty_amount,
+                        "penalty_amount": penalty_amount,
+                        # Penalties accrue from the day after the obligation invoice due date
+                        "accrual_start_date": past_due_date + timedelta(days=1),
                     },
                 )
 
@@ -132,6 +127,7 @@ class AutomaticOverduePenaltyScenario(ScenarioHandler):
                                 else penalty_amount
                             ),
                             "invoice_fee_balance": penalty_amount,
+                            "invoice_interest_balance": Decimal("0.00"),
                             "is_void": False,
                             "last_refreshed": timezone.now(),
                         },
@@ -144,6 +140,5 @@ class AutomaticOverduePenaltyScenario(ScenarioHandler):
             "obligation_id": obligation.obligation_id,
             "penalty_status": obligation.penalty_status,
             "days_overdue": days_overdue,
-            "cap_reached": cap_reached,
             "penalty_invoice_number": penalty_invoice_number,
         }

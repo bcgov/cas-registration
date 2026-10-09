@@ -35,7 +35,9 @@ export const generateReviewObligationPenaltyTaskList: (
     },
   ];
 
-  if (penaltyStatus !== PenaltyStatus.PAID) {
+  // The penalty is finalized once the obligation is met (accrual stops and it is invoiced),
+  // so there is nothing left to project
+  if (!isObligationFullyPaid) {
     elements.push({
       type: "Page" as const,
       title: "Penalty calculator",

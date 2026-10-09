@@ -7,13 +7,13 @@ describe("generateReviewObligationPenaltyTaskList", () => {
   const mockComplianceReportVersionId = 456;
   const mockReportingYear = 2024;
 
-  it("generates task list with correct structure and defaults", () => {
+  it("generates task list with correct structure while the obligation is not met and the penalty is unpaid", () => {
     const taskList = generateReviewObligationPenaltyTaskList(
       mockComplianceReportVersionId,
       {
         reportingYear: mockReportingYear,
         hasLateSubmissionPenalty: false,
-        outstandingBalance: 0,
+        outstandingBalance: 10,
         hasOverduePenalty: true,
         penaltyStatus: "NOT PAID",
       } as any,
@@ -43,7 +43,7 @@ describe("generateReviewObligationPenaltyTaskList", () => {
     });
   });
 
-  it("sets active page correctly for each page type", () => {
+  it("sets active page correctly for each page type once the obligation is met", () => {
     const baseTasklistData = {
       reportingYear: mockReportingYear,
       hasLateSubmissionPenalty: true,
@@ -54,53 +54,55 @@ describe("generateReviewObligationPenaltyTaskList", () => {
 
     // order should be:
     // 1. ReviewComplianceObligationReport
-    // 2. PenaltyCalculator
-    // 3. ReviewInterestSummary
-    // 4. ReviewPenaltySummary
+    // 2. ReviewInterestSummary
+    // 3. ReviewPenaltySummary
 
     const listReview = generateReviewObligationPenaltyTaskList(
       mockComplianceReportVersionId,
       baseTasklistData,
       ActivePage.ReviewComplianceObligationReport,
     );
-    expect(listReview).toHaveLength(4);
+    expect(listReview).toHaveLength(3);
     expect(listReview[0].isActive).toBe(true);
     expect(listReview[1].isActive).toBe(false);
     expect(listReview[2].isActive).toBe(false);
-    expect(listReview[3].isActive).toBe(false);
-
-    const listCalculator = generateReviewObligationPenaltyTaskList(
-      mockComplianceReportVersionId,
-      baseTasklistData,
-      ActivePage.PenaltyCalculator,
-    );
-    expect(listCalculator).toHaveLength(4);
-    expect(listCalculator[0].isActive).toBe(false);
-    expect(listCalculator[1].isActive).toBe(true);
-    expect(listCalculator[2].isActive).toBe(false);
-    expect(listCalculator[3].isActive).toBe(false);
 
     const listInterest = generateReviewObligationPenaltyTaskList(
       mockComplianceReportVersionId,
       baseTasklistData,
       ActivePage.ReviewInterestSummary,
     );
-    expect(listInterest).toHaveLength(4);
+    expect(listInterest).toHaveLength(3);
     expect(listInterest[0].isActive).toBe(false);
-    expect(listInterest[1].isActive).toBe(false);
-    expect(listInterest[2].isActive).toBe(true);
-    expect(listInterest[3].isActive).toBe(false);
+    expect(listInterest[1].isActive).toBe(true);
+    expect(listInterest[2].isActive).toBe(false);
 
     const listPenalty = generateReviewObligationPenaltyTaskList(
       mockComplianceReportVersionId,
       baseTasklistData,
       ActivePage.ReviewPenaltySummary,
     );
-    expect(listPenalty).toHaveLength(4);
+    expect(listPenalty).toHaveLength(3);
     expect(listPenalty[0].isActive).toBe(false);
     expect(listPenalty[1].isActive).toBe(false);
-    expect(listPenalty[2].isActive).toBe(false);
-    expect(listPenalty[3].isActive).toBe(true);
+    expect(listPenalty[2].isActive).toBe(true);
+  });
+
+  it("sets penalty calculator active while the obligation is not met", () => {
+    const listCalculator = generateReviewObligationPenaltyTaskList(
+      mockComplianceReportVersionId,
+      {
+        reportingYear: mockReportingYear,
+        hasLateSubmissionPenalty: false,
+        outstandingBalance: 123,
+        penaltyStatus: "ACCRUING",
+      } as any,
+      ActivePage.PenaltyCalculator,
+    );
+    expect(listCalculator).toHaveLength(2);
+    expect(listCalculator[0].isActive).toBe(false);
+    expect(listCalculator[1].title).toBe("Penalty calculator");
+    expect(listCalculator[1].isActive).toBe(true);
   });
 
   it("does not include penalty page when no penalty has been created", () => {
@@ -158,7 +160,7 @@ describe("generateReviewObligationPenaltyTaskList", () => {
     expect(taskList[1].title).toBe("Review Penalty Summary");
   });
 
-  it("includes penalty page and penalty calculator when there is zero outstanding balance and a penalty status of 'NOT PAID'", () => {
+  it("includes penalty page but not penalty calculator when there is zero outstanding balance and a penalty status of 'NOT PAID'", () => {
     const taskList = generateReviewObligationPenaltyTaskList(
       mockComplianceReportVersionId,
       {
@@ -170,9 +172,8 @@ describe("generateReviewObligationPenaltyTaskList", () => {
       } as any,
     );
 
-    expect(taskList).toHaveLength(3);
-    expect(taskList[1].title).toBe("Penalty calculator");
-    expect(taskList[2].title).toBe("Review Penalty Summary");
+    expect(taskList).toHaveLength(2);
+    expect(taskList[1].title).toBe("Review Penalty Summary");
   });
 
   it("includes interest page when hasLateSubmissionPenalty is true (inactive by default)", () => {
@@ -186,16 +187,33 @@ describe("generateReviewObligationPenaltyTaskList", () => {
       } as any,
     );
 
-    expect(taskList).toHaveLength(3);
+    expect(taskList).toHaveLength(2);
     expect(taskList[0].title).toBe(
       `Review ${mockReportingYear} Compliance Obligation Report`,
     );
     expect(taskList[0].isActive).toBe(true);
 
-    expect(taskList[1].title).toBe("Penalty calculator");
+    expect(taskList[1].title).toBe("Review Interest Summary");
     expect(taskList[1].isActive).toBe(false);
-
-    expect(taskList[2].title).toBe("Review Interest Summary");
-    expect(taskList[2].isActive).toBe(false);
   });
+
+  it.each(["NONE", "NOT PAID", "PAID"])(
+    "does not include penalty calculator once the obligation is fully met (penalty status %s)",
+    (penaltyStatus) => {
+      const taskList = generateReviewObligationPenaltyTaskList(
+        mockComplianceReportVersionId,
+        {
+          reportingYear: mockReportingYear,
+          hasLateSubmissionPenalty: false,
+          outstandingBalance: 0,
+          hasOverduePenalty: penaltyStatus !== "NONE",
+          penaltyStatus,
+        } as any,
+      );
+
+      expect(taskList.some((item) => item.title === "Penalty calculator")).toBe(
+        false,
+      );
+    },
+  );
 });
