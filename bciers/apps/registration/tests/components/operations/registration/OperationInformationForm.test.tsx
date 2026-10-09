@@ -1,4 +1,10 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import {
   useSessionRole,
@@ -597,10 +603,14 @@ describe("the OperationInformationForm component", () => {
       name: /The purpose of this registration+/i,
     });
     await userEvent.clear(remountedPurposeInput);
-    await fillComboboxWidgetField(
-      remountedPurposeInput,
-      "OBPS Regulated Operation",
-    );
+    // Selecting the option remounts the form while user-event is still moving focus around, which
+    // leaves MUI blur/transition updates outside act(); a plain click inside an awaited act() avoids that
+    const openDropdownButton = remountedPurposeInput.parentElement?.children[1]
+      ?.children[0] as HTMLElement;
+    await userEvent.click(openDropdownButton);
+    await act(async () => {
+      fireEvent.click(screen.getByText("OBPS Regulated Operation"));
+    });
     await waitFor(() => {
       expect(
         screen.getByText(
