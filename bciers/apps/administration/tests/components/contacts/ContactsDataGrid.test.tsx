@@ -147,7 +147,7 @@ describe("ContactsDataGrid component", () => {
     const firstNameHeader = screen.getByRole("columnheader", {
       name: "First Name",
     });
-    act(() => {
+    await act(async () => {
       firstNameHeader.click();
     });
 
@@ -159,7 +159,7 @@ describe("ContactsDataGrid component", () => {
     ).toBe("asc");
 
     // click on the same column header again
-    act(() => {
+    await act(async () => {
       firstNameHeader.click();
     });
     expect(
@@ -173,7 +173,7 @@ describe("ContactsDataGrid component", () => {
     const lastNameHeader = screen.getByRole("columnheader", {
       name: "Last Name",
     });
-    act(() => {
+    await act(async () => {
       lastNameHeader.click();
     });
 
@@ -185,7 +185,7 @@ describe("ContactsDataGrid component", () => {
     ).toBe("asc");
 
     // click on the same column header again
-    act(() => {
+    await act(async () => {
       lastNameHeader.click();
     });
 
@@ -207,8 +207,8 @@ describe("ContactsDataGrid component", () => {
 
     const searchInput = screen.getAllByPlaceholderText(/Search/i)[0]; // first name search input
     expect(searchInput).toBeVisible();
-    searchInput.focus();
-    act(() => {
+    await act(async () => {
+      searchInput.focus();
       fireEvent.change(searchInput, { target: { value: "john" } });
     });
     expect(searchInput).toHaveValue("john");

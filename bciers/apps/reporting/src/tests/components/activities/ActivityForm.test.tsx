@@ -200,7 +200,9 @@ describe("ActivityForm component", () => {
     expect(screen.getByText(/Continue/i)).toBeInTheDocument();
 
     const continueButton = screen.getByText(/Continue/i);
-    fireEvent.click(continueButton);
+    await act(async () => {
+      fireEvent.click(continueButton);
+    });
 
     expect(mockSubmitHandler).not.toHaveBeenCalled();
   });

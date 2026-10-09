@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  act,
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
 import ApplyComplianceUnitsComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
 import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
 import {
@@ -78,6 +84,18 @@ const setupMocks = () => {
   });
 };
 
+// Renders and lets the operation-name fetch that runs on mount settle inside act()
+const renderApplyComplianceUnits = async () => {
+  await act(async () => {
+    render(
+      <ApplyComplianceUnitsComponent
+        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
+        reportingYear={2024}
+      />,
+    );
+  });
+};
+
 const setupValidAccountAndSubmit = async () => {
   setupMocks();
 
@@ -133,26 +151,16 @@ describe("ApplyComplianceUnitsComponent", () => {
     mockActionHandler.mockReset();
   });
 
-  it("displays form title and BCCR account section and input field", () => {
-    render(
-      <ApplyComplianceUnitsComponent
-        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
-        reportingYear={2024}
-      />,
-    );
+  it("displays form title and BCCR account section and input field", async () => {
+    await renderApplyComplianceUnits();
 
     expect(screen.getByText("Apply Compliance Units")).toBeVisible();
     expect(screen.getByText("Enter account ID")).toBeVisible();
     expect(screen.getByLabelText("BCCR Holding Account ID:*")).toBeVisible();
   });
 
-  it("does not show compliance account and units initially", () => {
-    render(
-      <ApplyComplianceUnitsComponent
-        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
-        reportingYear={2024}
-      />,
-    );
+  it("does not show compliance account and units initially", async () => {
+    await renderApplyComplianceUnits();
 
     expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();
     expect(
@@ -663,13 +671,8 @@ describe("ApplyComplianceUnitsComponent", () => {
     });
   });
 
-  it("navigates to correct URL when Cancel button is clicked", () => {
-    render(
-      <ApplyComplianceUnitsComponent
-        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
-        reportingYear={2024}
-      />,
-    );
+  it("navigates to correct URL when Cancel button is clicked", async () => {
+    await renderApplyComplianceUnits();
 
     const cancelButton = screen.getByRole("button", { name: "Cancel" });
     fireEvent.click(cancelButton);
@@ -716,13 +719,8 @@ describe("ApplyComplianceUnitsComponent", () => {
     expect(screen.getByTestId("spinner")).toBeInTheDocument();
   });
 
-  it("renders all initial form sections", () => {
-    render(
-      <ApplyComplianceUnitsComponent
-        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
-        reportingYear={2024}
-      />,
-    );
+  it("renders all initial form sections", async () => {
+    await renderApplyComplianceUnits();
 
     // Check that initial form sections are present
     expect(screen.getByText("Apply Compliance Units")).toBeVisible();
@@ -735,13 +733,8 @@ describe("ApplyComplianceUnitsComponent", () => {
     expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();
   });
 
-  it("handles empty account ID gracefully", () => {
-    render(
-      <ApplyComplianceUnitsComponent
-        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
-        reportingYear={2024}
-      />,
-    );
+  it("handles empty account ID gracefully", async () => {
+    await renderApplyComplianceUnits();
 
     const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
     fireEvent.change(accountInput, { target: { value: "" } });

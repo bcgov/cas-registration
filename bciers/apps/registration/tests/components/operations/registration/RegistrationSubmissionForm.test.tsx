@@ -28,7 +28,7 @@ const defaultProps = {
 };
 
 const checkAllCheckboxesAndSubmit = async (
-  mockResponse = {
+  mockResponse: Record<string, unknown> = {
     id: "81f62498-3b9d-49b7-961f-739c51b961a9",
     status: OperationStatus.REGISTERED,
   },
@@ -39,7 +39,7 @@ const checkAllCheckboxesAndSubmit = async (
     }),
   ).toBeDisabled();
 
-  act(() => {
+  await act(async () => {
     // click all checkboxes
     screen.getAllByRole("checkbox").forEach((checkbox) => {
       checkbox.click();
@@ -51,7 +51,7 @@ const checkAllCheckboxesAndSubmit = async (
   });
   expect(submitButton).not.toBeDisabled();
   actionHandler.mockResolvedValueOnce(mockResponse);
-  act(() => {
+  await act(async () => {
     submitButton.click();
   });
 
@@ -131,17 +131,16 @@ describe("the RegistrationSubmissionForm component", () => {
   it("should not render the success page if the operation data is incomplete", async () => {
     render(<RegistrationSubmissionForm {...defaultProps} />);
 
+    // The backend rejects incomplete registrations with an error response
     await checkAllCheckboxesAndSubmit({
-      id: "81f62498-3b9d-49b7-961f-739c51b961a9",
-      status: OperationStatus.DRAFT,
+      error: "Operation registration data is incomplete",
     });
 
-    await waitFor(() => {
-      expect(
-        screen.queryByText("Registration complete"),
-      ).not.toBeInTheDocument();
-      expect(screen.getByText(/Before clicking 'Submit'/i)).toBeVisible();
-    });
+    expect(
+      await screen.findByText("Operation registration data is incomplete"),
+    ).toBeVisible();
+    expect(screen.queryByText("Registration complete")).not.toBeInTheDocument();
+    expect(screen.getByText(/Before clicking 'Submit'/i)).toBeVisible();
   });
 
   it("displays an error message when the submission request fails", async () => {

@@ -44,9 +44,7 @@ const checkTypingDate = async (inputString: string, expectedValue: string) => {
 
   const dateWidgetInput = screen.getByRole("textbox") as HTMLInputElement;
 
-  await act(async () => {
-    await userEvent.type(dateWidgetInput, inputString);
-  });
+  await userEvent.type(dateWidgetInput, inputString);
 
   expect(dateWidgetInput.value).toBe(expectedValue);
 };

@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  act,
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import OptedOutOperationWidget from "./OptedOutOperationWidget";
 import { actionHandler } from "@bciers/actions";
@@ -173,14 +179,17 @@ describe("OptedOutOperationWidget", () => {
     expect(baseProps.onChange).toHaveBeenCalledWith(undefined);
   });
 
-  it("renders explanatory text when year is selected", () => {
+  it("renders explanatory text when year is selected", async () => {
     renderWidget({
       isOptedOut: true,
       isCasDirector: true,
       operationId: "123",
     });
 
-    fireEvent.click(screen.getByText("select-year"));
+    // selecting a year saves it asynchronously
+    await act(async () => {
+      fireEvent.click(screen.getByText("select-year"));
+    });
 
     expect(
       screen.getByText(

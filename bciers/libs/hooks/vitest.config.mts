@@ -1,11 +1,13 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
-import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
 
 export default defineConfig({
   root: import.meta.dirname,
   cacheDir: "../../node_modules/.vite/libs/hooks",
-  plugins: [react(), nxViteTsPaths()],
+  plugins: [react()],
+  resolve: {
+    tsconfigPaths: true,
+  },
   test: {
     globals: true,
     environment: "jsdom",

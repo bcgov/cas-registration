@@ -24,7 +24,7 @@ describe("The ComponentAccordion component", () => {
 
   it("collapses a section when the section's collapse button is clicked", async () => {
     render(<ComponentAccordion {...defaultProps} />);
-    userEvent.click(screen.getByRole("button", { name: /Hi/i }));
+    await userEvent.click(screen.getByRole("button", { name: /Hi/i }));
     await waitFor(() => {
       expect(screen.queryByText(/Hello!/i)).not.toBeVisible();
     });
@@ -34,13 +34,13 @@ describe("The ComponentAccordion component", () => {
 
   it("collapses and expands all when buttons are clicked", async () => {
     render(<ComponentAccordion {...defaultProps} />);
-    userEvent.click(screen.getByRole("button", { name: /Collapse All/i }));
+    await userEvent.click(screen.getByRole("button", { name: /Collapse All/i }));
     await waitFor(() => {
       expect(screen.queryByText(/Hello!/i)).not.toBeVisible();
       expect(screen.queryByText(/Goodbye!/i)).not.toBeVisible();
     });
 
-    userEvent.click(screen.getByRole("button", { name: /Expand All/i }));
+    await userEvent.click(screen.getByRole("button", { name: /Expand All/i }));
     await waitFor(() => {
       expect(screen.queryByText(/Hello!/i)).toBeVisible();
       expect(screen.queryByText(/Goodbye!/i)).toBeVisible();

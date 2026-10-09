@@ -79,6 +79,8 @@ vi.mock("@/dashboard/auth", () => ({
 // Mock the Sentry module to avoid actual error logging during tests
 vi.mock("@sentry/nextjs", () => ({
   captureException,
+  withScope: (callback: (scope: { setUser: () => void }) => unknown) =>
+    callback({ setUser: vi.fn() }),
 }));
 
 vi.mock("@bciers/utils/src/sessionUtils", () => ({
@@ -152,6 +154,10 @@ vi.mock("@bciers/actions/api/handleInternalAccessRequest", () => ({
 vi.mock("apps/compliance/src/app/utils/getElicensingInvoices.ts", () => ({
   getElicensingInvoices,
 }));
+
+// jsdom has no canvas implementation and logs "Not implemented" on every call; return null like it does, silently
+HTMLCanvasElement.prototype.getContext = (() =>
+  null) as typeof HTMLCanvasElement.prototype.getContext;
 
 // mock fetch
 type FetchMock = ReturnType<typeof vi.fn> & {
