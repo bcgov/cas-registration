@@ -535,7 +535,7 @@ describe("FacilityForm component", () => {
       <FacilityForm
         schema={facilitiesLfoSchema}
         uiSchema={facilitiesLfoUiSchema}
-        formData={{ name: "Smagg Facility", type: "Small Aggregrate" }}
+        formData={{ name: "Smagg Facility", type: "Small Aggregate" }}
       />,
     );
     // form fields
@@ -543,7 +543,7 @@ describe("FacilityForm component", () => {
       "Smagg Facility",
     );
     expect(container.querySelector("#root_section1_type")).toHaveTextContent(
-      "Small Aggregrate",
+      "Small Aggregate",
     );
     expect(
       screen.queryByText("BC Energy Regulator Well Authorization Number(s)"),

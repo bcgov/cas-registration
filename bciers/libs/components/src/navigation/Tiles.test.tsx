@@ -60,16 +60,16 @@ const mockTilesWithLinks = [
     content: "View payments for compliance obligations here",
     links: [
       {
-        href: "/compliance/tbd",
-        title: "TBD",
+        href: "/compliance/tbd-1",
+        title: "TBD 1",
       },
       {
-        href: "/compliance/tbd",
-        title: "TBD",
+        href: "/compliance/tbd-2",
+        title: "TBD 2",
       },
       {
-        href: "/compliance/tbd",
-        title: "TBD",
+        href: "/compliance/tbd-3",
+        title: "TBD 3",
       },
     ],
   },
@@ -214,10 +214,10 @@ describe("The Tiles component", () => {
     ).toBeInTheDocument();
 
     // Compliance tile links
-    expect(screen.getAllByRole("link", { name: "TBD" })).toHaveLength(3);
-    expect(screen.getAllByRole("link", { name: "TBD" })[0]).toHaveAttribute(
+    expect(screen.getAllByRole("link", { name: /^TBD \d$/ })).toHaveLength(3);
+    expect(screen.getByRole("link", { name: "TBD 1" })).toHaveAttribute(
       "href",
-      "/compliance/tbd",
+      "/compliance/tbd-1",
     );
 
     // Report a Problem tile
