@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import ToggleWidget from "./ToggleWidget";
@@ -69,7 +69,7 @@ describe("RJSF ToggleWidget", () => {
 
     expect(checkbox).not.toBeChecked();
 
-    checkbox.click();
+    fireEvent.click(checkbox);
 
     expect(checkbox).toBeChecked();
   });
@@ -81,11 +81,11 @@ describe("RJSF ToggleWidget", () => {
 
     const checkbox = screen.getByRole("checkbox");
 
-    checkbox.click();
+    fireEvent.click(checkbox);
 
     expect(checkbox).toBeChecked();
 
-    checkbox.click();
+    fireEvent.click(checkbox);
 
     expect(checkbox).not.toBeChecked();
   });
@@ -131,7 +131,7 @@ describe("RJSF ToggleWidget", () => {
     expect(screen.getByText("Cat")).toBeVisible();
     expect(screen.getByText("Dog")).toHaveStyle({ opacity: "0" });
 
-    checkbox.click();
+    fireEvent.click(checkbox);
 
     expect(screen.getByText("Dog")).toBeVisible();
   });

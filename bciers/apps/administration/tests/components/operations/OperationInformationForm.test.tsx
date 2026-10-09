@@ -955,9 +955,7 @@ describe("the OperationInformationForm component", () => {
     const newEntrantApplicationDocument = screen.getByLabelText(
       /new entrant application and statutory declaration/i,
     );
-    await act(async () => {
-      await userEvent.upload(newEntrantApplicationDocument, mockFile);
-    });
+    await userEvent.upload(newEntrantApplicationDocument, mockFile);
     expect(
       screen.getByText(
         "Uploading. You may continue to the next page while the file is being scanned for security.",

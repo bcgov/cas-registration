@@ -105,7 +105,7 @@ describe("FacilitiesDataGrid component", () => {
       name: "Facility Name",
     });
 
-    act(() => {
+    await act(async () => {
       facilityNameHeader.click();
     });
 
@@ -117,7 +117,7 @@ describe("FacilitiesDataGrid component", () => {
     ).toBe("asc");
 
     // click on the same column header again
-    act(() => {
+    await act(async () => {
       facilityNameHeader.click();
     });
     expect(
@@ -132,7 +132,7 @@ describe("FacilitiesDataGrid component", () => {
       name: "BC GHG ID",
     });
 
-    act(() => {
+    await act(async () => {
       facilityTypeHeader.click();
     });
 
@@ -144,7 +144,7 @@ describe("FacilitiesDataGrid component", () => {
     ).toBe("asc");
 
     // click on the same column header again
-    act(() => {
+    await act(async () => {
       facilityTypeHeader.click();
     });
 
@@ -166,8 +166,8 @@ describe("FacilitiesDataGrid component", () => {
 
     const searchInput = screen.getAllByPlaceholderText(/Search/i)[0]; // facility name search input
     expect(searchInput).toBeVisible();
-    searchInput.focus();
-    act(() => {
+    await act(async () => {
+      searchInput.focus();
       fireEvent.change(searchInput, { target: { value: "facility 1" } });
     });
     expect(searchInput).toHaveValue("facility 1");
