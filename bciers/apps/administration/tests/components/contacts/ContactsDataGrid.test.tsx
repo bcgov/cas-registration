@@ -147,7 +147,7 @@ describe("ContactsDataGrid component", () => {
     const firstNameHeader = screen.getByRole("columnheader", {
       name: "First Name",
     });
-    await act(async () => {
+    act(() => {
       firstNameHeader.click();
     });
 
@@ -159,7 +159,7 @@ describe("ContactsDataGrid component", () => {
     ).toBe("asc");
 
     // click on the same column header again
-    await act(async () => {
+    act(() => {
       firstNameHeader.click();
     });
     expect(
@@ -173,7 +173,7 @@ describe("ContactsDataGrid component", () => {
     const lastNameHeader = screen.getByRole("columnheader", {
       name: "Last Name",
     });
-    await act(async () => {
+    act(() => {
       lastNameHeader.click();
     });
 
@@ -185,7 +185,7 @@ describe("ContactsDataGrid component", () => {
     ).toBe("asc");
 
     // click on the same column header again
-    await act(async () => {
+    act(() => {
       lastNameHeader.click();
     });
 

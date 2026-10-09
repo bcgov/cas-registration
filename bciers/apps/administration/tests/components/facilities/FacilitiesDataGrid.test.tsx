@@ -105,7 +105,7 @@ describe("FacilitiesDataGrid component", () => {
       name: "Facility Name",
     });
 
-    await act(async () => {
+    act(() => {
       facilityNameHeader.click();
     });
 
@@ -117,7 +117,7 @@ describe("FacilitiesDataGrid component", () => {
     ).toBe("asc");
 
     // click on the same column header again
-    await act(async () => {
+    act(() => {
       facilityNameHeader.click();
     });
     expect(
@@ -132,7 +132,7 @@ describe("FacilitiesDataGrid component", () => {
       name: "BC GHG ID",
     });
 
-    await act(async () => {
+    act(() => {
       facilityTypeHeader.click();
     });
 
@@ -144,7 +144,7 @@ describe("FacilitiesDataGrid component", () => {
     ).toBe("asc");
 
     // click on the same column header again
-    await act(async () => {
+    act(() => {
       facilityTypeHeader.click();
     });
 
