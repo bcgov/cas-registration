@@ -59,13 +59,11 @@ const OptedOutOperationWidget: React.FC<WidgetProps> = ({
   const { errors, setErrors, renderedErrors } = useValidationErrors();
 
   // Sync status when value changes from outside (e.g., initial load)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useLayoutEffect(() => {
     if (finalReportingYear !== undefined && finalReportingYear !== null) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatus("Opted-out");
     } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatus("Opted-in");
     }
   }, [finalReportingYear]);
