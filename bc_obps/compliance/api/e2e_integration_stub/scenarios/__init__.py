@@ -7,6 +7,7 @@ from .earned_credits import (
 from .pay_obligation import PayObligationScenario
 from .submit_report import SubmitReportScenario
 from .automatic_overdue_penalty import AutomaticOverduePenaltyScenario
+from .supplementary_late_submission import SupplementaryLateSubmissionScenario
 
 
 SCENARIO_HANDLERS: Dict[str, ScenarioHandler] = {
@@ -15,6 +16,7 @@ SCENARIO_HANDLERS: Dict[str, ScenarioHandler] = {
     "earned_credits_director_approve": EarnedCreditsDirectorApproveScenario(),
     "pay_obligation": PayObligationScenario(),
     "automatic_overdue_penalty": AutomaticOverduePenaltyScenario(),
+    "supplementary_late_submission": SupplementaryLateSubmissionScenario(),
 }
 
 
@@ -26,4 +28,5 @@ __all__ = [
     "EarnedCreditsDirectorApproveScenario",
     "PayObligationScenario",
     "AutomaticOverduePenaltyScenario",
+    "SupplementaryLateSubmissionScenario",
 ]

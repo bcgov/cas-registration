@@ -28,7 +28,7 @@ test.describe("Automatic overdue penalty flow - CAS analyst", () => {
     request,
     happoScreenshot,
   }) => {
-    // 1. Prime DB state via e2e integration stub for CRV 2
+    // Prime DB state via e2e integration stub for CRV 2
     const penaltyCalculator = new PenaltyCalculatorPOM(page);
     await penaltyCalculator.setupAccruingPenaltyState(
       request,
@@ -39,7 +39,7 @@ test.describe("Automatic overdue penalty flow - CAS analyst", () => {
       },
     );
 
-    // 2. Navigate to Compliance Summaries grid
+    // Navigate to Compliance Summaries grid
     const summaries = new ComplianceSummariesPOM(page);
     await summaries.route();
 
@@ -54,24 +54,24 @@ test.describe("Automatic overdue penalty flow - CAS analyst", () => {
       variant: `penalty status: ${PenaltyStatus.ACCRUING}`,
     });
 
-    // 3. Drill down via "View Details" on the 'Obligation - not met' row
+    // Drill down via "View Details" on the 'Obligation - not met' row
     await summaries.openActionForOperation({
       operationName: ComplianceDisplayStatus.OBLIGATION_NOT_MET,
       linkName: GridActionText.VIEW_DETAILS,
       urlPattern: REVIEW_OBLIGATION_URL_PATTERN,
     });
 
-    // 4. Click "Penalty calculator" from the task list
+    // Click "Penalty calculator" from the task list
     const manageObligationTaskList = new ManageObligationTaskListPOM(page);
     await manageObligationTaskList.clickPenaltyCalculator();
 
-    // 5. Verify URL route
+    // Verify URL route
     await penaltyCalculator.assertUrlCorrect(complianceReportVersionId);
 
-    // 6. Select an overdue date to populate calculation rows in the grid
+    // Select an overdue date to populate calculation rows in the grid
     await penaltyCalculator.setFinalAccrualDate(targetAccrualDate);
 
-    // 7. Verify grid is populated with records
+    // Verify grid is populated with records
     await penaltyCalculator.assertPenaltyGridLoaded();
 
     await takeStabilizedScreenshot(happoScreenshot, page, {

@@ -44,15 +44,18 @@ class AutomaticOverduePenaltyScenario(ScenarioHandler):
         fee_choice = self._get_line_item_fee_choice()
 
         with RlsManager.bypass_rls():
-            # 1. Clean up earned credits for this version
+            # Clean up earned credits for this version
             ComplianceEarnedCredit.objects.filter(compliance_report_version_id=crv_id).delete()
 
-            # 2. Set report version status
+            # Set report version status
             crv = ComplianceReportVersion.objects.get(id=crv_id)
             crv.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
-            crv.save(update_fields=["status"])
+            # Reset to an original report, since scenarios that make it supplementary share this version
+            crv.is_supplementary = False
+            crv.previous_version = None
+            crv.save(update_fields=["status", "is_supplementary", "previous_version"])
 
-            # 3. Seed operator
+            # Seed operator
             client_operator, _ = ElicensingClientOperator.objects.get_or_create(
                 client_object_id=1,
                 defaults={
@@ -61,7 +64,7 @@ class AutomaticOverduePenaltyScenario(ScenarioHandler):
                 },
             )
 
-            # 4. Seed invoice with overdue date
+            # Seed invoice with overdue date
             past_due_date = timezone.now().date() - timedelta(days=days_overdue)
             invoice, _ = ElicensingInvoice.objects.update_or_create(
                 invoice_number="inv001",
@@ -76,7 +79,7 @@ class AutomaticOverduePenaltyScenario(ScenarioHandler):
                 },
             )
 
-            # 5. Seed line item with model-validated choice
+            # Seed line item with model-validated choice
             ElicensingLineItem.objects.update_or_create(
                 object_id=1,
                 elicensing_invoice=invoice,
@@ -88,7 +91,7 @@ class AutomaticOverduePenaltyScenario(ScenarioHandler):
                 },
             )
 
-            # 6. Seed / update compliance obligation
+            # Seed / update compliance obligation
             obligation, _ = ComplianceObligation.objects.update_or_create(
                 compliance_report_version_id=crv_id,
                 defaults={
@@ -101,7 +104,7 @@ class AutomaticOverduePenaltyScenario(ScenarioHandler):
                 },
             )
 
-            # 7. Seed penalty record when capped or marked unpaid
+            # Seed penalty record when capped or marked unpaid
             penalty_invoice_number = None
             if cap_reached or penalty_status == ComplianceObligation.PenaltyStatus.NOT_PAID:
                 penalty_amount = Decimal(str(payload.get("penalty_amount", self.DEFAULT_PENALTY_AMOUNT)))

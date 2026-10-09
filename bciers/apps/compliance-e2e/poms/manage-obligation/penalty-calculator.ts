@@ -2,42 +2,44 @@ import { APIRequestContext, Locator, Page, expect } from "@playwright/test";
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
 import { PenaltyStatus } from "@/compliance-e2e/utils/enums";
 
+/**
+ * Options sent to the e2e stub scenarios that prime penalty state.
+ */
 export interface AutomaticOverduePenaltyPayload {
+  /** Days past the invoice due date */
   days_overdue?: number;
   penalty_status?: PenaltyStatus;
+  /** Whether the automatic overdue penalty has reached its maximum and stopped accruing */
   cap_reached?: boolean;
+  /** Penalty record amount, seeded when the penalty is capped or not paid */
   penalty_amount?: string;
+  /** Invoice number for the seeded penalty record */
   penalty_invoice_number?: string;
 }
 
 export class PenaltyCalculatorPOM {
   readonly page: Page;
 
+  // Field Locators
+  readonly finalAccrualDateInput: Locator;
+  readonly accrualDataCell: Locator;
+  readonly ggeaparOption: Locator;
+  readonly selectedPenaltyTypeInput: Locator;
+  readonly ggeaparNotApplicableAlert: Locator;
+
   constructor(page: Page) {
     this.page = page;
-  }
-
-  // -----------------
-  // Locators
-  // -----------------
-
-  /**
-   * Scopes strictly to section 2 to locate the final accrual date input.
-   */
-  get finalAccrualDateInput(): Locator {
-    return this.page
-      .locator("div, section, fieldset")
-      .filter({ hasText: /select final day of penalty accrual/i })
-      .locator("input")
-      .first();
-  }
-
-  /**
-   * Locates any rendered data cell in the Accrual Data table
-   * (supporting gridcell, cell, and native td).
-   */
-  get accrualDataCell(): Locator {
-    return this.page
+    this.finalAccrualDateInput = page.locator(
+      "#root_final_day_of_penalty_accrual",
+    );
+    this.ggeaparOption = page.getByText("GGEAPAR", { exact: true });
+    this.selectedPenaltyTypeInput = page.locator(
+      'input[name="root_requested_penalty_type"]:checked',
+    );
+    this.ggeaparNotApplicableAlert = page.getByText(
+      /GGEAPAR interest only applies to obligations for supplementary compliance reports/i,
+    );
+    this.accrualDataCell = page
       .locator('[role="gridcell"], [role="cell"], table tbody tr td')
       .first();
   }
@@ -46,11 +48,54 @@ export class PenaltyCalculatorPOM {
   // Actions
   // -----------------
 
+  /**
+   * Primes an overdue obligation with an accruing automatic overdue penalty.
+   * Uses the original (non-supplementary) report, so GGEAPAR interest does not apply.
+   */
   async setupAccruingPenaltyState(
     apiContext: APIRequestContext,
     complianceReportVersionId: number | string,
     options?: AutomaticOverduePenaltyPayload,
   ) {
+    await this.setupPenaltyScenario(
+      apiContext,
+      complianceReportVersionId,
+      "automatic_overdue_penalty",
+      "Automatic Overdue Penalty Setup",
+      options,
+    );
+  }
+
+  /**
+   * Primes a supplementary report that was submitted after the compliance
+   * deadline, so GGEAPAR interest applies and accrues.
+   */
+  async setupSupplementaryLateSubmissionState(
+    apiContext: APIRequestContext,
+    complianceReportVersionId: number | string,
+    options?: AutomaticOverduePenaltyPayload,
+  ) {
+    await this.setupPenaltyScenario(
+      apiContext,
+      complianceReportVersionId,
+      "supplementary_late_submission",
+      "Supplementary Late Submission Setup",
+      options,
+    );
+  }
+
+  /**
+   * Calls the Django e2e stub directly to set up server-side state.
+   * Both scenarios share the same payload shape.
+   */
+  private async setupPenaltyScenario(
+    apiContext: APIRequestContext,
+    complianceReportVersionId: number | string,
+    scenario: string,
+    label: string,
+    options?: AutomaticOverduePenaltyPayload,
+  ) {
+    // The stub call reads the user guid from the page, so it needs a loaded page
     if (this.page.url() === "about:blank") {
       await this.page.goto("/");
     }
@@ -71,52 +116,53 @@ export class PenaltyCalculatorPOM {
       this.page,
       apiContext,
       () => ({
-        scenario: "automatic_overdue_penalty",
+        scenario,
         compliance_report_version_id: Number(complianceReportVersionId),
         payload,
       }),
-      "Automatic Overdue Penalty Setup",
+      label,
       { directCall: true },
     );
   }
 
   /**
-   * Updates the accrual date picker and waits for the calculation to render table rows.
+   * Enters the final accrual date and waits for the recalculated grid rows.
+   * The date must be today or later, as the picker's minDate is today.
+   *
+   * @param date ISO date, YYYY-MM-DD
    */
   async setFinalAccrualDate(date: string = "2026-12-15"): Promise<void> {
     const input = this.finalAccrualDateInput;
     await expect(input).toBeVisible();
 
-    // 1. Focus and clear existing value
     await input.click();
     await input.press("ControlOrMeta+a");
     await input.press("Backspace");
+    await this.page.keyboard.type(date.replaceAll("-", ""), { delay: 50 });
+    await input.blur();
 
-    // 2. Dispatch change through React's native prototype setter with bubbling events
-    await input.evaluate((el: HTMLInputElement, val: string) => {
-      const nativeSetter = Object.getOwnPropertyDescriptor(
-        window.HTMLInputElement.prototype,
-        "value",
-      )?.set;
-      nativeSetter?.call(el, val);
-      el.dispatchEvent(new Event("input", { bubbles: true }));
-      el.dispatchEvent(new Event("change", { bubbles: true }));
-    }, date);
-
-    // 3. Fallback sequential typing if the native setter was masked by a date picker widget
-    const currentValue = await input.inputValue();
-    if (currentValue !== date) {
-      await input.fill(date);
-    }
-
-    await input.press("Enter");
-    await input.dispatchEvent("blur");
-
-    // 4. Verify input retained the target date
     await expect(input).toHaveValue(date, { timeout: 5_000 });
-
-    // 5. Wait for the calculation to run and populate at least one data cell
     await expect(this.accrualDataCell).toBeVisible({ timeout: 15_000 });
+  }
+
+  /**
+   * Switches the penalty type to GGEAPAR and confirms it took effect.
+   * GGEAPAR is stored as the "Late Submission" penalty type.
+   */
+  async selectGgeaparPenaltyType(): Promise<void> {
+    await expect(this.ggeaparOption).toBeVisible();
+    await this.ggeaparOption.click();
+    await expect(this.selectedPenaltyTypeInput).toHaveValue("Late Submission");
+  }
+
+  async assertGgeaparNotApplicable(): Promise<void> {
+    await expect(this.ggeaparNotApplicableAlert).toBeVisible({
+      timeout: 15_000,
+    });
+  }
+
+  async assertGgeaparNotApplicableHidden(): Promise<void> {
+    await expect(this.ggeaparNotApplicableAlert).toBeHidden();
   }
 
   async assertUrlCorrect(complianceReportVersionId: number | string) {

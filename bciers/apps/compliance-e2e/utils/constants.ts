@@ -61,8 +61,9 @@ export const DOWNLOAD_PAYMENT_INSTRUCTIONS_URL_PATTERN = new RegExp(
 export const PAY_OBLIGATION_TRACK_PAYMENTS_URL_PATTERN = new RegExp(
   `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/pay-obligation-track-payments$`,
 );
-export const PENALTY_CALCULATOR_URL_PATTERN =
-  /.*\/compliance-summaries\/\d+\/penalty-calculator.*/;
+export const PENALTY_CALCULATOR_URL_PATTERN = new RegExp(
+  `${COMPLIANCE_SUMMARIES_BASE_PATH}/\\d+/penalty-calculator$`,
+);
 
 // Industry / earned credits / request issuance of earned credits url
 export const REQUEST_ISSUANCE_CREDITS_URL_PATTERN = new RegExp(
