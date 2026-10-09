@@ -60,7 +60,7 @@ class ReportSupplementaryVersionService:
             is_latest_submitted=False,
         )
 
-        clone_all(source, new_version)
+        clone_all(source, new_version, operator_changed)
         return new_version
 
     @staticmethod
