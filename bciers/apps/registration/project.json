@@ -31,6 +31,7 @@
       "executor": "@nx/eslint:lint",
       "options": {}
     },
+    "typecheck": {},
     "container": {
       "executor": "@nx-tools/nx-container:build",
       "dependsOn": ["build"],
