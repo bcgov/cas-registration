@@ -522,7 +522,6 @@ class ElicensingInvoiceService:
         total_payments_subquery = (
             ElicensingPayment.objects.filter(
                 elicensing_line_item__elicensing_invoice_id=OuterRef("pk"),
-                elicensing_line_item__line_item_type=ElicensingLineItem.LineItemType.FEE,
             )
             .values("elicensing_line_item__elicensing_invoice_id")
             .annotate(total=Sum("amount"))
@@ -536,6 +535,16 @@ class ElicensingInvoiceService:
             )
             .values("elicensing_line_item__elicensing_invoice_id")
             .annotate(total=Sum("amount"))
+            .values("total")
+        )
+
+        faa_interest_total_subquery = (
+            ElicensingLineItem.objects.filter(
+                elicensing_invoice_id=OuterRef("pk"),
+                line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            )
+            .values("elicensing_invoice_id")
+            .annotate(total=Sum("base_amount"))
             .values("total")
         )
 
@@ -598,6 +607,11 @@ class ElicensingInvoiceService:
             ),
             total_adjustments=Coalesce(
                 Subquery(total_adjustments_subquery),
+                0,
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            ),
+            faa_interest_total=Coalesce(
+                Subquery(faa_interest_total_subquery),
                 0,
                 output_field=DecimalField(max_digits=12, decimal_places=2),
             ),
