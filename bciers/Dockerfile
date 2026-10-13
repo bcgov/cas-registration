@@ -24,8 +24,14 @@ COPY ./public ./apps/${application_path}/public
 RUN ln -s /usr/src/app/apps/${application_path}/server.js /usr/src/app/server.js
 COPY ./.next/static ./apps/${application_path}/.next/static
 
-ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 /usr/local/bin/dumb-init
-RUN chmod +x /usr/local/bin/dumb-init
+# Add kube-log-runner for simultaneous output to console and logfile
+# v1.31.0 matches Kubernetes version used in OpenShift v4.18.
+ENV KUBE_VERSION=v1.31.0 \
+    KUBE_ARCH=amd64
+
+ADD https://dl.k8s.io/${KUBE_VERSION}/bin/linux/${KUBE_ARCH}/kube-log-runner /usr/local/bin/kube-log-runner
+RUN chmod +x /usr/local/bin/kube-log-runner
+
 ####################
 # Runner Stage
 # - Uses DHI.io runtime image which does not include shell
@@ -52,9 +58,9 @@ WORKDIR /usr/src/app
 # Copy application and dumb-init from bundler
 # Writable .next directory: The .next directory is owned by the node user so the server can write prerender cache and optimized images at runtime
 COPY --from=bundler --chown=node:node /usr/src/app ./
-COPY --from=bundler --chown=node:node /usr/local/bin/dumb-init /usr/local/bin/dumb-init
+COPY --from=builder --chown=node:node /usr/local/bin/kube-log-runner /usr/local/bin/kube-log-runner
 
-ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
+ENTRYPOINT ["/usr/local/bin/kube-log-runner", "-also-stdout", "-log-file=/var/log/app/app.log"]
 
 USER node
 EXPOSE 3000
