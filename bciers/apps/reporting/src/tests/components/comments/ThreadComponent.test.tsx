@@ -102,7 +102,11 @@ describe("The comment thread component", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Delete comment" }));
 
-    expect(await screen.findByText("Failed to delete comment.")).toBeVisible();
+    expect(
+      await screen.findByText(
+        "You do not have permission to delete this comment.",
+      ),
+    ).toBeVisible();
     expect(screen.getByText("First comment")).toBeVisible();
     expect(onCommentDeleted).not.toHaveBeenCalled();
     expect(actionHandler).toHaveBeenCalledWith(

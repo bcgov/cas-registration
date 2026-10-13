@@ -19,6 +19,11 @@ class TestDeleteComment(CommonTestSetup):
         response = TestUtils.mock_delete_with_auth_role(self, "cas_director", self.endpoint_under_test)
 
         assert response.status_code == 403
+        body = response.json()
+        assert body["message"] == "You do not have permission to delete this comment."
+        assert len(body["errors"]) == 1
+        assert body["errors"][0]["key"] == "permission_denied"
+        assert body["errors"][0]["error"]["message"] == "You do not have permission to delete this comment."
         mock_get.assert_called_once_with(id="123")
         comment.delete.assert_not_called()
         comment.comment_thread.delete.assert_not_called()
@@ -37,6 +42,7 @@ class TestDeleteComment(CommonTestSetup):
         mock_get.assert_called_once_with(id="123")
         comment.delete.assert_called_once_with()
         thread.refresh_from_db.assert_called_once_with()
+        # check if the thread was deleted based on whether it has comments
         if has_comments:
             thread.delete.assert_not_called()
         else:
