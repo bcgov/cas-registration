@@ -181,7 +181,7 @@ describe("The Comments Sidebar", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Delete comment" }));
 
-    expect(await screen.findByText("Failed to delete comment.")).toBeVisible();
+    expect(await screen.findByText(message)).toBeVisible();
     expect(screen.getByText("Comment 11")).toBeVisible();
     expect(screen.getByText(/Facility Name:.*Facility One/)).toBeVisible();
     expect(screen.getByRole("button", { name: "Reply" })).toBeVisible();
@@ -200,14 +200,24 @@ describe("The Comments Sidebar", () => {
             id: 10,
             version_id: 42,
             facility_name: "Facility One",
-            comments: [11, 12].map((id) => ({
-              id,
-              version_id: 42,
-              author: "Test Author",
-              timestamp: "2026-09-10T12:00:00Z",
-              comment: `Comment ${id}`,
-              user_id: userId,
-            })),
+            comments: [
+              {
+                id: 1,
+                version_id: 42,
+                author: "Test Author",
+                timestamp: "2026-09-10T12:00:00Z",
+                comment: `This comment will be deleted first`,
+                user_id: userId,
+              },
+              {
+                id: 2,
+                version_id: 42,
+                author: "Test Author",
+                timestamp: "2026-09-10T12:00:00Z",
+                comment: `This comment will be deleted second`,
+                user_id: userId,
+              },
+            ],
           },
           {
             id: 20,
@@ -215,7 +225,7 @@ describe("The Comments Sidebar", () => {
             facility_name: "Facility Two",
             comments: [
               {
-                id: 21,
+                id: 3,
                 version_id: 42,
                 author: "Another Author",
                 timestamp: "2026-09-10T12:00:00Z",
@@ -232,12 +242,17 @@ describe("The Comments Sidebar", () => {
       screen.getAllByRole("button", { name: "Delete comment" })[0],
     );
     await waitFor(() => {
-      expect(screen.queryByText("Comment 11")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("This comment will be deleted first"),
+      ).not.toBeInTheDocument();
     });
-    expect(screen.getByText("Comment 12")).toBeVisible();
+    expect(
+      screen.getByText("This comment will be deleted second"),
+    ).toBeVisible();
     expect(screen.getAllByRole("button", { name: "Reply" })).toHaveLength(2);
 
     fireEvent.click(screen.getByRole("button", { name: "Delete comment" }));
+    // Assert that the whole thread is deleted by checking that the facility name is no longer in the document
     await waitFor(() => {
       expect(
         screen.queryByText(/Facility Name:.*Facility One/),

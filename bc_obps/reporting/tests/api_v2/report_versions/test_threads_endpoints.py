@@ -2,7 +2,6 @@ from model_bakery.baker import make_recipe
 
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.models import CommentThread
-from ninja.responses import NinjaJSONEncoder
 
 
 class TestThreadsV2Endpoints(CommonTestSetup):
@@ -72,13 +71,9 @@ class TestThreadsV2Endpoints(CommonTestSetup):
         )
 
         assert response.status_code == 201
-        threads = CommentThread.objects.filter(report=self.report).all()
+        thread = CommentThread.objects.get(report=self.report)
 
-        thread = threads[0]
         comment = thread.comments.all()[0]
-
-        assert threads.count() == 1
-        assert thread.comments.count() == 1
 
         assert response.json() == {
             "version_id": self.report_version.id,
@@ -87,9 +82,10 @@ class TestThreadsV2Endpoints(CommonTestSetup):
                 {
                     "version_id": self.report_version.id,
                     "author": comment.created_by.get_full_name(),
-                    "timestamp": NinjaJSONEncoder().default(comment.created_at),
+                    "user_id": str(comment.created_by_id),
+                    "timestamp": comment.created_at.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z",
                     "id": comment.id,
-                    "comment": comment.comment,
+                    "comment": "Test comment",
                 }
             ],
             "facility_name": "Test Facility",
