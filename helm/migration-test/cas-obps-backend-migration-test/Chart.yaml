@@ -4,6 +4,6 @@ description: A Helm chart deploying a locally-configured bciers
              backend for migration testing purposes.
 type: application
 
-version: 0.3.5
+version: 0.3.6
 
-appVersion: "5.22.0"
+appVersion: "5.23.0"
