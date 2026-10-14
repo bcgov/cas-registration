@@ -5,6 +5,23 @@ import { fetchOperatorsPageData } from "@/administration/tests/components/operat
 import TransferPage from "@/registration/app/components/transfers/TransferPage";
 import { operationEntitySchema } from "@/registration/app/data/jsonSchema/transfer/transferDetail";
 
+// Mocking the TransferDetailForm component
+vi.mock(
+  "apps/registration/app/components/transfers/TransferDetailForm",
+  () => ({
+    default: () => <div>Mocked TransferDetailForm</div>,
+  }),
+);
+
+// Mocking the operationEntitySchema function
+vi.mock(
+  "apps/registration/app/data/jsonSchema/transfer/transferDetail",
+  () => ({
+    operationEntitySchema: vi.fn(),
+    editTransferUiSchema: vi.fn(),
+  }),
+);
+
 describe("Transfer page", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -36,22 +53,6 @@ describe("Transfer page", () => {
   });
 
   it("renders the TransferDetailForm if transferId is provided", async () => {
-    // Mocking the TransferDetailForm component
-    vi.mock(
-      "apps/registration/app/components/transfers/TransferDetailForm",
-      () => ({
-        default: () => <div>Mocked TransferDetailForm</div>,
-      }),
-    );
-
-    // Mocking the operationEntitySchema function
-    vi.mock(
-      "apps/registration/app/data/jsonSchema/transfer/transferDetail",
-      () => ({
-        operationEntitySchema: vi.fn(),
-        editTransferUiSchema: vi.fn(),
-      }),
-    );
     const mockOperationEntitySchema = operationEntitySchema as ReturnType<
       typeof vi.fn
     >;
