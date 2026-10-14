@@ -1,5 +1,23 @@
 # Changelog
 
+# [5.24.0](https://github.com/bcgov/cas-registration/compare/v5.22.0...v5.24.0) (2026-10-14)
+
+### Bug Fixes
+
+- copy methodology name not id when cloning reports ([#5297](https://github.com/bcgov/cas-registration/issues/5297)) ([a879594](https://github.com/bcgov/cas-registration/commit/a879594f2b9e2065074d2779e6157f8a9907724a))
+- **deps:** update dependency eslint-config-next to v16.3.8 ([#5290](https://github.com/bcgov/cas-registration/issues/5290)) ([2e1a221](https://github.com/bcgov/cas-registration/commit/2e1a2210644e441627a6ac652a924219353a6f0b))
+- **deps:** update dependency next to v16.3.6 [security] ([#5272](https://github.com/bcgov/cas-registration/issues/5272)) ([8d27248](https://github.com/bcgov/cas-registration/commit/8d27248201b945858bc792a4c7cf3fa2d8275ae7))
+- **deps:** update dependency next to v16.3.8 [security] ([78725c3](https://github.com/bcgov/cas-registration/commit/78725c30041e43241277ea89a5c53e7092718385))
+- display chemical pulp help text conditionally ([#5232](https://github.com/bcgov/cas-registration/issues/5232)) ([e868f51](https://github.com/bcgov/cas-registration/commit/e868f5160a00eeecd225aac1e549575c73a1c183))
+- happo shouldn't report during merge queue events ([#5315](https://github.com/bcgov/cas-registration/issues/5315)) ([50db38a](https://github.com/bcgov/cas-registration/commit/50db38a07ddc8b6896e9291d2791057a2cd08587))
+- merge queue's event name is `merge_group` ([#5271](https://github.com/bcgov/cas-registration/issues/5271)) ([6617599](https://github.com/bcgov/cas-registration/commit/66175993ecdf8838830d6be1624a870468c6df5a))
+- typo ([#5305](https://github.com/bcgov/cas-registration/issues/5305)) ([e5b3436](https://github.com/bcgov/cas-registration/commit/e5b3436c0a4847183b93e7c698c48102a0a93f38))
+- user can select operation representative for a supplementary report after transfer ([#5221](https://github.com/bcgov/cas-registration/issues/5221)) ([c25cef1](https://github.com/bcgov/cas-registration/commit/c25cef1c7bd9d49a42dd9136ad4ea127fd1670ff))
+
+### Features
+
+- bump tailwindcss to v4.3.3 ([a248555](https://github.com/bcgov/cas-registration/commit/a248555e20b4486e620d6037100b77fad51e68e3))
+
 # [5.23.0](https://github.com/bcgov/cas-registration/compare/v5.22.0...v5.23.0) (2026-10-13)
 
 ### Bug Fixes
