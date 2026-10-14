@@ -198,7 +198,9 @@ class BCCarbonRegistryAccountService:
 
             master_account_id = subaccount_entity.get("masterAccountId")
             if str(master_account_id) != str(holding_account_id):
-                raise UserError("The sub-account does not belong to the holding account.")
+                raise UserError(
+                    "The provided holding account does not own the compliance sub-account for this operation."
+                )
             return True
 
         # If we don't have a bccr_subaccount_id, check if there should be one for this holding account, compliance year and boro_id

@@ -75,6 +75,19 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
 
   const isReadOnly = disabled || readonly || isLoading;
 
+  const handleAccountError = (errorMessageText: string) => {
+    setIsValid(false);
+
+    if (isWrongAccountTypeError(errorMessageText)) {
+      setShowError(true);
+      setErrorMessage(getAccountErrorMessage(errorMessageText));
+    } else {
+      setShowError(false);
+      onError?.([errorMessageText]);
+    }
+    onValidAccountResolved?.(undefined);
+  };
+
   const validateAccount = async (accountId: string) => {
     if (accountId.length !== 15 || !validateBccrAccount) return;
 
@@ -92,11 +105,13 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
         setShowError(true);
         setErrorMessage(REMOTE_BCCR_ISSUE_MESSAGE);
         onValidAccountResolved?.(undefined);
-      } else if (response?.bccr_trading_name === null || response?.error) {
+      } else if (response?.bccr_trading_name === null) {
         setIsValid(false);
         setShowError(true);
         setErrorMessage(getAccountErrorMessage(response?.error));
         onValidAccountResolved?.(undefined);
+      } else if (response?.error) {
+        handleAccountError(response.error);
       } else {
         setIsValid(true);
         setShowError(false);
@@ -104,28 +119,19 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
         onError?.(undefined);
       }
     } catch (error) {
-      setIsValid(false);
-      const errorMessageText = (error as Error).message;
-
-      if (isWrongAccountTypeError(errorMessageText)) {
-        setShowError(true);
-        setErrorMessage(getAccountErrorMessage(errorMessageText));
-      } else {
-        setShowError(false);
-        onError?.([errorMessageText]);
-      }
-      onValidAccountResolved?.(undefined);
+      handleAccountError((error as Error).message);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value.replace(/[^0-9]/g, "").slice(0, 15);
+    const newValue = e.target.value.replace(/\D/g, "").slice(0, 15);
     onChange(newValue);
 
     if (newValue.length === 15) {
-      validateAccount(newValue);
+      // validateAccount handles its own errors
+      void validateAccount(newValue);
     } else {
       setIsValid(null);
       setShowError(false);
@@ -133,6 +139,13 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
       onValidAccountResolved?.(undefined);
       onError?.(undefined);
     }
+  };
+
+  const renderStatusIcon = () => {
+    if (isLoading) return <CircularProgress size={20} />;
+    if (isValid === true) return <CheckCircleIcon color="success" />;
+    if (showError) return <AlertIcon width="20" height="20" />;
+    return null;
   };
 
   return (
@@ -151,13 +164,7 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
           endAdornment: (
             <InputAdornment position="end">
               <div className="flex items-center justify-center">
-                {isLoading ? (
-                  <CircularProgress size={20} />
-                ) : isValid === true ? (
-                  <CheckCircleIcon color="success" />
-                ) : showError ? (
-                  <AlertIcon width="20" height="20" />
-                ) : null}
+                {renderStatusIcon()}
               </div>
             </InputAdornment>
           ),

@@ -21,6 +21,7 @@ export interface ComplianceReportVersionGridSearchParams extends DataGridSearchP
 }
 export interface BccrAccountDetailsResponse {
   bccr_trading_name?: string | null;
+  has_remote_bccr_errors?: boolean;
   error?: string;
 }
 
