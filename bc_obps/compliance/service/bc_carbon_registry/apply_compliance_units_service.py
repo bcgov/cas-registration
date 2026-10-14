@@ -327,7 +327,7 @@ class ApplyComplianceUnitsService:
             )
             is False
         ):
-            raise UserError("The holding account does not own the compliance sub-account for this operation.")
+            raise UserError("The provided holding account does not own the compliance sub-account for this operation.")
 
         # Check we are working with fresh elicensing data
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(

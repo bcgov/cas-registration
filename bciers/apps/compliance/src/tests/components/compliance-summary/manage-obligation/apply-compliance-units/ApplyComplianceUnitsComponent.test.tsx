@@ -25,10 +25,16 @@ useRouter.mockReturnValue({
   push: mockRouterPush,
 });
 
-vi.mock("@/compliance/src/app/utils/bccrAccountHandlers", () => ({
-  getBccrAccountDetails: vi.fn(),
-  getBccrComplianceUnitsAccountDetails: vi.fn(),
-}));
+// Keep the real getBccrComplianceUnits so it calls the mocked actionHandler
+vi.mock(
+  "@/compliance/src/app/utils/bccrAccountHandlers",
+  async (importOriginal) => ({
+    ...(await importOriginal<
+      typeof import("@/compliance/src/app/utils/bccrAccountHandlers")
+    >()),
+    getBccrAccountDetails: vi.fn(),
+  }),
+);
 
 vi.mock(
   "@/compliance/src/app/utils/getReportOperationByComplianceReportVersionId",
