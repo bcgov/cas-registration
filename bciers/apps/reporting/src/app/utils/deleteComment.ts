@@ -5,6 +5,9 @@ export async function deleteComment(
 ): Promise<number | { error: string }> {
   const endpoint = `reporting/v2/comments/${commentId}`;
 
-  const response: number = await actionHandler(endpoint, "DELETE");
+  const response: number | { error: string } = await actionHandler(
+    endpoint,
+    "DELETE",
+  );
   return response;
 }

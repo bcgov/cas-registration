@@ -24,7 +24,15 @@ const ThreadComponent: React.FC<Props> = ({
     startTransition(async () => {
       const resp = await deleteComment(commentId);
       if (resp !== 200) {
-        setErrors([{ field: "comment", error: resp.error }]);
+        setErrors([
+          {
+            field: "comment",
+            error:
+              typeof resp === "number"
+                ? `HTTP error! Status: ${resp}`
+                : resp.error,
+          },
+        ]);
         return;
       }
       setErrors([]);
