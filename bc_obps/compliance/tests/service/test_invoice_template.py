@@ -84,16 +84,22 @@ class TestInvoiceTemplate(SimpleTestCase):
             {"date": "Jan 15, 2025", "description": "Compliance Fee", "amount": "$2,000.00"},
             {"date": "Jan 20, 2025", "description": "Late Payment Penalty", "amount": "$100.00"},
             {"date": "Jan 25, 2025", "description": "Payment Credit", "amount": "-$500.00"},
+            {"date": "Jan 26, 2025", "description": "FAA Interest", "amount": "$200.00"},
+            {"date": "Jan 26, 2025", "description": "FAA Interest Payment", "amount": "-$200.00"},
         ]
         context['total_amount_due'] = "$1,600.00"
         rendered_html = render_to_string('invoice.html', context)
         self.assertIn("Compliance Fee", rendered_html)
         self.assertIn("Late Payment Penalty", rendered_html)
         self.assertIn("Payment Credit", rendered_html)
+        self.assertIn("FAA Interest", rendered_html)
+        self.assertIn("FAA Interest Payment", rendered_html)
         self.assertIn("$2,000.00", rendered_html)
         self.assertIn("$100.00", rendered_html)
         self.assertIn("-$500.00", rendered_html)
         self.assertIn("$1,600.00", rendered_html)
+        self.assertIn("$200.00", rendered_html)
+        self.assertIn("-$200.00", rendered_html)
 
     def test_invoice_template_with_empty_billing_items(self):
         context = self.base_context.__dict__.copy()
