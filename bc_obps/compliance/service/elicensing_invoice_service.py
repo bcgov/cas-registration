@@ -103,16 +103,6 @@ class ElicensingInvoiceService:
         invoice_number = invoice.invoice_number
         invoice_due_date = invoice.due_date.strftime("%b %-d, %Y") if invoice.due_date else "—"
         amount_due, billing_items, _, _, _ = cls.calculate_invoice_amount_due(invoice)
-        # Apply interest to the invoice if interest exists
-        if invoice.invoice_interest_balance is not None and invoice.invoice_interest_balance > Decimal('0.00'):
-            billing_items.append(
-                {
-                    'date': f'{DATE_TODAY}',
-                    'description': 'FAA Interest',
-                    'amount': f'${invoice.invoice_interest_balance:,.2f}',
-                }
-            )
-            amount_due += invoice.invoice_interest_balance
 
         total_amount_due = f"${amount_due.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"
 
@@ -420,9 +410,7 @@ class ElicensingInvoiceService:
         total_payments = Decimal("0.00")
         total_adjustments = Decimal("0.00")
 
-        fee_line_items: QuerySet[ElicensingLineItem] = invoice.elicensing_line_items.filter(
-            line_item_type=ElicensingLineItem.LineItemType.FEE
-        ).prefetch_related(
+        fee_line_items: QuerySet[ElicensingLineItem] = invoice.elicensing_line_items.prefetch_related(
             Prefetch("elicensing_payments"),
             Prefetch("elicensing_adjustments"),
         )
@@ -455,7 +443,11 @@ class ElicensingInvoiceService:
         amount = line_item.base_amount
         entry = {
             "date": fee_date,
-            "description": line_item.description,
+            "description": (
+                "FAA Interest"
+                if line_item.line_item_type == ElicensingLineItem.LineItemType.INTEREST
+                else line_item.description
+            ),
             "amount": f"${amount:,.2f}",
         }
         return amount, [entry]
@@ -467,7 +459,10 @@ class ElicensingInvoiceService:
 
         for payment in line_item.elicensing_payments.all():
             date = payment.received_date.strftime("%b %-d, %Y") if payment.received_date else "—"
-            description = getattr(payment, "description", None) or f"Payment {payment.payment_object_id}"
+            if line_item.line_item_type == ElicensingLineItem.LineItemType.INTEREST:
+                description = "FAA Interest Payment"
+            else:
+                description = getattr(payment, "description", None) or f"Payment {payment.payment_object_id}"
             amount = payment.amount
             billing_items.append(
                 {
