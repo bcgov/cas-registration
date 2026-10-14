@@ -44,6 +44,21 @@ class TestElicensingInvoiceService:
         make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=self.test_data.fee, amount=25)
         make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=self.test_data.fee, amount=25)
 
+        # Add FAA Interest + payment to the first invoice
+        self.faa_line_item = make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=self.test_data.invoice,
+            line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            base_amount=Decimal("20.00"),
+            fee_date=date(2025, 1, 26),
+            description="Interest to Payment Received Date",
+        )
+        make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=self.faa_line_item,
+            amount=Decimal("10.00"),
+        )
+
         # Add automatic overdue penalty
         self.penalty_invoice = make_recipe("compliance.tests.utils.elicensing_invoice", due_date=date(2025, 8, 1))
         make_recipe(
@@ -216,7 +231,6 @@ class TestElicensingInvoiceService:
             line_item: ElicensingLineItem = make_recipe(
                 "compliance.tests.utils.elicensing_line_item",
                 elicensing_invoice=invoice,
-                line_item_type=ElicensingLineItem.LineItemType.FEE,
                 base_amount=fee_amount,
                 fee_date=date(2025, 6, 1),
                 description="Compliance Fee",
@@ -447,7 +461,8 @@ class TestElicensingInvoiceService:
         # spot-checking the details
         assert result[0].invoice_type == "obligation"
         assert result[0].invoice_total == 300
-        assert result[0].total_payments == 250  # 201 + 49
+        assert result[0].faa_interest_total == 20
+        assert result[0].total_payments == 260  # 201 + 49 + 10(interest)
         assert result[0].total_adjustments == 50  # 25 + 25
 
     def test_get_elicensing_invoice_for_dashboard_for_industry_user(self):
@@ -470,6 +485,21 @@ class TestElicensingInvoiceService:
         make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=test_data_2.fee, amount=25)
         make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=test_data_2.fee, amount=25)
 
+        # Add FAA Interest + payment
+        faa_line_item = make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=test_data_2.invoice,
+            line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            base_amount=Decimal("100.00"),
+            fee_date=date(2025, 1, 26),
+            description="Interest to Payment Received Date",
+        )
+        make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=faa_line_item,
+            amount=Decimal("15.00"),
+        )
+
         assert (
             ElicensingInvoice.objects.count() == 4
         )  # 3 from setup (obligation + 2 penalty invoices) + 1 from this test
@@ -481,5 +511,6 @@ class TestElicensingInvoiceService:
 
         assert result[0].invoice_type == "obligation"
         assert result[0].invoice_total == 500
-        assert result[0].total_payments == 250  # 201 + 49
+        assert result[0].faa_interest_total == 100
+        assert result[0].total_payments == 265  # 201 + 49 + 15
         assert result[0].total_adjustments == 50  # 25 + 25
