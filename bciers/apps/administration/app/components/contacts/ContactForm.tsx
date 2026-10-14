@@ -113,6 +113,7 @@ export default function ContactForm({
     // boundary (see defaultPageFactory), which swaps the form for a loading
     // skeleton and unmounts the success message along with it.
     window.history.replaceState(null, "", `/administration${replaceUrl}`);
+    setIsSnackbarOpen(true);
   };
 
   const hasPlacesAssigned =

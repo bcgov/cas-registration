@@ -1,7 +1,7 @@
 "use client";
 
 import { createRef, useMemo, useState } from "react";
-import { Alert, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { IChangeEvent } from "@rjsf/core";
 import { FieldTemplateProps, RJSFSchema, UiSchema } from "@rjsf/utils";
@@ -20,7 +20,7 @@ interface TaskListFormProps {
   onSubmit: (e: IChangeEvent) => Promise<{ error?: string } | void>;
   schema: RJSFSchema;
   uiSchema: UiSchema;
-  error?: string;
+  errors?: (string | React.ReactNode)[];
   inlineMessage?: React.ReactNode;
   mode?: FormMode;
   allowEdit?: boolean;
@@ -59,7 +59,7 @@ const TaskListForm = ({
   handleDelete,
   schema,
   uiSchema,
-  error,
+  errors,
   inlineMessage,
   mode = FormMode.CREATE,
   allowEdit = true,
@@ -132,9 +132,7 @@ const TaskListForm = ({
           omitExtraData={true}
         >
           {inlineMessage && <div className="mt-10 mb-5">{inlineMessage}</div>}
-          <div className="min-h-6">
-            {error && <Alert severity="error">{error}</Alert>}
-          </div>
+          {errors}
           <div className="w-full flex justify-between items-center mt-8">
             {customButtonSection || (
               <div className="flex items-center">
