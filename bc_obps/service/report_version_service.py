@@ -11,7 +11,7 @@ from django.db.models import Min, F
 from dataclasses import dataclass
 from django.db.models import Prefetch
 from reporting.models import ReportVersion, FacilityReport, ReportActivity, ReportNonAttributableEmissions
-from typing import Union, List, Any
+from typing import Union, List, Any, Optional
 from service.operation_service import OperationService
 
 
@@ -114,13 +114,28 @@ class ReportVersionService:
 
     @staticmethod
     @transaction.atomic()
-    def delete_report_version(report_version_id: int) -> bool:
+    def delete_report_version(report_version_id: int, reason: Optional[str] = None) -> bool:
         """
         Deletes report version with the given report_version_id
         Returns True if deletion is successful, False otherwise.
+
+        Args:
+            report_version_id: the ID of the ReportVersion to delete
+            reason: an optional human-readable explanation for the deletion, recorded as
+                simple_history's `history_change_reason` on the resulting historical record.
         """
-        deleted, _ = ReportVersion.objects.filter(id=report_version_id).delete()
-        return deleted > 0
+        try:
+            report_version = ReportVersion.objects.get(id=report_version_id)
+        except ReportVersion.DoesNotExist:
+            return False
+        if reason:
+            # `_change_reason` is simple_history's dynamic hook for recording a
+            # `history_change_reason` on the historical record this delete produces.
+            # It isn't a declared model field, so it's set via `setattr` rather than
+            # direct attribute assignment to keep mypy happy.
+            setattr(report_version, "_change_reason", reason)
+        report_version.delete()
+        return True
 
     @staticmethod
     @transaction.atomic

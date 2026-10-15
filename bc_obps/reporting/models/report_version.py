@@ -1,5 +1,6 @@
 from django.db import models
 import pgtrigger
+from simple_history.models import HistoricalRecords
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report import Report
 from reporting.models.rls_configs.report_version import Rls as ReportVersionRls
@@ -44,6 +45,11 @@ class ReportVersion(TimeStampedModel):
         blank=True,
         null=True,
         db_comment="Reason explaining why a supplementary report change was made.",
+    )
+
+    history = HistoricalRecords(
+        table_name='erc_history"."report_version_history',
+        history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
     class Meta(TimeStampedModel.Meta):

@@ -45,4 +45,6 @@ def handle_registration_purpose_changed(sender: Type[Any], **kwargs: Any) -> Non
     version_id = draft_version.id
 
     logger.info("Deleting draft report version id=%s for operation_id=%s", version_id, operation_id)
-    ReportVersionService.delete_report_version(version_id)
+    ReportVersionService.delete_report_version(
+        version_id, reason="Deleted because the operation's registration purpose changed"
+    )
