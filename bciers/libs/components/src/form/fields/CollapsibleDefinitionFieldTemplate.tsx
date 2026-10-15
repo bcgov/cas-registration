@@ -33,11 +33,12 @@ function CollapsibleDefinitionFieldTemplate({
           <Grid size="auto">
             <CardHeader
               title={label}
-              titleTypographyProps={
-                hasErrors
-                  ? { variant: "h6", color: "#DC2626" }
-                  : { variant: "h6", color: "#38598A" }
-              }
+              slotProps={{
+                title: {
+                  variant: "h6",
+                  className: hasErrors ? "text-[#dc2626]" : "text-bc-bg-blue",
+                },
+              }}
               className="text-[blue]"
             />
           </Grid>
