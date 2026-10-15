@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import defaultTheme from "./theme/defaultTheme";
 import readOnlyTheme from "./theme/readOnlyTheme";
 import { useRef, useState } from "react";
@@ -11,6 +12,12 @@ import FormValidationError from "./components/FormValidationError";
 const currentYear = new Date().getFullYear();
 const yearRegEx = new RegExp(`.*(?:${currentYear - 1}|${currentYear}).*`);
 
+// The DateWidget's maxDate only limits the calendar, so a typed date needs this check
+// Compares calendar dates; malformed values are left to date_format
+const isNotFutureDate = (value: string) =>
+  !/^\d{4}-\d{2}-\d{2}/.test(value) ||
+  value.slice(0, 10) <= dayjs().format("YYYY-MM-DD");
+
 const customFormats = {
   phone: /\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}$/,
   "postal-code":
@@ -18,6 +25,7 @@ const customFormats = {
   bc_corporate_registry_number: "^[A-Za-z]{1,3}\\d{7}$",
   date_format: /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]).*/,
   starting_date_year: yearRegEx,
+  not_future_date: isNotFutureDate,
   signature: /^[A-Za-z\s]+$/,
   cra_business_number: /^\d{9}$/,
 };
@@ -32,6 +40,7 @@ export const customFormatsErrorMessages = {
   starting_date_year: `Starting Date must be between ${
     currentYear - 1
   } and ${currentYear}`,
+  not_future_date: "Date cannot be in the future",
   signature: "Signature should not include special characters or numbers",
   cra_business_number: "CRA Business Number should be 9 digits",
 };
