@@ -1,6 +1,5 @@
 import { screen, within } from "@testing-library/react";
 
-
 const titleSelector = ".MuiDataGrid-columnHeaderTitle";
 
 export const queryColumnHeader = (title: string) =>
@@ -13,8 +12,10 @@ export const getColumnHeader = (title: string) =>
     .getByText(title, { selector: titleSelector })
     .closest('[role="columnheader"]') as HTMLElement;
 
-
-export const expectColumnHeader = (title: string, isSortable: boolean = true) => {
+export const expectColumnHeader = (
+  title: string,
+  isSortable: boolean = true,
+) => {
   const header = getColumnHeader(title);
 
   expect(header).toBeVisible();
