@@ -76,7 +76,7 @@ const DataGrid: React.FC<Props> = ({
   getRowId,
   sx,
   pageSize,
-  rowSelection,
+  rowSelection = false,
   noDataMessage,
   hideFooter = false,
   getRowClassName: rowClassName,
