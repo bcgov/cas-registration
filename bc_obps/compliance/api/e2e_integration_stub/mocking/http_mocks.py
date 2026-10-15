@@ -1,4 +1,5 @@
 import re
+import uuid
 from contextlib import contextmanager
 from decimal import Decimal
 from typing import Any, Callable, Iterator, Optional
@@ -22,6 +23,12 @@ class UnmockedExternalCall(RuntimeError):
 
 # Invoice balance constants used across initial obligation scenarios
 _INITIAL_OUTSTANDING = "1000968.64"
+_DEFAULT_INVOICE_NUMBER = "INV-999"
+
+
+def _new_invoice_number() -> str:
+    # Create invoice (unique)
+    return f"INV-{uuid.uuid4().hex[:8].upper()}"
 
 
 class _InvoiceMock:
@@ -34,7 +41,8 @@ class _InvoiceMock:
         self._posted_adjustment_amount: Optional[str] = None
         self._posted_adjustment_reason: Optional[str] = None
 
-    def get(self, url: str, **_kwargs: Any) -> Response:
+    def get(self, url: str, **kwargs: Any) -> Response:
+        invoice_number = (kwargs.get("params") or {}).get("InvoiceNumber", _DEFAULT_INVOICE_NUMBER)
         outstanding_dec = Decimal(_INITIAL_OUTSTANDING)
         if self._adjusted and self._posted_adjustment_amount is not None:
             outstanding_dec += Decimal(self._posted_adjustment_amount)
@@ -159,7 +167,7 @@ _ELICENSING_STATIC_MOCKS: list[tuple[str, str, Callable[..., Response]]] = [
                 "clientObjectId": "123",
                 "businessAreaCode": "E2E",
                 "clientGUID": "00000000-0000-0000-0000-000000000000",
-                "invoiceNumber": "INV-999",
+                "invoiceNumber": _new_invoice_number(),
             },
             url,
         ),

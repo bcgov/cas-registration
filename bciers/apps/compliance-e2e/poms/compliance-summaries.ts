@@ -179,15 +179,21 @@ export class ComplianceSummariesPOM {
 
   async getRowByOperationName(
     operationName: string,
-    penaltyStatus?: string,
+    complianceReportVersionId?: number | string,
   ): Promise<Locator> {
     await this.waitForGridReady({ timeout: 30_000 });
 
     const getRowLocator = () => {
       let row = this.grid().getByRole("row").filter({ hasText: operationName });
 
-      if (penaltyStatus) {
-        row = row.filter({ hasText: penaltyStatus });
+      // Several rows can share an operation name or status, so pin the row by its compliance report version,
+      // which every action link in the row includes
+      if (complianceReportVersionId !== undefined) {
+        row = row.filter({
+          has: this.page.locator(
+            `a[href*="/compliance-summaries/${complianceReportVersionId}/"]`,
+          ),
+        });
       }
 
       return row.first();
@@ -213,9 +219,12 @@ export class ComplianceSummariesPOM {
   async getCellTextForOperation(
     operationName: string,
     field: ComplianceSummariesGridHeaders,
-    penaltyStatus?: string,
+    complianceReportVersionId?: number | string,
   ): Promise<string> {
-    const row = await this.getRowByOperationName(operationName, penaltyStatus);
+    const row = await this.getRowByOperationName(
+      operationName,
+      complianceReportVersionId,
+    );
     const cell = row.locator(`[role="gridcell"][data-field="${field}"]`);
 
     await expect(cell).toBeVisible();
@@ -258,12 +267,13 @@ export class ComplianceSummariesPOM {
   async assertPenaltyStatusForOperation(
     operationName: string,
     expectedStatus: string,
+    complianceReportVersionId?: number | string,
   ): Promise<void> {
     await expect(async () => {
       const status = await this.getCellTextForOperation(
         operationName,
         ComplianceSummariesGridHeaders.PENALTY_STATUS,
-        expectedStatus,
+        complianceReportVersionId,
       );
       expect(status).toBe(expectedStatus);
     }).toPass({ timeout: 30_000 });
@@ -273,11 +283,15 @@ export class ComplianceSummariesPOM {
     operationName: string;
     linkName: string | RegExp;
     urlPattern?: string | RegExp;
-    penaltyStatus?: string;
+    complianceReportVersionId?: number | string;
   }) {
-    const { operationName, linkName, urlPattern, penaltyStatus } = options;
+    const { operationName, linkName, urlPattern, complianceReportVersionId } =
+      options;
 
-    const row = await this.getRowByOperationName(operationName, penaltyStatus);
+    const row = await this.getRowByOperationName(
+      operationName,
+      complianceReportVersionId,
+    );
     const actionLink = row.getByRole("link", { name: linkName });
 
     await expect(async () => {

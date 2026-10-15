@@ -67,6 +67,7 @@ test.describe("Test report version to compliance report version manage obligatio
 
     const paymentInstructions = new PaymentInstructionsPOM(page);
     await paymentInstructions.assertHasInvoiceNumber();
+    await paymentInstructions.maskInvoiceNumberForScreenshot();
 
     // happo screenshot
     await takeStabilizedScreenshot(happoScreenshot, page, {
