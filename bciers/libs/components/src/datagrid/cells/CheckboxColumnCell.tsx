@@ -32,7 +32,7 @@ const getCheckboxColumnCell = (
         <Checkbox
           checked={Boolean(params.row.is_completed)}
           onChange={handleCheckboxChange}
-          inputProps={{ "aria-label": "Report Status" }}
+          slotProps={{ input: { "aria-label": "Report Status" } }}
         />
         <Box>Completed</Box>
       </FormControl>

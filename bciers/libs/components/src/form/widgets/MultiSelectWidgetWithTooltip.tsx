@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import {
   Autocomplete,
-  AutocompleteRenderGetTagProps,
+  Box,
   Chip,
-  MenuItem,
   TextField,
   Tooltip,
   Zoom,
@@ -157,9 +156,9 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
       sx={styles}
       isOptionEqualToValue={(
         option: OptionWithTooltip,
-        val: OptionWithTooltip,
+        val: string | OptionWithTooltip,
       ) => {
-        return option.id === val.id;
+        return typeof val !== "string" && option.id === val.id;
       }}
       onChange={handleChange}
       onHighlightChange={(event, option) => {
@@ -178,12 +177,10 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
           helperText={helpText}
         />
       )}
-      renderTags={(
-        renderOptions: Array<OptionWithTooltip>,
-        getTagProps: AutocompleteRenderGetTagProps,
-      ) => {
+      renderValue={(selectedOptions, getItemProps) => {
+        const renderOptions = selectedOptions as OptionWithTooltip[];
         return renderOptions.map((option: OptionWithTooltip, index: number) => {
-          const { key: _key, ...tagProps } = getTagProps({ index });
+          const { key: _key, ...tagProps } = getItemProps({ index });
           const chip = (
             <Chip
               key={option.id}
@@ -202,15 +199,17 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
                 slots={{
                   transition: Zoom,
                 }}
-                PopperProps={{
-                  modifiers: [
-                    {
-                      name: "offset",
-                      options: {
-                        offset: [0, -10],
+                slotProps={{
+                  popper: {
+                    modifiers: [
+                      {
+                        name: "offset",
+                        options: {
+                          offset: [0, -10],
+                        },
                       },
-                    },
-                  ],
+                    ],
+                  },
                 }}
               >
                 {chip}
@@ -222,15 +221,17 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
       }}
       renderOption={(renderProps, option: OptionWithTooltip) => {
         const isHighlighted = highlightedOption?.id === option.id;
+        const { key: _key, ...optionProps } = renderProps;
+        // MenuItem can't be used here: since MUI v9 it throws outside a Menu/MenuList
         const menuItem = (
-          <MenuItem
-            {...renderProps}
+          <Box
+            component="li"
+            {...optionProps}
             key={option.id}
-            value={option.id}
             sx={menuItemStyle}
           >
             {option.label}
-          </MenuItem>
+          </Box>
         );
         if (option.tooltip) {
           return (
@@ -243,15 +244,17 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
               slots={{
                 transition: Zoom,
               }}
-              PopperProps={{
-                modifiers: [
-                  {
-                    name: "offset",
-                    options: {
-                      offset: [0, -7],
+              slotProps={{
+                popper: {
+                  modifiers: [
+                    {
+                      name: "offset",
+                      options: {
+                        offset: [0, -7],
+                      },
                     },
-                  },
-                ],
+                  ],
+                },
               }}
             >
               {menuItem}

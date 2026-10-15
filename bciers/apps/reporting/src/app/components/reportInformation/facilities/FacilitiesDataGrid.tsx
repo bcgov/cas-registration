@@ -164,8 +164,7 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
       <Typography
         variant="body2"
         color={BC_GOV_BACKGROUND_COLOR_BLUE}
-        fontStyle="italic"
-        className="mb-5 text-[16px]"
+        className="mb-5 text-[16px] italic"
       >
         All facility reports in the Facilities table below must be marked as
         complete before you can continue.

@@ -32,7 +32,7 @@ const Modal: React.FC<Props> = ({
       maxWidth={maxWidth}
       fullWidth={fullWidth}
       data-testid="modal"
-      PaperProps={{ sx: { borderRadius: "2px" } }}
+      slotProps={{ paper: { sx: { borderRadius: "2px" } } }}
     >
       <DialogTitle className="bg-bc-primary-blue text-white px-4 py-2 flex flex-row items-center justify-between">
         {title}
