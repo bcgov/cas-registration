@@ -2,6 +2,7 @@ import { render, screen, within, fireEvent } from "@testing-library/react";
 import { ComplianceUnitsGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceUnitsGrid";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import { ComplianceAppliedUnitsSummary } from "@/compliance/src/app/types";
+import expectColumnHeader from "@bciers/testConfig/helpers/expectColumnHeader";
 
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
@@ -88,7 +89,7 @@ describe("ComplianceUnitsGrid", () => {
       "Equivalent Value",
     ];
     headers.forEach((header) => {
-      expect(screen.getByRole("columnheader", { name: header })).toBeVisible();
+      expectColumnHeader(header);
     });
 
     const rows = screen.getAllByRole("row");
