@@ -41,7 +41,7 @@ const DateWidget: React.FC<WidgetProps> = ({
 
   const styles = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
+    "& .MuiPickersOutlinedInput-root": {
       "& fieldset": {
         borderColor,
       },
