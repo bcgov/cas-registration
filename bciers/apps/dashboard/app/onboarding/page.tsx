@@ -59,11 +59,9 @@ export default function Page() {
   return (
     <Grid container spacing={2} className="mb-6">
       <Grid
-        item
-        xs={12}
-        md={6}
-        order={{ xs: 1, md: 1 }}
+        size={{ xs: 12, md: 6 }}
         sx={{
+          order: { xs: 1, md: 1 },
           marginRight: {
             xs: "0px",
             lg: "40px",
@@ -143,11 +141,9 @@ export default function Page() {
         </section>
       </Grid>
       <Grid
-        item
-        xs={12}
-        md={5.5}
-        order={{ xs: 2, md: 2 }}
+        size={{ xs: 12, md: 5.5 }}
         sx={{
+          order: { xs: 2, md: 2 },
           paddingLeft: {
             xs: "0px",
             md: "40px",

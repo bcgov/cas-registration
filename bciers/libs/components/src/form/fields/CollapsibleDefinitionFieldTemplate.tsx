@@ -30,7 +30,7 @@ function CollapsibleDefinitionFieldTemplate({
     <Paper className={`mb-4 ${classNames}`}>
       <Card className="text-left">
         <Grid container spacing={1} className="justify-between">
-          <Grid item xs={"auto"}>
+          <Grid size="auto">
             <CardHeader
               title={label}
               titleTypographyProps={
@@ -42,7 +42,7 @@ function CollapsibleDefinitionFieldTemplate({
             />
           </Grid>
           {!readonly && (
-            <Grid item xs={1}>
+            <Grid size={1}>
               <CardActions className="justify-end">
                 <IconButton onClick={() => setExpandCollapse(!expandCollapse)}>
                   {!expandCollapse ? <ExpandMoreIcon /> : <ExpandLessIcon />}
