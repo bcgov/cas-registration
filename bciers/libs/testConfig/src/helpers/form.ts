@@ -68,3 +68,13 @@ export const checkNoValidationErrorIsTriggered = async () => {
   await userEvent.click(submitButton);
   expect(screen.queryByRole("alert")).toBeNull();
 };
+
+// MUI X date fields render editable sections (year, month, day); the labelled
+// <input> is hidden and only holds the value. Type into the sections instead
+export const typeDate = async (dateInput: HTMLElement, value: string) => {
+  const sections = dateInput
+    .closest('[role="group"]')
+    ?.querySelector<HTMLElement>(".MuiPickersSectionList-root");
+  if (!sections) throw new Error("Date field sections not found");
+  await userEvent.type(sections, value);
+};

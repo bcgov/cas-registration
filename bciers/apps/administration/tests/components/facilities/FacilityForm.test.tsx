@@ -23,6 +23,7 @@ import {
   facilitiesLfoUiSchema,
 } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
 import { FrontendMessages, FrontEndRoles } from "@bciers/utils/src/enums";
+import { typeDate } from "@bciers/testConfig/helpers/form";
 import { expect } from "vitest";
 
 const currentYear = new Date().getFullYear();
@@ -293,9 +294,9 @@ const fillOptionalFields = async (schema: RJSFSchema, container?: Element) => {
   // fill year and starting date
   const year = screen.getByLabelText(/Did this facility begin operations+/i);
   await userEvent.click(year);
-  await userEvent.type(
+  await typeDate(
     screen.getByLabelText(/Date of facility starting operations+/i),
-    defaultFillFormValues.starting_date,
+    `${currentYear}0707`,
   );
 
   await userEvent.type(
@@ -650,7 +651,7 @@ describe("FacilityForm component", () => {
     // fill year and starting date with wrong info
     const year = screen.getByLabelText(/Did this facility begin operations+/i);
     await userEvent.click(year);
-    await userEvent.type(
+    await typeDate(
       screen.getByLabelText(/Date of facility starting operations+/i),
       "20200101",
     );
@@ -673,13 +674,10 @@ describe("FacilityForm component", () => {
       1,
     );
 
-    // refill year and starting date to check for proper format
-    await userEvent.clear(
+    // refill the starting date with a partial date
+    await typeDate(
       screen.getByLabelText(/Date of facility starting operations+/i),
-    );
-    await userEvent.type(
-      screen.getByLabelText(/Date of facility starting operations+/i),
-      "202",
+      "{Control>}a{/Control}{Backspace}202",
     );
     fireEvent.click(saveButton);
 
