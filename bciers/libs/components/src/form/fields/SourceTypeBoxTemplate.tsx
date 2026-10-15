@@ -79,7 +79,10 @@ export function SourceTypeBoxTemplate({
           <Grid size={10}>
             <CardHeader
               className="text-[blue]"
-              titleTypographyProps={{ variant: "h6", color: "#38598A" }}
+              // v9 Typography ignores non-palette values in its color prop
+              slotProps={{
+                title: { variant: "h6", className: "text-bc-bg-blue" },
+              }}
               title={
                 <div className="flex items-center">
                   {label}
