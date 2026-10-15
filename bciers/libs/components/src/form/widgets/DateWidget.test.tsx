@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 import {
   checkTextWidgetValidationStyles,
   checkNoValidationErrorIsTriggered,
+  typeDate,
 } from "@bciers/testConfig/helpers/form";
 
 const dateWidgetFieldLabel = "DateWidget test field";
@@ -44,7 +45,7 @@ const checkTypingDate = async (inputString: string, expectedValue: string) => {
 
   const dateWidgetInput = screen.getByRole("textbox") as HTMLInputElement;
 
-  await userEvent.type(dateWidgetInput, inputString);
+  await typeDate(dateWidgetInput, inputString);
 
   expect(dateWidgetInput.value).toBe(expectedValue);
 };
