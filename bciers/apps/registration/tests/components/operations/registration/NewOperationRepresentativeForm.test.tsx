@@ -134,7 +134,7 @@ describe("the NewOperationRepresentativeForm component", () => {
     );
     expect(screen.getByText(/operation representative\(s\):/i)).toBeVisible();
     expect(screen.getByText(/john doe/i)).toBeVisible();
-    expect(screen.getByTestId("DeleteOutlineIcon")).toBeVisible();
+    expect(screen.getByTestId("DeleteOutlinedIcon")).toBeVisible();
 
     //This button should not be visible before clicking the add new operation representative button
     expect(
@@ -222,7 +222,7 @@ describe("the NewOperationRepresentativeForm component", () => {
     );
 
     // Clearing the selected contact - must clear the form
-    await userEvent.click(screen.getByTestId("DeleteOutlineIcon"));
+    await userEvent.click(screen.getByTestId("DeleteOutlinedIcon"));
 
     await userEvent.clear(
       screen.getByRole("combobox", {
@@ -357,7 +357,7 @@ describe("the NewOperationRepresentativeForm component", () => {
         contacts={contactsMock}
       />,
     );
-    await userEvent.click(screen.getByTestId("DeleteOutlineIcon"));
+    await userEvent.click(screen.getByTestId("DeleteOutlinedIcon"));
     await waitFor(() => {
       expect(
         screen.getByText(/Operation Representative removed successfully/i),
@@ -383,7 +383,7 @@ describe("the NewOperationRepresentativeForm component", () => {
         />,
       );
 
-      await userEvent.click(screen.getAllByTestId("DeleteOutlineIcon")[0]);
+      await userEvent.click(screen.getAllByTestId("DeleteOutlinedIcon")[0]);
       await waitFor(() => {
         expect(
           screen.getByText(/Operation Representative removed successfully/i),
