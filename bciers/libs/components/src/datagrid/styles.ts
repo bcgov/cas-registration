@@ -18,11 +18,9 @@ const styles = {
     backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
     fontWeight: "bold",
   },
-  "& .MuiDataGrid-columnHeadersInner": {
-    flexDirection: "column-reverse",
-  },
   "& .MuiDataGrid-columnHeaders": {
     display: "flex",
+    flexDirection: "column-reverse",
     // If column group headers are present, make the background white
     "& [role=row]:first-of-type:not(:only-child)": {
       "& .MuiDataGrid-columnHeader": {
@@ -32,6 +30,9 @@ const styles = {
       },
       "& .MuiDataGrid-columnHeader:last-of-type": {
         borderRight: "none",
+      },
+      "& .MuiDataGrid-columnHeader--emptyGroup": {
+        borderBottom: "1px solid var(--DataGrid-rowBorderColor)",
       },
     },
   },
@@ -79,8 +80,23 @@ const styles = {
   "& .MuiDataGrid-sortIcon": {
     opacity: "inherit !important",
   },
+  // MUI gives the sort button the default (white) header background and only
+  // shows it on hover; keep our icon always visible on the blue header
+  "& .MuiDataGrid-columnHeader .MuiDataGrid-sortButton": {
+    backgroundColor: "transparent",
+    // MUI's rule hiding unsorted buttons is more specific than this selector
+    opacity: "1 !important",
+    "& > *": {
+      opacity: "1 !important",
+    },
+  },
   "& .MuiDataGrid-filler": {
     display: "none",
+  },
+  // Cells only have a top border, and the filler that would draw the grid's
+  // bottom line is hidden above, so border the last row instead
+  "& .MuiDataGrid-row--lastVisible .MuiDataGrid-cell": {
+    borderBottom: "1px solid var(--DataGrid-rowBorderColor)",
   },
   "& .MuiDataGrid-virtualScroller": {
     // Set min height to stop jumping effect when searching and no results are found
