@@ -21,6 +21,7 @@ import {
   fillNameAndTypeFields,
   toggleAndFillStartDate,
 } from "./utils";
+import expectColumnHeader from "@bciers/testConfig/helpers/expectColumnHeader";
 
 useSessionRole.mockReturnValue("industry_user_admin");
 
@@ -87,16 +88,10 @@ describe("the FacilityLfoForm component", () => {
         name: /add new facility/i,
       }),
     ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Facility Name" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Facility Type" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "BC GHG ID" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Actions" })).toBeVisible();
+    expectColumnHeader("Facility Name");
+    expectColumnHeader("Facility Type");
+    expectColumnHeader("BC GHG ID");
+    expectColumnHeader("Actions", false);
     expect(
       screen.getByRole("link", {
         name: "Cancel",

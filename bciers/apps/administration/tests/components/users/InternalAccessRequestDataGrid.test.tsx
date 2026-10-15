@@ -11,6 +11,9 @@ import InternalAccessRequestDataGrid from "@/administration/app/components/users
 import { FrontEndRoles, InternalFrontEndRoles } from "@bciers/utils/src/enums";
 import { TestErrorBoundary } from "@bciers/testConfig/helpers/TestErrorBoundary";
 import { InternalAccessRequestDataGridRow } from "@/administration/app/components/users/types";
+import expectColumnHeader, {
+  queryColumnHeader,
+} from "@bciers/testConfig/helpers/expectColumnHeader";
 
 const mockInitialData: {
   rows: InternalAccessRequestDataGridRow[];
@@ -75,24 +78,18 @@ describe("Access Requests DataGrid", () => {
     );
     expect(screen.getByRole("grid")).toBeVisible();
     expect(screen.getByText(/No records found/i)).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Name" })).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Email" })).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "User Role" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Status" })).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Approve Access?" }),
-    ).toBeVisible();
+    expectColumnHeader("Name");
+    expectColumnHeader("Email");
+    expectColumnHeader("User Role");
+    expectColumnHeader("Status");
+    expectColumnHeader("Approve Access?", false);
   });
 
   it("renders Access Requests component with DATA for readonly roles (cas_analyst, cas_view_only, cas_director)", async () => {
     useSessionRole.mockReturnValue(FrontEndRoles.CAS_ANALYST);
 
     render(<InternalAccessRequestDataGrid initialData={mockInitialData} />);
-    expect(
-      screen.queryByRole("columnheader", { name: "Approve Access?" }),
-    ).not.toBeInTheDocument();
+    expect(queryColumnHeader("Approve Access?")).not.toBeInTheDocument();
 
     // spot checking a row
     const thirdRow = screen.getAllByRole("row")[3];

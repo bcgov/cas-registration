@@ -12,6 +12,9 @@ import { QueryParams } from "@bciers/testConfig/types";
 import { FacilityInitialData } from "@/administration/app/components/facilities/types";
 import extractParams from "@bciers/testConfig/helpers/extractParams";
 import userEvent from "@testing-library/user-event";
+import expectColumnHeader, {
+  getColumnHeader,
+} from "@bciers/testConfig/helpers/expectColumnHeader";
 
 const mockReplace = vi.spyOn(global.history, "replaceState");
 
@@ -58,16 +61,10 @@ describe("FacilitiesDataGrid component", () => {
     );
 
     // correct headers
-    expect(
-      screen.getByRole("columnheader", { name: "Facility Name" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Facility Type" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "BC GHG ID" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Actions" })).toBeVisible();
+    expectColumnHeader("Facility Name");
+    expectColumnHeader("Facility Type");
+    expectColumnHeader("BC GHG ID");
+    expectColumnHeader("Actions", false);
     expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(3);
 
     // Check data displays
@@ -101,9 +98,7 @@ describe("FacilitiesDataGrid component", () => {
     );
 
     // click on the first column header
-    const facilityNameHeader = screen.getByRole("columnheader", {
-      name: "Facility Name",
-    });
+    const facilityNameHeader = getColumnHeader("Facility Name");
 
     act(() => {
       facilityNameHeader.click();
@@ -128,9 +123,7 @@ describe("FacilitiesDataGrid component", () => {
     ).toBe("desc");
 
     // click on another column header
-    const facilityTypeHeader = screen.getByRole("columnheader", {
-      name: "BC GHG ID",
-    });
+    const facilityTypeHeader = getColumnHeader("BC GHG ID");
 
     act(() => {
       facilityTypeHeader.click();

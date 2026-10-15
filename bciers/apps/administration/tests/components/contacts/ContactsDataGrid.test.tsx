@@ -10,6 +10,10 @@ import ContactsDataGrid from "apps/administration/app/components/contacts/Contac
 import { useSearchParams } from "@bciers/testConfig/mocks";
 import { QueryParams } from "@bciers/testConfig/types";
 import extractParams from "@bciers/testConfig/helpers/extractParams";
+import expectColumnHeader, {
+  getColumnHeader,
+  queryColumnHeader,
+} from "@bciers/testConfig/helpers/expectColumnHeader";
 
 const mockReplace = vi.spyOn(global.history, "replaceState");
 
@@ -69,22 +73,12 @@ describe("ContactsDataGrid component", () => {
     );
 
     // correct headers
-    expect(
-      screen.queryByRole("columnheader", { name: "First Name" }),
-    ).toBeVisible();
-    expect(
-      screen.queryByRole("columnheader", { name: "Last Name" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("columnheader", { name: "Business Email Address" }),
-    ).toBeVisible();
+    expectColumnHeader("First Name");
+    expectColumnHeader("Last Name");
+    expectColumnHeader("Business Email Address");
     // Internal users should only see two below columns
-    expect(
-      screen.queryByRole("columnheader", { name: "Operator Legal Name" }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("columnheader", { name: "Actions" }),
-    ).toBeVisible();
+    expect(queryColumnHeader("Operator Legal Name")).not.toBeInTheDocument();
+    expectColumnHeader("Actions", false);
     expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(3);
 
     // Check data displays
@@ -104,21 +98,11 @@ describe("ContactsDataGrid component", () => {
     );
 
     // correct headers
-    expect(
-      screen.queryByRole("columnheader", { name: "First Name" }),
-    ).toBeVisible();
-    expect(
-      screen.queryByRole("columnheader", { name: "Last Name" }),
-    ).toBeVisible();
-    expect(
-      screen.queryByRole("columnheader", { name: "Business Email Address" }),
-    ).toBeVisible();
-    expect(
-      screen.queryByRole("columnheader", { name: "Operator Legal Name" }),
-    ).toBeVisible();
-    expect(
-      screen.queryByRole("columnheader", { name: "Actions" }),
-    ).toBeVisible();
+    expectColumnHeader("First Name");
+    expectColumnHeader("Last Name");
+    expectColumnHeader("Business Email Address");
+    expectColumnHeader("Operator Legal Name");
+    expectColumnHeader("Actions", false);
     expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(4);
 
     // Check data displays
@@ -144,9 +128,7 @@ describe("ContactsDataGrid component", () => {
     );
 
     // click on the first column header
-    const firstNameHeader = screen.getByRole("columnheader", {
-      name: "First Name",
-    });
+    const firstNameHeader = getColumnHeader("First Name");
     act(() => {
       firstNameHeader.click();
     });
@@ -170,9 +152,7 @@ describe("ContactsDataGrid component", () => {
     ).toBe("desc");
 
     // click on the second column header
-    const lastNameHeader = screen.getByRole("columnheader", {
-      name: "Last Name",
-    });
+    const lastNameHeader = getColumnHeader("Last Name");
     act(() => {
       lastNameHeader.click();
     });

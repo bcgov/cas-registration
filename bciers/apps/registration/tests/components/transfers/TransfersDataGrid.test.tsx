@@ -3,6 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import TransfersDataGrid from "@/registration/app/components/transfers/TransfersDataGrid";
 import { TransferRow } from "@/registration/app/components/transfers/types";
+import expectColumnHeader from "@bciers/testConfig/helpers/expectColumnHeader";
 
 useRouter.mockReturnValue({
   query: {},
@@ -60,20 +61,11 @@ describe("TransfersDataGrid component", () => {
     render(<TransfersDataGrid initialData={mockResponse} />);
 
     // correct headers
-    expect(
-      screen.getByRole("columnheader", { name: "Submission Date" }),
-    ).toBeVisible();
-    expect(
-      screen.queryByRole("columnheader", { name: "Operation" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: "Facility" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Status" })).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Effective Date" }),
-    ).toBeVisible();
-
+    expectColumnHeader("Submission Date");
+    expectColumnHeader("Operation");
+    expectColumnHeader("Facility");
+    expectColumnHeader("Status");
+    expectColumnHeader("Effective Date");
     expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(3);
 
     const rows = screen.getAllByRole("row"); // row 0 is headers and row 1 is filter cells
