@@ -1,7 +1,7 @@
 import "@bciers/styles/globals.css";
 import type { Metadata, Viewport } from "next";
 import type { Session } from "next-auth";
-import ThemeProvider from "@mui/material/styles/ThemeProvider";
+import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import SessionProvider from "@bciers/components/auth/SessionProvider";
 import {
