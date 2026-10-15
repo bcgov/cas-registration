@@ -8,8 +8,8 @@ import {
   sortMethodologyEntries,
 } from "@reporting/src/app/components/shared/activityRenderUtils";
 import {
-  dataCardStyle,
-  verticalBorder,
+  dataCardClasses,
+  verticalBorderClasses,
 } from "@reporting/src/app/components/changeReview/constants/styles";
 
 type FieldDisplayTitles = Record<string, string>;
@@ -82,14 +82,7 @@ export const renderField = (
   );
 
   const wrapper = (children: React.ReactNode) => (
-    <div
-      style={{
-        marginBottom: 4,
-        display: "flex",
-        alignItems: "center",
-        gap: "4px",
-      }}
-    >
+    <div className="mb-1 flex items-center gap-1">
       {label}
       {children}
     </div>
@@ -155,8 +148,7 @@ export const renderObject = (
         return (
           <div key={`${labelPrefix}-${index}`} style={{ marginBottom: 12 }}>
             {renderHeading(`Source sub-type ${index + 1}:`, isDeleted)}
-
-            <div style={{ marginLeft: 10 }}>
+            <div className="ml-2.5">
               {renderObject(
                 orderedItem,
                 labelPrefix,
@@ -178,17 +170,13 @@ export const renderObject = (
 
       const title = singularLabel ? `${singularLabel} ${index + 1}:` : "";
 
-      const containerStyle = {
-        marginLeft: 20,
-        marginBottom: 8,
-        ...(lower === "emissions" ? verticalBorder : {}),
-      };
+      const containerClasses =
+        lower === "emissions" ? `mb-2 ${verticalBorderClasses}` : "ml-5 mb-2";
 
       return (
-        <div key={`${labelPrefix}-${index}`} style={containerStyle}>
+        <div key={`${labelPrefix}-${index}`} className={containerClasses}>
           {title && renderHeading(title, isDeleted)}
-
-          <div style={{ marginLeft: 10 }}>
+          <div className="ml-2.5">
             {renderObject(item, labelPrefix, isDeleted, fieldDisplayTitles)}
           </div>
         </div>
@@ -222,8 +210,8 @@ export const renderObject = (
         );
 
         return (
-          <div key={`${key}-${idx}`} style={{ marginBottom: 4 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+          <div key={`${key}-${idx}`} className="mb-1">
+            <div className="flex items-center gap-1">
               <strong style={deletedStyles}>Methodology:</strong>
 
               {methodName && <span style={deletedStyles}>{methodName}</span>}
@@ -234,16 +222,13 @@ export const renderObject = (
               // is rendered as a blue sub-header with its fields indented beneath it.
               if (typeof pVal === "object" && pVal !== null) {
                 return (
-                  <div
-                    key={`${pKey}-${pIdx}`}
-                    style={{ marginLeft: 20, marginBottom: 8 }}
-                  >
+                  <div key={`${pKey}-${pIdx}`} className="ml-5 mb-2">
                     {renderHeading(
                       `${getFieldLabel(pKey, methodologyFieldDisplayTitles)}:`,
                       isDeleted,
                     )}
 
-                    <div style={{ marginLeft: 16 }}>
+                    <div className="ml-4">
                       {renderObject(
                         pVal,
                         pKey,
@@ -258,13 +243,7 @@ export const renderObject = (
               return (
                 <div
                   key={`${pKey}-${pIdx}`}
-                  style={{
-                    marginBottom: 4,
-                    marginLeft: 20,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                  }}
+                  className="mb-1 ml-5 flex items-center gap-1"
                 >
                   <strong style={deletedStyles}>
                     {getFieldLabel(pKey, methodologyFieldDisplayTitles)}:
@@ -294,16 +273,7 @@ export const renderObject = (
       return (
         <div
           key={`${key}-${idx}`}
-          style={{
-            marginBottom: 4,
-            ...(isObjOrArr
-              ? {}
-              : {
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                }),
-          }}
+          className={`mb-1 ${isObjOrArr ? "" : "flex items-center gap-1"}`}
         >
           {!suppressLabel && (
             <strong style={deletedStyles}>
@@ -355,7 +325,7 @@ export const renderFuels = (
   const fieldDisplayTitles = getFieldDisplayTitles(sourceTypeValue, {});
 
   return (
-    <div style={dataCardStyle}>
+    <div className={dataCardClasses}>
       {Object.entries(sourceTypeValue)
         .filter(([key]) =>
           ["fuel name", "fuel unit"].includes(key.toLowerCase()),

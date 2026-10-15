@@ -35,16 +35,16 @@ export const ChangeValueBox: React.FC<ChangeValueBoxProps> = ({
   return (
     <Paper
       variant="outlined"
-      sx={{ p: 1, bgcolor: "#f9f9f9", fontSize: 14, wordBreak: "break-all" }}
+      className="p-2 bg-[#f9f9f9] text-sm/normal break-all"
     >
       {isAddedItem && (
         <Box>
           {typeof newValue === "object" ? (
-            <pre style={{ margin: 0, fontWeight: "bold", ...deletedStyles }}>
+            <pre className="m-0 font-bold" style={deletedStyles}>
               {formatValue(newValue)}
             </pre>
           ) : (
-            <span style={{ fontWeight: "bold", ...deletedStyles }}>
+            <span className="font-bold" style={deletedStyles}>
               {formatValue(newValue)}
             </span>
           )}
@@ -53,22 +53,11 @@ export const ChangeValueBox: React.FC<ChangeValueBoxProps> = ({
       {isDeletedItem && (
         <Box>
           {typeof oldValue === "object" ? (
-            <pre
-              style={{
-                margin: 0,
-                textDecoration: "line-through",
-                color: "#666",
-              }}
-            >
+            <pre className="m-0 line-through text-[#666]">
               {formatValue(oldValue)}
             </pre>
           ) : (
-            <span
-              style={{
-                textDecoration: "line-through",
-                color: "#666",
-              }}
-            >
+            <span className="line-through text-[#666]">
               {formatValue(oldValue)}
             </span>
           )}
@@ -78,32 +67,19 @@ export const ChangeValueBox: React.FC<ChangeValueBoxProps> = ({
         <Box>
           {typeof oldValue === "object" || typeof newValue === "object" ? (
             <Box>
-              <pre
-                style={{
-                  margin: 0,
-                  textDecoration: "line-through",
-                  color: "#666",
-                  marginBottom: "8px",
-                }}
-              >
+              <pre className="m-0 mb-2 line-through text-[#666]">
                 {formatValue(oldValue)}
               </pre>
-              <pre style={{ margin: 0, fontWeight: "bold", ...deletedStyles }}>
+              <pre className="m-0 font-bold" style={deletedStyles}>
                 {formatValue(newValue)}
               </pre>
             </Box>
           ) : (
             <Box>
-              <span
-                style={{
-                  textDecoration: "line-through",
-                  color: "#666",
-                  marginRight: "8px",
-                }}
-              >
+              <span className="line-through text-[#666] mr-2">
                 {formatValue(oldValue)}
               </span>
-              <span style={{ fontWeight: "bold", ...deletedStyles }}>
+              <span className="font-bold" style={deletedStyles}>
                 {formatValue(newValue)}
               </span>
             </Box>

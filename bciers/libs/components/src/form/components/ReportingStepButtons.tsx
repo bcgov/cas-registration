@@ -58,7 +58,7 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
   );
 
   return (
-    <Box display="flex" justifyContent="space-between" mt={3}>
+    <Box className="flex justify-between mt-6">
       <div>
         {backUrl && (
           <Button
@@ -75,7 +75,7 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
             variant="contained"
             color="primary"
             disabled={isSaving || saveButtonDisabled}
-            sx={{ mx: 3 }}
+            className="mx-6"
             type="submit"
             onClick={() => {
               if (noFormSave) noFormSave();
@@ -89,7 +89,7 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
         variant="contained"
         color="primary"
         disabled={isSaving || submitButtonDisabled}
-        sx={{ px: 4 }}
+        className="px-8"
         onClick={() => {
           if (saveAndContinue) {
             saveAndContinue();

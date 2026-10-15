@@ -34,38 +34,19 @@ const Modal: React.FC<Props> = ({
       data-testid="modal"
       PaperProps={{ sx: { borderRadius: "2px" } }}
     >
-      <DialogTitle
-        sx={{
-          bgcolor: "primary.main",
-          color: "#FFFFFF",
-          padding: "8px 16px",
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <DialogTitle className="bg-bc-primary-blue text-white px-4 py-2 flex flex-row items-center justify-between">
         {title}
         {onClose ? (
           <IconButton
             aria-label="close"
             onClick={onClose}
-            sx={{
-              color: "#FFFFFF",
-              paddingRight: "0",
-            }}
+            className="text-white pr-0"
           >
             X
           </IconButton>
         ) : null}
       </DialogTitle>
-      <DialogContent
-        sx={{
-          padding: "16px",
-        }}
-      >
-        {children}
-      </DialogContent>
+      <DialogContent className="px-4 pt-0 pb-4">{children}</DialogContent>
     </Dialog>
   );
 };

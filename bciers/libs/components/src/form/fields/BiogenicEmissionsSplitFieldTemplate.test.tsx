@@ -83,6 +83,6 @@ describe("BiogenicEmissionsSplitFieldTemplate", () => {
       <BiogenicEmissionsSplitFieldTemplate {...buildProps()} />,
     );
     const box = container.querySelector(".rounded-md");
-    expect(box).toHaveStyle({ backgroundColor: "rgb(242, 242, 242)" });
+    expect(box).toHaveClass("bg-bc-bg-grey");
   });
 });

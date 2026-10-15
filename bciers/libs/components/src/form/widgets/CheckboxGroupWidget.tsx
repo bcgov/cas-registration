@@ -30,8 +30,8 @@ const CheckboxGroupWidget: React.FC<WidgetProps> = ({
   return (
     <div>
       <FormGroup
+        className="grid"
         style={{
-          display: "grid",
           gridTemplateColumns: `repeat(${columns}, 1fr)`,
           alignItems: alignment,
         }}

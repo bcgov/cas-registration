@@ -1,6 +1,5 @@
 // typescript
 import React from "react";
-import { BC_GOV_COMPONENTS_GREY, LIGHT_GREY_BG_COLOR } from "@bciers/styles";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
 import { NumberField } from "@base-ui/react/number-field";
 import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
@@ -51,7 +50,7 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
     }
     if (typeof val === "string" && val.includes(";") && !isReasonForChange) {
       return (
-        <ul style={{ listStyleType: "none", paddingLeft: 0, margin: 0 }}>
+        <ul className="list-none pl-0 m-0">
           {val.split(";").map((item, idx) => (
             <li key={idx}>- {item.trim()}</li>
           ))}
@@ -103,12 +102,7 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
             </NumberField.Root>
           ) : changeType === "modified" ? (
             <>
-              <span
-                style={{
-                  textDecoration: "line-through",
-                  color: BC_GOV_COMPONENTS_GREY,
-                }}
-              >
+              <span className="line-through text-bc-component-grey">
                 {formatValue(oldValue)}
                 {unit && ` ${unit}`}
               </span>
@@ -127,7 +121,7 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
         {!isReasonForChange ? (
           <div
             className={`w-full md:w-5/12 flex items-center ${
-              unit ? "text-bc-bg-blue" : ""
+              unit && !isDeleted ? "text-bc-bg-blue" : ""
             }`}
             style={deletedValueStyles}
           >
@@ -137,14 +131,7 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
       </div>
 
       {showSeparator && (
-        <hr
-          className="mt-5"
-          style={{
-            border: "none",
-            height: "1px",
-            backgroundColor: LIGHT_GREY_BG_COLOR,
-          }}
-        />
+        <hr className="mt-5 border-none h-px bg-bc-bg-light-grey" />
       )}
     </div>
   );

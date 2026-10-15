@@ -1,5 +1,4 @@
 "use client";
-import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
 import Link from "next/link";
 import Form from "@bciers/components/form/FormBase";
 import { useRouter } from "next/navigation";
@@ -78,8 +77,7 @@ export default function SelectOperatorForm() {
           Don&apos;t see the operator?{" "}
           <Link
             href="/select-operator/add-operator"
-            className="underline hover:no-underline mr-2"
-            style={{ color: BC_GOV_LINKS_COLOR }}
+            className="underline hover:no-underline mr-2 text-bc-link-blue"
           >
             Add Operator
           </Link>

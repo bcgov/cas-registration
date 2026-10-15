@@ -254,7 +254,7 @@ const DataGrid: React.FC<Props> = ({
   }, [searchParams]);
 
   return (
-    <div style={{ height: "auto", width: "100%" }}>
+    <div className="h-auto w-full">
       <MuiGrid
         rows={rows}
         columns={columns}

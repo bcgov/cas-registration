@@ -27,11 +27,7 @@ const AccessTypeColumnCell = (params: UserOperatorRenderCellParams) => {
   }
 
   return (
-    <FormControl
-      style={{
-        minWidth: 120,
-      }}
-    >
+    <FormControl className="min-w-30">
       <Select
         labelId={id}
         id={id}

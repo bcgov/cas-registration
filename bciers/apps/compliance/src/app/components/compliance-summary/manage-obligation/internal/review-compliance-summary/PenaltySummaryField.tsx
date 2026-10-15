@@ -13,7 +13,7 @@ type PenaltySummaryFieldProps = {
 };
 
 const tileStyles =
-  "w-[350px] shrink-0 rounded-md border border-solid border-current p-4";
+  "w-87.5 shrink-0 rounded-md border border-solid border-current p-4";
 
 export const PenaltySummaryField = ({
   formData,

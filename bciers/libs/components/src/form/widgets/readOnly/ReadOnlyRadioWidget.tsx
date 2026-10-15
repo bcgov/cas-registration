@@ -10,7 +10,7 @@ const ReadOnlyRadioWidget: React.FC<WidgetProps> = (props) => {
     value === true ? "Yes" : value === false ? "No" : value;
 
   return (
-    <div id={id} className="read-only-widget py-[9px]">
+    <div id={id} className="read-only-widget py-2.25">
       {customizedValue || formattedValue}
     </div>
   );

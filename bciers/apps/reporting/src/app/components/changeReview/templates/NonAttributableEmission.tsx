@@ -48,7 +48,7 @@ export const NonAttributableEmissionItem: React.FC<Props> = ({ change }) => {
       }));
 
     return (
-      <Box mb={2}>
+      <Box className="mb-4">
         {changeType !== "modified" && <StatusLabel type={changeType} />}
         {items.map((item) => (
           <ChangeItemDisplay
@@ -63,7 +63,7 @@ export const NonAttributableEmissionItem: React.FC<Props> = ({ change }) => {
 
   // Scalar case: single field — let ChangeItemDisplay render its own badge inline
   return (
-    <Box mb={2}>
+    <Box className="mb-4">
       <ChangeItemDisplay
         item={{
           ...change,

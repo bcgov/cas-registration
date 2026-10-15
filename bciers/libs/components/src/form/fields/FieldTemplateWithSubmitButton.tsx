@@ -33,7 +33,7 @@ function FieldTemplateWithSubmitButton(props: Readonly<FieldTemplateProps>) {
       >
         {isErrors && (
           <div
-            className={`hidden md:flex items-left text-red-500 text-sm w-fit absolute top-[14px] ${
+            className={`hidden md:flex items-left text-red-500 text-sm w-fit absolute top-3.5 ${
               isCraNumberError ? "left-[-320px]" : "left-[-200px]"
             }`}
             role="alert"
