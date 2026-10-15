@@ -2,65 +2,52 @@ import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
 import {
-  ComplianceDisplayStatus,
-  PenaltyStatus,
-  GridActionText,
-} from "@/compliance-e2e/utils/enums";
-import {
   DEFAULT_DAYS_OVERDUE,
-  OVERDUE_PENALTY_CRV_ID,
-  REVIEW_OBLIGATION_URL_PATTERN,
+  LATE_SUBMISSION_DAYS_AFTER_DEADLINE,
+  PENALTY_TARGET_ACCRUAL_DATE,
 } from "@/compliance-e2e/utils/constants";
-import { ComplianceSummariesPOM } from "@/compliance-e2e/poms/compliance-summaries";
-import { ManageObligationTaskListPOM } from "@/compliance-e2e/poms/manage-obligation/tasklist";
-import { PenaltyCalculatorPOM } from "@/compliance-e2e/poms/manage-obligation/penalty-calculator";
+import {
+  OverdueObligation,
+  openPenaltyCalculator,
+  restoreOverdueObligation,
+  setupOverdueObligationAsIndustryUser,
+} from "@/compliance-e2e/utils/penalty-setup";
 
 // 👤 run test using the storageState for internal staff (CAS Analyst)
 const test = setupBeforeEachTest(UserRole.CAS_ANALYST);
 
+const daysOverdue = DEFAULT_DAYS_OVERDUE;
+
 test.describe("GGEAPAR interest flow - CAS analyst", () => {
-  const complianceReportVersionId = OVERDUE_PENALTY_CRV_ID;
-  const daysOverdue = DEFAULT_DAYS_OVERDUE;
-  const targetAccrualDate = "2026-12-15"; // Date that populates grid records
+  // Each test has an industry user submit one or two reports before reaching the penalty calculator
+  test.describe.configure({ timeout: 120_000 });
+
+  let overdueObligation: OverdueObligation | undefined;
+
+  // The compliance deadline is shared by every report of the period, so put it back
+  test.afterEach(async ({ page, request }) => {
+    await restoreOverdueObligation(page, request, overdueObligation);
+    overdueObligation = undefined;
+  });
 
   test("when the report is not supplementary, selecting GGEAPAR shows the not-applicable alert", async ({
     page,
     request,
+    browser,
+    baseURL,
     happoScreenshot,
   }) => {
-    // Prime DB state via e2e integration stub
-    const penaltyCalculator = new PenaltyCalculatorPOM(page);
-    await penaltyCalculator.setupAccruingPenaltyState(
+    // Original report only, with its compliance deadline moved into the past
+    overdueObligation = await setupOverdueObligationAsIndustryUser(
+      browser,
+      baseURL,
       request,
-      complianceReportVersionId,
-      {
-        days_overdue: daysOverdue,
-        penalty_status: PenaltyStatus.ACCRUING,
-      },
     );
 
-    // Navigate to Compliance Summaries grid and drill into the obligation
-    const summaries = new ComplianceSummariesPOM(page);
-    await summaries.route();
-
-    // Verify row with 'Obligation - not met' displays 'ACCRUING' penalty status
-    await summaries.assertPenaltyStatusForOperation(
-      ComplianceDisplayStatus.OBLIGATION_NOT_MET,
-      PenaltyStatus.ACCRUING,
+    const penaltyCalculator = await openPenaltyCalculator(
+      page,
+      overdueObligation.complianceReportVersionId,
     );
-
-    // Drill down via "View Details" on the 'ACCRUING', 'Obligation - not met' row
-    await summaries.openActionForOperation({
-      operationName: ComplianceDisplayStatus.OBLIGATION_NOT_MET,
-      linkName: GridActionText.VIEW_DETAILS,
-      urlPattern: REVIEW_OBLIGATION_URL_PATTERN,
-      penaltyStatus: PenaltyStatus.ACCRUING,
-    });
-
-    // Open the penalty calculator from the task list
-    const manageObligationTaskList = new ManageObligationTaskListPOM(page);
-    await manageObligationTaskList.clickPenaltyCalculator();
-    await penaltyCalculator.assertUrlCorrect(complianceReportVersionId);
 
     // Alert is absent for the default Automatic overdue type
     await penaltyCalculator.assertGgeaparNotApplicableHidden();
@@ -69,6 +56,8 @@ test.describe("GGEAPAR interest flow - CAS analyst", () => {
     await penaltyCalculator.selectGgeaparPenaltyType();
     await penaltyCalculator.assertGgeaparNotApplicable();
 
+    // The final accrual date defaults to today, so it would change the screenshot daily
+    await penaltyCalculator.hideDatesFromScreenshot();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "Penalty calculator",
       variant: "GGEAPAR - not applicable (non-supplementary report)",
@@ -78,51 +67,37 @@ test.describe("GGEAPAR interest flow - CAS analyst", () => {
   test("when a supplementary report was submitted late, GGEAPAR interest accrues and renders daily calculations", async ({
     page,
     request,
+    browser,
+    baseURL,
     happoScreenshot,
   }) => {
-    // Prime DB state: supplementary report submitted after the deadline
-    const penaltyCalculator = new PenaltyCalculatorPOM(page);
-    await penaltyCalculator.setupSupplementaryLateSubmissionState(
+    // Original report plus a supplementary report that increases the obligation,
+    // with the supplementary submission dated after the compliance deadline
+    overdueObligation = await setupOverdueObligationAsIndustryUser(
+      browser,
+      baseURL,
       request,
-      complianceReportVersionId,
       {
-        days_overdue: daysOverdue,
-        penalty_status: PenaltyStatus.ACCRUING,
+        supplementaryIncrease: true,
+        daysAfterDeadline: LATE_SUBMISSION_DAYS_AFTER_DEADLINE,
       },
     );
 
-    // Navigate to the penalty calculator
-    const summaries = new ComplianceSummariesPOM(page);
-    await summaries.route();
-
-    // Verify row with 'Obligation - not met' displays 'ACCRUING' penalty status
-    await summaries.assertPenaltyStatusForOperation(
-      ComplianceDisplayStatus.OBLIGATION_NOT_MET,
-      PenaltyStatus.ACCRUING,
+    const penaltyCalculator = await openPenaltyCalculator(
+      page,
+      overdueObligation.complianceReportVersionId,
     );
-
-    // Drill down via "View Details" on the 'ACCRUING', 'Obligation - not met' row
-    await summaries.openActionForOperation({
-      operationName: ComplianceDisplayStatus.OBLIGATION_NOT_MET,
-      linkName: GridActionText.VIEW_DETAILS,
-      urlPattern: REVIEW_OBLIGATION_URL_PATTERN,
-      penaltyStatus: PenaltyStatus.ACCRUING,
-    });
-
-    // Click "Penalty calculator" from the task list
-    const manageObligationTaskList = new ManageObligationTaskListPOM(page);
-    await manageObligationTaskList.clickPenaltyCalculator();
-    await penaltyCalculator.assertUrlCorrect(complianceReportVersionId);
 
     // Switch to GGEAPAR: interest applies, so no not-applicable alert
     await penaltyCalculator.selectGgeaparPenaltyType();
     await penaltyCalculator.assertGgeaparNotApplicableHidden();
 
     // Select a final accrual date and verify the grid is populated
-    await penaltyCalculator.setFinalAccrualDate(targetAccrualDate);
+    await penaltyCalculator.setFinalAccrualDate(PENALTY_TARGET_ACCRUAL_DATE);
     await penaltyCalculator.assertPenaltyGridLoaded();
     await penaltyCalculator.assertGgeaparNotApplicableHidden();
 
+    await penaltyCalculator.hideDatesFromScreenshot();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "Penalty calculator",
       variant: `GGEAPAR - accruing (supplementary, ${daysOverdue} days overdue)`,

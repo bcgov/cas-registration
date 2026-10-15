@@ -126,4 +126,16 @@ export const AMOUNT_DUE_AFTER_DECREASE_OBLIGATION_MET = new RegExp(
 // --- Penalty Calculation
 
 export const DEFAULT_DAYS_OVERDUE = 45;
-export const OVERDUE_PENALTY_CRV_ID = 2;
+// Days after the compliance deadline a late supplementary report is submitted
+export const LATE_SUBMISSION_DAYS_AFTER_DEADLINE = 10;
+// The "Obligation not met" report's second product starts at 1,000; less production raises the obligation
+export const SUPPLEMENTARY_INCREASE_PRODUCT_INDEX = 1;
+export const SUPPLEMENTARY_INCREASE_ANNUAL_PRODUCTION = 500;
+
+const addDays = (days: number) => {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10); // YYYY-MM-DD
+};
+// Relative to today, since the final accrual date picker's minDate is today
+export const PENALTY_TARGET_ACCRUAL_DATE = addDays(60);

@@ -1,19 +1,29 @@
 import { APIRequestContext, Locator, Page, expect } from "@playwright/test";
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
-import { PenaltyStatus } from "@/compliance-e2e/utils/enums";
-import { COMPLIANCE_SUMMARIES_BASE_PATH } from "@/compliance-e2e/utils/constants";
+import {
+  COMPLIANCE_SUMMARIES_BASE_PATH,
+  DEFAULT_DAYS_OVERDUE,
+} from "@/compliance-e2e/utils/constants";
 
 /**
- * Options sent to the e2e stub scenarios that prime penalty state.
+ * Options sent to the make_obligation_overdue e2e stub scenario.
  */
-export interface AutomaticOverduePenaltyPayload {
-  /** Days past the invoice due date */
+export interface MakeObligationOverduePayload {
+  /** Report version the obligation was created from */
+  report_version_id: number;
+  /** Days since the compliance deadline */
   days_overdue?: number;
-  penalty_status?: PenaltyStatus;
-  /** Penalty record amount, seeded when the penalty is not paid or paid */
-  penalty_amount?: string;
-  /** Invoice number for the seeded penalty record */
-  penalty_invoice_number?: string;
+  /** Days after the compliance deadline the obligation was created, which makes a supplementary report late */
+  days_after_deadline?: number;
+}
+
+export interface MakeObligationOverdueResult {
+  compliance_report_version_id: number;
+  is_supplementary: boolean;
+  compliance_deadline: string;
+  /** The deadline before it was moved, to restore once the test is done */
+  original_compliance_deadline: string;
+  invoice_due_date: string;
 }
 
 export class PenaltyCalculatorPOM {
@@ -59,78 +69,59 @@ export class PenaltyCalculatorPOM {
     );
   }
 
-  /**
-   * Primes an overdue obligation with an accruing automatic overdue penalty.
-   * Uses the original (non-supplementary) report, so GGEAPAR interest does not apply.
-   */
-  async setupAccruingPenaltyState(
-    apiContext: APIRequestContext,
-    complianceReportVersionId: number | string,
-    options?: AutomaticOverduePenaltyPayload,
-  ) {
-    await this.setupPenaltyScenario(
-      apiContext,
-      complianceReportVersionId,
-      "automatic_overdue_penalty",
-      "Automatic Overdue Penalty Setup",
-      options,
-    );
-  }
-
-  /**
-   * Primes a supplementary report that was submitted after the compliance
-   * deadline, so GGEAPAR interest applies and accrues.
-   */
-  async setupSupplementaryLateSubmissionState(
-    apiContext: APIRequestContext,
-    complianceReportVersionId: number | string,
-    options?: AutomaticOverduePenaltyPayload,
-  ) {
-    await this.setupPenaltyScenario(
-      apiContext,
-      complianceReportVersionId,
-      "supplementary_late_submission",
-      "Supplementary Late Submission Setup",
-      options,
-    );
-  }
-
-  /**
-   * Calls the Django e2e stub directly to set up server-side state.
-   * All scenarios share the same payload shape.
-   */
-  private async setupPenaltyScenario(
-    apiContext: APIRequestContext,
-    complianceReportVersionId: number | string,
-    scenario: string,
-    label: string,
-    options?: AutomaticOverduePenaltyPayload,
-  ) {
-    // The stub call reads the user guid from the page, so it needs a loaded page
+  // The stub call reads the user guid from the page, so it needs a loaded page
+  private async ensurePageLoaded() {
     if (this.page.url() === "about:blank") {
       await this.page.goto("/");
     }
+  }
 
-    const payload: AutomaticOverduePenaltyPayload = {
-      days_overdue: options?.days_overdue ?? 45,
-      penalty_status: options?.penalty_status ?? PenaltyStatus.ACCRUING,
-      ...(options?.penalty_amount && {
-        penalty_amount: options.penalty_amount,
-      }),
-      ...(options?.penalty_invoice_number && {
-        penalty_invoice_number: options.penalty_invoice_number,
-      }),
+  /**
+   * Moves the compliance deadline and obligation dates of a submitted report into the past via the
+   * Django e2e stub, so penalties and interest accrue. Returns the compliance report version it changed.
+   */
+  async makeOverdue(
+    apiContext: APIRequestContext,
+    options: MakeObligationOverduePayload,
+  ): Promise<MakeObligationOverdueResult> {
+    await this.ensurePageLoaded();
+
+    const payload: MakeObligationOverduePayload = {
+      ...options,
+      days_overdue: options.days_overdue ?? DEFAULT_DAYS_OVERDUE,
     };
+
+    return attachE2EStubEndpoint<MakeObligationOverdueResult>(
+      this.page,
+      apiContext,
+      () => ({ scenario: "make_obligation_overdue", payload }),
+      "Make Obligation Overdue",
+      { directCall: true },
+    );
+  }
+
+  /**
+   * Puts back the compliance deadline that makeOverdue moved. The deadline belongs to the compliance period,
+   * which every report of that year shares, so leaving it in the past would affect other specs.
+   */
+  async restoreComplianceDeadline(
+    apiContext: APIRequestContext,
+    reportVersionId: number,
+    originalComplianceDeadline: string,
+  ): Promise<void> {
+    await this.ensurePageLoaded();
 
     await attachE2EStubEndpoint(
       this.page,
       apiContext,
       () => ({
-        scenario,
-        compliance_report_version_id: Number(complianceReportVersionId),
-        payload,
+        scenario: "make_obligation_overdue",
+        payload: {
+          report_version_id: reportVersionId,
+          restore_compliance_deadline: originalComplianceDeadline,
+        },
       }),
-      label,
+      "Make Obligation Overdue Restore",
       { directCall: true },
     );
   }
@@ -163,6 +154,23 @@ export class PenaltyCalculatorPOM {
     await expect(this.ggeaparOption).toBeVisible();
     await this.ggeaparOption.click();
     await expect(this.selectedPenaltyTypeInput).toHaveValue("Late Submission");
+  }
+
+  /**
+   * Hides the final accrual date input and the grid's date column from Happo.
+   * Both are relative to today, so they would otherwise produce a diff every day.
+   */
+  async hideDatesFromScreenshot(): Promise<void> {
+    await this.finalAccrualDateInput.evaluate((el) => {
+      el.dataset.happoHide = "";
+    });
+    await this.page
+      .locator('[role="gridcell"][data-field="date"]')
+      .evaluateAll((cells) => {
+        for (const cell of cells) {
+          cell.dataset.happoHide = "";
+        }
+      });
   }
 
   async assertGgeaparNotApplicable(): Promise<void> {

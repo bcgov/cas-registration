@@ -8,7 +8,6 @@ export enum ComplianceOperations {
   NO_OBLIGATION = "Compliance SFO - No obligation or earned credits",
   EARNED_CREDITS = "Compliance SFO - Earned credits",
   OBLIGATION_NOT_MET = "Compliance SFO - Obligation not met",
-  BANANA_LFO_REGISTERED = "Banana LFO - Registered",
 }
 
 export enum ComplianceDisplayStatus {
