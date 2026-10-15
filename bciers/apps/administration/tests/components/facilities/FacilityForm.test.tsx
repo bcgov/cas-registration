@@ -671,10 +671,58 @@ describe("FacilityForm component", () => {
     );
     fireEvent.click(saveButton);
 
-    // expect to see format error for starting date
+    // MUI X v8+ keeps a partially filled date as null, so it fails as missing
+    // rather than as a format error
     expect(
-      screen.getAllByText(/Starting Date format should be YYYY-MM-DD/i),
-    ).toHaveLength(1);
+      screen.getByText(/Date of facility starting operations: is required/i),
+    ).toBeVisible();
+  });
+
+  it("does not allow a typed starting date in the future", async () => {
+    // Pin today so a later date in the current year exists
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(currentYear, 5, 15, 12));
+    try {
+      render(
+        <FacilityForm
+          schema={facilitiesLfoSchema}
+          uiSchema={facilitiesLfoUiSchema}
+          formData={{}}
+          isCreating
+        />,
+      );
+      // the starting date shows once a facility type is selected
+      const comboBoxInput = screen.getAllByRole(
+        "combobox",
+      )[0] as HTMLInputElement;
+      await userEvent.click(
+        comboBoxInput?.parentElement?.children[1]
+          ?.children[0] as HTMLInputElement,
+      );
+      await userEvent.click(screen.getByText("Large Facility"));
+      await userEvent.click(
+        screen.getByLabelText(/Did this facility begin operations+/i),
+      );
+      const startingDate = screen.getByLabelText(
+        /Date of facility starting operations+/i,
+      );
+      const saveButton = screen.getByRole("button", { name: "Save" });
+
+      await typeDate(startingDate, `${currentYear}0616`);
+      fireEvent.click(saveButton);
+      expect(screen.getByText(/Date cannot be in the future/i)).toBeVisible();
+
+      await typeDate(
+        startingDate,
+        `{Control>}a{/Control}{Backspace}${currentYear}0615`,
+      );
+      fireEvent.click(saveButton);
+      expect(
+        screen.queryByText(/Date cannot be in the future/i),
+      ).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it(
