@@ -3,6 +3,7 @@ from datetime import timedelta
 from decimal import Decimal
 from typing import Protocol
 from django.utils import timezone
+from compliance.models.elicensing_line_item import ElicensingLineItem
 from compliance.models.elicensing_invoice import ElicensingInvoice
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_report_version import ComplianceReportVersion
@@ -10,6 +11,8 @@ from compliance.models.compliance_penalty import CompliancePenalty
 from compliance.service.penalty_calculation_service import CalculatedPenaltyData, PenaltyCalculationService
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from django.db import transaction
+from django.db.models import Sum
+from django.db.models.functions import Coalesce
 
 logger = logging.getLogger(__name__)
 
@@ -153,7 +156,19 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         obligation = invoice.compliance_obligation
         compliance_report_version = obligation.compliance_report_version
         # invoice_interest_balance should never be None here; fail loudly
-        interest_not_paid = invoice.invoice_interest_balance > ZERO_DECIMAL  # type: ignore[operator]
+        interest_line_items = invoice.elicensing_line_items.filter(
+            line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            elicensing_invoice=invoice,
+        )
+        interest_amount = interest_line_items.aggregate(
+            total=Coalesce(Sum("base_amount"), ZERO_DECIMAL),
+        )["total"]
+        interest_paid = interest_line_items.aggregate(
+            total=Coalesce(Sum("elicensing_payments__amount"), ZERO_DECIMAL),
+        )["total"]
+
+        interest_not_paid = interest_amount > interest_paid
+
         compliance_report_version.status = (
             ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
             if interest_not_paid
@@ -260,10 +275,21 @@ class InterestPaidHandler(ComplianceUpdateHandler):
         if _is_penalty_invoice(invoice):
             return False
 
+        interest_line_items = invoice.elicensing_line_items.filter(
+            line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            elicensing_invoice=invoice,
+        )
+        interest_amount = interest_line_items.aggregate(
+            total=Coalesce(Sum("base_amount"), ZERO_DECIMAL),
+        )["total"]
+        interest_paid = interest_line_items.aggregate(
+            total=Coalesce(Sum("elicensing_payments__amount"), ZERO_DECIMAL),
+        )["total"]
+
         return (
             invoice.compliance_obligation.compliance_report_version.status
             == ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
-            and invoice.invoice_interest_balance == ZERO_DECIMAL
+            and interest_amount == interest_paid
         )
 
     def handle(self, invoice: ElicensingInvoice) -> None:
