@@ -27,22 +27,30 @@ const styles = {
         backgroundColor: "white",
         borderRight: "1px rgba(224, 224, 224, 1) solid",
         padding: 0,
+        borderRadius: 0,
       },
-      "& .MuiDataGrid-columnHeader:last-of-type": {
+      "& .MuiDataGrid-columnHeader--last": {
         borderRight: "none",
       },
       "& .MuiDataGrid-columnHeader--emptyGroup": {
         borderBottom: "1px solid var(--DataGrid-rowBorderColor)",
       },
     },
+    // Round the outer corners of the header row shown on top instead
+    "& [role=row]:last-of-type": {
+      "& [aria-colindex='1']": {
+        borderTopLeftRadius: "calc(var(--unstable_DataGrid-radius) - 1px)",
+      },
+      "& .MuiDataGrid-columnHeader--last": {
+        borderTopRightRadius: "calc(var(--unstable_DataGrid-radius) - 1px)",
+      },
+    },
   },
-  "& .MuiDataGrid-columnHeader:first-of-type": {
+  // Header rows also hold filler elements, so :first/last-of-type don't match the edge cells
+  "& .MuiDataGrid-columnHeader[aria-colindex='1']": {
     borderLeft: "none",
   },
-  "& .MuiDataGrid-columnHeader:last-of-type": {
-    borderRight: "none",
-  },
-  "& .MuiDataGrid-cell--withRightBorder:last-of-type": {
+  "& .MuiDataGrid-columnHeader--last": {
     borderRight: "none",
   },
   "& .MuiDataGrid-columnHeaderTitleContainer": {
@@ -99,8 +107,9 @@ const styles = {
     borderBottom: "1px solid var(--DataGrid-rowBorderColor)",
   },
   "& .MuiDataGrid-virtualScroller": {
-    // Set min height to stop jumping effect when searching and no results are found
-    minHeight: "40vh",
+    // Set min height to stop jumping effect when searching and no results are found.
+    // The scroller also holds the column headers, so add their height to keep 30vh of rows
+    minHeight: "calc(30vh + var(--DataGrid-headersTotalHeight))",
   },
 };
 
