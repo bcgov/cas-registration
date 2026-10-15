@@ -6,6 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { UUID } from "crypto";
+import userEvent from "@testing-library/user-event";
 import { expect } from "vitest";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectRadio from "@bciers/testConfig/helpers/expectRadio";
@@ -60,9 +61,9 @@ const renderTransferForm = () => {
 
 // Selecting an operator triggers an async fetch + state update, so let act() flush it
 const selectOperator = async (label: RegExp, operatorName: string) => {
-  fireEvent.change(screen.getByLabelText(label), {
-    target: { value: "Operator" },
-  });
+  const input = screen.getByLabelText(label);
+  await userEvent.clear(input);
+  await userEvent.type(input, "Operator");
   await act(async () => {
     fireEvent.click(screen.getByRole("option", { name: operatorName }));
   });
