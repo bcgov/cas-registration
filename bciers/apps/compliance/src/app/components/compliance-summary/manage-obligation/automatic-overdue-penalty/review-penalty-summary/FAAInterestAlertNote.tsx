@@ -3,9 +3,9 @@ import AlertNote from "@bciers/components/form/components/AlertNote";
 export const FAAInterestAlertNote = () => {
   return (
     <AlertNote>
-      Financial Administration Act (FAA) interest is incurred and accrues at
-      prime + 3.00% daily if the automatic administrative penalty is not paid on
-      time.
+      Automatic overdue penalty accrues daily at 0.38% of the unpaid balance
+      until the obligation is paid in full. If automatic overdue penalty is not
+      paid by due date, FAA interest will be incurred.
     </AlertNote>
   );
 };
