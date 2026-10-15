@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import date, datetime
+import uuid
 import pytest
 from decimal import Decimal
 from datetime import timedelta
@@ -13,7 +14,7 @@ from compliance.service.automated_process.compliance_handlers import (
     InterestPaidHandler,
     ComplianceHandlerManager,
 )
-from compliance.models import ComplianceObligation, ComplianceReportVersion, CompliancePenalty
+from compliance.models import ComplianceObligation, ComplianceReportVersion, CompliancePenalty, ElicensingLineItem
 from compliance.service.penalty_calculation_service import CalculatedPenaltyData
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 from common.lib import pgtrigger
@@ -275,7 +276,14 @@ class TestObligationPaidHandler:
         # The fee (tCO2e obligation) is fully paid but FAA interest is still owing.
         # Unpaid interest must not block the obligation from being considered met
         self.invoice.invoice_fee_balance = Decimal("0.00")
-        self.invoice.invoice_interest_balance = Decimal("50.00")
+        ElicensingLineItem.objects.create(
+            guid=uuid.uuid4(),
+            object_id=1000000001,
+            fee_date=date.today(),
+            elicensing_invoice=self.invoice,
+            line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            base_amount=Decimal("50.00"),
+        )
         self.invoice.outstanding_balance = Decimal("50.00")
         self.invoice.save()
 
@@ -319,7 +327,14 @@ class TestObligationPaidHandler:
         mock_create_penalty,
     ):
         # Fee is paid but FAA interest remains outstanding
-        self.invoice.invoice_interest_balance = Decimal("50.00")
+        ElicensingLineItem.objects.create(
+            guid=uuid.uuid4(),
+            object_id=1000000001,
+            fee_date=date.today(),
+            elicensing_invoice=self.invoice,
+            line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            base_amount=Decimal("50.00"),
+        )
         self.invoice.outstanding_balance = Decimal("50.00")
         self.invoice.save()
 
@@ -493,7 +508,6 @@ class TestInterestPaidHandler:
             compliance_obligation=self.obligation,
             outstanding_balance=Decimal("0.00"),
             invoice_fee_balance=Decimal("0.00"),
-            invoice_interest_balance=Decimal("0.00"),
         )
         with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
             self.obligation.elicensing_invoice = self.invoice
@@ -505,7 +519,14 @@ class TestInterestPaidHandler:
         assert result is True
 
     def test_can_not_handle_when_interest_still_outstanding(self):
-        self.invoice.invoice_interest_balance = Decimal("25.00")
+        ElicensingLineItem.objects.create(
+            guid=uuid.uuid4(),
+            object_id=1000000001,
+            fee_date=date.today(),
+            elicensing_invoice=self.invoice,
+            line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            base_amount=Decimal("25.00"),
+        )
         self.invoice.outstanding_balance = Decimal("25.00")
         self.invoice.save()
 
@@ -681,7 +702,6 @@ class TestComplianceHandlerManager:
             compliance_obligation=self.obligation,
             outstanding_balance=Decimal("0.00"),
             invoice_fee_balance=Decimal("0.00"),
-            invoice_interest_balance=Decimal("0.00"),
         )
 
         # Spy on all handlers to verify which one is called
