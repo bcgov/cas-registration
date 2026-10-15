@@ -34,26 +34,19 @@ export const ListDiffDisplay: React.FC<ListDiffDisplayProps> = ({
   return (
     <Paper
       variant="outlined"
-      sx={{ p: 1, bgcolor: "#f9f9f9", fontSize: 14, wordBreak: "break-word" }}
+      className="p-2 bg-[#f9f9f9] text-sm/normal [word-break:break-word]"
     >
-      <Box sx={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+      <Box className="flex flex-col gap-1">
         {/* Removed items — strikethrough, greyed out */}
         {removed.map((activity) => (
-          <span
-            key={activity}
-            style={{
-              color: "#666",
-              textDecoration: "line-through",
-            }}
-          >
+          <span key={activity} className="text-[#666] line-through">
             {activity}
           </span>
         ))}
         {/* Added items — bold with green "(Added)" label */}
         {added.map((activity) => (
-          <span key={activity} style={{ fontWeight: "bold" }}>
-            {activity}{" "}
-            <span style={{ color: "#2e7d32", fontWeight: 700 }}>(Added)</span>
+          <span key={activity} className="font-bold">
+            {activity} <span className="text-[#2e7d32] font-bold">(Added)</span>
           </span>
         ))}
       </Box>

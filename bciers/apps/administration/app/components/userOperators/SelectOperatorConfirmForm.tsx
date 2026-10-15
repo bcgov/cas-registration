@@ -14,7 +14,6 @@ import {
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import RequestAccessButton from "../buttons/RequestAccessButton";
 import Link from "next/link";
-import { BC_GOV_LINKS_COLOR, DARK_GREY_BG_COLOR } from "@bciers/styles/colors";
 import Button from "@mui/material/Button";
 import { Operator } from "./types";
 
@@ -72,13 +71,12 @@ export default function SelectOperatorConfirmForm({
       {hasConfirmedOperator ? (
         <>
           <span>
-            <WarningRoundedIcon sx={{ color: "#fcba19", fontSize: "40px" }} />
+            <WarningRoundedIcon className="text-bc-yellow text-[40px]" />
           </span>
           <div>{hasAdmin ? operatorHasAdminJSX : operatorHasNoAdmin}</div>
           <Link
             href="#"
-            className="underline hover:no-underline"
-            style={{ color: BC_GOV_LINKS_COLOR, fontSize: "16px" }}
+            className="underline hover:no-underline text-bc-link-blue text-base"
             onClick={() => setHasConfirmedOperator(false)}
           >
             Go Back
@@ -87,42 +85,42 @@ export default function SelectOperatorConfirmForm({
       ) : (
         <>
           <p>Kindly confirm if this is the operator that you represent.</p>
-          <Box display="flex" justifyContent="center">
+          <Box className="flex justify-center">
             <TableContainer
               component={Paper}
-              sx={{ backgroundColor: DARK_GREY_BG_COLOR, width: "auto" }}
+              className="bg-bc-bg-dark-grey w-auto"
             >
-              <Table sx={{ width: "auto" }}>
+              <Table className="w-auto">
                 <TableBody>
                   <TableRow>
-                    <TableCell sx={{ borderBottom: "none" }}>
+                    <TableCell className="border-b-0">
                       <b>Legal Name</b>
                     </TableCell>
-                    <TableCell sx={{ borderBottom: "none" }}>
+                    <TableCell className="border-b-0">
                       {operator.legal_name || "-"}
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell sx={{ borderBottom: "none" }}>
+                    <TableCell className="border-b-0">
                       <b>Trade Name</b>
                     </TableCell>
-                    <TableCell sx={{ borderBottom: "none" }}>
+                    <TableCell className="border-b-0">
                       {operator.trade_name || "-"}
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell sx={{ borderBottom: "none" }}>
+                    <TableCell className="border-b-0">
                       <b>CRA Business Number</b>
                     </TableCell>
-                    <TableCell sx={{ borderBottom: "none" }}>
+                    <TableCell className="border-b-0">
                       {operator.cra_business_number}
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell sx={{ borderBottom: "none" }}>
+                    <TableCell className="border-b-0">
                       <b>Street Address</b>
                     </TableCell>
-                    <TableCell sx={{ borderBottom: "none" }}>
+                    <TableCell className="border-b-0">
                       {operator.street_address || "-"}
                     </TableCell>
                   </TableRow>
@@ -132,7 +130,7 @@ export default function SelectOperatorConfirmForm({
           </Box>
           <div className="flex flex-col items-center gap-5 mt-10">
             <Button
-              sx={{ textTransform: "none" }} //to remove uppercase text
+              className="normal-case" //to remove uppercase text
               aria-label="Yes this is my operator"
               color="primary"
               variant="contained"
@@ -145,8 +143,7 @@ export default function SelectOperatorConfirmForm({
               This is not my operator.{" "}
               <Link
                 href="/select-operator"
-                className="underline hover:no-underline text-sm"
-                style={{ color: BC_GOV_LINKS_COLOR }}
+                className="underline hover:no-underline text-sm text-bc-link-blue"
                 onClick={() => setHasConfirmedOperator(false)}
               >
                 Go back

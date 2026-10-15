@@ -63,12 +63,7 @@ export default function FacilityReportFinalReviewContent({
           facilityData={data}
           showProductionData={showProductionData}
         />
-        <Box
-          display="flex"
-          justifyContent="flex-start"
-          mt={3}
-          className="print:hidden"
-        >
+        <Box justifyContent="flex-start" className="print:hidden flex mt-6">
           <Button
             variant="outlined"
             onClick={() => {

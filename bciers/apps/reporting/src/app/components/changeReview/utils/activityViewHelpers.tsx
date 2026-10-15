@@ -6,8 +6,7 @@ import {
 import { ChangeItem } from "@reporting/src/app/components/changeReview/constants/types";
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
-import { dataCardStyle } from "@reporting/src/app/components/changeReview/constants/styles";
+import { dataCardClasses } from "@reporting/src/app/components/changeReview/constants/styles";
 import { renderObject as renderActivityObject } from "@reporting/src/app/components/changeReview/utils/activityRenderUtils";
 import StatusLabel from "@bciers/components/form/fields/StatusLabel";
 import { ChangeItemDisplay } from "@reporting/src/app/components/changeReview/templates/ChangeItemDisplay";
@@ -219,22 +218,13 @@ export const ObjectLeafNode: React.FC<{
   changeType: string;
   value: object;
 }> = ({ label, changeType, value }) => (
-  <Box mb={1}>
-    <Typography
-      sx={{
-        fontWeight: 600,
-        color: BC_GOV_BACKGROUND_COLOR_BLUE,
-        fontSize: "0.9rem",
-        display: "flex",
-        alignItems: "center",
-        gap: 1,
-      }}
-    >
+  <Box className="mb-2">
+    <Typography className="font-semibold text-bc-bg-blue text-[0.9rem] flex items-center gap-2">
       {label}
       {changeType === "added" && <StatusLabel type="added" />}
       {changeType === "removed" && <StatusLabel type="removed" />}
     </Typography>
-    <Box ml={2} style={dataCardStyle}>
+    <Box className={`ml-4 ${dataCardClasses}`}>
       {renderActivityObject(value, "", changeType === "removed")}
     </Box>
   </Box>
@@ -248,18 +238,11 @@ export const BranchNode: React.FC<{
   label: string;
   children: React.ReactNode;
 }> = ({ label, children }) => (
-  <Box mb={1}>
-    <Typography
-      sx={{
-        fontWeight: 600,
-        color: BC_GOV_BACKGROUND_COLOR_BLUE,
-        fontSize: "0.9rem",
-        mb: 0.5,
-      }}
-    >
+  <Box className="mb-2">
+    <Typography className="font-semibold text-bc-bg-blue text-[0.9rem] mb-1">
       {label}
     </Typography>
-    <Box ml={2}>{children}</Box>
+    <Box className="ml-4">{children}</Box>
   </Box>
 );
 

@@ -68,11 +68,11 @@ const ComplianceSummary: React.FC<{ changes: ChangeItem[] }> = ({
   let regulatoryHeadingRendered = false;
 
   return (
-    <Box mb={4}>
+    <Box className="mb-8">
       <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-0">
         Compliance Summary
       </Typography>
-      <Divider sx={{ mb: 2 }} />
+      <Divider className="mb-4" />
 
       {nonProductChanges.map((item, idx) => {
         const key = item.field.match(/\['([^']+)'\]$/)?.[1] ?? "";
@@ -116,7 +116,7 @@ const ComplianceSummary: React.FC<{ changes: ChangeItem[] }> = ({
           const data =
             first.change_type === "added" ? first.newValue : first.oldValue;
           return (
-            <Box key={productName} mb={4}>
+            <Box className="mb-8" key={productName}>
               <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-2">
                 {productName} <StatusLabel type={first.change_type} />
               </Typography>
@@ -135,7 +135,7 @@ const ComplianceSummary: React.FC<{ changes: ChangeItem[] }> = ({
         }
 
         return (
-          <Box key={productName} mb={2}>
+          <Box className="mb-4" key={productName}>
             <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-4">
               {productName}
             </Typography>

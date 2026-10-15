@@ -1,6 +1,5 @@
 "use client";
 import AlertFieldTemplateFactory from "@bciers/components/form/fields/AlertFieldTemplateFactory";
-import { BC_GOV_TEXT } from "@bciers/styles";
 import { InfoRounded } from "@mui/icons-material";
 
 const MissingRepresentativeAlertContent: React.FC = () => {
@@ -10,7 +9,7 @@ const MissingRepresentativeAlertContent: React.FC = () => {
 const component = AlertFieldTemplateFactory(
   MissingRepresentativeAlertContent,
   "ALERT",
-  <InfoRounded fontSize="inherit" sx={{ color: BC_GOV_TEXT }} />,
+  <InfoRounded fontSize="inherit" className="text-bc-text" />,
 );
 
 export default component;

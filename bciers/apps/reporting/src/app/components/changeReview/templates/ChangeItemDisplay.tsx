@@ -26,15 +26,15 @@ export const ChangeItemDisplay: React.FC<ChangeItemDisplayProps> = ({
     item.displayLabel || getContextualLabel(item.field, context);
 
   return (
-    <Box key={item.field} mb={2}>
+    <Box className="mb-4" key={item.field}>
       <Grid container spacing={2} alignItems="center">
         <Grid item xs={12} md={3}>
           <Typography
-            fontWeight={500}
-            sx={{
-              textDecoration: isDeleted ? "line-through" : "none",
-              color: isDeleted ? "#666" : "inherit",
-            }}
+            className={`font-medium ${
+              isDeleted
+                ? "line-through text-[#666]"
+                : "no-underline text-inherit"
+            }`}
           >
             {fieldLabel}
             {isDeletedItem && <StatusLabel type="removed" />}
@@ -64,7 +64,7 @@ export const ChangeItemDisplay: React.FC<ChangeItemDisplayProps> = ({
           )}
         </Grid>
       </Grid>
-      <Divider sx={{ mt: 2 }} />
+      <Divider className="mt-4" />
     </Box>
   );
 };

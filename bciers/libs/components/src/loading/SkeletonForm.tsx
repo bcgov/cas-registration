@@ -6,7 +6,7 @@ export default function SkeletonForm() {
   return (
     <Stack spacing={1} data-testid="loading">
       {/* For variant="text", adjust the height via font-size */}
-      <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
+      <Skeleton variant="text" className="text-[1rem]" />
 
       {/* For other variants, adjust the size with `width` and `height` */}
       <Skeleton variant="circular" width={40} height={40} />

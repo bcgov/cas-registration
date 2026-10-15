@@ -21,7 +21,7 @@ export default function HelpDrawer() {
 
   const DrawerList = (
     <Box
-      sx={{ width: 400, padding: "2rem" }}
+      className="w-100 p-8"
       role="presentation"
       onClick={toggleDrawer(false)}
     >
@@ -39,14 +39,7 @@ export default function HelpDrawer() {
         rel="noopener noreferrer"
         underline="hover"
       >
-        <Box
-          sx={{
-            border: "1px solid lightgrey",
-            borderRadius: 1,
-            padding: "1rem",
-            marginBottom: "1rem",
-          }}
-        >
+        <Box className="border border-[lightgrey] rounded-sm p-4 mb-4">
           <h3 className={`text-bc-bg-blue text-2xl w-full mt-0`}>
             BC OBPS overview
           </h3>
@@ -63,14 +56,7 @@ export default function HelpDrawer() {
         rel="noopener noreferrer"
         underline="hover"
       >
-        <Box
-          sx={{
-            border: "1px solid lightgrey",
-            borderRadius: 1,
-            padding: "1rem",
-            marginBottom: "1rem",
-          }}
-        >
+        <Box className="border border-[lightgrey] rounded-sm p-4 mb-4">
           <h3 className={`text-bc-bg-blue text-2xl w-full mt-0`}>
             Reporting Guidance
           </h3>
@@ -87,13 +73,7 @@ export default function HelpDrawer() {
         rel="noopener noreferrer"
         underline="hover"
       >
-        <Box
-          sx={{
-            border: "1px solid lightgrey",
-            borderRadius: 1,
-            padding: "1rem",
-          }}
-        >
+        <Box className="border border-[lightgrey] rounded-sm p-4">
           <h3 className={`text-bc-bg-blue text-2xl w-full mt-0`}>
             Compliance Guidance
           </h3>
@@ -114,14 +94,7 @@ export default function HelpDrawer() {
         rel="noopener noreferrer"
         underline="hover"
       >
-        <Box
-          sx={{
-            border: "1px solid lightgrey",
-            borderRadius: 1,
-            padding: "1rem",
-            marginBottom: "1rem",
-          }}
-        >
+        <Box className="border border-[lightgrey] rounded-sm p-4 mb-4">
           <h3 className={`text-bc-bg-blue text-2xl w-full mt-0`}>
             Process flow diagram and facility boundary map guidance
           </h3>
@@ -139,14 +112,7 @@ export default function HelpDrawer() {
         rel="noopener noreferrer"
         underline="hover"
       >
-        <Box
-          sx={{
-            border: "1px solid lightgrey",
-            borderRadius: 1,
-            padding: "1rem",
-            marginBottom: "1rem",
-          }}
-        >
+        <Box className="border border-[lightgrey] rounded-sm p-4 mb-4">
           <h3 className={`text-bc-bg-blue text-2xl w-full mt-0`}>
             WCI methodologies
           </h3>
@@ -164,14 +130,7 @@ export default function HelpDrawer() {
         rel="noopener noreferrer"
         underline="hover"
       >
-        <Box
-          sx={{
-            border: "1px solid lightgrey",
-            borderRadius: 1,
-            padding: "1rem",
-            marginBottom: "1rem",
-          }}
-        >
+        <Box className="border border-[lightgrey] rounded-sm p-4 mb-4">
           <h3 className={`text-bc-bg-blue text-2xl w-full mt-0`}>GGIRCA</h3>
           <p>Greenhouse Gas Industrial Reporting and Control Act.</p>
         </Box>
@@ -182,14 +141,7 @@ export default function HelpDrawer() {
         rel="noopener noreferrer"
         underline="hover"
       >
-        <Box
-          sx={{
-            border: "1px solid lightgrey",
-            borderRadius: 1,
-            padding: "1rem",
-            marginBottom: "1rem",
-          }}
-        >
+        <Box className="border border-[lightgrey] rounded-sm p-4 mb-4">
           <h3 className={`text-bc-bg-blue text-2xl w-full mt-0`}>GGERR</h3>
           <p>Greenhouse Gas Emission Reporting Regulation.</p>
         </Box>
@@ -200,14 +152,7 @@ export default function HelpDrawer() {
         rel="noopener noreferrer"
         underline="hover"
       >
-        <Box
-          sx={{
-            border: "1px solid lightgrey",
-            borderRadius: 1,
-            padding: "1rem",
-            marginBottom: "1rem",
-          }}
-        >
+        <Box className="border border-[lightgrey] rounded-sm p-4 mb-4">
           <h3 className={`text-bc-bg-blue text-2xl w-full mt-0`}>GGEAPAR</h3>
           <p>
             Greenhouse Gas Emission Administrative Penalties and Appeals
@@ -220,7 +165,7 @@ export default function HelpDrawer() {
 
   return (
     <>
-      <Link href="#" sx={{ color: "white", marginX: "2rem" }}>
+      <Link href="#" className="text-white mx-8">
         <Button
           aria-label="Help"
           color="inherit"

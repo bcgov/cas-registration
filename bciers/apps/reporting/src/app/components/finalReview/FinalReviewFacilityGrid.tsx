@@ -67,13 +67,7 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
         sortable: false,
         renderCell: ({ row }: GridRenderCellParams) => (
           <button
-            style={{
-              color: "#1976d2",
-              textDecoration: "underline",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-            }}
+            className="text-[#1976d2] underline bg-transparent border-none cursor-pointer"
             onClick={() =>
               router.push(
                 `${currentPath}/facility/${row.facility}?origin=${origin}`,

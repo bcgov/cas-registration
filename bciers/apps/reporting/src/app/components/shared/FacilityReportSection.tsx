@@ -99,7 +99,7 @@ export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
               {processedEmissions.map((record, i) => (
                 <div key={i} className="mb-4">
                   {record.change_type && (
-                    <Box mb={1}>
+                    <Box className="mb-2">
                       <StatusLabel type={record.change_type} />
                     </Box>
                   )}

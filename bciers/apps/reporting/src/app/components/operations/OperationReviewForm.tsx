@@ -196,7 +196,7 @@ export default function OperationReviewForm({
         confirmText="Change report type"
       >
         {apiError ? (
-          <div style={{ color: "red" }}>{apiError}</div>
+          <div className="text-[red]">{apiError}</div>
         ) : (
           <>
             Are you sure you want to change your report type to{" "}

@@ -44,7 +44,7 @@ const ValidationForm: React.FC<Props> = ({
       ) : (
         <AlertNote
           alertType="INFO"
-          icon={<CheckCircleRounded sx={{ color: "#2E8540" }} />}
+          icon={<CheckCircleRounded className="text-bc-success-green" />}
         >
           No issues were detected by the automated validation. However, you may
           be contacted by Ministry staff in case additional questions are

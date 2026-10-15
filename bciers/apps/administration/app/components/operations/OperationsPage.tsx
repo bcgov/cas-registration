@@ -7,7 +7,6 @@ import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 import { fetchOperationsPageData } from "@bciers/actions/api";
 
 import AlertNote from "@bciers/components/form/components/AlertNote";
-import { BC_GOV_TEXT } from "@bciers/styles";
 import { InfoRounded } from "@mui/icons-material";
 
 export default async function OperationsPage({
@@ -43,10 +42,10 @@ export default async function OperationsPage({
     !isInternalUser && operationsWithoutContacts.length > 0;
 
   const missingContactsAlert = shouldShowMissingContactsAlert ? (
-    <div className="min-h-[48px] box-border mt-4">
+    <div className="min-h-12 box-border mt-4">
       <AlertNote
         alertType="ALERT"
-        icon={<InfoRounded fontSize="inherit" sx={{ color: BC_GOV_TEXT }} />}
+        icon={<InfoRounded fontSize="inherit" className="text-bc-text" />}
       >
         Missing Information: Please add an operation representative for{" "}
         {operationsWithoutContacts.join(", ")} in{" "}

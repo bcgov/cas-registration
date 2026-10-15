@@ -31,10 +31,7 @@ describe("Select Operator Received Page", () => {
   it("renders the selected operator received page, admin access request correctly", async () => {
     mockOperatorState(false);
     render(await SelectOperatorReceivedPage({ step: "request-access", id }));
-    expectIcon("AccessTimeFilledIcon", {
-      color: "#FFCC00",
-      fontSize: "50px",
-    });
+    expectIcon("AccessTimeFilledIcon", ["text-[#FFCC00]", "text-[50px]"]);
     expectMessage(
       "access-request-message",
       `Your access request as administrator for ${operatorJSON.legal_name} has been received by ministry staff and will be reviewed shortly.Once approved, you will receive a confirmation email. You can then log back in using your Business BCeID.`,
@@ -44,10 +41,7 @@ describe("Select Operator Received Page", () => {
   it("renders the selected operator received page, subsequent access request correctly", async () => {
     mockOperatorState(true);
     render(await SelectOperatorReceivedPage({ step: "request-access", id }));
-    expectIcon("AccessTimeFilledIcon", {
-      color: "#FFCC00",
-      fontSize: "50px",
-    });
+    expectIcon("AccessTimeFilledIcon", ["text-[#FFCC00]", "text-[50px]"]);
     expectMessage(
       "subsequent-access-request-message",
       `Your access request has been sent to the Administrator(s) of ${operatorJSON.legal_name} for review.Once approved, you will receive an email.You can then log back in using your Business BCeID with the designated access type.`,

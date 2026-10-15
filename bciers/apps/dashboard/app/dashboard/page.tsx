@@ -16,9 +16,9 @@ function PendingAccessMessage() {
       data-testid="dashboard-pending-message"
     >
       <span>
-        <AccessTimeFilledIcon sx={{ color: "#FFCC00", fontSize: 50 }} />
+        <AccessTimeFilledIcon className="text-[#FFCC00] text-[50px]" />
       </span>
-      <div style={{ fontSize: "16px" }}>
+      <div className="text-base leading-8">
         <p>By logging in, you have automatically requested access.</p>
         <p>
           Once approved, you will receive a confirmation email. You can then log

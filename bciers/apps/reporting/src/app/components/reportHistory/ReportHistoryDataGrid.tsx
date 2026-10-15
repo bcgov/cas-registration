@@ -39,7 +39,7 @@ const ReportHistoryDataGrid = ({
         <h2 className="text-2xl font-bold">Report History: {operationName}</h2>
       </div>
 
-      <Typography variant="body2" fontSize={16} className="mb-5">
+      <Typography variant="body2" className="mb-5 text-[16px]">
         History of this operation&apos;s report versions for the year{" "}
         <strong>{reportingYear}</strong>
       </Typography>
@@ -51,7 +51,7 @@ const ReportHistoryDataGrid = ({
           paginationMode="client"
           initialData={initialData}
           noDataMessage={
-            <div style={{ textAlign: "center" }}>
+            <div className="text-center">
               No report versions available. <br />
               Once a report is created, it will be displayed here.
             </div>
