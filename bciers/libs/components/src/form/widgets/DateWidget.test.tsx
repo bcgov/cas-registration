@@ -43,7 +43,9 @@ const checkTypingDate = async (inputString: string, expectedValue: string) => {
     />,
   );
 
-  const dateWidgetInput = screen.getByRole("textbox") as HTMLInputElement;
+  const dateWidgetInput = screen.getByLabelText(
+    dateWidgetLabelRequired,
+  ) as HTMLInputElement;
 
   await typeDate(dateWidgetInput, inputString);
 
@@ -73,7 +75,9 @@ describe("RJSF DateWidget", () => {
       />,
     );
 
-    const dateWidgetInput = screen.getByRole("textbox") as HTMLInputElement;
+    const dateWidgetInput = screen.getByLabelText(
+      dateWidgetLabelRequired,
+    ) as HTMLInputElement;
 
     expect(dateWidgetInput.value).toBe("");
   });
@@ -134,7 +138,7 @@ describe("RJSF DateWidget", () => {
 
     const dateWidgetCalendar = screen.getByRole("dialog");
     const dateWidgetCalendarDay = dateWidgetCalendar.querySelector(
-      ".MuiPickersDay-today",
+      ".MuiPickerDay-today",
     ) as HTMLElement;
 
     await act(async () => {
@@ -146,7 +150,7 @@ describe("RJSF DateWidget", () => {
     ) as HTMLInputElement;
 
     // Checking that this is a valid date rather than hardcoding a date.
-    // This is because this test selects the current day using the .MuiPickersDay-today class
+    // This is because this test selects the current day using the .MuiPickerDay-today class
     // So that the test will work regardless of when it is run.
     expect(dateWidgetInput.value).toBe(dayjs().format("YYYY-MM-DD"));
     expect(dayjs(dateWidgetInput.value).isValid()).toBe(true);
@@ -162,7 +166,9 @@ describe("RJSF DateWidget", () => {
       />,
     );
 
-    const dateWidgetInput = screen.getByRole("textbox") as HTMLInputElement;
+    const dateWidgetInput = screen.getByLabelText(
+      dateWidgetLabelRequired,
+    ) as HTMLInputElement;
     await act(async () => {
       fireEvent.change(dateWidgetInput, {
         target: { value: "2024-07-05" },
