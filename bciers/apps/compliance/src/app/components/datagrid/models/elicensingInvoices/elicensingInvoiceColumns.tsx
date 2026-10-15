@@ -40,7 +40,7 @@ const elicensingInvoiceColumns = (isInternalUser: boolean): GridColDef[] => {
       field: "invoice_type",
       headerName: "Invoice Type",
       flex: 1,
-      valueFormatter: (params) => formatInvoiceType(params.value),
+      valueFormatter: (value) => formatInvoiceType(value),
     },
     {
       field: "invoice_number",
@@ -69,31 +69,31 @@ const elicensingInvoiceColumns = (isInternalUser: boolean): GridColDef[] => {
       field: "invoice_total",
       headerName: "Invoice Total",
       flex: 1,
-      valueFormatter: (params) => formatMonetaryValue(Number(params.value)),
+      valueFormatter: (value) => formatMonetaryValue(Number(value)),
     },
     {
       field: "total_adjustments",
       headerName: "Total Adjustments",
       flex: 1,
-      valueFormatter: (params) => formatMonetaryValue(Number(params.value)),
+      valueFormatter: (value) => formatMonetaryValue(Number(value)),
     },
     {
       field: "total_payments",
       headerName: "Total Payments",
       flex: 1,
-      valueFormatter: (params) => formatMonetaryValue(Number(params.value)),
+      valueFormatter: (value) => formatMonetaryValue(Number(value)),
     },
     {
       field: "invoice_interest_balance",
       headerName: "FAA Interest",
       flex: 1,
-      valueFormatter: (params) => formatMonetaryValue(Number(params.value)),
+      valueFormatter: (value) => formatMonetaryValue(Number(value)),
     },
     {
       field: "outstanding_balance",
       headerName: "Outstanding Balance",
       flex: 1,
-      valueFormatter: (params) => formatMonetaryValue(Number(params.value)),
+      valueFormatter: (value) => formatMonetaryValue(Number(value)),
     },
   ];
 };
