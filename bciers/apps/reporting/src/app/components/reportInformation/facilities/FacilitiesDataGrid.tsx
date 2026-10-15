@@ -175,7 +175,6 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
         paginationMode="server"
         initialData={pageData}
         pageSize={10}
-        rowSelection={false}
       />
 
       {/* Error Display */}
