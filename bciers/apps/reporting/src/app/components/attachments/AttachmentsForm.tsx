@@ -281,9 +281,11 @@ const AttachmentsForm: React.FC<Props> = ({
               onChange={(e) =>
                 setConfirmRequiredAttachmentsUploaded(e.target.checked)
               }
-              inputProps={{
-                "aria-labelledby":
-                  "confirm-required-attachments-uploaded-label",
+              slotProps={{
+                input: {
+                  "aria-labelledby":
+                    "confirm-required-attachments-uploaded-label",
+                },
               }}
             />
             <label
@@ -302,9 +304,11 @@ const AttachmentsForm: React.FC<Props> = ({
               onChange={(e) =>
                 setConfirmExistingAttachmentsRelevant(e.target.checked)
               }
-              inputProps={{
-                "aria-labelledby":
-                  "confirm-existing-attachments-relevant-label",
+              slotProps={{
+                input: {
+                  "aria-labelledby":
+                    "confirm-existing-attachments-relevant-label",
+                },
               }}
             />
             <label

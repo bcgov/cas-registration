@@ -20,11 +20,7 @@ export default function SubmissionSuccess({
 
   return (
     <Box className="flex justify-center mt-20">
-      <Box
-        className="flex flex-col items-center"
-        maxWidth={600}
-        minHeight="20vh"
-      >
+      <Box className="flex flex-col items-center max-w-150 min-h-[20vh]">
         <Box className="flex flex-col items-center">
           <Check />
         </Box>
