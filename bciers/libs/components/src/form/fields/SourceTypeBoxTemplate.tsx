@@ -76,7 +76,7 @@ export function SourceTypeBoxTemplate({
     <Paper className={`mb-2.5 ${classNames}`}>
       <Card className="text-left">
         <Grid container spacing={1} className="justify-between">
-          <Grid item xs={10}>
+          <Grid size={10}>
             <CardHeader
               className="text-[blue]"
               titleTypographyProps={{ variant: "h6", color: "#38598A" }}
@@ -89,7 +89,7 @@ export function SourceTypeBoxTemplate({
             />
           </Grid>
           {!readonly && (
-            <Grid item xs={1}>
+            <Grid size={1}>
               <CardActions className="justify-end mr-7.5">
                 <IconButton onClick={() => setExpand(!expand)}>
                   {expand ? <ExpandLessIcon /> : <ExpandMoreIcon />}

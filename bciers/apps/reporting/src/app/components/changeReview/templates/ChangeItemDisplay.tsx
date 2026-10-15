@@ -27,8 +27,8 @@ export const ChangeItemDisplay: React.FC<ChangeItemDisplayProps> = ({
 
   return (
     <Box className="mb-4" key={item.field}>
-      <Grid container spacing={2} alignItems="center">
-        <Grid item xs={12} md={3}>
+      <Grid container spacing={2} className="items-center">
+        <Grid size={{ xs: 12, md: 3 }}>
           <Typography
             className={`font-medium ${
               isDeleted
@@ -44,7 +44,7 @@ export const ChangeItemDisplay: React.FC<ChangeItemDisplayProps> = ({
               )}
           </Typography>
         </Grid>
-        <Grid item xs={12} md={9}>
+        <Grid size={{ xs: 12, md: 9 }}>
           {(item.field.endsWith("['activities']") ||
             item.field.endsWith("['regulated_products']")) &&
           item.change_type === "modified" &&
