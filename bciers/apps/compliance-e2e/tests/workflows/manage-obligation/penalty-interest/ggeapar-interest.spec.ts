@@ -57,7 +57,7 @@ test.describe("GGEAPAR interest flow - CAS analyst", () => {
     await penaltyCalculator.assertGgeaparNotApplicable();
 
     // The final accrual date defaults to today, so it would change the screenshot daily
-    await penaltyCalculator.hideDatesFromScreenshot();
+    await penaltyCalculator.hideDateInputFromScreenshot();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "Penalty calculator",
       variant: "GGEAPAR - not applicable (non-supplementary report)",
@@ -97,7 +97,7 @@ test.describe("GGEAPAR interest flow - CAS analyst", () => {
     await penaltyCalculator.assertPenaltyGridLoaded();
     await penaltyCalculator.assertGgeaparNotApplicableHidden();
 
-    await penaltyCalculator.hideDatesFromScreenshot();
+    await penaltyCalculator.hideDateInputFromScreenshot();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "Penalty calculator",
       variant: `GGEAPAR - accruing (supplementary, ${daysOverdue} days overdue)`,
