@@ -133,6 +133,13 @@ export const theme = createTheme({
         },
       },
     },
+    MuiListItemIcon: {
+      styleOverrides: {
+        root: {
+          minWidth: 56,
+        },
+      },
+    },
     MuiListItem: {
       styleOverrides: {
         root: {
