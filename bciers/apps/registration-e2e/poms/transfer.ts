@@ -8,7 +8,7 @@ import {
   assertConfirmationModal,
   clickButton,
   fillComboxboxWidget,
-  fillInputValueByLabel,
+  fillDateFieldByLabel,
 } from "@bciers/e2e/utils/helpers";
 import { TransferRoute, TransferStatus } from "../utils/enums";
 
@@ -50,7 +50,7 @@ export class TransferPOM {
     await expect(async () => {
       await this.page.getByRole("radio", { name: /operation/i }).check();
       await fillComboxboxWidget(this.page, /operation/i, operation);
-      await fillInputValueByLabel(
+      await fillDateFieldByLabel(
         this.page,
         /effective date of transfer/i,
         effectiveDate,
@@ -101,7 +101,7 @@ export class TransferPOM {
         .first()
         .click();
     }).toPass({ timeout: 75000 });
-    await fillInputValueByLabel(
+    await fillDateFieldByLabel(
       this.page,
       /effective date of transfer/i,
       effectiveDate,
@@ -125,7 +125,7 @@ export class TransferPOM {
 
   async editEffectiveDate(date: string) {
     await this.clickEditDetails();
-    await fillInputValueByLabel(this.page, /effective date of transfer/i, date);
+    await fillDateFieldByLabel(this.page, /effective date of transfer/i, date);
     await this.submitTransfer();
     await this.assertEditDetailsVisible();
   }
