@@ -4,9 +4,8 @@ import {
   mapOptionsWithTooltips as mapOptions,
 } from "@bciers/components/form/widgets/MultiSelectWidgetWithTooltip";
 import { actionHandler } from "@bciers/actions";
-import { useState } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import SnackBar from "../components/SnackBar";
+import { useSnackbar } from "@bciers/components/snackbar";
 import { IconButton } from "@mui/material";
 import {
   useValidationErrors,
@@ -38,7 +37,7 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
   uiSchema,
   onChange,
 }) => {
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const { showSnackbar } = useSnackbar();
   const { setErrors, renderedErrors } = useValidationErrors();
   const { formContext } = registry;
 
@@ -82,7 +81,7 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
                 (repId) => repId !== option.id,
               ),
             );
-            setIsSnackbarOpen(true);
+            showSnackbar("Operation Representative removed successfully");
           }}
         />
       </IconButton>
@@ -96,11 +95,6 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
       className="read-only-widget whitespace-pre-line"
     >
       {displayOptions}
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        message="Operation Representative removed successfully"
-        setIsSnackbarOpen={setIsSnackbarOpen}
-      />
     </div>
   );
 };

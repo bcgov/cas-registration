@@ -52,6 +52,28 @@ vi.mock("react", async () => {
   };
 });
 
+// Render every test inside the app-wide SnackbarProvider, as RootLayout does,
+// so components that call useSnackbar().showSnackbar() display their message
+// Any wrapper passed by the test is kept inside it
+vi.mock("@testing-library/react", async () => {
+  const actual = await vi.importActual<typeof import("@testing-library/react")>(
+    "@testing-library/react",
+  );
+  const { SnackbarProvider } = await import("@bciers/components/snackbar");
+  const render = ((ui: React.ReactNode, options?: any) => {
+    const TestWrapper = options?.wrapper;
+    return actual.render(ui, {
+      ...options,
+      wrapper: ({ children }: { children: React.ReactNode }) => (
+        <SnackbarProvider>
+          {TestWrapper ? <TestWrapper>{children}</TestWrapper> : children}
+        </SnackbarProvider>
+      ),
+    });
+  }) as typeof actual.render;
+  return { ...actual, render };
+});
+
 vi.mock("next/navigation", () => ({
   useRouter,
   useParams,

@@ -6,7 +6,7 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import { Stack } from "@mui/system";
 import { InternalFrontEndRoles, Status } from "@bciers/utils/src/enums";
-import SnackBar from "@bciers/components/form/components/SnackBar";
+import { useSnackbar } from "@bciers/components/snackbar";
 import LoadingSpinner from "@bciers/components/loading/LoadingSpinner";
 import { BC_GOV_COMPONENTS_GREY } from "@bciers/styles";
 import { InternalAccessRequestGridRenderCellParams } from "../types";
@@ -45,8 +45,7 @@ const ActionColumnCell = (
   const { data: session } = useSession();
   const email = session?.user?.email;
 
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const { showSnackbar } = useSnackbar();
 
   const [isPending, startTransition] = useTransition();
 
@@ -80,12 +79,11 @@ const ActionColumnCell = (
       const newStatus = inferStatus(res.app_role, res.archived_at);
       const newRole = res.app_role;
 
-      setSnackbarMessage(
+      showSnackbar(
         `${res.first_name} ${res.last_name} is now ${
           res.archived_at ? "declined" : formatRole(newRole)
         }`,
       );
-      setIsSnackbarOpen(true);
 
       params.api.updateRows([
         {
@@ -156,11 +154,6 @@ const ActionColumnCell = (
         {email !== params?.row.email &&
           (status === Status.PENDING ? approveDeclineButton : editButton)}
       </Stack>
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        message={snackbarMessage}
-        setIsSnackbarOpen={setIsSnackbarOpen}
-      />
     </>
   );
 };

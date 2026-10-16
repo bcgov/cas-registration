@@ -17,7 +17,7 @@ import {
 import FormBase, { FormPropsWithTheme } from "@bciers/components/form/FormBase";
 import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
-import SnackBar from "@bciers/components/form/components/SnackBar";
+import { useSnackbar } from "@bciers/components/snackbar";
 import useKey from "@bciers/utils/src/useKey";
 import {
   useValidationErrors,
@@ -49,7 +49,7 @@ const NewOperationRepresentativeForm: FC<
   const [formState, setFormState] = useState(formData);
   const [key, resetKey] = useKey();
   const [existingContactId, setExistingContactId] = useState("");
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
   const { setErrors, renderedErrors } = useValidationErrors();
 
@@ -132,7 +132,7 @@ const NewOperationRepresentativeForm: FC<
       new_operation_representative: [{}],
     });
     resetKey(); // force re-render to clear the form
-    setIsSnackbarOpen(true);
+    showSnackbar("Operation Representative saved successfully");
   };
 
   const submitHandler = async ({ formData: newFormData }: IChangeEvent) => {
@@ -185,11 +185,6 @@ const NewOperationRepresentativeForm: FC<
           <div className="min-h-12 box-border">{renderedErrors}</div>
         </div>
       </FormBase>
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        message="Operation Representative saved successfully"
-        setIsSnackbarOpen={setIsSnackbarOpen}
-      />
     </>
   );
 };

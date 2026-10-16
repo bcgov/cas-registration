@@ -82,8 +82,8 @@ export default function FacilityForm({
 
     const facilityId = isCreatingState ? response[0].id : formState.id;
     const facilityName = isCreatingState ? response[0].name : response.name;
-    const replaceUrl = `/administration/operations/${params.operationId}/facilities/${facilityId}${queryString}&facilities_title=${facilityName}`;
-    window.history.replaceState(null, "", replaceUrl);
+    const replaceUrl = `/operations/${params.operationId}/facilities/${facilityId}${queryString}&facilities_title=${facilityName}`;
+    router.replace(replaceUrl);
   };
 
   return (
@@ -100,6 +100,7 @@ export default function FacilityForm({
       allowEdit={canEdit}
       mode={isCreatingState ? FormMode.CREATE : FormMode.READ_ONLY}
       onSubmit={handleSubmit}
+      keepSnackbarOnNextNavigation={isCreatingState}
       onCancel={() =>
         router.replace(
           isSfo

@@ -9,6 +9,7 @@ import { dummyNavigationInformation } from "@reporting/src/tests/components/task
 import { FacilityRow } from "@reporting/src/app/components/reportInformation/facilities/types";
 
 vi.mock("next/navigation", () => ({
+  usePathname: vi.fn(),
   useRouter: vi.fn(),
   useSearchParams: vi.fn(),
 }));
