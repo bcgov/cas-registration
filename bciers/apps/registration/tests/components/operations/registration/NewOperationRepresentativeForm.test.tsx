@@ -134,7 +134,7 @@ describe("the NewOperationRepresentativeForm component", () => {
     );
     expect(screen.getByText(/operation representative\(s\):/i)).toBeVisible();
     expect(screen.getByText(/john doe/i)).toBeVisible();
-    expect(screen.getByTestId("DeleteOutlineIcon")).toBeVisible();
+    expect(screen.getByTestId("DeleteOutlinedIcon")).toBeVisible();
 
     //This button should not be visible before clicking the add new operation representative button
     expect(
@@ -222,7 +222,7 @@ describe("the NewOperationRepresentativeForm component", () => {
     );
 
     // Clearing the selected contact - must clear the form
-    await userEvent.click(screen.getByTestId("DeleteOutlineIcon"));
+    await userEvent.click(screen.getByTestId("DeleteOutlinedIcon"));
 
     await userEvent.clear(
       screen.getByRole("combobox", {
@@ -236,7 +236,7 @@ describe("the NewOperationRepresentativeForm component", () => {
   it("render the NewOperationRepresentativeForm component and select and then change the rep", async () => {
     render(
       <NewOperationRepresentativeForm
-        formData={{}}
+        formData={{ operation_representatives: [3] }}
         operation={operationId}
         step={5}
         existingOperationRepresentatives={existingOperationRepresentativesMock}
@@ -357,13 +357,73 @@ describe("the NewOperationRepresentativeForm component", () => {
         contacts={contactsMock}
       />,
     );
-    await userEvent.click(screen.getByTestId("DeleteOutlineIcon"));
+    await userEvent.click(screen.getByTestId("DeleteOutlinedIcon"));
     await waitFor(() => {
       expect(
         screen.getByText(/Operation Representative removed successfully/i),
       ).toBeVisible();
     });
   });
+
+  it("shows the whole form once the last operation representative is removed", async () => {
+    render(
+      <NewOperationRepresentativeForm
+        formData={{ operation_representatives: [3] }}
+        operation={operationId}
+        step={5}
+        existingOperationRepresentatives={existingOperationRepresentativesMock}
+        contacts={contactsMock}
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: /add new operation representative/i }),
+    ).toBeVisible();
+
+    await userEvent.click(screen.getByTestId("DeleteOutlinedIcon"));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("button", {
+          name: /add new operation representative/i,
+        }),
+      ).not.toBeInTheDocument();
+    });
+    checkEmptyOperationRepresentativeForm();
+  });
+
+  it(
+    "shows only the add button once a new operation representative is saved",
+    { timeout: 20000 },
+    async () => {
+      actionHandler.mockResolvedValue({ id: 99 });
+      render(
+        <NewOperationRepresentativeForm
+          formData={{ operation_representatives: [] }}
+          operation={operationId}
+          step={5}
+          existingOperationRepresentatives={[]}
+          contacts={contactsMock}
+        />,
+      );
+
+      await fillOperationRepresentativeForm();
+      await userEvent.click(
+        screen.getByRole("button", { name: /save operation representative/i }),
+      );
+
+      expect(
+        await screen.findByRole("button", {
+          name: /add new operation representative/i,
+        }),
+      ).toBeVisible();
+      expect(screen.queryByLabelText(/First Name/i)).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", {
+          name: /save operation representative/i,
+        }),
+      ).not.toBeInTheDocument();
+    },
+  );
 
   it(
     "can still save a new operation representative after an existing one was removed",
@@ -383,7 +443,7 @@ describe("the NewOperationRepresentativeForm component", () => {
         />,
       );
 
-      await userEvent.click(screen.getAllByTestId("DeleteOutlineIcon")[0]);
+      await userEvent.click(screen.getAllByTestId("DeleteOutlinedIcon")[0]);
       await waitFor(() => {
         expect(
           screen.getByText(/Operation Representative removed successfully/i),

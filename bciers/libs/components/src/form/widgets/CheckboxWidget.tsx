@@ -23,7 +23,7 @@ const CheckboxWidget: React.FC<WidgetProps> = ({
         <Checkbox
           checked={typeof value === "undefined" ? false : value}
           value={value}
-          inputProps={{ id }}
+          slotProps={{ input: { id } }}
           required={required}
           aria-label={label}
           disabled={disabled}

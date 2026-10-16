@@ -29,9 +29,12 @@ const DateWidget: React.FC<WidgetProps> = ({
       return onChange("invalid date");
     }
 
+    // Build the value from the calendar date the user sees. Converting d itself to
+    // UTC can shift the day, e.g. ahead of UTC or when d carries the current time
+    const selectedDate = d.format("YYYY-MM-DD");
     const newDate = simpleDateFormat
-      ? d.utc().format("YYYY-MM-DD") // Return just the date (no time)
-      : d.utc().set("hour", 9).toISOString(); // Return full ISO string with time
+      ? selectedDate // Return just the date (no time)
+      : dayjs.utc(selectedDate).hour(9).toISOString(); // Return full ISO string with time
 
     return onChange(newDate);
   };
@@ -41,7 +44,7 @@ const DateWidget: React.FC<WidgetProps> = ({
 
   const styles = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
+    "& .MuiPickersOutlinedInput-root": {
       "& fieldset": {
         borderColor,
       },
@@ -54,7 +57,8 @@ const DateWidget: React.FC<WidgetProps> = ({
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
-        value={formattedValue ? dayjs(formattedValue).utc() : null}
+        // Parse as UTC: parsing as local time first shifts the date back a day ahead of UTC
+        value={formattedValue ? dayjs.utc(formattedValue) : null}
         onChange={handleChange}
         disabled={disabled || readonly}
         format="YYYY-MM-DD"

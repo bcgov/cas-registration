@@ -6,6 +6,9 @@ import { OperationStatus, OperationTypes } from "@bciers/utils/src/enums";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 import { expect } from "vitest";
 import { OperationRow } from "@/administration/app/components/operations/types";
+import expectColumnHeader, {
+  queryColumnHeader,
+} from "@bciers/testConfig/helpers/expectColumnHeader";
 
 useRouter.mockReturnValue({
   query: {},
@@ -96,27 +99,15 @@ describe("OperationsDataGrid component", () => {
     );
 
     // correct headers
-    expect(
-      screen.getByRole("columnheader", { name: "Operation Name" }),
-    ).toBeVisible();
-    expect(
-      screen.queryByRole("columnheader", { name: "Operator Legal Name" }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: "Operation Type" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "BORO ID" })).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "BC GHG ID" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Status" })).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Operation Type" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Facilities" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Action" })).toBeVisible();
+    expectColumnHeader("Operation Name");
+    expect(queryColumnHeader("Operator Legal Name")).not.toBeInTheDocument();
+    expectColumnHeader("Operation Type");
+    expectColumnHeader("BORO ID");
+    expectColumnHeader("BC GHG ID");
+    expectColumnHeader("Status");
+    expectColumnHeader("Operation Type");
+    expectColumnHeader("Facilities", false);
+    expectColumnHeader("Action", false);
     expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(5);
 
     // Check data displays
@@ -154,23 +145,13 @@ describe("OperationsDataGrid component", () => {
     );
 
     // correct headers
-    expect(
-      screen.getByRole("columnheader", { name: "Operation Name" }),
-    ).toBeVisible();
-    expect(
-      screen.queryByRole("columnheader", { name: "Operator Legal Name" }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "BORO ID" })).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "BC GHG ID" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Operation Type" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Facilities" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Action" })).toBeVisible();
+    expectColumnHeader("Operation Name");
+    expectColumnHeader("Operator Legal Name");
+    expectColumnHeader("BORO ID");
+    expectColumnHeader("BC GHG ID");
+    expectColumnHeader("Operation Type");
+    expectColumnHeader("Facilities", false);
+    expectColumnHeader("Action", false);
     expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(5);
 
     // Check data displays

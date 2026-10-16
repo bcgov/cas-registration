@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import { MonetaryPaymentsGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/MonetaryPaymentsGrid";
 import type { PaymentData } from "@/compliance/src/app/types";
 import { useSearchParams } from "@bciers/testConfig/mocks";
+import expectColumnHeader from "@bciers/testConfig/helpers/expectColumnHeader";
 
 // Mocks
 useSearchParams.mockReturnValue({
@@ -47,7 +48,7 @@ describe("MonetaryPaymentsGrid", () => {
       "Receipt Number",
     ];
     headers.forEach((header) => {
-      expect(screen.getByRole("columnheader", { name: header })).toBeVisible();
+      expectColumnHeader(header);
     });
 
     // Data rows (1 header + 2 data rows = 3 total)

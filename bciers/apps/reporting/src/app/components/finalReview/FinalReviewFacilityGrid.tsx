@@ -122,7 +122,6 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
         initialData={{ rows: initialRows, row_count: totalRows }}
         getRowId={(row) => row.facility}
         pageSize={PAGE_SIZE}
-        rowSelection={false}
         sx={{ minHeight: 200 }}
       />
     </div>

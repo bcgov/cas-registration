@@ -42,7 +42,7 @@ describe("the OperationRepresentativeForm component", () => {
           },
         ]}
         contacts={[]}
-        formData={{}}
+        formData={{ operation_representatives: [1] }}
         operation="002d5a9e-32a6-4191-938c-2c02bfec592d"
         step={5}
         steps={allOperationRegistrationSteps}

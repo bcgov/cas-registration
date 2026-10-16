@@ -74,9 +74,7 @@ describe("The ReportForm component", () => {
       />,
     );
     await user.click(screen.getByText("Back to All Reports"));
-    expect(mockRouterPush).toHaveBeenCalledWith(
-      "/reporting/reports/current-reports",
-    );
+    expect(mockRouterPush).toHaveBeenCalledWith("/reports/current-reports");
   });
 
   it("renders the attachments section when origin is submitted", () => {

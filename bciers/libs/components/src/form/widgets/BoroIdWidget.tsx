@@ -50,19 +50,21 @@ const BoroIdWidget: React.FC<WidgetProps> = ({ id, value, registry }) => {
 
   if (formContext?.isCasDirector && !boroId) {
     return (
-      <Button
-        variant="outlined"
-        onClick={async () => {
-          setErrors(undefined);
-          const response = await generateBoroId(formContext?.operationId);
-          const isSuccess = handleApiResponse(response, setErrors);
-          if (!isSuccess) return;
-          setIsSnackbarOpen(true);
-          setBoroId(response?.id);
-        }}
-      >
-        &#xFF0B; Issue BORO ID
-      </Button>
+      <div className="pl-3.5">
+        <Button
+          variant="outlined"
+          onClick={async () => {
+            setErrors(undefined);
+            const response = await generateBoroId(formContext?.operationId);
+            const isSuccess = handleApiResponse(response, setErrors);
+            if (!isSuccess) return;
+            setIsSnackbarOpen(true);
+            setBoroId(response?.id);
+          }}
+        >
+          &#xFF0B; Issue BORO ID
+        </Button>
+      </div>
     );
   }
   return (

@@ -27,6 +27,18 @@ export async function analyzeAccessibility(
   if (disableRules && disableRules.length > 0)
     builder.disableRules(disableRules);
 
+  // Let transitions finish first (e.g. a button fading from disabled to enabled),
+  // otherwise axe can check a colour mid-transition. Endless ones like spinners are skipped
+  await page.waitForFunction(() =>
+    document
+      .getAnimations()
+      .every(
+        (animation) =>
+          animation.playState !== "running" ||
+          animation.effect?.getComputedTiming().endTime === Infinity,
+      ),
+  );
+
   const accessibilityScanResults = await builder.analyze();
 
   if (accessibilityScanResults.violations.length > 0) {
@@ -54,6 +66,7 @@ export async function analyzeAccessibility(
  *
  * @param page - Playwright Page instance
  * @param buttonText - Button accessible name or RegExp
+ * @param opts - Options
  * @param opts.root - Optional Locator to scope the button search
  * @param opts.inForm - Scope the button search to a <form> (default: false)
  * @param opts.waitForUrl - RegExp URL to wait for after clicking (optional)
@@ -106,6 +119,8 @@ export async function fillComboxboxWidget(
   const option = page.getByRole("option", { name: value, exact });
   await expect(option).toBeVisible();
   await option.click();
+  // Wait for the list to close so a following screenshot doesn't catch it open
+  await expect(input).toHaveAttribute("aria-expanded", "false");
 }
 
 export async function fillDropdownByLabel(
@@ -143,6 +158,29 @@ export async function fillInputValueByLabel(
 
   if (blur === "tab") await field.press("Tab");
   if (blur === "enter") await field.press("Enter");
+}
+
+// MUI X date fields render editable sections over a hidden labelled <input>.
+// As MUI recommends, focus the field first, then fill the hidden input with the
+// formatted value: https://mui.com/x/react-date-pickers/base-concepts/#testing
+export async function fillDateFieldByLabel(
+  page: Page,
+  label: string | RegExp,
+  date: string, // YYYY-MM-DD
+): Promise<void> {
+  const name = label instanceof RegExp ? label : new RegExp(label, "i");
+  // The label names both the field group and the hidden input
+  const input = page.getByLabel(name).and(page.locator("input"));
+  const field = input.locator("xpath=ancestor::*[@role='group'][1]");
+
+  await expect(field).toBeVisible({ timeout: 30_000 });
+  await expect(input).toBeEnabled({ timeout: 30_000 });
+
+  await field.click();
+  await input.fill(date);
+  await page.keyboard.press("Tab");
+
+  await expect(input).toHaveValue(date);
 }
 
 export async function fillInputValueByLocator(

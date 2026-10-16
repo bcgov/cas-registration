@@ -5,7 +5,7 @@ import {
 } from "@bciers/components/form/widgets/MultiSelectWidgetWithTooltip";
 import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import SnackBar from "../components/SnackBar";
 import { IconButton } from "@mui/material";
 import {
@@ -61,7 +61,7 @@ const OperationRepresentativeWidget: React.FC<WidgetProps> = ({
     <span key={index}>
       {option.label}
       <IconButton aria-label="delete">
-        <DeleteOutlineIcon
+        <DeleteOutlinedIcon
           key={option.id}
           className="text-bc-error-red"
           onClick={async () => {

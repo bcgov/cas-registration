@@ -49,10 +49,10 @@ const userOperatorGroupColumns = (
       children: [{ field: "role" }],
     },
     {
-      groupId: "action",
+      groupId: "actions",
       headerName: "Actions",
       renderHeaderGroup: EmptyGroupCell,
-      children: [{ field: "action" }],
+      children: [{ field: "actions" }],
     },
   ];
 };

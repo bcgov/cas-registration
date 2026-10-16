@@ -23,6 +23,7 @@ import {
   facilitiesLfoUiSchema,
 } from "apps/administration/app/data/jsonSchema/facilitiesLfo";
 import { FrontendMessages, FrontEndRoles } from "@bciers/utils/src/enums";
+import { typeDate } from "@bciers/testConfig/helpers/form";
 import { expect } from "vitest";
 
 const currentYear = new Date().getFullYear();
@@ -293,9 +294,9 @@ const fillOptionalFields = async (schema: RJSFSchema, container?: Element) => {
   // fill year and starting date
   const year = screen.getByLabelText(/Did this facility begin operations+/i);
   await userEvent.click(year);
-  await userEvent.type(
+  await typeDate(
     screen.getByLabelText(/Date of facility starting operations+/i),
-    defaultFillFormValues.starting_date,
+    `${currentYear}0707`,
   );
 
   await userEvent.type(
@@ -640,7 +641,7 @@ describe("FacilityForm component", () => {
     // fill year and starting date with wrong info
     const year = screen.getByLabelText(/Did this facility begin operations+/i);
     await userEvent.click(year);
-    await userEvent.type(
+    await typeDate(
       screen.getByLabelText(/Date of facility starting operations+/i),
       "20200101",
     );
@@ -663,20 +664,65 @@ describe("FacilityForm component", () => {
       1,
     );
 
-    // refill year and starting date to check for proper format
-    await userEvent.clear(
+    // refill the starting date with a partial date
+    await typeDate(
       screen.getByLabelText(/Date of facility starting operations+/i),
-    );
-    await userEvent.type(
-      screen.getByLabelText(/Date of facility starting operations+/i),
-      "202",
+      "{Control>}a{/Control}{Backspace}202",
     );
     fireEvent.click(saveButton);
 
-    // expect to see format error for starting date
+    // MUI X v8+ keeps a partially filled date as null, so it fails as missing
+    // rather than as a format error
     expect(
-      screen.getAllByText(/Starting Date format should be YYYY-MM-DD/i),
-    ).toHaveLength(1);
+      screen.getByText(/Date of facility starting operations: is required/i),
+    ).toBeVisible();
+  });
+
+  it("does not allow a typed starting date in the future", async () => {
+    // Pin today so a later date in the current year exists
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(currentYear, 5, 15, 12));
+    try {
+      render(
+        <FacilityForm
+          schema={facilitiesLfoSchema}
+          uiSchema={facilitiesLfoUiSchema}
+          formData={{}}
+          isCreating
+        />,
+      );
+      // the starting date shows once a facility type is selected
+      const comboBoxInput = screen.getAllByRole(
+        "combobox",
+      )[0] as HTMLInputElement;
+      await userEvent.click(
+        comboBoxInput?.parentElement?.children[1]
+          ?.children[0] as HTMLInputElement,
+      );
+      await userEvent.click(screen.getByText("Large Facility"));
+      await userEvent.click(
+        screen.getByLabelText(/Did this facility begin operations+/i),
+      );
+      const startingDate = screen.getByLabelText(
+        /Date of facility starting operations+/i,
+      );
+      const saveButton = screen.getByRole("button", { name: "Save" });
+
+      await typeDate(startingDate, `${currentYear}0616`);
+      fireEvent.click(saveButton);
+      expect(screen.getByText(/Date cannot be in the future/i)).toBeVisible();
+
+      await typeDate(
+        startingDate,
+        `{Control>}a{/Control}{Backspace}${currentYear}0615`,
+      );
+      fireEvent.click(saveButton);
+      expect(
+        screen.queryByText(/Date cannot be in the future/i),
+      ).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it(

@@ -76,7 +76,7 @@ describe("RJSF OperationRepresentativeWidget", () => {
     expect(operationRepresentativeTestField).toHaveTextContent(
       "Neville FlashdanceOz Twindlewinks",
     );
-    expect(screen.getAllByTestId("DeleteOutlineIcon")).toHaveLength(2);
+    expect(screen.getAllByTestId("DeleteOutlinedIcon")).toHaveLength(2);
   });
 
   it("should hit the API to remove a contact", async () => {
@@ -92,7 +92,7 @@ describe("RJSF OperationRepresentativeWidget", () => {
         onChange={onChange}
       />,
     );
-    const trashNevilleButton = screen.getAllByTestId("DeleteOutlineIcon")[0];
+    const trashNevilleButton = screen.getAllByTestId("DeleteOutlinedIcon")[0];
     await userEvent.click(trashNevilleButton);
     expect(actionHandler).toHaveBeenCalledWith(...expectedRemoveCall);
     await waitFor(() => {
@@ -121,7 +121,7 @@ describe("RJSF OperationRepresentativeWidget", () => {
         onChange={onChange}
       />,
     );
-    const trashNevilleButton = screen.getAllByTestId("DeleteOutlineIcon")[0];
+    const trashNevilleButton = screen.getAllByTestId("DeleteOutlinedIcon")[0];
     await userEvent.click(trashNevilleButton);
     expect(actionHandler).toHaveBeenCalledWith(...expectedRemoveCall);
     expect(screen.getByText(/i bork :\(/i)).toBeVisible();

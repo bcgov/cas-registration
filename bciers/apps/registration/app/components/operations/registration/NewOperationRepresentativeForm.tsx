@@ -35,6 +35,21 @@ interface NewOperationRepresentativeFormProps extends Omit<
   contacts: ContactRow[];
 }
 
+// With no operation representative selected, show the whole form to add one;
+// otherwise only the button to add another
+const withNewOperationRepresentativeForm = <
+  T extends {
+    operation_representatives?: unknown[];
+    new_operation_representative?: unknown[];
+  },
+>(
+  data: T,
+) =>
+  !data?.operation_representatives?.length &&
+  !data?.new_operation_representative?.length
+    ? { ...data, new_operation_representative: [{}] }
+    : data;
+
 const NewOperationRepresentativeForm: FC<
   NewOperationRepresentativeFormProps
 > = (props) => {
@@ -46,7 +61,9 @@ const NewOperationRepresentativeForm: FC<
     step,
   } = props;
 
-  const [formState, setFormState] = useState(formData);
+  const [formState, setFormState] = useState(() =>
+    withNewOperationRepresentativeForm(formData),
+  );
   const [key, resetKey] = useKey();
   const [existingContactId, setExistingContactId] = useState("");
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
@@ -111,25 +128,29 @@ const NewOperationRepresentativeForm: FC<
       handleClearingExistingContact();
     } else {
       // This is needed to update the form data and show the submit button
-      setFormState({
-        // Take the list from the event so deletions made in the
-        // OperationRepresentativeWidget aren't discarded
-        operation_representatives: newFormData.operation_representatives ?? [],
-        new_operation_representative: newOperationRepresentative,
-      });
+      setFormState(
+        withNewOperationRepresentativeForm({
+          // Take the list from the event so deletions made in the
+          // OperationRepresentativeWidget aren't discarded
+          operation_representatives:
+            newFormData.operation_representatives ?? [],
+          new_operation_representative: newOperationRepresentative,
+        }),
+      );
     }
   };
 
   const handleAfterSubmit = (response: { id: number }) => {
     setErrors(undefined);
     setExistingContactId(""); // Clear the existing contact id to enable disabled fields
-    // Add the new operation representative to the list of operation representatives and clear the form
+    // Add the new operation representative to the list of operation representatives and
+    // close the form, leaving the button to add another
     setFormState({
       operation_representatives: [
-        ...formState.operation_representatives,
+        ...(formState.operation_representatives ?? []),
         response.id, // Contact ID
       ],
-      new_operation_representative: [{}],
+      new_operation_representative: [],
     });
     resetKey(); // force re-render to clear the form
     setIsSnackbarOpen(true);

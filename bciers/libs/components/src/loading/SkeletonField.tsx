@@ -1,4 +1,4 @@
-import Container from "@mui/material/Container/Container";
+import Container from "@mui/material/Container";
 import Skeleton from "@mui/material/Skeleton";
 
 export default function SkeletonField() {

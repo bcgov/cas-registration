@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 import {
   checkTextWidgetValidationStyles,
   checkNoValidationErrorIsTriggered,
+  typeDate,
 } from "@bciers/testConfig/helpers/form";
 
 const dateWidgetFieldLabel = "DateWidget test field";
@@ -42,9 +43,11 @@ const checkTypingDate = async (inputString: string, expectedValue: string) => {
     />,
   );
 
-  const dateWidgetInput = screen.getByRole("textbox") as HTMLInputElement;
+  const dateWidgetInput = screen.getByLabelText(
+    dateWidgetLabelRequired,
+  ) as HTMLInputElement;
 
-  await userEvent.type(dateWidgetInput, inputString);
+  await typeDate(dateWidgetInput, inputString);
 
   expect(dateWidgetInput.value).toBe(expectedValue);
 };
@@ -72,7 +75,9 @@ describe("RJSF DateWidget", () => {
       />,
     );
 
-    const dateWidgetInput = screen.getByRole("textbox") as HTMLInputElement;
+    const dateWidgetInput = screen.getByLabelText(
+      dateWidgetLabelRequired,
+    ) as HTMLInputElement;
 
     expect(dateWidgetInput.value).toBe("");
   });
@@ -102,7 +107,7 @@ describe("RJSF DateWidget", () => {
   });
 
   it("should not allow typing an invalid date", async () => {
-    await checkTypingDate("not a date", "YYYY-MM-DD");
+    await checkTypingDate("not a date", "");
 
     const submitButton = screen.getByRole("button", { name: "Submit" });
 
@@ -133,7 +138,7 @@ describe("RJSF DateWidget", () => {
 
     const dateWidgetCalendar = screen.getByRole("dialog");
     const dateWidgetCalendarDay = dateWidgetCalendar.querySelector(
-      ".MuiPickersDay-today",
+      ".MuiPickerDay-today",
     ) as HTMLElement;
 
     await act(async () => {
@@ -145,7 +150,7 @@ describe("RJSF DateWidget", () => {
     ) as HTMLInputElement;
 
     // Checking that this is a valid date rather than hardcoding a date.
-    // This is because this test selects the current day using the .MuiPickersDay-today class
+    // This is because this test selects the current day using the .MuiPickerDay-today class
     // So that the test will work regardless of when it is run.
     expect(dateWidgetInput.value).toBe(dayjs().format("YYYY-MM-DD"));
     expect(dayjs(dateWidgetInput.value).isValid()).toBe(true);
@@ -161,7 +166,9 @@ describe("RJSF DateWidget", () => {
       />,
     );
 
-    const dateWidgetInput = screen.getByRole("textbox") as HTMLInputElement;
+    const dateWidgetInput = screen.getByLabelText(
+      dateWidgetLabelRequired,
+    ) as HTMLInputElement;
     await act(async () => {
       fireEvent.change(dateWidgetInput, {
         target: { value: "2024-07-05" },
@@ -291,5 +298,126 @@ describe("RJSF DateWidget", () => {
     const submitButton = screen.getByRole("button", { name: "Submit" });
     await userEvent.click(submitButton);
     expect(screen.getByText(/^.* is required/i)).toBeVisible();
+  });
+});
+
+// These pin the timezone and clock to times where the local date and the UTC
+// date differ, to check the widget always works with the calendar date
+describe("RJSF DateWidget timezone handling", () => {
+  const originalTimezone = process.env.TZ;
+
+  const setTimezoneAndNow = (timezone: string, now: string) => {
+    process.env.TZ = timezone;
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(now));
+  };
+
+  const submitAndGetValue = async (mockSubmit: ReturnType<typeof vi.fn>) => {
+    await userEvent.click(screen.getByRole("button", { name: "Submit" }));
+    expect(mockSubmit).toHaveBeenCalledOnce();
+    return mockSubmit.mock.calls[0][0].formData.dateWidgetTestField;
+  };
+
+  const renderWidget = (
+    props: { formData?: object; uiSchema?: UiSchema } = {},
+  ) => {
+    const mockSubmit = vi.fn();
+    render(
+      <FormBase
+        schema={dateWidgetFieldSchema}
+        uiSchema={props.uiSchema ?? dateWidgetFieldUiSchema}
+        formData={props.formData}
+        onSubmit={mockSubmit}
+      />,
+    );
+    return mockSubmit;
+  };
+
+  afterEach(() => {
+    vi.useRealTimers();
+    process.env.TZ = originalTimezone;
+  });
+
+  it("saves the typed date at 9am UTC late in the evening in Vancouver", async () => {
+    // 11:30pm on July 5 in Vancouver is already July 6 in UTC
+    setTimezoneAndNow("America/Vancouver", "2024-07-06T06:30:00.000Z");
+    const mockSubmit = renderWidget();
+
+    await typeDate(screen.getByLabelText(dateWidgetLabelRequired), "20240710");
+
+    expect(await submitAndGetValue(mockSubmit)).toBe(
+      "2024-07-10T09:00:00.000Z",
+    );
+  });
+
+  it("saves the typed date at 9am UTC early in the morning ahead of UTC", async () => {
+    // 1am on July 5 in Auckland is still July 4 in UTC
+    setTimezoneAndNow("Pacific/Auckland", "2024-07-04T13:00:00.000Z");
+    const mockSubmit = renderWidget();
+
+    await typeDate(screen.getByLabelText(dateWidgetLabelRequired), "20240710");
+
+    expect(await submitAndGetValue(mockSubmit)).toBe(
+      "2024-07-10T09:00:00.000Z",
+    );
+  });
+
+  it("saves today's date when today is picked late in the evening", async () => {
+    setTimezoneAndNow("America/Vancouver", "2024-07-06T06:30:00.000Z");
+    const mockSubmit = renderWidget();
+
+    await userEvent.click(
+      screen.getByTestId("CalendarIcon").parentElement as HTMLElement,
+    );
+    await userEvent.click(
+      screen.getByRole("dialog").querySelector(".MuiPickerDay-today")!,
+    );
+
+    expect(await submitAndGetValue(mockSubmit)).toBe(
+      "2024-07-05T09:00:00.000Z",
+    );
+  });
+
+  it("saves only the typed date when simpleDateFormat is set", async () => {
+    setTimezoneAndNow("America/Vancouver", "2024-07-06T06:30:00.000Z");
+    const mockSubmit = renderWidget({
+      uiSchema: {
+        dateWidgetTestField: {
+          "ui:widget": "DateWidget",
+          "ui:options": { simpleDateFormat: true },
+        },
+      },
+    });
+
+    await typeDate(screen.getByLabelText(dateWidgetLabelRequired), "20240710");
+
+    expect(await submitAndGetValue(mockSubmit)).toBe("2024-07-10");
+  });
+
+  it("shows and keeps a saved value as its UTC date", async () => {
+    // 12:30am UTC on July 5 is still July 4 in Vancouver
+    setTimezoneAndNow("America/Vancouver", "2024-07-06T06:30:00.000Z");
+    const mockSubmit = renderWidget({
+      formData: { dateWidgetTestField: "2024-07-05T00:30:00.000Z" },
+    });
+
+    expect(screen.getByLabelText(dateWidgetLabelRequired)).toHaveValue(
+      "2024-07-05",
+    );
+    expect(await submitAndGetValue(mockSubmit)).toBe(
+      "2024-07-05T00:30:00.000Z",
+    );
+  });
+
+  it("shows a saved value as its UTC date ahead of UTC", async () => {
+    // 11:30pm UTC on July 5 is already July 6 in Auckland
+    setTimezoneAndNow("Pacific/Auckland", "2024-07-04T13:00:00.000Z");
+    renderWidget({
+      formData: { dateWidgetTestField: "2024-07-05T23:30:00.000Z" },
+    });
+
+    expect(screen.getByLabelText(dateWidgetLabelRequired)).toHaveValue(
+      "2024-07-05",
+    );
   });
 });

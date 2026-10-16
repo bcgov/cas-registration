@@ -68,7 +68,7 @@ describe("RJSF OperationRepresentativeWidget", () => {
     expect(screen.getByText("Jane Doe")).toBeVisible();
 
     const deleteIcon = container.querySelector(
-      "[data-testid='DeleteOutlineIcon']",
+      "[data-testid='DeleteOutlinedIcon']",
     )!;
 
     await userEvent.click(deleteIcon);
@@ -103,7 +103,7 @@ describe("RJSF OperationRepresentativeWidget", () => {
     );
 
     const deleteIcon = container.querySelector(
-      "[data-testid='DeleteOutlineIcon']",
+      "[data-testid='DeleteOutlinedIcon']",
     )!;
 
     await userEvent.click(deleteIcon);

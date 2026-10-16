@@ -4,7 +4,6 @@ import React, { useState, useMemo, useCallback } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Typography } from "@mui/material";
-import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 import { fetchFacilitiesPageData } from "@reporting/src/app/components/reportInformation/facilities/fetchFacilitiesPageData";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
@@ -163,9 +162,7 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
 
       <Typography
         variant="body2"
-        color={BC_GOV_BACKGROUND_COLOR_BLUE}
-        fontStyle="italic"
-        className="mb-5 text-[16px]"
+        className="mb-5 text-[16px] italic text-bc-bg-blue"
       >
         All facility reports in the Facilities table below must be marked as
         complete before you can continue.
@@ -178,7 +175,6 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
         paginationMode="server"
         initialData={pageData}
         pageSize={10}
-        rowSelection={false}
       />
 
       {/* Error Display */}

@@ -2,7 +2,7 @@
 
 import { createRef, useState } from "react";
 import { Button } from "@mui/material";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
@@ -179,7 +179,7 @@ const SingleStepTaskListForm = ({
                 variant="outlined"
                 color="error"
                 className="text-bc-error-red"
-                startIcon={<DeleteOutlineIcon />}
+                startIcon={<DeleteOutlinedIcon />}
                 onClick={handleDelete}
               >
                 {deleteButtonText}

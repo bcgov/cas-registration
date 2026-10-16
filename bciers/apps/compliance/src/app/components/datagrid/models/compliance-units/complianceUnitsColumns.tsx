@@ -27,7 +27,7 @@ const complianceUnitsColumns = (): GridColDef[] => {
       headerName: "Quantity",
       width: 150,
       type: "string",
-      valueFormatter: (params) => `${Number(params.value).toFixed(0)}`,
+      valueFormatter: (value) => `${Number(value).toFixed(0)}`,
       sortComparator: (a, b) => a - b,
     },
     {
@@ -35,12 +35,10 @@ const complianceUnitsColumns = (): GridColDef[] => {
       headerName: "Equivalent Emission Reduced",
       width: 200,
       type: "string",
-      valueGetter: (params) => {
-        return !params.row.quantity_applied
-          ? 0
-          : Number(params.row.quantity_applied);
+      valueGetter: (_value, row) => {
+        return !row.quantity_applied ? 0 : Number(row.quantity_applied);
       },
-      valueFormatter: (params) => `${params.value} tCO2e`,
+      valueFormatter: (value) => `${value} tCO2e`,
       sortComparator: (a, b) => a - b,
     },
     {
@@ -48,8 +46,8 @@ const complianceUnitsColumns = (): GridColDef[] => {
       headerName: "Equivalent Value",
       width: 150,
       type: "string",
-      valueFormatter: (params) =>
-        `$${Number(params.value).toLocaleString(undefined, {
+      valueFormatter: (value) =>
+        `$${Number(value).toLocaleString(undefined, {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })}`,

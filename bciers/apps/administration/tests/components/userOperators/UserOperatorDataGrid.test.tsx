@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import { UserOperatorStatus } from "@bciers/utils/src/enums";
 import UserOperatorDataGrid from "@/administration/app/components/userOperators/UserOperatorDataGrid";
 import { expect } from "vitest";
+import expectColumnHeader from "@bciers/testConfig/helpers/expectColumnHeader";
 
 useRouter.mockReturnValue({
   query: {},
@@ -71,25 +72,14 @@ describe("UserOperatorDataGrid component", () => {
     render(<UserOperatorDataGrid initialData={mockResponse} />);
 
     // correct headers
-    expect(
-      screen.getByRole("columnheader", { name: "Request ID" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "First Name" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Last Name" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Email" })).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "BCeID Business Name" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Operator" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Role" })).toBeVisible();
-
-    expect(screen.getByRole("columnheader", { name: "Actions" })).toBeVisible();
+    expectColumnHeader("Request ID");
+    expectColumnHeader("First Name");
+    expectColumnHeader("Last Name");
+    expectColumnHeader("Email");
+    expectColumnHeader("BCeID Business Name");
+    expectColumnHeader("Operator");
+    expectColumnHeader("Role");
+    expectColumnHeader("Actions", false);
     expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(7);
 
     // Check data displays

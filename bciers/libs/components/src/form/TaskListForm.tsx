@@ -2,7 +2,7 @@
 
 import { createRef, useMemo, useState } from "react";
 import { Button } from "@mui/material";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import { IChangeEvent } from "@rjsf/core";
 import { FieldTemplateProps, RJSFSchema, UiSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
@@ -176,7 +176,7 @@ const TaskListForm = ({
                 variant="outlined"
                 color="error"
                 style={{ color: BC_GOV_SEMANTICS_RED }}
-                startIcon={<DeleteOutlineIcon />}
+                startIcon={<DeleteOutlinedIcon />}
                 onClick={handleDelete}
               >
                 {deleteButtonText}

@@ -5,6 +5,7 @@ import AccessRequestDataGrid from "apps/administration/app/components/userOperat
 import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { TestErrorBoundary } from "@bciers/testConfig/helpers/TestErrorBoundary";
+import expectColumnHeader from "@bciers/testConfig/helpers/expectColumnHeader";
 
 const mockInitialData = {
   rows: [
@@ -50,17 +51,13 @@ describe("Access Requests DataGrid", () => {
     render(<AccessRequestDataGrid initialData={{ rows: [] }} />);
     expect(screen.getByRole("grid")).toBeVisible();
     expect(screen.getByText(/No records found/i)).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "User ID" })).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Name" })).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Email" })).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Business BCeID" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "User Role" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Status" })).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Actions" })).toBeVisible();
+    expectColumnHeader("User ID");
+    expectColumnHeader("Name");
+    expectColumnHeader("Email");
+    expectColumnHeader("Business BCeID");
+    expectColumnHeader("User Role");
+    expectColumnHeader("Status");
+    expectColumnHeader("Actions", false);
   });
   it("renders Access Requests component with DATA", async () => {
     render(<AccessRequestDataGrid initialData={mockInitialData} />);

@@ -147,20 +147,22 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
         onChange={handleChange}
         className="w-full"
         error={showError}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <div className="flex items-center justify-center">
-                {isLoading ? (
-                  <CircularProgress size={20} />
-                ) : isValid === true ? (
-                  <CheckCircleIcon color="success" />
-                ) : showError ? (
-                  <AlertIcon width="20" height="20" />
-                ) : null}
-              </div>
-            </InputAdornment>
-          ),
+        slotProps={{
+          input: {
+            endAdornment: (
+              <InputAdornment position="end">
+                <div className="flex items-center justify-center">
+                  {isLoading ? (
+                    <CircularProgress size={20} />
+                  ) : isValid === true ? (
+                    <CheckCircleIcon color="success" />
+                  ) : showError ? (
+                    <AlertIcon width="20" height="20" />
+                  ) : null}
+                </div>
+              </InputAdornment>
+            ),
+          },
         }}
       />
       <small>
