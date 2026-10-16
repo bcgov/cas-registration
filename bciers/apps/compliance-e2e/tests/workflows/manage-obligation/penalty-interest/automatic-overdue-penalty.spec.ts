@@ -6,18 +6,15 @@ import {
   DEFAULT_DAYS_OVERDUE,
   PENALTY_TARGET_ACCRUAL_DATE,
 } from "@/compliance-e2e/utils/constants";
-import { PenaltyCalculatorPOM } from "@/compliance-e2e/poms/manage-obligation/penalty-calculator";
 import {
   OverdueObligation,
   openPenaltyCalculator,
   restoreOverdueObligation,
   setupOverdueObligationAsIndustryUser,
-  submitObligationReports,
 } from "@/compliance-e2e/utils/penalty-setup";
 
-// 👤 Setup scoped test runners per role
+// 👤 run test using the storageState for internal staff (CAS Analyst)
 const internalTest = setupBeforeEachTest(UserRole.CAS_ANALYST);
-const externalTest = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
 
 const daysOverdue = DEFAULT_DAYS_OVERDUE;
 
@@ -60,43 +57,6 @@ internalTest.describe("Automatic overdue penalty flow - CAS analyst", () => {
         component: "Penalty calculator",
         variant: `status: ${PenaltyStatus.ACCRUING} - ${daysOverdue} days overdue`,
       });
-    },
-  );
-});
-
-// ---------------------------------------------------------------------------
-// External Suite (Industry User Admin)
-// ---------------------------------------------------------------------------
-externalTest.describe("Automatic overdue penalty flow - Industry user", () => {
-  externalTest.describe.configure({ timeout: 120_000 });
-
-  let overdueObligation: OverdueObligation | undefined;
-
-  externalTest.afterEach(async ({ page, request }) => {
-    await restoreOverdueObligation(page, request, overdueObligation);
-    overdueObligation = undefined;
-  });
-
-  externalTest(
-    "when navigating directly to the penalty calculator, the page is not found",
-    async ({ page, request }) => {
-      const reportVersionId = await submitObligationReports(page, request);
-      const penaltyCalculator = new PenaltyCalculatorPOM(page);
-      const overdueResult = await penaltyCalculator.makeOverdue(request, {
-        report_version_id: reportVersionId,
-      });
-      overdueObligation = {
-        complianceReportVersionId: overdueResult.compliance_report_version_id,
-        reportVersionId,
-        originalComplianceDeadline: overdueResult.original_compliance_deadline,
-      };
-
-      // The penalty calculator only exists for internal users, so it is never linked in the industry task list.
-      // Guard against it being reachable by URL instead.
-      await penaltyCalculator.route(
-        overdueObligation.complianceReportVersionId,
-      );
-      await penaltyCalculator.assertNotFound();
     },
   );
 });

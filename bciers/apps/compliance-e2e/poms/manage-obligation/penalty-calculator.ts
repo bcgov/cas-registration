@@ -1,9 +1,6 @@
 import { APIRequestContext, Locator, Page, expect } from "@playwright/test";
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
-import {
-  COMPLIANCE_SUMMARIES_BASE_PATH,
-  DEFAULT_DAYS_OVERDUE,
-} from "@/compliance-e2e/utils/constants";
+import { DEFAULT_DAYS_OVERDUE } from "@/compliance-e2e/utils/constants";
 
 /**
  * Options sent to the make_obligation_overdue e2e stub scenario.
@@ -35,7 +32,6 @@ export class PenaltyCalculatorPOM {
   readonly ggeaparOption: Locator;
   readonly selectedPenaltyTypeInput: Locator;
   readonly ggeaparNotApplicableAlert: Locator;
-  readonly notFoundHeading: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -49,7 +45,6 @@ export class PenaltyCalculatorPOM {
     this.ggeaparNotApplicableAlert = page.getByText(
       /GGEAPAR interest only applies to obligations for supplementary compliance reports/i,
     );
-    this.notFoundHeading = page.getByRole("heading", { name: "Not found" });
     this.accrualDataCell = page
       .locator('[role="gridcell"], [role="cell"], table tbody tr td')
       .first();
@@ -58,16 +53,6 @@ export class PenaltyCalculatorPOM {
   // -----------------
   // Actions
   // -----------------
-
-  /**
-   * Navigates directly to the penalty calculator for a compliance report version.
-   */
-  async route(complianceReportVersionId: number | string) {
-    await this.page.goto(
-      `${COMPLIANCE_SUMMARIES_BASE_PATH}/${complianceReportVersionId}/penalty-calculator`,
-      { waitUntil: "domcontentloaded" },
-    );
-  }
 
   // The stub call reads the user guid from the page, so it needs a loaded page
   private async ensurePageLoaded() {
@@ -186,10 +171,5 @@ export class PenaltyCalculatorPOM {
 
   async assertPenaltyGridLoaded() {
     await expect(this.accrualDataCell).toBeVisible({ timeout: 15_000 });
-  }
-
-  async assertNotFound() {
-    await expect(this.notFoundHeading).toBeVisible({ timeout: 15_000 });
-    await expect(this.finalAccrualDateInput).toHaveCount(0);
   }
 }

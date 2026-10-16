@@ -42,7 +42,7 @@ export interface OverdueObligation {
  * @param page A page signed in as an industry user
  * @returns The report version id of the last submitted report
  */
-export async function submitObligationReports(
+async function submitObligationReports(
   page: Page,
   apiContext: APIRequestContext,
   options?: { supplementaryIncrease?: boolean },
