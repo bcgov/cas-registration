@@ -1,18 +1,16 @@
 import re
-import uuid
 from contextlib import contextmanager
 from decimal import Decimal
 from typing import Any, Callable, Iterator, Optional
 from unittest.mock import patch
-
 from compliance.service.elicensing.schema import InvoiceQueryResponse
 from pydantic import TypeAdapter
 import requests
 from requests.models import Response
-
 from ..utils import base_url, is_local_url, json_response
 from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
 from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
+import uuid
 
 
 class UnmockedExternalCall(RuntimeError):
@@ -42,6 +40,7 @@ class _InvoiceMock:
         self._posted_adjustment_reason: Optional[str] = None
 
     def get(self, url: str, **kwargs: Any) -> Response:
+        # Echo the queried invoice number: the refresh looks the invoice up by the number it was created with
         invoice_number = (kwargs.get("params") or {}).get("InvoiceNumber", _DEFAULT_INVOICE_NUMBER)
         outstanding_dec = Decimal(_INITIAL_OUTSTANDING)
         if self._adjusted and self._posted_adjustment_amount is not None:
@@ -68,7 +67,7 @@ class _InvoiceMock:
         json_data = {
             "clientObjectId": "123",
             "clientGUID": "00000000-0000-0000-0000-000000000000",
-            "invoiceNumber": "INV-999",
+            "invoiceNumber": invoice_number,
             "invoicePaymentDueDate": "2025-12-31",
             "invoiceOutstandingBalance": outstanding,
             "invoiceFeeBalance": outstanding,
@@ -87,7 +86,7 @@ class _InvoiceMock:
                     "taxAdjustmentTotal": "0.00",
                     "paymentBaseAmount": _INITIAL_OUTSTANDING,
                     "paymentTotal": _INITIAL_OUTSTANDING,
-                    "invoiceNumber": "INV-999",
+                    "invoiceNumber": invoice_number,
                     "payments": [],
                     "adjustments": adjustments,
                 }
