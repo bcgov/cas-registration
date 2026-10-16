@@ -55,7 +55,7 @@ internalTest.describe("Automatic overdue penalty flow - CAS analyst", () => {
       await penaltyCalculator.setFinalAccrualDate(PENALTY_TARGET_ACCRUAL_DATE);
       await penaltyCalculator.assertPenaltyGridLoaded();
 
-      await penaltyCalculator.hideDatesFromScreenshot();
+      await penaltyCalculator.hideDateInputFromScreenshot();
       await takeStabilizedScreenshot(happoScreenshot, page, {
         component: "Penalty calculator",
         variant: `status: ${PenaltyStatus.ACCRUING} - ${daysOverdue} days overdue`,
