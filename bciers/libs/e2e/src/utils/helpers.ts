@@ -147,6 +147,29 @@ export async function fillInputValueByLabel(
   if (blur === "enter") await field.press("Enter");
 }
 
+// MUI X date fields render editable sections over a hidden labelled <input>.
+// As MUI recommends, focus the field first, then fill the hidden input with the
+// formatted value: https://mui.com/x/react-date-pickers/base-concepts/#testing
+export async function fillDateFieldByLabel(
+  page: Page,
+  label: string | RegExp,
+  date: string, // YYYY-MM-DD
+): Promise<void> {
+  const name = label instanceof RegExp ? label : new RegExp(label, "i");
+  // The label names both the field group and the hidden input
+  const input = page.getByLabel(name).and(page.locator("input"));
+  const field = input.locator("xpath=ancestor::*[@role='group'][1]");
+
+  await expect(field).toBeVisible({ timeout: 30_000 });
+  await expect(input).toBeEnabled({ timeout: 30_000 });
+
+  await field.click();
+  await input.fill(date);
+  await page.keyboard.press("Tab");
+
+  await expect(input).toHaveValue(date);
+}
+
 export async function fillInputValueByLocator(
   field: Locator,
   value: string | number,
