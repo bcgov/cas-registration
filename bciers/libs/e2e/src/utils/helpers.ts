@@ -27,6 +27,18 @@ export async function analyzeAccessibility(
   if (disableRules && disableRules.length > 0)
     builder.disableRules(disableRules);
 
+  // Let transitions finish first (e.g. a button fading from disabled to enabled),
+  // otherwise axe can check a colour mid-transition. Endless ones like spinners are skipped
+  await page.waitForFunction(() =>
+    document
+      .getAnimations()
+      .every(
+        (animation) =>
+          animation.playState !== "running" ||
+          animation.effect?.getComputedTiming().endTime === Infinity,
+      ),
+  );
+
   const accessibilityScanResults = await builder.analyze();
 
   if (accessibilityScanResults.violations.length > 0) {
@@ -54,6 +66,7 @@ export async function analyzeAccessibility(
  *
  * @param page - Playwright Page instance
  * @param buttonText - Button accessible name or RegExp
+ * @param opts - Options
  * @param opts.root - Optional Locator to scope the button search
  * @param opts.inForm - Scope the button search to a <form> (default: false)
  * @param opts.waitForUrl - RegExp URL to wait for after clicking (optional)
