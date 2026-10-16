@@ -19,4 +19,14 @@ export class PaymentInstructionsPOM {
     const text = (await this.invoiceNumberField.textContent())?.trim() || "";
     await expect(text.length).toBeGreaterThan(0);
   }
+
+  /**
+   * Hides the invoice number from Happo. The e2e stub generates a new invoice number for each invoice,
+   * so it would otherwise produce a diff every run. Call after assertHasInvoiceNumber, which checks the real value.
+   */
+  async hideFromScreenshot(): Promise<void> {
+    await this.invoiceNumberField.evaluate((el) => {
+      el.dataset.happoHide = "";
+    });
+  }
 }

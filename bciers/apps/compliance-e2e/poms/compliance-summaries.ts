@@ -177,14 +177,30 @@ export class ComplianceSummariesPOM {
     await this.waitForGridReady({ timeout });
   }
 
-  async getRowByOperationName(operationName: string): Promise<Locator> {
+  async getRowByOperationName(
+    operationName: string,
+    complianceReportVersionId?: number | string,
+  ): Promise<Locator> {
     await this.waitForGridReady({ timeout: 30_000 });
 
+    const getRowLocator = () => {
+      let row = this.grid().getByRole("row").filter({ hasText: operationName });
+
+      // Several rows can share an operation name or status, so pin the row by its compliance report version,
+      // which every action link in the row includes
+      if (complianceReportVersionId !== undefined) {
+        row = row.filter({
+          has: this.page.locator(
+            `a[href*="/compliance-summaries/${complianceReportVersionId}/"]`,
+          ),
+        });
+      }
+
+      return row.first();
+    };
+
     await expect(async () => {
-      const row = this.grid()
-        .getByRole("row")
-        .filter({ hasText: operationName })
-        .first();
+      const row = getRowLocator();
 
       const matchingRowCount = await row.count();
       const totalRowCount = await this.grid().getByRole("row").count();
@@ -197,17 +213,18 @@ export class ComplianceSummariesPOM {
       expect(cellCount).toBeGreaterThan(0);
     }).toPass({ timeout: 30_000 });
 
-    return this.grid()
-      .getByRole("row")
-      .filter({ hasText: operationName })
-      .first();
+    return getRowLocator();
   }
 
   async getCellTextForOperation(
     operationName: string,
     field: ComplianceSummariesGridHeaders,
+    complianceReportVersionId?: number | string,
   ): Promise<string> {
-    const row = await this.getRowByOperationName(operationName);
+    const row = await this.getRowByOperationName(
+      operationName,
+      complianceReportVersionId,
+    );
     const cell = row.locator(`[role="gridcell"][data-field="${field}"]`);
 
     await expect(cell).toBeVisible();
@@ -247,14 +264,34 @@ export class ComplianceSummariesPOM {
     }).toPass({ timeout: 30_000 });
   }
 
+  async assertPenaltyStatusForOperation(
+    operationName: string,
+    expectedStatus: string,
+    complianceReportVersionId?: number | string,
+  ): Promise<void> {
+    await expect(async () => {
+      const status = await this.getCellTextForOperation(
+        operationName,
+        ComplianceSummariesGridHeaders.PENALTY_STATUS,
+        complianceReportVersionId,
+      );
+      expect(status).toBe(expectedStatus);
+    }).toPass({ timeout: 30_000 });
+  }
+
   async openActionForOperation(options: {
     operationName: string;
     linkName: string | RegExp;
     urlPattern?: string | RegExp;
+    complianceReportVersionId?: number | string;
   }) {
-    const { operationName, linkName, urlPattern } = options;
+    const { operationName, linkName, urlPattern, complianceReportVersionId } =
+      options;
 
-    const row = await this.getRowByOperationName(operationName);
+    const row = await this.getRowByOperationName(
+      operationName,
+      complianceReportVersionId,
+    );
     const actionLink = row.getByRole("link", { name: linkName });
 
     await expect(async () => {
