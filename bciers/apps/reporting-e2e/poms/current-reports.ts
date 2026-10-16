@@ -800,7 +800,7 @@ export class CurrentReportsPOM {
    * @param options The production change to make
    * @returns The supplementary report version id
    */
-  private async submitSupplementaryProductionChange(
+  async submitSupplementaryProductionChange(
     apiContext: APIRequestContext,
     {
       annualProduction,
@@ -837,25 +837,5 @@ export class CurrentReportsPOM {
     await this.submitReportById(apiContext, reportId, false, true, true);
 
     return reportId;
-  }
-
-  /**
-   * Supplementary report that **decreases the obligation**: production above the original.
-   */
-  async supplementaryReportObligationDecrease(
-    apiContext: APIRequestContext,
-    change: SupplementaryProductionChange,
-  ): Promise<number> {
-    return this.submitSupplementaryProductionChange(apiContext, change);
-  }
-
-  /**
-   * Supplementary report that **increases the obligation**: production below the original.
-   */
-  async supplementaryReportObligationIncrease(
-    apiContext: APIRequestContext,
-    change: SupplementaryProductionChange,
-  ): Promise<number> {
-    return this.submitSupplementaryProductionChange(apiContext, change);
   }
 }
