@@ -5,7 +5,6 @@ import {
   archiveContact,
   useRouter,
   useSessionRole,
-  useSearchParams,
   useParams,
 } from "@bciers/testConfig/mocks";
 import { contactsSchema } from "apps/administration/app/data/jsonSchema/contact";
@@ -15,14 +14,12 @@ import { FrontendMessages } from "@bciers/utils/src/enums";
 import { ContactFormData } from "@/administration/app/components/contacts/types";
 
 const mockReplace = vi.fn();
-const mockHistoryReplaceState = vi.spyOn(global.history, "replaceState");
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
   query: {},
   replace: mockReplace,
   push: mockRouterPush,
 });
-useSearchParams.mockReturnValue({ from_deletion: true });
 useParams.mockReturnValue({
   contactId: "123",
 });
@@ -325,14 +322,9 @@ describe("ContactForm component", () => {
             body: JSON.stringify(createContactRequestBody),
           },
         );
-        // The URL is rewritten in place so the page, and the success message on it,
-        // are not unmounted by a navigation
-        expect(mockHistoryReplaceState).toHaveBeenCalledWith(
-          null,
-          "",
-          "/administration/contacts/123?contacts_title=John Doe",
+        expect(mockReplace).toHaveBeenCalledWith(
+          "/contacts/123?contacts_title=John Doe",
         );
-        expect(mockReplace).not.toHaveBeenCalled();
       });
 
       await waitFor(() => {
@@ -581,10 +573,14 @@ describe("ContactForm component", () => {
 
     await userEvent.click(modalDeleteButton);
     expect(archiveContact).toHaveBeenCalledWith("123");
+    await waitFor(() => {
+      expect(mockRouterPush).toHaveBeenCalledWith("/contacts");
+    });
+    expect(screen.getByText("Contact deleted")).toBeVisible();
   });
 
   it("keeps the success message visible after editing an existing contact", async () => {
-    render(
+    const { rerender } = render(
       <ContactForm
         schema={createContactSchema(contactsSchema)}
         formData={contactFormData}
@@ -609,13 +605,15 @@ describe("ContactForm component", () => {
       ).toBeVisible();
     });
 
-    // A router navigation would re-suspend the page and unmount the message
-    expect(mockHistoryReplaceState).toHaveBeenCalledWith(
-      null,
-      "",
-      "/administration/contacts/123?contacts_title=John updated Doe",
+    expect(mockReplace).toHaveBeenCalledWith(
+      "/contacts/123?contacts_title=John updated Doe",
     );
-    expect(mockReplace).not.toHaveBeenCalled();
+
+    // The navigation remounts the page; the message is owned by the app-wide provider so it stays
+    rerender(<div />);
+    expect(
+      screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),
+    ).toBeVisible();
   });
 
   it("shows an error on each address field when saving a contact that has no address", async () => {

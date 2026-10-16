@@ -16,7 +16,7 @@ import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { AddressErrorWidget } from "@reporting/src/data/jsonSchema/personResponsibleWidgets";
-import SnackBar from "@bciers/components/form/components/SnackBar";
+import { useSnackbar } from "@bciers/components/snackbar";
 import useKey from "@bciers/utils/src/useKey";
 import {
   useValidationErrors,
@@ -53,8 +53,7 @@ const PersonResponsibleForm = ({
   schema: initialSchema,
   initialContactId,
 }: Props) => {
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const { showSnackbar } = useSnackbar();
 
   const { setErrors, renderedErrors } = useValidationErrors();
 
@@ -189,7 +188,6 @@ const PersonResponsibleForm = ({
     const updatedContacts = await getContacts();
     // If contact is selected, update form fields
     if (componentState.selectedContactId) {
-      setIsSnackbarOpen(true);
       // Fetch the updated contact info based on the current selected contact
       const updatedContactResponse = await getContact(
         String(componentState.selectedContactId),
@@ -198,7 +196,7 @@ const PersonResponsibleForm = ({
       // If the contact no longer exists,
       // preserve the existing snapshot data
       if (!updatedContactResponse || "error" in updatedContactResponse) {
-        setSnackbarMessage(
+        showSnackbar(
           "This contact was deleted but the existing information entered has been saved.",
         );
 
@@ -225,7 +223,7 @@ const PersonResponsibleForm = ({
         },
       });
 
-      setSnackbarMessage("Changes synced successfully.");
+      showSnackbar("Changes synced successfully.");
     }
   };
   return (
@@ -268,17 +266,6 @@ const PersonResponsibleForm = ({
         onChange={handleChange}
         onSubmit={handleSave}
         errors={renderedErrors}
-      />
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        message={snackbarMessage}
-        setIsSnackbarOpen={(open) => {
-          setIsSnackbarOpen(open);
-
-          if (!open) {
-            setSnackbarMessage("");
-          }
-        }}
       />
     </>
   );

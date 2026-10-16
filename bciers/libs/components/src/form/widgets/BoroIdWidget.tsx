@@ -4,7 +4,7 @@ import { WidgetProps } from "@rjsf/utils";
 import { Button } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
-import SnackBar from "../components/SnackBar";
+import { useSnackbar } from "@bciers/components/snackbar";
 import { OperationStatus } from "@bciers/utils/src/enums";
 import {
   useValidationErrors,
@@ -22,7 +22,7 @@ async function generateBoroId(id: string) {
 
 const BoroIdWidget: React.FC<WidgetProps> = ({ id, value, registry }) => {
   const [boroId, setBoroId] = useState(value);
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const { showSnackbar } = useSnackbar();
   const { setErrors, renderedErrors } = useValidationErrors();
   const { formContext } = registry;
 
@@ -57,7 +57,7 @@ const BoroIdWidget: React.FC<WidgetProps> = ({ id, value, registry }) => {
           const response = await generateBoroId(formContext?.operationId);
           const isSuccess = handleApiResponse(response, setErrors);
           if (!isSuccess) return;
-          setIsSnackbarOpen(true);
+          showSnackbar("BORO ID issued successfully");
           setBoroId(response?.id);
         }}
       >
@@ -70,11 +70,6 @@ const BoroIdWidget: React.FC<WidgetProps> = ({ id, value, registry }) => {
       <div id={id} className="read-only-widget whitespace-pre-line">
         {boroId ? `${boroId} BORO ID issued` : "Pending"}
       </div>
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        message="BORO ID issued successfully"
-        setIsSnackbarOpen={setIsSnackbarOpen}
-      />
     </>
   );
 };

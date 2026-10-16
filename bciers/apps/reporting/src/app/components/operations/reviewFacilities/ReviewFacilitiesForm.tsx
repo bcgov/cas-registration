@@ -10,7 +10,7 @@ import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
 import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../../taskList/types";
-import SnackBar from "@bciers/components/form/components/SnackBar";
+import { useSnackbar } from "@bciers/components/snackbar";
 import {
   useValidationErrors,
   handleApiResponse,
@@ -55,7 +55,7 @@ export default function ReviewFacilitiesForm({
   const [deselectedFacilities, setDeselectedFacilities] = useState<string[]>(
     [],
   );
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const { showSnackbar } = useSnackbar();
   const [continueAfterSubmit, setContinueAfterSubmit] =
     useState<boolean>(false);
   const [schema, setSchema] = useState<any>(
@@ -206,7 +206,7 @@ export default function ReviewFacilitiesForm({
       ),
     );
     setFacilitiesData(newData);
-    setIsSnackbarOpen(true);
+    showSnackbar("Changes synced successfully");
   };
 
   return (
@@ -256,11 +256,6 @@ export default function ReviewFacilitiesForm({
         backUrl={navigationInformation.backUrl}
         saveButtonDisabled={submittingDisabled}
         submitButtonDisabled={submittingDisabled}
-      />
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        message="Changes synced successfully"
-        setIsSnackbarOpen={setIsSnackbarOpen}
       />
     </>
   );

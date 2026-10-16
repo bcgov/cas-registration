@@ -8,7 +8,7 @@ import {
   FrontEndRoles,
   FrontendMessages,
 } from "@bciers/utils/src/enums";
-import SnackBar from "@bciers/components/form/components/SnackBar";
+import { useSnackbar } from "@bciers/components/snackbar";
 import { contactsUiSchema } from "@/administration/app/data/jsonSchema/contact";
 import Link from "next/link";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
@@ -51,7 +51,7 @@ export default function ContactForm({
   const role = useSessionRole();
   const [modalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const { showSnackbar } = useSnackbar();
   const params = useParams();
 
   const handleClickDelete = () => {
@@ -60,8 +60,9 @@ export default function ContactForm({
 
   const handleArchiveContact = async () => {
     setIsSubmitting(true);
-    // Not the route param: after creating a contact the URL is rewritten with
-    // history.replaceState, so useParams() still reports the add-contact route
+    // Prefer the id from form state: right after creating a contact the Delete button
+    // appears before router.replace() lands on /contacts/[contactId], so useParams()
+    // can still report the add-contact route (no contactId) for a moment
     const response = await archiveContact(
       String(formState.id ?? params.contactId),
     );
@@ -71,7 +72,8 @@ export default function ContactForm({
       setIsSubmitting(false);
       return;
     }
-    router.push("/contacts?from_deletion=true");
+    showSnackbar("Contact deleted");
+    router.push("/contacts");
     return;
   };
 
@@ -109,11 +111,8 @@ export default function ContactForm({
     const replaceUrl = `/contacts/${
       method === "POST" ? response.id : formState.id
     }?contacts_title=${response.first_name} ${response.last_name}`;
-    // Rewrite the URL in place. router.replace() re-suspends the page's Suspense
-    // boundary (see defaultPageFactory), which swaps the form for a loading
-    // skeleton and unmounts the success message along with it.
-    window.history.replaceState(null, "", `/administration${replaceUrl}`);
-    setIsSnackbarOpen(true);
+    showSnackbar(FrontendMessages.SUBMIT_CONFIRMATION);
+    router.replace(replaceUrl);
   };
 
   const hasPlacesAssigned =
@@ -121,12 +120,6 @@ export default function ContactForm({
 
   return (
     <>
-      {/* Sits outside TaskListForm so that resetKey() doesn't unmount it on save */}
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        setIsSnackbarOpen={setIsSnackbarOpen}
-        message={FrontendMessages.SUBMIT_CONFIRMATION}
-      />
       <SimpleModal
         title="Confirmation"
         open={modalOpen}

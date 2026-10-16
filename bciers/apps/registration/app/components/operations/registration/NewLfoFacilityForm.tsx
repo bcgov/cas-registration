@@ -7,7 +7,7 @@ import { Button } from "@mui/material";
 import FormBase, { FormPropsWithTheme } from "@bciers/components/form/FormBase";
 import { actionHandler } from "@bciers/actions";
 import { UUID } from "crypto";
-import SnackBar from "@bciers/components/form/components/SnackBar";
+import { useSnackbar } from "@bciers/components/snackbar";
 import { RJSFSchema } from "@rjsf/utils";
 import { FacilityInformationFormData } from "apps/registration/app/components/operations/registration/types";
 import { createUnnestedFormData } from "@bciers/components/form/formDataUtils";
@@ -41,7 +41,7 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
   } = props;
 
   const [formState, setFormState] = useState(formData);
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const { showSnackbar } = useSnackbar();
   const [showForm, setShowForm] = useState(false);
 
   const { setErrors, renderedErrors } = useValidationErrors();
@@ -91,7 +91,7 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
     // 🔔 Notify parent via callback
     onSuccess?.(response);
 
-    setIsSnackbarOpen(true);
+    showSnackbar("Facility added");
     setShowForm(false);
     setFormState({}); // reset form state
   };
@@ -132,11 +132,6 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
           </Button>
         </div>
       )}
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        message="Facility added"
-        setIsSnackbarOpen={setIsSnackbarOpen}
-      />
     </>
   );
 };

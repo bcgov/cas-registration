@@ -4,7 +4,7 @@ import { WidgetProps } from "@rjsf/utils";
 import { Button, TextField } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
-import SnackBar from "../components/SnackBar";
+import { useSnackbar } from "@bciers/components/snackbar";
 import { DARK_GREY_BG_COLOR } from "@bciers/styles";
 import Link from "next/link";
 import {
@@ -62,7 +62,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
   name,
 }) => {
   const [bcghgId, setBcghgId] = useState(value);
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const { showSnackbar } = useSnackbar();
   const { setErrors, renderedErrors } = useValidationErrors();
   const [editBcghgId, setEditBcghgId] = useState(false);
   const [manualBcghgId, setManualBcghgId] = useState("");
@@ -99,7 +99,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
     );
     const isSuccess = handleApiResponse(response, setErrors);
     if (!isSuccess) return;
-    setIsSnackbarOpen(true);
+    showSnackbar("BCGHG ID issued successfully");
     setBcghgId(response?.id);
     setEditBcghgId(false);
   };
@@ -176,11 +176,6 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
           </Button>
         )}
         {formContext?.isCasDirector && !formContext?.isSfo && editBcghgIdJsx}
-        <SnackBar
-          isSnackbarOpen={isSnackbarOpen}
-          message="BCGHG ID issued successfully"
-          setIsSnackbarOpen={setIsSnackbarOpen}
-        />
       </div>
       {renderedErrors && <div className="mt-2 w-full">{renderedErrors}</div>}
     </div>
