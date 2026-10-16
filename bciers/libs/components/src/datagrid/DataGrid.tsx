@@ -206,20 +206,6 @@ const DataGrid: React.FC<Props> = ({
     [searchParams, disabled],
   );
 
-  // Fill the grid's width: if no column flexes, grow them all in proportion to
-  // their widths, never below them, so wide screens don't leave an empty gap
-  const fillingColumns = useMemo(
-    () =>
-      columns.some((column) => column.flex)
-        ? columns
-        : columns.map((column) => ({
-            ...column,
-            flex: column.width ?? 100,
-            minWidth: column.minWidth ?? column.width ?? 100,
-          })),
-    [columns],
-  );
-
   // Memoize initialState
   const initialState = useMemo(() => {
     return {
@@ -273,7 +259,7 @@ const DataGrid: React.FC<Props> = ({
     <div className="h-auto w-full">
       <MuiGrid
         rows={rows}
-        columns={fillingColumns}
+        columns={columns}
         columnGroupingModel={columnGroupModel}
         loading={loading}
         // Only meaningful for server-side pagination
