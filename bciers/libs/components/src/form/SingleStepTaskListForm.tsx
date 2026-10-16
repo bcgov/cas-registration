@@ -34,6 +34,7 @@ interface SingleStepTaskListFormProps {
   handleDelete?: () => void;
   deleteButtonText?: string;
   customButtonSection?: React.ReactNode;
+  keepSnackbarOnNextNavigation?: boolean;
 }
 
 const SingleStepTaskListForm = ({
@@ -55,6 +56,7 @@ const SingleStepTaskListForm = ({
   showDeleteButton = false,
   deleteButtonText = "Delete",
   customButtonSection,
+  keepSnackbarOnNextNavigation = false,
 }: SingleStepTaskListFormProps) => {
   const formData = createNestedFormData(rawFormData, schema);
   const [formState, setFormState] = useState(formData);
@@ -89,7 +91,9 @@ const SingleStepTaskListForm = ({
       setIsDisabled(false);
     } else {
       setIsDisabled(true);
-      showSnackbar(FrontendMessages.SUBMIT_CONFIRMATION);
+      showSnackbar(FrontendMessages.SUBMIT_CONFIRMATION, {
+        keepOnNextNavigation: keepSnackbarOnNextNavigation,
+      });
     }
   };
 

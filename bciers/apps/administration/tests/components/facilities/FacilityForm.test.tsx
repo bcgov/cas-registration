@@ -348,6 +348,16 @@ const assertFormPost = async (
       screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),
     ).toBeVisible();
   });
+
+  // Redirects to the new facility's page
+  expect(mockReplace).toHaveBeenCalledWith(
+    expect.stringContaining(
+      `/operations/${operationId}/facilities/${facilityId}?`,
+    ),
+  );
+  expect(mockReplace).toHaveBeenCalledWith(
+    expect.stringContaining(`facilities_title=${facilityName}`),
+  );
 };
 
 // ⛏️ Helper function to simulate form PUT submission and assert the result
