@@ -262,7 +262,8 @@ const DataGrid: React.FC<Props> = ({
         columns={columns}
         columnGroupingModel={columnGroupModel}
         loading={loading}
-        rowCount={rowCount}
+        // Only meaningful for server-side pagination
+        rowCount={paginationMode === "server" ? rowCount : undefined}
         showCellVerticalBorder
         disableColumnMenu
         initialState={initialState}
