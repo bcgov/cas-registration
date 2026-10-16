@@ -1,17 +1,24 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { usePathname } from "@bciers/testConfig/mocks";
 import { SnackbarProvider, useSnackbar } from "@bciers/components/snackbar";
 
 const Trigger = ({
   message,
   autoHideDuration,
+  keepOnNextNavigation,
 }: {
   message: string;
   autoHideDuration?: number;
+  keepOnNextNavigation?: boolean;
 }) => {
   const { showSnackbar } = useSnackbar();
   return (
-    <button onClick={() => showSnackbar(message, { autoHideDuration })}>
+    <button
+      onClick={() =>
+        showSnackbar(message, { autoHideDuration, keepOnNextNavigation })
+      }
+    >
       {`show ${message}`}
     </button>
   );
@@ -20,6 +27,7 @@ const Trigger = ({
 describe("SnackbarProvider", () => {
   afterEach(() => {
     vi.useRealTimers();
+    usePathname.mockReset();
   });
 
   it("shows the message passed to showSnackbar", () => {
@@ -46,6 +54,40 @@ describe("SnackbarProvider", () => {
     rerender(<SnackbarProvider>{null}</SnackbarProvider>);
 
     expect(screen.getByText("Saved")).toBeVisible();
+  });
+
+  it("closes when the route changes", () => {
+    usePathname.mockReturnValue("/contacts/add-contact");
+    const { rerender } = render(
+      <SnackbarProvider>
+        <Trigger message="Saved" />
+      </SnackbarProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "show Saved" }));
+
+    usePathname.mockReturnValue("/contacts");
+    rerender(<SnackbarProvider>{null}</SnackbarProvider>);
+
+    // Exit transition starts; the message is no longer shown as open
+    expect(screen.queryByText("Saved")).not.toBeVisible();
+  });
+
+  it("stays open through the next route change with keepOnNextNavigation, then closes on the one after", () => {
+    usePathname.mockReturnValue("/contacts/add-contact");
+    const { rerender } = render(
+      <SnackbarProvider>
+        <Trigger message="Saved" keepOnNextNavigation />
+      </SnackbarProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "show Saved" }));
+
+    usePathname.mockReturnValue("/contacts/123");
+    rerender(<SnackbarProvider>{null}</SnackbarProvider>);
+    expect(screen.getByText("Saved")).toBeVisible();
+
+    usePathname.mockReturnValue("/operations");
+    rerender(<SnackbarProvider>{null}</SnackbarProvider>);
+    expect(screen.queryByText("Saved")).not.toBeVisible();
   });
 
   it("does not close on a click elsewhere on the page", async () => {

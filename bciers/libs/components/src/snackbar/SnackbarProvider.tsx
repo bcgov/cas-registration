@@ -3,11 +3,15 @@
 import { createContext, use, useCallback, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import Snackbar from "@mui/material/Snackbar";
+import { usePathname } from "next/navigation";
 
 const DEFAULT_AUTO_HIDE_DURATION = 5000;
 
 interface ShowSnackbarOptions {
   autoHideDuration?: number;
+  // By default the snackbar closes when the route changes, so a message doesn't carry over to an
+  // unrelated page. Set this when navigating right after showing it (e.g. save then redirect).
+  keepOnNextNavigation?: boolean;
 }
 
 interface SnackbarContextValue {
@@ -19,6 +23,7 @@ interface SnackbarState {
   open: boolean;
   message: ReactNode;
   autoHideDuration: number;
+  keepOnNextNavigation: boolean;
   // Bumped on every show so a new message restarts the auto-hide timer
   id: number;
 }
@@ -32,15 +37,28 @@ const SnackbarContext = createContext<SnackbarContextValue>({
 /**
  * App-wide snackbar, mounted once in RootLayout.
  * It lives above the route tree so it survives the triggering component being remounted
- * (e.g. a form key reset or a route change right after saving).
+ * (e.g. a form key reset, or a redirect right after saving with keepOnNextNavigation).
  */
 export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
   const [state, setState] = useState<SnackbarState>({
     open: false,
     message: "",
     autoHideDuration: DEFAULT_AUTO_HIDE_DURATION,
+    keepOnNextNavigation: false,
     id: 0,
   });
+
+  // Close on route change unless the message was shown for the navigation that just happened
+  const pathname = usePathname();
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setState((prev) => ({
+      ...prev,
+      open: prev.open && prev.keepOnNextNavigation,
+      keepOnNextNavigation: false,
+    }));
+  }
 
   const showSnackbar = useCallback(
     (message: ReactNode, options?: ShowSnackbarOptions) =>
@@ -49,6 +67,7 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
         message,
         autoHideDuration:
           options?.autoHideDuration ?? DEFAULT_AUTO_HIDE_DURATION,
+        keepOnNextNavigation: options?.keepOnNextNavigation ?? false,
         id: prev.id + 1,
       })),
     [],

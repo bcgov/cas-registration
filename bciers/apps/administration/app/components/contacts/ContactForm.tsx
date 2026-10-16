@@ -72,7 +72,7 @@ export default function ContactForm({
       setIsSubmitting(false);
       return;
     }
-    showSnackbar("Contact deleted");
+    showSnackbar("Contact deleted", { keepOnNextNavigation: true });
     router.push("/contacts");
     return;
   };
@@ -111,7 +111,9 @@ export default function ContactForm({
     const replaceUrl = `/contacts/${
       method === "POST" ? response.id : formState.id
     }?contacts_title=${response.first_name} ${response.last_name}`;
-    showSnackbar(FrontendMessages.SUBMIT_CONFIRMATION);
+    showSnackbar(FrontendMessages.SUBMIT_CONFIRMATION, {
+      keepOnNextNavigation: true,
+    });
     router.replace(replaceUrl);
   };
 
