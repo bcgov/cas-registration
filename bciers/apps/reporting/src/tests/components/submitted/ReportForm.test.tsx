@@ -75,7 +75,7 @@ describe("The ReportForm component", () => {
     );
     await user.click(screen.getByText("Back to All Reports"));
     expect(mockRouterPush).toHaveBeenCalledWith(
-      "/reporting/reports/current-reports",
+      "/reports/current-reports",
     );
   });
 
