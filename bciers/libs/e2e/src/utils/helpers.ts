@@ -106,6 +106,8 @@ export async function fillComboxboxWidget(
   const option = page.getByRole("option", { name: value, exact });
   await expect(option).toBeVisible();
   await option.click();
+  // Wait for the list to close so a following screenshot doesn't catch it open
+  await expect(input).toHaveAttribute("aria-expanded", "false");
 }
 
 export async function fillDropdownByLabel(
