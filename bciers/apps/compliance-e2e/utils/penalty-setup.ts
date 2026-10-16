@@ -58,7 +58,7 @@ export async function submitObligationReports(
   }
 
   await reports.route();
-  return reports.supplementaryReportObligationIncrease(apiContext, {
+  return reports.submitSupplementaryProductionChange(apiContext, {
     annualProduction: SUPPLEMENTARY_INCREASE_ANNUAL_PRODUCTION,
     productIndex: SUPPLEMENTARY_INCREASE_PRODUCT_INDEX,
   });
