@@ -11,24 +11,16 @@ from .base import ScenarioHandler
 
 class MakeObligationOverdueScenario(ScenarioHandler):
     """
-    Moves the dates around an obligation created by a real report submission, so penalties and interest
-    accrue without waiting in real time.
-
-    Dates are relative to today, so the scenario behaves the same all year:
-    - The compliance deadline moves to `days_overdue` days ago, so the automatic overdue penalty accrues.
-    - With `days_after_deadline`, the obligation is created that many days after the deadline. A supplementary
-      report submitted after the deadline is late, so GGEAPAR interest accrues, and its invoice is due 30 days
-      after submission.
-
-    The compliance deadline belongs to the compliance period, which every report of that year shares, so
-    the previous deadline is returned and can be put back with `restore_compliance_deadline`.
+    Backdates a real obligation's dates so penalties and interest accrue.
+    - The compliance deadline moves to `days_overdue` days ago (automatic overdue penalty).
+    - With `days_after_deadline`, the obligation is created that many days after the deadline (late
+      supplementary report, so GGEAPAR interest accrues) and its invoice is due 30 days later.
 
     Payload:
-        report_version_id: Report version the compliance obligation was created from
+        report_version_id: Report version the obligation was created from
         days_overdue: Days since the compliance deadline
         days_after_deadline: Days after the deadline the obligation was created
-        restore_compliance_deadline: ISO date to set the compliance deadline back to. Only the deadline is
-            changed, and the other options are ignored
+        restore_compliance_deadline: ISO date to reset the deadline to
     """
 
     DEFAULT_DAYS_OVERDUE = 45
@@ -81,7 +73,7 @@ class MakeObligationOverdueScenario(ScenarioHandler):
             invoice.due_date = invoice_due_date
             invoice.save(update_fields=["due_date"])
 
-            # GGEAPAR interest is calculated from the eLicensing interest rates
+            # GGEAPAR interest needs an interest rate
             if not ElicensingInterestRate.objects.exists():
                 ElicensingInterestRate.objects.create(
                     interest_rate=self.DEFAULT_INTEREST_RATE,
