@@ -157,20 +157,13 @@ export class PenaltyCalculatorPOM {
   }
 
   /**
-   * Hides the final accrual date input and the grid's date column from Happo.
-   * Both are relative to today, so they would otherwise produce a diff every day.
+   * Hides the final accrual date input from Happo. It is relative to today, so it would otherwise
+   * produce a diff every day.
    */
-  async hideDatesFromScreenshot(): Promise<void> {
+  async hideDateInputFromScreenshot(): Promise<void> {
     await this.finalAccrualDateInput.evaluate((el) => {
       el.dataset.happoHide = "";
     });
-    await this.page
-      .locator('[role="gridcell"][data-field="date"]')
-      .evaluateAll((cells) => {
-        for (const cell of cells) {
-          cell.dataset.happoHide = "";
-        }
-      });
   }
 
   async assertGgeaparNotApplicable(): Promise<void> {
