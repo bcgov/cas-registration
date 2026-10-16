@@ -74,13 +74,14 @@ const styles = {
   "& .MuiDataGrid-columnSeparator": {
     display: "none",
   },
-  "& .MuiDataGrid-cell": {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    textAlign: "center",
-    whiteSpace: "pre-line",
-  },
+  "& .MuiDataGrid-cell, & .MuiDataGrid-row--dynamicHeight > .MuiDataGrid-cell":
+    {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      textAlign: "center",
+      whiteSpace: "pre-line",
+    },
   ".MuiDataGrid-iconButtonContainer": {
     visibility: "visible !important",
     minWidth: "20px",
