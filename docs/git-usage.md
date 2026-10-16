@@ -47,6 +47,8 @@ If there is a "merge halt" (that is, the **MERGE HALT develop** ruleset's enforc
 
 Developers with Admin permission on the repository can [jump their PRs to the top of the queue](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#jumping-to-the-top-of-the-queue), **but this will restart _all_ ci for every PR already in queue**. Use caution when doing this! Developers with Admin permission can also **completely bypass** the merge queue, even when a merge halt is active.
 
+PRs can be merged into the `develop` branch after repeated removals from the queue due to flakiness. A repository admin (other than yourself) should check the queue failures to determine if the it is applicable to bypass. You can use the `gh pr merge {PR_NUMBER} --squash --admin` command or the bypass button in the UI.
+
 ### Further Reading
 
 - [How merge queues work](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#how-merge-queues-work)
