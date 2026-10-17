@@ -1,4 +1,4 @@
-import BccrHoldingAccountWidget from "@/compliance/src/app/widgets/BccrHoldingAcountWidget";
+import BccrHoldingAccountWidget from "@/compliance/src/app/widgets/BccrHoldingAccountWidget";
 import {
   act,
   render,
@@ -129,6 +129,23 @@ describe("BccrHoldingAccountWidget", () => {
       expect(mockOnError).toHaveBeenCalledWith([errorMessage]);
       expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
     });
+  });
+
+  it("passes a returned response.error to onError", async () => {
+    const errorMessage =
+      "The provided holding account does not own the compliance sub-account for this operation.";
+    mockValidateBccrAccount.mockResolvedValueOnce({ error: errorMessage });
+
+    render(<BccrHoldingAccountWidget {...defaultProps} />);
+    const input = screen.getByRole("textbox");
+
+    fireEvent.change(input, { target: { value: "123456789012345" } });
+
+    await waitFor(() => {
+      expect(mockOnError).toHaveBeenCalledWith([errorMessage]);
+      expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
+    });
+    expect(screen.queryByTestId("CheckCircleIcon")).not.toBeInTheDocument();
   });
 
   it("shows error message for wrong account type", async () => {

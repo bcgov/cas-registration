@@ -10,7 +10,10 @@ import {
   applyComplianceUnitsDataSchema,
   createApplyComplianceUnitsUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/applyComplianceUnitsSchema";
-import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
+import {
+  getBccrAccountDetails,
+  getBccrComplianceUnits,
+} from "@/compliance/src/app/utils/bccrAccountHandlers";
 import {
   BccrComplianceAccountResponse,
   ApplyComplianceUnitsFormData,
@@ -169,14 +172,14 @@ export default function ApplyComplianceUnitsComponent({
     setStatus("submitting");
     setErrors(undefined);
     try {
-      const response = await actionHandler(
-        `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
-        "GET",
-        "",
+      const response = await getBccrComplianceUnits(
+        e.formData?.bccr_holding_account_id as string,
+        complianceReportVersionId,
       );
 
       const isSuccess = handleApiResponse(response, setErrors);
-      if (!isSuccess) {
+      // "error" in response narrows the type; handleApiResponse already handles it
+      if (!isSuccess || "error" in response) {
         setStatus("idle");
         return;
       }
