@@ -118,6 +118,7 @@ const MultiSelectWidgetWithTooltip: React.FC<WidgetProps> = ({
 
   const chipStyle = {
     height: "auto",
+    lineHeight: "inherit",
     maxWidth: "150px",
     "& .MuiChip-label": {
       whiteSpace: "normal", // Allows text wrapping
