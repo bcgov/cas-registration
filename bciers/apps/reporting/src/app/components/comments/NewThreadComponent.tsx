@@ -26,7 +26,7 @@ const NewThreadComponent: React.FC<Props> = ({
   const [errors, setErrors] = useState<{ field: string; error: string }[]>([]);
   const [pending, startTransition] = useTransition();
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!newThreadData.comment?.trim()) {
       setErrors([{ field: "comment", error: "Comment cannot be empty" }]);
       return;
@@ -95,8 +95,8 @@ const NewThreadComponent: React.FC<Props> = ({
         />
         {errors.length > 0 && (
           <AlertNote alertType="ERROR">
-            {errors.map((error, index) => (
-              <div key={index}>{error.error}</div>
+            {errors.map((error) => (
+              <div key={`field-${error.field}`}>{error.error}</div>
             ))}
           </AlertNote>
         )}
