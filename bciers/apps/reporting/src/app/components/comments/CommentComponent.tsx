@@ -36,6 +36,7 @@ const CommentComponent: React.FC<Props> = ({
           {isCommentByCurrentUser && (
             <>
               <IconButton
+                title="Delete comment"
                 aria-label="Delete comment"
                 size="small"
                 onClick={() => handleDelete(comment.id)}
