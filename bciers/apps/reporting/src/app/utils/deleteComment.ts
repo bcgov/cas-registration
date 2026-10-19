@@ -1,13 +1,8 @@
 import { actionHandler } from "@bciers/actions";
 
-export async function deleteComment(
-  commentId: number,
-): Promise<number | { error: string }> {
+export async function deleteComment(commentId: number) {
   const endpoint = `reporting/v2/comments/${commentId}`;
 
-  const response: number | { error: string } = await actionHandler(
-    endpoint,
-    "DELETE",
-  );
+  const response = await actionHandler(endpoint, "DELETE");
   return response;
 }

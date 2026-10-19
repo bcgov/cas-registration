@@ -6,6 +6,7 @@ import ThreadFrame from "./ThreadFrame";
 import { UUID } from "crypto";
 import { deleteComment } from "../../utils/deleteComment";
 import AlertNote from "@bciers/components/form/components/AlertNote";
+
 interface Props {
   thread: Thread;
   canReply: boolean;
@@ -25,16 +26,8 @@ const ThreadComponent: React.FC<Props> = ({
   const handleCommentDelete = (commentId: number) => {
     startTransition(async () => {
       const resp = await deleteComment(commentId);
-      if (resp !== 200) {
-        setErrors([
-          {
-            field: "comment",
-            error:
-              typeof resp === "number"
-                ? `HTTP error! Status: ${resp}`
-                : resp.error,
-          },
-        ]);
+      if (resp.error) {
+        setErrors([{ field: "comment", error: resp.error }]);
         return;
       }
       setErrors([]);
