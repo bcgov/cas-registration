@@ -38,4 +38,4 @@ If a PR in the queue fails any status checks _or_ has conflicts with the base br
 
 ### Merge Halts
 
-If there is a "merge halt" (that is, **Lock Branch** has been enabled in the branch protection rules), PRs can still be added to the merge queue. CI will run on them as normal, they will queue as normal, but instead of merging when all CI passes (or after a certain amount of time) they will be held in queue until the branch is unlocked. When it is unlocked, the entire queued temporary branch will merge in (assuming all conditions/timers pass).
+If there is a "merge halt" (that is, the **MERGE HALT develop** ruleset's enforcement status is set to "Active"), PRs can still be added to the merge queue. CI will run on them as normal, they will queue as normal, but instead of merging when all CI passes (or after a certain amount of time) they will be held in queue until the branch is unlocked. When it is unlocked, the entire queued temporary branch will merge in (assuming all conditions/timers pass).
