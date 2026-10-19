@@ -1,6 +1,6 @@
 import { Button, MenuItem, Stack, TextField } from "@mui/material";
 import ThreadFrame from "./ThreadFrame";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { FacilityItem, Thread } from "./types";
 import AlertNote from "@bciers/components/form/components/AlertNote";
 import postCommentThread from "../../utils/postCommentThread";
@@ -24,6 +24,7 @@ const NewThreadComponent: React.FC<Props> = ({
   }>({});
 
   const [errors, setErrors] = useState<{ field: string; error: string }[]>([]);
+  const [pending, startTransition] = useTransition();
 
   const handleSubmit = async () => {
     if (!newThreadData.comment?.trim()) {
@@ -31,15 +32,25 @@ const NewThreadComponent: React.FC<Props> = ({
       return;
     }
 
+    const newComment = newThreadData.comment?.trim();
+    const newFacility = newThreadData.facility || undefined;
+
     setErrors([]);
 
-    const newThread = await postCommentThread(
-      version_id,
-      newThreadData.comment,
-      newThreadData.facility || undefined,
-    );
+    startTransition(async () => {
+      const response = await postCommentThread(
+        version_id,
+        newComment,
+        newFacility,
+      );
 
-    onThreadCreated(newThread);
+      if (response?.error) {
+        setErrors([{ field: "api", error: response.error }]);
+        return;
+      }
+
+      onThreadCreated(response as Thread);
+    });
   };
 
   const handleCancel = () => {
@@ -96,6 +107,7 @@ const NewThreadComponent: React.FC<Props> = ({
             sx={{ width: "50%" }}
             type="button"
             onClick={handleSubmit}
+            disabled={pending}
           >
             Save
           </Button>
@@ -104,6 +116,7 @@ const NewThreadComponent: React.FC<Props> = ({
             sx={{ width: "50%" }}
             type="button"
             onClick={handleCancel}
+            disabled={pending}
           >
             Cancel
           </Button>
