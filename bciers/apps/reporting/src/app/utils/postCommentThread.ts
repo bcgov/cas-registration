@@ -1,5 +1,4 @@
 import { actionHandler } from "@bciers/actions";
-import { Thread } from "../components/comments/types";
 
 async function postCommentThread(
   reportVersionId: number,
@@ -15,7 +14,7 @@ async function postCommentThread(
     }),
   });
 
-  return response as Thread;
+  return response;
 }
 
 export default postCommentThread;
