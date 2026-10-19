@@ -109,8 +109,8 @@ const styles = {
   },
   "& .MuiDataGrid-virtualScroller": {
     // Set min height to stop jumping effect when searching and no results are found.
-    // The scroller also holds the column headers, so add their height to keep 30vh of rows
-    minHeight: "calc(30vh + var(--DataGrid-headersTotalHeight))",
+    // The scroller also holds the column headers, so add their height to keep 40vh of rows
+    minHeight: "calc(40vh + var(--DataGrid-headersTotalHeight))",
   },
 };
 
