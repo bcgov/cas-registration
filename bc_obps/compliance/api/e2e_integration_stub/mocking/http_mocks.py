@@ -4,6 +4,8 @@ from decimal import Decimal
 from typing import Any, Callable, Iterator, Optional
 from unittest.mock import patch
 
+from compliance.service.elicensing.schema import InvoiceQueryResponse
+from pydantic import TypeAdapter
 import requests
 from requests.models import Response
 
@@ -55,35 +57,41 @@ class _InvoiceMock:
             else []
         )
 
+        json_data = {
+            "clientObjectId": "123",
+            "clientGUID": "00000000-0000-0000-0000-000000000000",
+            "invoiceNumber": "INV-999",
+            "invoicePaymentDueDate": "2025-12-31",
+            "invoiceOutstandingBalance": outstanding,
+            "invoiceFeeBalance": outstanding,
+            "invoiceInterestBalance": "0.00",
+            "fees": [
+                {
+                    "feeObjectId": "999",
+                    "feeGUID": "11111111-1111-1111-1111-111111111111",
+                    "businessAreaCode": "E2E",
+                    "feeDate": "2025-12-18",
+                    "feeType": "Regular",
+                    "description": "GGIRCA Compliance Obligation",
+                    "baseAmount": _INITIAL_OUTSTANDING,
+                    "taxTotal": "0.00",
+                    "adjustmentTotal": adjustment_amount if self._adjusted else "0.00",
+                    "taxAdjustmentTotal": "0.00",
+                    "paymentBaseAmount": _INITIAL_OUTSTANDING,
+                    "paymentTotal": _INITIAL_OUTSTANDING,
+                    "invoiceNumber": "INV-999",
+                    "payments": [],
+                    "adjustments": adjustments,
+                }
+            ],
+        }
+
+        # Validate testing data against existing dataclass
+        TypeAdapter(InvoiceQueryResponse).validate_python(json_data)
+
         return json_response(
             200,
-            {
-                "clientObjectId": "123",
-                "clientGUID": "00000000-0000-0000-0000-000000000000",
-                "invoiceNumber": "INV-999",
-                "invoicePaymentDueDate": "2025-12-31",
-                "invoiceOutstandingBalance": outstanding,
-                "invoiceFeeBalance": outstanding,
-                "invoiceInterestBalance": "0.00",
-                "fees": [
-                    {
-                        "feeObjectId": 999,
-                        "feeGUID": "11111111-1111-1111-1111-111111111111",
-                        "businessAreaCode": "E2E",
-                        "feeDate": "2025-12-18",
-                        "description": "GGIRCA Compliance Obligation",
-                        "baseAmount": _INITIAL_OUTSTANDING,
-                        "taxTotal": "0.00",
-                        "adjustmentTotal": adjustment_amount if self._adjusted else "0.00",
-                        "taxAdjustmentTotal": "0.00",
-                        "paymentBaseAmount": _INITIAL_OUTSTANDING,
-                        "paymentTotal": _INITIAL_OUTSTANDING,
-                        "invoiceNumber": "INV-999",
-                        "payments": [],
-                        "adjustments": adjustments,
-                    }
-                ],
-            },
+            json_data,
             url,
         )
 

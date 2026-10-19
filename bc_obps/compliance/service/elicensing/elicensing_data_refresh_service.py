@@ -1,5 +1,8 @@
+from typing import List
+
 from compliance.enums import ComplianceInvoiceTypes
 from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
+from compliance.service.elicensing.schema import Payment
 from django.db import transaction
 from compliance.models import (
     ElicensingClientOperator,
@@ -133,43 +136,57 @@ class ElicensingDataRefreshService:
                 },
             )
             for fee in invoice_response.fees:
-                if 'GGIRCA Compliance Obligation' in fee.description or fee.description in [
-                    CompliancePenalty.PenaltyType.LATE_SUBMISSION,
-                    CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-                    'Automatic Overdue Penalty',
-                    'GGEAPAR Interest',
-                ]:
-                    fee_record, _ = ElicensingLineItem.objects.update_or_create(
-                        elicensing_invoice=invoice_record,
-                        object_id=fee.feeObjectId,
-                        guid=fee.feeGUID,
-                        line_item_type=ElicensingLineItem.LineItemType.FEE,
-                        defaults={
-                            "fee_date": date.fromisoformat(fee.feeDate),
-                            "description": fee.description,
-                            "base_amount": Decimal(fee.baseAmount).quantize(Decimal("0.00")),
-                        },
-                    )
-                    cls._process_fee_payments(fee_record, fee.payments)
-                    cls._process_fee_adjustments(
-                        fee_record, fee.adjustments, supplementary_compliance_report_version_id
-                    )
+                if fee.feeType == "Regular":
+                    fee_type = ElicensingLineItem.LineItemType.FEE
+                elif fee.feeType == "Interest":
+                    fee_type = ElicensingLineItem.LineItemType.INTEREST
+                else:
+                    raise ValueError(f"Unknown fee type: {fee.feeType} for invoice {invoice_number}")
 
-    @classmethod
-    def _process_fee_payments(cls, fee_record: ElicensingLineItem, payments: list) -> None:
-        for payment in payments:
-            # Quarantine incorrectly applied receipt number in elicensing. This is a temporary fix & should be removed during the work in ticket 468 when the more permanent fix for distributions is applied.
-            if payment.receiptNumber != 'R998167':
-                ElicensingPayment.objects.update_or_create(
-                    elicensing_line_item=fee_record,
-                    payment_object_id=payment.paymentObjectId,
+                fee_record, _ = ElicensingLineItem.objects.update_or_create(
+                    elicensing_invoice=invoice_record,
+                    object_id=fee.feeObjectId,
+                    guid=fee.feeGUID,
+                    line_item_type=fee_type,
                     defaults={
-                        "received_date": date.fromisoformat(payment.receivedDate),
-                        "amount": Decimal(payment.amount).quantize(Decimal("0.00")),
-                        "method": payment.method,
-                        "receipt_number": payment.receiptNumber,
+                        "fee_date": date.fromisoformat(fee.feeDate),
+                        "description": fee.description,
+                        "base_amount": Decimal(fee.baseAmount).quantize(Decimal("0.00")),
                     },
                 )
+                cls._process_fee_payments(fee_record, fee.payments)
+                cls._process_fee_adjustments(fee_record, fee.adjustments, supplementary_compliance_report_version_id)
+
+    @classmethod
+    def _process_fee_payments(cls, fee_record: ElicensingLineItem, payments: List[Payment]) -> None:
+        for payment in payments:
+            # Quarantine incorrectly applied receipt number in elicensing. This is a temporary fix & should be removed during the work in ticket 468 when the more permanent fix for distributions is applied.
+            if payment.receiptNumber == 'R998167':
+                continue
+
+            """
+            Applicable distributions:
+            - have a feeObjectId that matches the current fee_record.object_id
+            - have a distributionType of either 'Payment' or 'Reversal'
+            """
+
+            applicable_distributions = [
+                d
+                for d in payment.distributions
+                if d.feeObjectId == fee_record.object_id and d.distributionType in ['Payment', 'Reversal']
+            ]
+            sum_distributed_amount = Decimal(sum(d.amount for d in applicable_distributions))
+
+            ElicensingPayment.objects.update_or_create(
+                elicensing_line_item=fee_record,
+                payment_object_id=payment.paymentObjectId,
+                defaults={
+                    "received_date": date.fromisoformat(payment.receivedDate),
+                    "amount": sum_distributed_amount.quantize(Decimal("0.00")),
+                    "method": payment.method,
+                    "receipt_number": payment.receiptNumber,
+                },
+            )
 
     @classmethod
     def _process_fee_adjustments(
