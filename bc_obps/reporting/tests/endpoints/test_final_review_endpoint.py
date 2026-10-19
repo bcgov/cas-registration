@@ -17,7 +17,7 @@ class TestReportFinalReview(CommonTestSetup):
     def setup_method(self):
         super().setup_method()
 
-        self.emission_category_ = EmissionCategory.objects.get(
+        self.emission_category = EmissionCategory.objects.get(
             category_name="Stationary fuel combustion emissions", category_type="basic"
         )
         self.activity_1 = make_recipe("reporting.tests.utils.activity", name="very fake activity")
@@ -65,7 +65,7 @@ class TestReportFinalReview(CommonTestSetup):
         self.report_non_attributable_emissions = baker.make_recipe(
             "reporting.tests.utils.report_non_attributable_emissions",
             report_version=self.report_version,
-            emission_category=self.emission_category_,
+            emission_category=self.emission_category,
         )
         self.compliance_summary = baker.make_recipe(
             "reporting.tests.utils.report_compliance_summary", report_version=self.report_version
@@ -139,7 +139,7 @@ class TestReportFinalReview(CommonTestSetup):
             report_version=self.report_version,
             report_emission_allocation=self.report_emission_allocation,
             report_product=self.report_product_1,
-            emission_category=self.emission_category_,
+            emission_category=self.emission_category,
             allocated_quantity=100.5,
         )
         self.additional_reporting_data = make_recipe(
@@ -150,7 +150,7 @@ class TestReportFinalReview(CommonTestSetup):
             "reporting.tests.utils.report_non_attributable_emissions",
             report_version=self.report_version,
             facility_report=self.facility_report,
-            emission_category=self.emission_category_,
+            emission_category=self.emission_category,
         )
         self.endpoint_under_test = f"/report-version/{self.report_version.id}/final-review"
 
