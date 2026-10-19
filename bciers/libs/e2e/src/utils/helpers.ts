@@ -517,6 +517,16 @@ export async function takeStabilizedScreenshot(
 
 export async function stabilizeGrid(page: Page, expectedRowCount: number) {
   await tableHasExpectedRowCount(page, expectedRowCount);
+  // Auto-height rows are measured after they render, so wait until the grid
+  // has grown to fit them all before taking a screenshot
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const scroller = document.querySelector(".MuiDataGrid-virtualScroller");
+        return scroller ? scroller.scrollHeight - scroller.clientHeight : 0;
+      }),
+    )
+    .toBeLessThanOrEqual(1);
 }
 
 export async function stabilizeAccordion(
