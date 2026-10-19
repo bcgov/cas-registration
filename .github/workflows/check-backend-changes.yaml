@@ -34,6 +34,16 @@ jobs:
             else
               echo "changed=false" >> "$GITHUB_OUTPUT"
             fi
+          # For the merge queue, `github.base_ref` is empty, so use merge_queue event payload.
+          elif [ "${{ github.event_name }}" = "merge_group" ]; then
+            BASE_REF="origin/${{ github.event.merge_group.base_ref }}"
+
+            # Check if any files in bc_obps directory changed
+            if git diff --name-only $BASE_REF...HEAD | grep -q "^bc_obps/"; then
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "changed=false" >> "$GITHUB_OUTPUT"
+            fi
           else
             # For pushes to develop/main, always report changes
             echo "changed=true" >> "$GITHUB_OUTPUT"
