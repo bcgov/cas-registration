@@ -125,6 +125,18 @@ rev = "v6.0.0"
 id = "debug-statements"
 priority = 0
 
+# GitHub Actions workflow linting
+
+[[repos]]
+repo = "https://github.com/rhysd/actionlint"
+rev = "914e7df21a07ef503a81201c76d2b11c789d3fca"  # v1.7.12
+
+[[repos.hooks]]
+id = "actionlint"
+# gh-aw generated files; regenerate with `gh aw compile` instead of editing
+exclude = '\.lock\.yml$'
+priority = 3
+
 # Python formatting and linting
 
 [[repos]]
