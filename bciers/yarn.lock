@@ -2592,9 +2592,9 @@ __metadata:
     "@emotion/styled": "npm:11.14.1"
     "@eslint/eslintrc": "npm:^3.3.3"
     "@eslint/js": "npm:^10.0.0"
-    "@mui/icons-material": "npm:^9.4.0"
-    "@mui/material": "npm:^9.4.0"
-    "@mui/system": "npm:^9.4.0"
+    "@mui/icons-material": "npm:^9.5.0"
+    "@mui/material": "npm:^9.5.0"
+    "@mui/system": "npm:^9.5.0"
     "@mui/x-data-grid": "npm:^9.15.0"
     "@mui/x-date-pickers": "npm:^9.15.0"
     "@nx-tools/nx-container": "npm:^7.3.0"
@@ -3532,7 +3532,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/icons-material@npm:^9.4.0":
+"@mui/icons-material@npm:^9.5.0":
   version: 9.5.0
   resolution: "@mui/icons-material@npm:9.5.0"
   dependencies:
@@ -3548,7 +3548,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/material@npm:^9.4.0":
+"@mui/material@npm:^9.5.0":
   version: 9.5.0
   resolution: "@mui/material@npm:9.5.0"
   dependencies:
@@ -3624,7 +3624,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/system@npm:^9.4.0, @mui/system@npm:^9.5.0":
+"@mui/system@npm:^9.5.0":
   version: 9.5.0
   resolution: "@mui/system@npm:9.5.0"
   dependencies:
