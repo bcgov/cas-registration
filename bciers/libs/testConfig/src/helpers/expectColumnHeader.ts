@@ -23,7 +23,7 @@ export const expectColumnHeader = (
   const sortButton = within(header).queryByRole("button", { name: "Sort" });
 
   if (isSortable) {
-    expect(sortButton).toBeInTheDocument();
+    expect(sortButton).toBeVisible();
   } else {
     expect(sortButton).not.toBeInTheDocument();
   }
