@@ -155,7 +155,7 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
 
         obligation = invoice.compliance_obligation
         compliance_report_version = obligation.compliance_report_version
-        # invoice_interest_balance should never be None here; fail loudly
+        # invoice_interest_balance amount should never be None here; fail loudly
         interest_line_items = invoice.elicensing_line_items.filter(
             line_item_type=ElicensingLineItem.LineItemType.INTEREST,
             elicensing_invoice=invoice,
@@ -168,7 +168,6 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         )["total"]
 
         interest_not_paid = interest_amount > interest_paid
-
         compliance_report_version.status = (
             ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
             if interest_not_paid

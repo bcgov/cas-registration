@@ -4,6 +4,7 @@ import calendar
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Any, Dict, Tuple
 from compliance.schema.calculated_penalty import CalculatedPenaltyOut, PenaltyAccrual, PenaltyTypeStatus
+from compliance.service.supplementary_version_service.constants import ZERO_DECIMAL
 from compliance.service.compliance_penalty_rate_service import CompliancePenaltyRateService
 from compliance.service.elicensing.elicensing_data_refresh_service import (
     ElicensingDataRefreshService,
@@ -173,8 +174,26 @@ class PenaltyCalculationService:
             'elicensing_invoice',
         ).get(compliance_report_version_id=compliance_report_version_id)
 
+        interest_amount = ZERO_DECIMAL
+        interest_paid = ZERO_DECIMAL
+
+        if obligation.elicensing_invoice:
+            interest_line_items = obligation.elicensing_invoice.elicensing_line_items.filter(
+                line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            )
+            interest_amount = interest_line_items.aggregate(
+                total=Sum("base_amount", default=ZERO_DECIMAL),
+            )["total"]
+            interest_paid = interest_line_items.aggregate(
+                total=Sum("elicensing_payments__amount", default=ZERO_DECIMAL),
+            )["total"]
+
         result: Dict[str, Any] = {
-            "faa_interest": refresh_result.invoice.invoice_interest_balance,
+            "faa_interest": (
+                (interest_amount - interest_paid)
+                if interest_amount
+                else refresh_result.invoice.invoice_interest_balance
+            ),
             "automatic_overdue_penalty_amount": Decimal('0.00'),
             "ggeapar_interest_amount": Decimal('0.00'),
         }
@@ -240,8 +259,23 @@ class PenaltyCalculationService:
         penalty = CompliancePenalty.objects.get(
             compliance_obligation=obligation, penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
         )
-        faa_interest = refresh_result.invoice.invoice_interest_balance if refresh_result.invoice else Decimal('0.00')
-        total_amount = penalty.penalty_amount + faa_interest if faa_interest else penalty.penalty_amount
+        faa_interest = ZERO_DECIMAL
+        faa_interest_paid = ZERO_DECIMAL
+        if obligation.elicensing_invoice:
+            interest_line_items = obligation.elicensing_invoice.elicensing_line_items.filter(
+                line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            )
+            faa_interest = interest_line_items.aggregate(
+                total=Sum("base_amount", default=ZERO_DECIMAL),
+            )["total"]
+            faa_interest_paid = interest_line_items.aggregate(
+                total=Sum("elicensing_payments__amount", default=ZERO_DECIMAL),
+            )["total"]
+        if refresh_result.invoice and refresh_result.invoice.invoice_interest_balance is not None:
+            faa_interest = faa_interest if faa_interest else refresh_result.invoice.invoice_interest_balance
+        total_amount = (
+            (penalty.penalty_amount + faa_interest - faa_interest_paid) if faa_interest else penalty.penalty_amount
+        )
 
         return {
             "penalty_status": penalty.status,
@@ -293,8 +327,25 @@ class PenaltyCalculationService:
             }
 
         penalty_amount = late_submission_penalty.penalty_amount
-        faa_interest = refresh_result.invoice.invoice_interest_balance if refresh_result.invoice else Decimal('0.00')
-        total_amount = penalty_amount + faa_interest if faa_interest else late_submission_penalty.penalty_amount
+        faa_interest = ZERO_DECIMAL
+        faa_interest_paid = ZERO_DECIMAL
+        if obligation.elicensing_invoice:
+            interest_line_items = obligation.elicensing_invoice.elicensing_line_items.filter(
+                line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            )
+            faa_interest = interest_line_items.aggregate(
+                total=Sum("base_amount", default=ZERO_DECIMAL),
+            )["total"]
+            faa_interest_paid = interest_line_items.aggregate(
+                total=Sum("elicensing_payments__amount", default=ZERO_DECIMAL),
+            )["total"]
+        if refresh_result.invoice and refresh_result.invoice.invoice_interest_balance is not None:
+            faa_interest = faa_interest if faa_interest else refresh_result.invoice.invoice_interest_balance
+        total_amount = (
+            (penalty_amount + faa_interest - faa_interest_paid)
+            if faa_interest
+            else late_submission_penalty.penalty_amount
+        )
 
         return {
             "has_penalty": True,
@@ -512,8 +563,19 @@ class PenaltyCalculationService:
 
             current_date += timedelta(days=1)
 
-        faa_interest = invoice.invoice_interest_balance or Decimal('0.00')
-        total_amount = total_penalty + faa_interest
+        faa_interest = ZERO_DECIMAL
+        faa_interest_paid = ZERO_DECIMAL
+        if obligation.elicensing_invoice:
+            interest_line_items = obligation.elicensing_invoice.elicensing_line_items.filter(
+                line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            )
+            faa_interest = interest_line_items.aggregate(
+                total=Sum("base_amount", default=ZERO_DECIMAL),
+            )["total"]
+            faa_interest_paid = interest_line_items.aggregate(
+                total=Sum("elicensing_payments__amount", default=ZERO_DECIMAL),
+            )["total"]
+        total_amount = total_penalty + faa_interest - faa_interest_paid
 
         result = CalculatedPenaltyData(
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
@@ -806,8 +868,19 @@ class PenaltyCalculationService:
 
             current_date += timedelta(days=1)
 
-        faa_interest = invoice.invoice_interest_balance or Decimal('0.00')
-        total_amount = total_penalty + faa_interest
+        faa_interest = ZERO_DECIMAL
+        faa_interest_paid = ZERO_DECIMAL
+        if obligation.elicensing_invoice:
+            interest_line_items = obligation.elicensing_invoice.elicensing_line_items.filter(
+                line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            )
+            faa_interest = interest_line_items.aggregate(
+                total=Sum("base_amount", default=ZERO_DECIMAL),
+            )["total"]
+            faa_interest_paid = interest_line_items.aggregate(
+                total=Sum("elicensing_payments__amount", default=ZERO_DECIMAL),
+            )["total"]
+        total_amount = total_penalty + faa_interest - faa_interest_paid
 
         result = CalculatedPenaltyData(
             penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
