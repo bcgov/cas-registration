@@ -5,6 +5,7 @@ describe("The comment thread component", () => {
   it("displays the facility and the list of comments", () => {
     render(
       <ThreadComponent
+        canReply={true}
         thread={{
           id: 1,
           version_id: 42,
@@ -29,7 +30,8 @@ describe("The comment thread component", () => {
       />,
     );
 
-    expect(screen.getByText(/Facility Name:.*Facility One/)).toBeVisible();
+    expect(screen.getByText("Facility Name:")).toBeVisible();
+    expect(screen.getByText("Facility One")).toBeVisible();
     expect(screen.getByText("First Author")).toBeVisible();
     expect(screen.getByText("First comment")).toBeVisible();
     expect(screen.getByText("Sep 10, 2026 5:00 AM")).toBeVisible();
@@ -41,7 +43,9 @@ describe("The comment thread component", () => {
   it("has a non-functional reply button", () => {
     render(
       <ThreadComponent
+        canReply={true}
         thread={{
+          id: 1,
           version_id: 42,
           comments: [],
         }}
@@ -55,5 +59,21 @@ describe("The comment thread component", () => {
 
     expect(screen.getByRole("button", { name: "Reply" })).toBeVisible();
     expect(screen.queryByText("New comment")).not.toBeInTheDocument();
+  });
+  it("does not show the reply button when canReply is false", () => {
+    render(
+      <ThreadComponent
+        canReply={false}
+        thread={{
+          id: 1,
+          version_id: 42,
+          comments: [],
+        }}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Reply" }),
+    ).not.toBeInTheDocument();
   });
 });

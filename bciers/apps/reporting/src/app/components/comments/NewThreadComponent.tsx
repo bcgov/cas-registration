@@ -69,7 +69,7 @@ const NewThreadComponent: React.FC<Props> = ({
 
   return (
     <ThreadFrame version_id={version_id}>
-      <Stack spacing={2} sx={{ mt: 2 }}>
+      <Stack spacing={2} className="mt-4">
         <TextField
           select
           fullWidth
