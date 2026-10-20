@@ -1,10 +1,12 @@
 from datetime import date
 from decimal import Decimal
 from unittest.mock import patch
+import uuid
+from compliance.service.supplementary_version_service.constants import ZERO_DECIMAL
 import pytest
 from model_bakery import baker
 from compliance.dataclass import RefreshWrapperReturn
-from compliance.models import ComplianceObligation, CompliancePenalty, ComplianceReportVersion
+from compliance.models import ComplianceObligation, CompliancePenalty, ComplianceReportVersion, ElicensingLineItem
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 
 pytestmark = pytest.mark.django_db
@@ -22,7 +24,7 @@ class TestGetAccruingPenaltyData:
             "compliance.tests.utils.elicensing_invoice",
             due_date=date(2025, 7, 30),
             outstanding_balance=Decimal("1000000.00"),
-            invoice_interest_balance=Decimal("1000.00"),
+            invoice_interest_balance=ZERO_DECIMAL,
         )
         baker.make_recipe(
             "compliance.tests.utils.elicensing_line_item",
@@ -35,6 +37,15 @@ class TestGetAccruingPenaltyData:
             elicensing_invoice=self.invoice,
             fee_amount_dollars=Decimal("1000000.00"),
             penalty_status=ComplianceObligation.PenaltyStatus.ACCRUING,
+        )
+        # Create an interest line item for the invoice to simulate FAA interest accruing
+        self.faa_line_item = ElicensingLineItem.objects.create(
+            guid=uuid.uuid4(),
+            object_id=1000000001,
+            fee_date=date.today(),
+            elicensing_invoice=self.invoice,
+            line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            base_amount=Decimal("1000.00"),
         )
 
     def _mock_refresh(self, mock_refresh_data):
@@ -66,8 +77,8 @@ class TestGetAccruingPenaltyData:
 
     @patch(REFRESH_WRAPPER_PATH)
     def test_returns_zero_faa_interest_when_none_accrued(self, mock_refresh_data):
-        self.invoice.invoice_interest_balance = Decimal("0.00")
-        self.invoice.save()
+        self.faa_line_item.base_amount = ZERO_DECIMAL
+        self.faa_line_item.save()
         self._mock_refresh(mock_refresh_data)
 
         result = PenaltyCalculationService.get_accruing_penalty_data(self.compliance_report_version.id)

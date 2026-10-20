@@ -1,3 +1,6 @@
+import uuid
+
+from compliance.service.supplementary_version_service.constants import ZERO_DECIMAL
 from compliance.models.compliance_penalty_rate import CompliancePenaltyRate
 import pytest
 from datetime import date, datetime, time, timedelta
@@ -42,12 +45,21 @@ class TestPenaltyCalculationService:
             "compliance.tests.utils.elicensing_invoice",
             due_date=date(2025, 11, 30),
             outstanding_balance=Decimal("0.00"),
-            invoice_interest_balance=Decimal("5000.00"),
+            invoice_interest_balance=ZERO_DECIMAL,
         )
         self.line_item = baker.make_recipe(
             "compliance.tests.utils.elicensing_line_item",
             elicensing_invoice=self.invoice,
             base_amount=Decimal("1000000.00"),
+        )
+        # FAA interest line item for the invoice
+        self.faa_line_item = ElicensingLineItem.objects.create(
+            guid=uuid.uuid4(),
+            object_id=1000000001,
+            fee_date=date.today(),
+            elicensing_invoice=self.invoice,
+            line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            base_amount=Decimal("5000.00"),
         )
 
         # Create payments and adjustments
