@@ -4,9 +4,10 @@ from reporting.models.report_attachment import ReportAttachment
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
-from model_bakery.baker import make_recipe, make
-from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsSetup
+from model_bakery.baker import make_recipe
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
+from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsTestSetup
+from common.lib import pgtrigger
 
 
 class ReportAttachmentTest(BaseTestCase):
@@ -34,77 +35,109 @@ class ReportAttachmentTest(BaseTestCase):
 
 class ReportAttachmentRlsTest(BaseTestCase):
     def test_report_attachment_rls_industry_user(self):
-        # Create a report attachment for an approved user operator
-        test = ReportRlsSetup()
-        test_report_attachment = make(
-            ReportAttachment,
-            report_version=test.report_version,
-            attachment='test_attachment.pdf',
-            attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
+        # Common Test Setup
+        t = ReportRlsTestSetup()
+
+        # ReportAttachment Setup
+        # Inside access bounds
+        with pgtrigger.ignore("reporting.ReportAttachment:immutable_report_version"):
+            report_attachment_2010_submitted = make_recipe(
+                'reporting.tests.utils.report_attachment', report_version=t.report_version_2010_submitted
+            )
+        report_attachment_2010_draft = make_recipe(
+            'reporting.tests.utils.report_attachment', report_version=t.report_version_2010_draft
+        )
+        # Outside access bounds
+        report_attachment_2013_draft = make_recipe(
+            'reporting.tests.utils.report_attachment', report_version=t.report_version_2013_draft
         )
 
-        # Create a random report attachment which the user should not have access to
-        random = ReportRlsSetup()
-        random_report_attachment = make(
-            ReportAttachment,
-            report_version=random.report_version,
-            attachment='random_attachment.pdf',
-            attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
-        )
+        # Additionl report_version needed for insert test: 2012 - Within access bounds
+        # reporting_year_2012 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2012)
+        # report_2012 = make_recipe(
+        #     'reporting.tests.utils.report',
+        #     operation=t.report_version_2010_submitted.report.operation,
+        #     operator=t.report_version_2010_submitted.report.operator,
+        #     reporting_year=reporting_year_2012,
+        # )
+        # report_version_2012_draft = make_recipe(
+        #     'reporting.tests.utils.report_version', report=report_2012, status='Draft'
+        # )
 
         def select_function(cursor):
-            ReportAttachment.objects.get(id=test_report_attachment.id)
+            ReportAttachment.objects.get(id=report_attachment_2010_submitted.id)
 
         def forbidden_select_function(cursor):
-            ReportAttachment.objects.get(id=random_report_attachment.id)
+            ReportAttachment.objects.get(id=report_attachment_2013_draft.id)
 
         def insert_function(cursor):
             ReportAttachment.objects.create(
-                report_version=test.report_version,
-                attachment_name='new attachment',
-                attachment='new_attachment.pdf',
-                attachment_type=ReportAttachment.ReportAttachmentType.WCI_352_362,
+                report_version=t.report_version_2010_draft,
+                attachment='test.pdf',
+                attachment_type='wci_352_362',
+                attachment_name='test',
             )
 
         def forbidden_insert_function(cursor):
             cursor.execute(
                 """
-                    INSERT INTO "erc"."report_attachment" (
-                        "report_version_id", "attachment", "attachment_type", "attachment_name"
-                    )
-                    VALUES (%s, %s, %s, %s)
+                    INSERT into "erc"."report_attachment"(report_version_id)
+                    values(%s)
                 """,
-                (
-                    random.report_version.id,
-                    "failed_attachment.pdf",
-                    ReportAttachment.ReportAttachmentType.WCI_352_362,
-                    "Failed_Attachment.pdf",
-                ),
+                (t.report_version_2013_draft.id,),
             )
 
         def update_function(cursor):
-            return ReportAttachment.objects.filter(id=test_report_attachment.id).update(
-                attachment_name="Updated_Attachment.pdf"
+            cursor.execute(
+                """
+                    UPDATE "erc"."report_attachment"
+                    SET attachment_name = %s
+                    WHERE id = %s
+                """,
+                ('changed', report_attachment_2010_draft.id),
             )
+            return cursor.rowcount
 
         def forbidden_update_function(cursor):
-            return ReportAttachment.objects.filter(id=random_report_attachment.id).update(
-                attachment_name="Updated_Attachment.pdf"
+            cursor.execute(
+                """
+                    UPDATE "erc"."report_attachment"
+                    SET attachment_name = %s
+                    WHERE id = %s
+                """,
+                ('changed', report_attachment_2013_draft.id),
             )
+            return cursor.rowcount
 
         def delete_function(cursor):
-            test_report_attachment.delete()
+            # Delete the report for the approved user operator
+            cursor.execute(
+                """
+                    DELETE from "erc"."report_attachment"
+                    WHERE id = %s
+                """,
+                (report_attachment_2010_draft.id,),
+            )
+            return cursor.rowcount
 
         def forbidden_delete_function(cursor):
-            random_report_attachment.delete()
+            # Delete the report for the approved user operator
+            cursor.execute(
+                """
+                    DELETE from "erc"."report_attachment"
+                    WHERE id in (%s,%s)
+                """,
+                (report_attachment_2010_submitted.id, report_attachment_2013_draft.id),
+            )
+            return cursor.rowcount
 
         assert_policies_for_industry_user(
             ReportAttachment,
-            test.approved_user_operator.user,
-            select_function,
-            insert_function,
-            update_function,
-            delete_function,
+            t.approved_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+            delete_function=delete_function,
             forbidden_select_function=forbidden_select_function,
             forbidden_insert_function=forbidden_insert_function,
             forbidden_update_function=forbidden_update_function,
@@ -112,14 +145,13 @@ class ReportAttachmentRlsTest(BaseTestCase):
         )
 
     def test_report_attachment_rls_cas_user(self):
-        test_quantity = 5
-        for i in range(test_quantity):
-            facility_report = make_recipe("reporting.tests.utils.facility_report")
-            make(
-                ReportAttachment,
-                report_version=facility_report.report_version,
-                attachment=f'test_attachment_{i}.pdf',
-            )
+        test_quantity = 2
+        make_recipe(
+            "reporting.tests.utils.report_attachment",
+        )
+        make_recipe(
+            "reporting.tests.utils.report_attachment",
+        )
 
         def select_function(cursor):
             assert ReportAttachment.objects.count() == test_quantity

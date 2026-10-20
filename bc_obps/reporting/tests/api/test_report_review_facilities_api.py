@@ -22,6 +22,9 @@ class TestFacilitiesReviewEndpoints(CommonTestSetup):
         }
         super().setup_method()
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        TestUtils.generate_operation_operator_timeline(
+            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+        )
 
     @patch("reporting.service.report_facilities_service.ReportFacilitiesService.get_all_facilities_for_review")
     def test_get_selected_facilities_success(self, mock_get_all_facilities: MagicMock):
