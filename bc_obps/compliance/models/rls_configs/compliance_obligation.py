@@ -45,7 +45,28 @@ compliance_report_version_id IN (
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
-    grants = generate_rls_grants(role_grants_mapping, ComplianceTableNames.COMPLIANCE_OBLIGATION)
+    # grants_mapping_with_column_restrictions = {
+    #     RlsRoles.INDUSTRY_USER: [
+    #         'select(id, compliance_report_version_id)',
+    #         RlsOperations.INSERT,
+    #         RlsOperations.UPDATE,
+    #         RlsOperations.DELETE,
+    #     ],
+    #     RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
+    #     RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
+    #     RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
+    #     RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
+    # }
+
+    grants_mapping_with_column_restrictions = role_grants_mapping.copy()
+    grants_mapping_with_column_restrictions[RlsRoles.INDUSTRY_USER] = [
+        'select(id, compliance_report_version_id)',
+        RlsOperations.INSERT,
+        RlsOperations.UPDATE,
+        RlsOperations.DELETE,
+    ]
+
+    grants = generate_rls_grants(grants_mapping_with_column_restrictions, ComplianceTableNames.COMPLIANCE_OBLIGATION)
     role_policy_mapping = generate_report_policy_mapping_from_grants(
         role_grants_mapping, using_statement, delete_using_statement
     )

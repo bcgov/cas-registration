@@ -19,7 +19,7 @@ class RlsGrant:
     def __init__(
         self,
         role: RlsRoles,
-        grants: List[RlsOperations],
+        grants: List[RlsOperations | str],
         table: Any,
         schema: Schemas = Schemas.ERC,
     ):
@@ -35,7 +35,9 @@ class RlsGrant:
         Args:
             cursor (Cursor): The database cursor for executing SQL commands.
         """
-        grant_string = ", ".join([grant.value for grant in self.grants])
+        grant_string = ", ".join([grant if type(grant) is str else grant.value for grant in self.grants])
+        if self.table == 'compliance_obligation':
+            print(grant_string)
         query = SQL("grant {grants} on {table} to {role}").format(
             grants=SQL(grant_string),
             table=Identifier(self.schema, self.table),

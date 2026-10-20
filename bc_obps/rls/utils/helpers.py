@@ -7,7 +7,7 @@ from rls.utils.m2m import M2MPolicyStatements, M2mRls
 
 
 def generate_rls_grants(
-    role_grants_mapping: Dict[RlsRoles, List[RlsOperations]],
+    role_grants_mapping: Dict[RlsRoles, List[RlsOperations | str]],
     table: Any,
     schema: Schemas = Schemas.ERC,
 ) -> List[RlsGrant]:
