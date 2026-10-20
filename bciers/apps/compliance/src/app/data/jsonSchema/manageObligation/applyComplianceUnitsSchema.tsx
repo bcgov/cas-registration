@@ -119,9 +119,9 @@ export const createApplyComplianceUnitsUiSchema = (
   },
   bccr_units: {
     "ui:widget": "ApplyComplianceUnitsWidget",
-    "ui:classNames":
-      // Modify the label width and font weight, and the grid width
-      "text-bc-bg-blue mt-8 [&>div:first-child]:mb-2 md:flex-col [&>div:first-child]:w-full [&>div:first-child>label]:font-normal [&>div:last-child]:w-full",
+    // Stack the title above the grid
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:classNames": "text-bc-bg-blue mt-8 [&>label]:mb-2",
   },
   // Summary Section
   summary_header: headerUiConfig,

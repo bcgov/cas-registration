@@ -35,6 +35,7 @@ export const newEntrant =
   "https://www2.gov.bc.ca/assets/download/751CDDAE4C9A411E974EEA9737CD42C6";
 
 export const ghgRegulatorEmail = "mailto:GHGRegulator@gov.bc.ca";
+export const ghgRegulatorEmailLabel = "GHGRegulator@gov.bc.ca";
 
 export const reportAnEventLink =
   "https://submit.digital.gov.bc.ca/app/form/submit?f=d26fb011-2846-44ed-9f5c-26e2756a758f";

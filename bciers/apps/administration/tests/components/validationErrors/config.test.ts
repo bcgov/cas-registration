@@ -1,23 +1,20 @@
 import { describe, it, expect } from "vitest";
 import { ghgRegulatorEmail } from "@bciers/utils/src/urls";
-import type { ValidationMessageKey } from "@/administration/app/components/validationErrors/types";
 import { validationUIConfig } from "@/administration/app/components/validationErrors/config";
 import { sortAlphabetically } from "@bciers/testConfig/helpers/sort";
+import { sharedValidationUIConfig } from "@bciers/components/validationErrors";
+import { localValidationKeys } from "@/administration/app/components/validationErrors/types";
 
 describe("validationUIConfig", () => {
-  const expectedKeys: ValidationMessageKey[] = [
-    "no_bceid_access",
-    "operation_rep_required",
-  ];
+  describe("validationUIConfig key parity", () => {
+    it("has a config for every shared and local validation key", () => {
+      const sharedKeys = Object.keys(sharedValidationUIConfig);
+      const expectedKeys = [...sharedKeys, ...localValidationKeys];
 
-  it("has the expected number of configs", () => {
-    expect(Object.keys(validationUIConfig)).toHaveLength(2);
-  });
-
-  it("has a config for every validation key", () => {
-    expect(Object.keys(validationUIConfig).sort(sortAlphabetically)).toEqual(
-      [...expectedKeys].sort(sortAlphabetically),
-    );
+      expect(Object.keys(validationUIConfig).sort(sortAlphabetically)).toEqual(
+        expectedKeys.sort(sortAlphabetically),
+      );
+    });
   });
 
   describe("specific key configurations", () => {

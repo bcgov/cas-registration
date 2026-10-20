@@ -25,10 +25,17 @@ useRouter.mockReturnValue({
   push: mockRouterPush,
 });
 
-vi.mock("@/compliance/src/app/utils/bccrAccountHandlers", () => ({
-  getBccrAccountDetails: vi.fn(),
-  getBccrComplianceUnitsAccountDetails: vi.fn(),
-}));
+// Keep the real getBccrComplianceUnits so its server-side error handling runs
+// against the mocked actionHandler
+vi.mock(
+  "@/compliance/src/app/utils/bccrAccountHandlers",
+  async (importOriginal) => ({
+    ...(await importOriginal<
+      typeof import("@/compliance/src/app/utils/bccrAccountHandlers")
+    >()),
+    getBccrAccountDetails: vi.fn(),
+  }),
+);
 
 vi.mock(
   "@/compliance/src/app/utils/getReportOperationByComplianceReportVersionId",
@@ -293,11 +300,11 @@ describe("ApplyComplianceUnitsComponent", () => {
     });
 
     // Now enter an invalid account (error response)
-    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-      new Error(
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      error:
         "The provided holding account does not own the compliance sub-account for this operation.",
-      ),
-    );
+      status: 400,
+    });
 
     fireEvent.change(accountInput, { target: { value: "999999999999999" } });
 

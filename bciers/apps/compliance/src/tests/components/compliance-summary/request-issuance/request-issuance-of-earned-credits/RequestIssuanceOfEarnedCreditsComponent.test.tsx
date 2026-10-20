@@ -104,9 +104,10 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
   });
 
   it("does not show trading name when account is invalid", async () => {
-    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-      new Error("Invalid account"),
-    );
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      error: "Invalid account",
+      status: 400,
+    });
 
     render(
       <RequestIssuanceOfEarnedCreditsComponent

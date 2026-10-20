@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from ninja.types import DictStrAny
 from compliance.api.router import router
 from typing import Dict, Literal, Tuple
@@ -22,6 +23,7 @@ from compliance.api.permissions import approved_industry_user_compliance_report_
 def get_apply_compliance_units_page_data(
     request: HttpRequest, account_id: FifteenDigitString, compliance_report_version_id: int
 ) -> Tuple[Literal[200], ApplyComplianceUnitsOut]:
+    raise BCCarbonRegistryError("Error.")
     apply_compliance_units_page_data = ApplyComplianceUnitsService.get_apply_compliance_units_page_data(
         account_id=account_id, compliance_report_version_id=compliance_report_version_id
     )
