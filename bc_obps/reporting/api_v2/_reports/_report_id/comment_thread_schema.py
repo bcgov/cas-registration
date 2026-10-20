@@ -1,59 +1,32 @@
 import datetime
-from typing import Optional
+from typing import Annotated, Optional
 from uuid import UUID
 
 from ninja import Field, ModelSchema, Schema
 
+from pydantic import StringConstraints
 from reporting.models import CommentThread, Comment
 
 
 class CommentSchema(ModelSchema):
-    version_id: int | None = None
-    author: str | None = None
-    timestamp: datetime.datetime | None = None
+    version_id: int | None = Field(None, alias="report_version_id")
+    author: str | None = Field(None, alias="created_by.get_full_name")
+    timestamp: datetime.datetime | None = Field(None, alias="created_at")
 
     class Meta:
         model = Comment
         fields = ["id", "comment"]
 
-    @staticmethod
-    def resolve_version_id(obj: Comment) -> int | None:
-        return obj.report_version_id
-
-    @staticmethod
-    def resolve_author(obj: Comment) -> str | None:
-        if obj.created_by:
-            return obj.created_by.get_full_name()
-        return None
-
-    @staticmethod
-    def resolve_timestamp(obj: Comment) -> datetime.datetime | None:
-        return obj.created_at
-
 
 class CommentThreadSchema(ModelSchema):
-    """
-    Schema for the ReportCommentThread model
-    """
-
-    version_id: int | None = None
+    version_id: int | None = Field(None, alias="report_version_id")
     facility_id: Optional[UUID] = None
+    facility_name: str | None = Field(None, alias="facility.name")
     comments: list[CommentSchema]
-    facility_name: str | None = None
 
     class Meta:
         model = CommentThread
         fields = ["id"]
-
-    @staticmethod
-    def resolve_version_id(obj: CommentThread) -> int | None:
-        return obj.report_version_id
-
-    @staticmethod
-    def resolve_facility_name(obj: CommentThread) -> str | None:
-        if obj.facility:
-            return obj.facility.name
-        return None
 
 
 class FacilityListItem(Schema):
@@ -73,4 +46,4 @@ class CommentThreadIn(Schema):
     """
 
     facility_id: Optional[UUID] = None
-    comment: str = Field(..., min_length=1)
+    comment: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
