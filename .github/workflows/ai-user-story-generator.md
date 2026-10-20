@@ -4,7 +4,8 @@ on:
     types: [labeled]
 permissions:
   contents: read
-  pull-requests: read
+  issues: read
+  copilot-requests: write
 if: >
   contains(github.event.issue.labels.*.name, 'AI User Story')
 
