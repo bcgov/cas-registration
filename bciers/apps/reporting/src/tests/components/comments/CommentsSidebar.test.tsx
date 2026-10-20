@@ -1,10 +1,18 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import CommentsSidebar from "@reporting/src/app/components/comments/CommentsSidebar";
 import * as NewThreadComponentModule from "@reporting/src/app/components/comments/NewThreadComponent";
+import { InternalFrontEndRoles } from "@bciers/utils/src/enums";
 
 describe("The Comments Sidebar", () => {
   it("shows a comments title and a new comment button", () => {
-    render(<CommentsSidebar version_id={42} threads={[]} facilities={[]} />);
+    render(
+      <CommentsSidebar
+        version_id={42}
+        threads={[]}
+        facilities={[]}
+        userRole={InternalFrontEndRoles.CAS_DIRECTOR}
+      />,
+    );
 
     expect(screen.getByRole("heading", { name: "Comments" })).toBeVisible();
     expect(
@@ -13,7 +21,14 @@ describe("The Comments Sidebar", () => {
   });
 
   it("renders the new thread component when pressing new comment", () => {
-    render(<CommentsSidebar version_id={42} threads={[]} facilities={[]} />);
+    render(
+      <CommentsSidebar
+        version_id={42}
+        threads={[]}
+        facilities={[]}
+        userRole={InternalFrontEndRoles.CAS_DIRECTOR}
+      />,
+    );
 
     fireEvent.click(
       screen.getByRole("button", { name: "Add internal Comment" }),
@@ -32,6 +47,7 @@ describe("The Comments Sidebar", () => {
       <CommentsSidebar
         version_id={42}
         facilities={[]}
+        userRole={InternalFrontEndRoles.CAS_DIRECTOR}
         threads={[
           {
             id: 10,
@@ -51,7 +67,8 @@ describe("The Comments Sidebar", () => {
       />,
     );
 
-    expect(screen.getByText(/Facility Name:.*Facility One/)).toBeVisible();
+    expect(screen.getByText("Facility Name:")).toBeVisible();
+    expect(screen.getByText("Facility One")).toBeVisible();
     expect(screen.getByText("Test Author")).toBeVisible();
     expect(screen.getByText("Existing comment")).toBeVisible();
     expect(screen.getByRole("button", { name: "Reply" })).toBeVisible();
@@ -61,7 +78,14 @@ describe("The Comments Sidebar", () => {
   it("adds a thread when the callback returns", async () => {
     const newThreadComponentSpy = vi.spyOn(NewThreadComponentModule, "default");
 
-    render(<CommentsSidebar version_id={42} threads={[]} facilities={[]} />);
+    render(
+      <CommentsSidebar
+        version_id={42}
+        threads={[]}
+        facilities={[]}
+        userRole={InternalFrontEndRoles.CAS_DIRECTOR}
+      />,
+    );
     fireEvent.click(
       screen.getByRole("button", { name: "Add internal Comment" }),
     );
@@ -88,5 +112,18 @@ describe("The Comments Sidebar", () => {
       screen.queryByRole("textbox", { name: "Comment" }),
     ).not.toBeInTheDocument();
     newThreadComponentSpy.mockRestore();
+  });
+  it("does not show the new thread component when userRole is not CAS_DIRECTOR", () => {
+    render(
+      <CommentsSidebar
+        version_id={42}
+        threads={[]}
+        facilities={[]}
+        userRole={InternalFrontEndRoles.CAS_VIEW_ONLY}
+      />,
+    );
+    expect(
+      screen.queryByRole("button", { name: "Add internal Comment" }),
+    ).not.toBeInTheDocument();
   });
 });

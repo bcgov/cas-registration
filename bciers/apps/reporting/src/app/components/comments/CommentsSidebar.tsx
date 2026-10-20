@@ -5,20 +5,29 @@ import { Thread, FacilityItem } from "./types";
 import ThreadComponent from "./ThreadComponent";
 import NewThreadComponent from "./NewThreadComponent";
 import { useState } from "react";
+import { InternalFrontEndRoles } from "@bciers/utils/src/enums";
 
 interface Props {
   version_id: number;
   threads: Thread[];
   facilities: FacilityItem[];
+  userRole: InternalFrontEndRoles;
 }
+
+const ROLES_CAN_COMMENT = [
+  InternalFrontEndRoles.CAS_DIRECTOR,
+  InternalFrontEndRoles.CAS_ANALYST,
+];
 
 const CommentsSidebar: React.FC<Props> = ({
   version_id,
   threads,
   facilities,
+  userRole,
 }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [commentThreads, setCommentThreads] = useState(threads);
+  const canCreate = ROLES_CAN_COMMENT.includes(userRole);
 
   const handleCreate = (newThread: Thread) => {
     setCommentThreads((prevThreads) => [newThread, ...prevThreads]);
@@ -33,26 +42,22 @@ const CommentsSidebar: React.FC<Props> = ({
         "@media print": { display: "none" },
       }}
     >
-      <Box
-        sx={{
-          p: 2,
-          pb: 4,
-          background: "#ffffff",
-        }}
-      >
-        <Typography variant="h6" sx={{ p: 2, pl: 0 }}>
+      <Box className="p-4 pb-8 bg-bc-white">
+        <Typography variant="h6" className="p-4 pl-0">
           Comments
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          onClick={() => setIsCreating(true)}
-        >
-          Add internal Comment
-        </Button>
+        {canCreate && (
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={() => setIsCreating(true)}
+          >
+            Add internal Comment
+          </Button>
+        )}
       </Box>
-      {isCreating && (
+      {canCreate && isCreating && (
         <NewThreadComponent
           facilities={facilities}
           onCancel={() => {
@@ -63,7 +68,11 @@ const CommentsSidebar: React.FC<Props> = ({
         />
       )}
       {commentThreads.map((thread) => (
-        <ThreadComponent key={`thread-${thread.id}`} thread={thread} />
+        <ThreadComponent
+          key={`thread-${thread.id}`}
+          thread={thread}
+          canReply={canCreate}
+        />
       ))}
     </Paper>
   );
