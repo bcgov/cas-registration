@@ -236,7 +236,6 @@ jobs:
           || needs.test-registration-e2e.result == 'failure'
           || needs.test-dashboard-e2e.result == 'failure'
           || needs.test-compliance-e2e.result == 'failure'
-          || needs.build-compliance-e2e.result == 'failure'
           || needs.build-dashboard.result == 'failure'
           || needs.zap-owasp.result == 'failure'
           || needs.schemaspy.result == 'failure'
