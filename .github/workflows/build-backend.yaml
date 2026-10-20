@@ -48,7 +48,7 @@ jobs:
         id: python_version
         run: |
           PYTHON_VERSION=$(grep '^python ' ./bc_obps/.tool-versions | awk '{print $2}')
-          echo "value=${PYTHON_VERSION}" >> $GITHUB_OUTPUT
+          echo "value=${PYTHON_VERSION}" >> "$GITHUB_OUTPUT"
         shell: bash
       - name: Build image
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
