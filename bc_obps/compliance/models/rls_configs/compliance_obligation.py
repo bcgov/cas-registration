@@ -1,5 +1,7 @@
 from compliance.enums import ComplianceTableNames
 from rls.enums import RlsRoles, RlsOperations
+from typing import Dict, List
+from rls.utils.grant import ColumnGrant, Grant
 from rls.utils.helpers import generate_report_policy_mapping_from_grants, generate_rls_grants, generate_rls_policies
 
 
@@ -33,9 +35,9 @@ compliance_report_version_id IN (
         )
     """
 
-    role_grants_mapping = {
+    role_grants_mapping: Dict[RlsRoles, List[Grant]] = {
         RlsRoles.INDUSTRY_USER: [
-            RlsOperations.SELECT,
+            ColumnGrant(RlsOperations.SELECT, ["id", "compliance_report_version_id"]),
             RlsOperations.INSERT,
             RlsOperations.UPDATE,
             RlsOperations.DELETE,
@@ -45,28 +47,7 @@ compliance_report_version_id IN (
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
-    # grants_mapping_with_column_restrictions = {
-    #     RlsRoles.INDUSTRY_USER: [
-    #         'select(id, compliance_report_version_id)',
-    #         RlsOperations.INSERT,
-    #         RlsOperations.UPDATE,
-    #         RlsOperations.DELETE,
-    #     ],
-    #     RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
-    #     RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
-    #     RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
-    #     RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
-    # }
-
-    grants_mapping_with_column_restrictions = role_grants_mapping.copy()
-    grants_mapping_with_column_restrictions[RlsRoles.INDUSTRY_USER] = [
-        'select(id, compliance_report_version_id)',
-        RlsOperations.INSERT,
-        RlsOperations.UPDATE,
-        RlsOperations.DELETE,
-    ]
-
-    grants = generate_rls_grants(grants_mapping_with_column_restrictions, ComplianceTableNames.COMPLIANCE_OBLIGATION)
+    grants = generate_rls_grants(role_grants_mapping, ComplianceTableNames.COMPLIANCE_OBLIGATION)
     role_policy_mapping = generate_report_policy_mapping_from_grants(
         role_grants_mapping, using_statement, delete_using_statement
     )

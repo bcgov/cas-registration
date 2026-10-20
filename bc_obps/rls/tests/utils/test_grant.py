@@ -17,7 +17,7 @@ class TestRlsGrant(TestCase):
         grant.apply_grant(mock_cursor)
 
         expected_query = SQL("grant {grants} on {table} to {role}").format(
-            grants=SQL("select, insert"),
+            grants=SQL(", ").join([SQL("select"), SQL("insert")]),
             table=Identifier(Schemas.ERC.value, RegistrationTableNames.CONTACT.value),
             role=Identifier(RlsRoles.INDUSTRY_USER.value),
         )

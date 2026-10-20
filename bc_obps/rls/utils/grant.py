@@ -1,8 +1,32 @@
-from typing import List, Any
+from dataclasses import dataclass
+from typing import List, Any, Sequence, Union
 from django.db.backends.utils import CursorWrapper
-from psycopg.sql import SQL, Identifier
+from psycopg.sql import SQL, Composable, Identifier
 from common.enums import Schemas
 from rls.enums import RlsRoles, RlsOperations
+
+
+@dataclass(frozen=True)
+class ColumnGrant:
+    operation: RlsOperations
+    columns: List[str]
+
+    def __post_init__(self) -> None:
+        if not self.columns:
+            raise ValueError("ColumnGrant requires at least one column")
+
+    def to_sql(self) -> Composable:
+        return SQL("{operation} ({columns})").format(
+            operation=SQL(self.operation.value),
+            columns=SQL(", ").join([Identifier(column) for column in self.columns]),
+        )
+
+
+Grant = Union[RlsOperations, ColumnGrant]
+
+
+def get_grant_operation(grant: Grant) -> RlsOperations:
+    return grant.operation if isinstance(grant, ColumnGrant) else grant
 
 
 class RlsGrant:
@@ -11,7 +35,7 @@ class RlsGrant:
 
     Attributes:
         role (str): The database role to grant permissions to.
-        grants (List[str]): The list of permissions to grant.
+        grants (Sequence[Grant]): The list of permissions to grant (table-level operations or column-level grants).
         table (str): The table to which the grants apply.
         schema (str): The schema containing the table (default is 'erc').
     """
@@ -19,7 +43,7 @@ class RlsGrant:
     def __init__(
         self,
         role: RlsRoles,
-        grants: List[RlsOperations | str],
+        grants: Sequence[Grant],
         table: Any,
         schema: Schemas = Schemas.ERC,
     ):
@@ -35,11 +59,11 @@ class RlsGrant:
         Args:
             cursor (Cursor): The database cursor for executing SQL commands.
         """
-        grant_string = ", ".join([grant if type(grant) is str else grant.value for grant in self.grants])
-        if self.table == 'compliance_obligation':
-            print(grant_string)
+        grants = SQL(", ").join(
+            [grant.to_sql() if isinstance(grant, ColumnGrant) else SQL(grant.value) for grant in self.grants]
+        )
         query = SQL("grant {grants} on {table} to {role}").format(
-            grants=SQL(grant_string),
+            grants=grants,
             table=Identifier(self.schema, self.table),
             role=Identifier(self.role),
         )

@@ -1,13 +1,13 @@
 from rls.utils.policy import RlsPolicy
 from common.enums import Schemas
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Mapping, Sequence
 from rls.enums import RlsRoles, RlsOperations
-from rls.utils.grant import RlsGrant
+from rls.utils.grant import Grant, RlsGrant, get_grant_operation
 from rls.utils.m2m import M2MPolicyStatements, M2mRls
 
 
 def generate_rls_grants(
-    role_grants_mapping: Dict[RlsRoles, List[RlsOperations | str]],
+    role_grants_mapping: Mapping[RlsRoles, Sequence[Grant]],
     table: Any,
     schema: Schemas = Schemas.ERC,
 ) -> List[RlsGrant]:
@@ -20,7 +20,7 @@ def generate_rls_grants(
 
 
 def generate_m2m_rls(
-    m2m_models_grants_mapping: Dict[Any, Dict[RlsRoles, List[RlsOperations]]],
+    m2m_models_grants_mapping: Mapping[Any, Mapping[RlsRoles, Sequence[Grant]]],
     m2m_models_policy_mapping: Dict[Any, M2MPolicyStatements] | None = None,
     enable_rls: bool = False,
     schema: Schemas = Schemas.ERC,
@@ -90,7 +90,7 @@ def generate_rls_policies(
 
 
 def generate_report_policy_mapping_from_grants(
-    role_grants_mapping: Dict[RlsRoles, List[RlsOperations]],
+    role_grants_mapping: Mapping[RlsRoles, Sequence[Grant]],
     using_statement: str,
     delete_using_statement: str,
 ) -> Dict[RlsRoles, List[Dict[str, str]]]:
@@ -110,9 +110,10 @@ def generate_report_policy_mapping_from_grants(
         dict: A mapping of roles to their corresponding policies.
     """
     policy_mapping: Dict[RlsRoles, List[Dict[str, str]]] = {}
-    for role, operations in role_grants_mapping.items():
+    for role, grants in role_grants_mapping.items():
         policy_mapping[role] = []
-        for operation in operations:
+        for grant in grants:
+            operation = get_grant_operation(grant)
             policy_data = {'operation': operation.value}
             # If the role is not INDUSTRY_USER, we set the using_statement to 'true'
             # 'true' means RLS does not filter any rows for that role. Only the grants restrict the operations.
