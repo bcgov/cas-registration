@@ -1,5 +1,6 @@
 from typing import Literal, Tuple
-
+from django.db.models import Prefetch
+from reporting.service.comment_service import CommentService
 from common.permissions import authorize
 from django.db import transaction
 from django.http import HttpRequest
@@ -33,8 +34,11 @@ def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[
 
     threads = (
         CommentThread.objects.select_related("facility")
-        .prefetch_related("comments__created_by")
+        .prefetch_related(
+            Prefetch("comments", queryset=Comment.objects.select_related("created_by").order_by("created_at"))
+        )
         .filter(report_id=report_id)
+        .order_by("-created_at")
     )
 
     facilities_dict = ReportFacilitiesService.get_all_facilities_for_review(int(version_id))
@@ -58,16 +62,10 @@ def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[
 def create_thread(
     request: HttpRequest, version_id: str, payload: CommentThreadIn
 ) -> Tuple[Literal[201], CommentThread]:
-    report_id = ReportVersion.objects.get(id=version_id).report_id
-    thread = CommentThread.objects.create(
-        report_id=report_id,
-        report_version_id=version_id,
-        facility_id=payload.facility_id,
-    )
-    Comment.objects.create(
-        comment_thread=thread,
-        report_version_id=version_id,
+    thread = CommentService.create_thread(
+        version_id=int(version_id),
         comment=payload.comment,
+        facility_id=payload.facility_id,
     )
 
     return 201, thread
