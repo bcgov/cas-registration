@@ -10,6 +10,7 @@ from reporting.api.permissions import check_operation_ownership
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.schema.report import StartReportIn, CreateReportVersionIn, CreateReportForReportingYearIn
+from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
 from service.report_service import CreateReportForReportingYearData, ReportService
 from service.report_version_service import ReportVersionService, ReportVersionData
 from service.reporting_year_service import ReportingYearService
@@ -175,5 +176,12 @@ def create_report_version(
     request: HttpRequest, report_id: int, payload: CreateReportVersionIn
 ) -> Tuple[Literal[200], int]:
     report = ReportService.get_report_by_id(report_id)
-    report_version = ReportVersionService.create_report_version(report)
+
+    timeline = OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
+        operation_id=report.operation.id, reporting_year=report.reporting_year_id
+    )
+
+    report_version = ReportVersionService.create_report_version(
+        report, use_transferred_operation_handling=timeline.has_been_transferred if timeline is not None else False
+    )
     return 200, report_version.id
