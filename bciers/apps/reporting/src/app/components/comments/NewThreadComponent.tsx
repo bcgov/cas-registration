@@ -2,8 +2,10 @@ import { Button, MenuItem, Stack, TextField } from "@mui/material";
 import ThreadFrame from "./ThreadFrame";
 import { useState, useTransition } from "react";
 import { FacilityItem, Thread } from "./types";
-import AlertNote from "@bciers/components/form/components/AlertNote";
 import postCommentThread from "../../utils/postCommentThread";
+import { useValidationErrors } from "@bciers/components/validationErrors/useValidationErrors";
+import { setClientError } from "@bciers/components/validationErrors/utils";
+import { handleApiResponse } from "@bciers/components/validationErrors/handleApiResponse";
 
 interface Props {
   version_id: number;
@@ -23,12 +25,12 @@ const NewThreadComponent: React.FC<Props> = ({
     facility?: string;
   }>({});
 
-  const [errors, setErrors] = useState<{ field: string; error: string }[]>([]);
+  const { setErrors, renderedErrors } = useValidationErrors();
   const [pending, startTransition] = useTransition();
 
   const handleSubmit = () => {
     if (!newThreadData.comment?.trim()) {
-      setErrors([{ field: "comment", error: "Comment cannot be empty" }]);
+      setClientError("Comment cannot be empty", setErrors);
       return;
     }
 
@@ -43,12 +45,10 @@ const NewThreadComponent: React.FC<Props> = ({
         newComment,
         newFacility,
       );
-
-      if (response?.error) {
-        setErrors([{ field: "api", error: response.error }]);
+      const isSuccess = handleApiResponse(response, setErrors);
+      if (!isSuccess) {
         return;
       }
-
       onThreadCreated(response as Thread);
     });
   };
@@ -76,7 +76,6 @@ const NewThreadComponent: React.FC<Props> = ({
           label="Facility (optional)"
           defaultValue=""
           onChange={changeHandlerFactory("facility")}
-          error={errors.some((e) => e.field === "facility")}
         >
           <MenuItem value="">Select Facility</MenuItem>
           {facilities.map((facility) => (
@@ -91,15 +90,8 @@ const NewThreadComponent: React.FC<Props> = ({
           multiline
           rows={3}
           onChange={changeHandlerFactory("comment")}
-          error={errors.some((e) => e.field === "comment")}
         />
-        {errors.length > 0 && (
-          <AlertNote alertType="ERROR">
-            {errors.map((error) => (
-              <div key={`field-${error.field}`}>{error.error}</div>
-            ))}
-          </AlertNote>
-        )}
+        {renderedErrors}
         <Stack direction="row" spacing={2}>
           <Button
             variant="contained"
