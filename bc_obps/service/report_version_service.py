@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from django.db.models import Prefetch
 from reporting.models import ReportVersion, FacilityReport, ReportActivity, ReportNonAttributableEmissions
 from typing import Union, List, Any
+from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
 from service.operation_service import OperationService
 
 
@@ -26,7 +27,6 @@ class ReportVersionService:
     def create_report_version(
         report: Report,
         report_type: str = "Annual Report",
-        use_transferred_operation_handling: bool = False,
         registration_purpose: str | None = None,
     ) -> ReportVersion:
         # Creating draft version
@@ -56,7 +56,13 @@ class ReportVersionService:
             operation_opted_out_final_reporting_year=operation_opted_out_final_reporting_year,
             naics_code=operation.naics_code,
         )
+
         # Special handling for report where the operation has been transferred
+        timeline = OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
+            operation_id=report.operation.id, reporting_year=report.reporting_year_id
+        )
+        use_transferred_operation_handling = timeline.has_been_transferred if timeline is not None else False
+
         if use_transferred_operation_handling:
             contacts = Contact.objects.filter(operator=operator, business_role="Operation Representative")
             selected_representative_state = False

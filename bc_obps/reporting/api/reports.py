@@ -175,5 +175,6 @@ def create_report_version(
     request: HttpRequest, report_id: int, payload: CreateReportVersionIn
 ) -> Tuple[Literal[200], int]:
     report = ReportService.get_report_by_id(report_id)
+
     report_version = ReportVersionService.create_report_version(report)
     return 200, report_version.id
