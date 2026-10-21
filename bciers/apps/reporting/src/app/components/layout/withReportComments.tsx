@@ -12,7 +12,7 @@ export default function withReportComments<
       </Grid>
 
       <Grid item md={4}>
-        <Suspense fallback={<div role="status">Loading comments...</div>}>
+        <Suspense fallback={<output>Loading comments...</output>}>
           <ReportComments version_id={props.version_id} />
         </Suspense>
       </Grid>

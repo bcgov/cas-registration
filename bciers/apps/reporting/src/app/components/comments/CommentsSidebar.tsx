@@ -14,10 +14,10 @@ interface Props {
   userRole: InternalFrontEndRoles;
 }
 
-const ROLES_CAN_COMMENT = [
+const ROLES_CAN_COMMENT = new Set([
   InternalFrontEndRoles.CAS_DIRECTOR,
   InternalFrontEndRoles.CAS_ANALYST,
-];
+]);
 
 const CommentsSidebar: React.FC<Props> = ({
   version_id,
@@ -27,7 +27,7 @@ const CommentsSidebar: React.FC<Props> = ({
 }) => {
   const [isCreating, setIsCreating] = useState(false);
   const [commentThreads, setCommentThreads] = useState(threads);
-  const canCreate = ROLES_CAN_COMMENT.includes(userRole);
+  const canCreate = ROLES_CAN_COMMENT.has(userRole);
 
   const handleCreate = (newThread: Thread) => {
     setCommentThreads((prevThreads) => [newThread, ...prevThreads]);
