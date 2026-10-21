@@ -1,12 +1,12 @@
 {
   "type": "object",
   "title": "Carbonates used but not consumed in other activities set out in column 2",
+  "default": { "emissions": [{}] },
   "properties": {
     "emissions": {
       "type": "array",
       "title": "Emissions",
       "minItems": 1,
-      "default": { "emissions": [{}] },
       "items": {
         "title": "Carbonate data",
         "type": "object",
