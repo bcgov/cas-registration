@@ -1,5 +1,3 @@
-from types import SimpleNamespace
-
 from django.utils import timezone
 import json
 from typing import Any
@@ -9,7 +7,6 @@ from common.tests.utils.call_endpoint import call_endpoint
 from django.http import HttpResponse
 from model_bakery import baker
 
-import pytest
 from registration.models.operation import Operation
 from registration.tests.utils.bakers import operation_baker, operator_baker
 from registration.utils import custom_reverse_lazy
@@ -205,28 +202,13 @@ class TestReportsEndpoint(CommonTestSetup):
 
             mock_validate_operation_ownership.assert_called_once()
 
-    @pytest.mark.parametrize(
-        "transfer_object, expected_use_transferred",
-        [
-            (SimpleNamespace(has_been_transferred=True), True),
-            (SimpleNamespace(has_been_transferred=False), False),
-            (None, False),
-        ],
-    )
-    @patch(
-        "reporting.api.reports.OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year"
-    )
     @patch("service.report_version_service.ReportVersionService.create_report_version")
     @patch("service.report_service.ReportService.get_report_by_id")
     def test_returns_data_as_provided_by_create_report_version(
         self,
         mock_get_report_by_id: MagicMock,
         mock_create_report_version: MagicMock,
-        mock_get_timeline: MagicMock,
-        transfer_object: dict,
-        expected_use_transferred: bool,
     ):
-        mock_get_timeline.return_value = transfer_object
         # Arrange: create user, operation, report, and report version
         user_operator = baker.make_recipe(
             'registration.tests.utils.user_operator',
@@ -256,9 +238,7 @@ class TestReportsEndpoint(CommonTestSetup):
 
         # Verify that the service methods were called with the correct arguments
         mock_get_report_by_id.assert_called_once_with(report.id)
-        mock_create_report_version.assert_called_once_with(
-            report, use_transferred_operation_handling=expected_use_transferred
-        )
+        mock_create_report_version.assert_called_once_with(report)
 
     @patch("service.report_service.ReportService.create_report_for_reporting_year")
     def test_create_report_for_reporting_year(

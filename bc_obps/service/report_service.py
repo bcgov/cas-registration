@@ -86,9 +86,7 @@ class ReportService:
             reporting_year=ReportingYearDataAccessService.get_by_year(reporting_year),
         )
 
-        report_version = ReportVersionService.create_report_version(
-            report, use_transferred_operation_handling=designated_operator_timeline.has_been_transferred
-        )
+        report_version = ReportVersionService.create_report_version(report)
 
         return report_version.id
 
@@ -129,7 +127,6 @@ class ReportService:
                 )
 
             operator = designated_operator_timeline.operator
-            use_transferred_operation_handling = designated_operator_timeline.has_been_transferred
 
         else:
             # Fallback path:
@@ -148,7 +145,6 @@ class ReportService:
                 )
 
             operator = user_operator.operator
-            use_transferred_operation_handling = False
 
         # A report cannot be created if one already exists for the same operation and reporting year
         if ReportDataAccessService.report_exists(operation_id, reporting_year):
@@ -176,7 +172,6 @@ class ReportService:
 
         report_version = ReportVersionService.create_report_version(
             report,
-            use_transferred_operation_handling=use_transferred_operation_handling,
             registration_purpose=selected_registration_purpose,
         )
 
