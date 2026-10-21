@@ -1,4 +1,4 @@
-import BccrHoldingAccountWidget from "@/compliance/src/app/widgets/BccrHoldingAcountWidget";
+import BccrHoldingAccountWidget from "@/compliance/src/app/widgets/BccrHoldingAccountWidget";
 import {
   act,
   render,
