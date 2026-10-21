@@ -2,6 +2,9 @@
 
 This document describes the non-technical process our team has decided upon for scheduling and performing releases. This is different from the technical [Release Documentation](./devops/release.md) that describes how to create a release with release-it.
 
+> [!NOTE]
+> The release process has changed slightly due to the change to using [GitHub Merge Queue](./git-usage.md).
+
 ## Process
 
 - Our release cadence targets every second Wednesday as the date to create a release & push it to the test environment.
