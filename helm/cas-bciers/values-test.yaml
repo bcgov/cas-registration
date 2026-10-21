@@ -140,4 +140,3 @@ run-reset-data-dag-on-upgrade:
 cas-logging-sidecar:
   host: ~
   prefix: "cas-bciers-test-logs"
-  tag: "oc-cas-bciers"

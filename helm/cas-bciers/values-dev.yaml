@@ -138,4 +138,5 @@ run-reset-data-dag-on-upgrade:
 cas-logging-sidecar:
   host: ~
   prefix: "cas-bciers-dev-logs"
-  tag: "oc-cas-bciers"
+  gateway:
+    debugLogsToConsole: true
