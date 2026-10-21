@@ -5,6 +5,7 @@
     "emissions": {
       "type": "array",
       "title": "Emissions",
+      "minItems": 1,
       "default": { "emissions": [{}] },
       "items": {
         "title": "Carbonate data",

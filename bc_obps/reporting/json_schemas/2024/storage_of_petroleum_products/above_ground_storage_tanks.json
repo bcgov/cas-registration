@@ -6,6 +6,7 @@
     "emissions": {
       "type": "array",
       "title": "Emissions",
+      "minItems": 1,
       "items": {
         "type": "object",
         "properties": {
