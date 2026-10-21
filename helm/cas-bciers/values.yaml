@@ -268,3 +268,6 @@ sentry:
   traceSampleRate: 0.1
 
 airflowNamespace: ~
+
+cas-logging-sidecar:
+  tag: "oc-cas-bciers"
