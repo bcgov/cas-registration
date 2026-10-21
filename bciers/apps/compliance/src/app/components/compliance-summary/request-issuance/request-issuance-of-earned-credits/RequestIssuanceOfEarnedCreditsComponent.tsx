@@ -12,6 +12,10 @@ import {
   RequestIssuanceOfEarnedCreditsFormData,
 } from "@/compliance/src/app/types";
 import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
+import {
+  validationLinks,
+  validationUIConfig,
+} from "@/compliance/src/app/components/validationErrors/config";
 import { IChangeEvent } from "@rjsf/core";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 import { actionHandler } from "@bciers/actions";
@@ -38,7 +42,10 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
 
   const [formData, setFormData] =
     useState<Partial<RequestIssuanceOfEarnedCreditsFormData>>(data);
-  const { setErrors, renderedErrors } = useValidationErrors();
+  const { setErrors, renderedErrors } = useValidationErrors({
+    config: validationUIConfig,
+    links: validationLinks,
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const idRequiringChange =
     data?.issuance_status === IssuanceStatus.CHANGES_REQUIRED

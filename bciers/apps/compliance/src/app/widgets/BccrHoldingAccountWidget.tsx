@@ -7,54 +7,51 @@ import {
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
-import {
-  bcCarbonRegistryLink,
-  ghgRegulatorEmail,
-} from "@bciers/utils/src/urls";
+import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
 import { useState } from "react";
+import {
+  ValidationItem,
+  ValidationMessage,
+} from "@bciers/components/validationErrors";
+import {
+  validationLinks,
+  validationUIConfig,
+} from "@/compliance/src/app/components/validationErrors/config";
+import { ValidationMessageKey } from "@/compliance/src/app/components/validationErrors/types";
+import { BccrAccountDetailsResponse } from "@/compliance/src/app/types";
 
-const INVALID_ACCOUNT_MESSAGE = (
-  <span className="text-bc-error-red">
-    Please enter a valid BCCR Holding Account ID to move to the next step, or
-    contact{" "}
-    <a href={ghgRegulatorEmail} className="text-bc-link-blue hover:underline">
-      GHGRegulator@gov.bc.ca
-    </a>{" "}
-    if you have any questions.
-  </span>
-);
+type BccrValidationItem = ValidationItem<ValidationMessageKey>;
 
-const WRONG_ACCOUNT_TYPE_MESSAGE = (
-  <span className="text-bc-error-red">
-    Please enter a BCCR Account ID with the account type &apos;Operator of
-    Regulated Operation&apos;, or contact{" "}
-    <a href={ghgRegulatorEmail} className="text-bc-link-blue hover:underline">
-      GHGRegulator@gov.bc.ca
-    </a>{" "}
-    if you have any questions.
-  </span>
-);
+const getErrorMessage = (response: BccrAccountDetailsResponse) =>
+  response.validation?.errors?.[0]?.error?.message ?? response.error;
 
-const REMOTE_BCCR_ISSUE_MESSAGE = (
-  <span className="text-bc-error-red">
-    Remote BC Carbon Registry system issues, please try again later or contact{" "}
-    <a href={ghgRegulatorEmail} className="text-bc-link-blue hover:underline">
-      GHGRegulator@gov.bc.ca
-    </a>{" "}
-    if you have any questions.
-  </span>
-);
+const createValidationItem = (
+  key: ValidationMessageKey,
+  message?: string,
+): BccrValidationItem => ({
+  key,
+  error: { severity: "Error", ...(message ? { message } : {}) },
+});
 
-const WRONG_ACCOUNT_TYPE_ERROR =
-  "Account exists but does not match the required account type";
+// Maps an unsuccessful account lookup response to an inline validation item
+const toValidationItem = (
+  response: BccrAccountDetailsResponse,
+): BccrValidationItem | null => {
+  if (
+    response.has_remote_bccr_errors ||
+    response.validation?.errors?.[0]?.key === "bccr_error"
+  )
+    return createValidationItem("bccr_error");
 
-const isWrongAccountTypeError = (error?: unknown) =>
-  typeof error === "string" && error.includes(WRONG_ACCOUNT_TYPE_ERROR);
+  const message = getErrorMessage(response);
+  if (response.validation?.errors?.[0]?.key === "user_error")
+    return createValidationItem("user_error", message);
 
-const getAccountErrorMessage = (error?: unknown) =>
-  isWrongAccountTypeError(error)
-    ? WRONG_ACCOUNT_TYPE_MESSAGE
-    : INVALID_ACCOUNT_MESSAGE;
+  if (response.bccr_trading_name === null || response.error)
+    return createValidationItem("invalid_bccr_account", message);
+
+  return null;
+};
 
 const BccrHoldingAccountWidget = (props: WidgetProps) => {
   const { id, value, disabled, readonly, onChange, registry } = props;
@@ -68,78 +65,95 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState<boolean | null>(null);
-  const [showError, setShowError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<React.ReactNode>(
-    INVALID_ACCOUNT_MESSAGE,
-  );
+  const [validationError, setValidationError] =
+    useState<BccrValidationItem | null>(null);
 
   const isReadOnly = disabled || readonly || isLoading;
+  const showError = validationError !== null;
+
+  const handleAccountError = (
+    response: BccrAccountDetailsResponse,
+    isThrown = false,
+  ) => {
+    const item = isThrown ? null : toValidationItem(response);
+    setIsValid(false);
+    setValidationError(item);
+    onValidAccountResolved?.(undefined);
+
+    if (!item) {
+      onError?.([getErrorMessage(response) ?? "An unexpected error occurred."]);
+    }
+  };
 
   const validateAccount = async (accountId: string) => {
     if (accountId.length !== 15 || !validateBccrAccount) return;
 
     setIsLoading(true);
-    setShowError(false);
+    setValidationError(null);
 
     try {
-      const response = await validateBccrAccount(
+      const response: BccrAccountDetailsResponse = await validateBccrAccount(
         accountId,
         complianceReportVersionId,
       );
 
-      if (response?.has_remote_bccr_errors) {
-        setIsValid(false);
-        setShowError(true);
-        setErrorMessage(REMOTE_BCCR_ISSUE_MESSAGE);
-        onValidAccountResolved?.(undefined);
-      } else if (response?.bccr_trading_name === null || response?.error) {
-        setIsValid(false);
-        setShowError(true);
-        setErrorMessage(getAccountErrorMessage(response?.error));
-        onValidAccountResolved?.(undefined);
+      if (
+        response?.has_remote_bccr_errors ||
+        response?.bccr_trading_name === null ||
+        response?.error
+      ) {
+        handleAccountError(response);
       } else {
         setIsValid(true);
-        setShowError(false);
+        setValidationError(null);
         onValidAccountResolved?.(response);
         onError?.(undefined);
       }
     } catch (error) {
-      setIsValid(false);
-      const errorMessageText = (error as Error).message;
-
-      if (isWrongAccountTypeError(errorMessageText)) {
-        setShowError(true);
-        setErrorMessage(getAccountErrorMessage(errorMessageText));
-      } else {
-        setShowError(false);
-        onError?.([errorMessageText]);
-      }
-      onValidAccountResolved?.(undefined);
+      handleAccountError({ error: (error as Error).message }, true);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value.replace(/[^0-9]/g, "").slice(0, 15);
+    const newValue = e.target.value.replace(/\D/g, "").slice(0, 15);
     onChange(newValue);
 
     if (newValue.length === 15) {
-      validateAccount(newValue);
+      void validateAccount(newValue);
     } else {
       setIsValid(null);
-      setShowError(false);
-      setErrorMessage(INVALID_ACCOUNT_MESSAGE);
+      setValidationError(null);
       onValidAccountResolved?.(undefined);
       onError?.(undefined);
     }
   };
 
+  let statusIcon: React.ReactNode = null;
+  if (isLoading) {
+    statusIcon = <CircularProgress size={20} />;
+  } else if (isValid === true) {
+    statusIcon = <CheckCircleIcon color="success" />;
+  } else if (showError) {
+    statusIcon = <AlertIcon width="20" height="20" />;
+  }
+
   return (
     <div className="w-full">
       <TextField
         id={id}
-        helperText={showError && errorMessage}
+        helperText={
+          validationError && (
+            <span className="text-bc-error-red">
+              <ValidationMessage
+                item={validationError}
+                config={validationUIConfig}
+                links={validationLinks}
+              />
+            </span>
+          )
+        }
         size="small"
         disabled={isReadOnly}
         name={id}
@@ -151,13 +165,7 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
           endAdornment: (
             <InputAdornment position="end">
               <div className="flex items-center justify-center">
-                {isLoading ? (
-                  <CircularProgress size={20} />
-                ) : isValid === true ? (
-                  <CheckCircleIcon color="success" />
-                ) : showError ? (
-                  <AlertIcon width="20" height="20" />
-                ) : null}
+                {statusIcon}
               </div>
             </InputAdornment>
           ),

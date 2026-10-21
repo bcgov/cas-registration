@@ -4,7 +4,9 @@ import AlertNote, {
 } from "@bciers/components/form/components/AlertNote";
 import {
   ValidationErrors,
+  ValidationItem,
   ValidationItemError,
+  ValidationLinks,
   ValidationSeverity,
   ValidationUIConfig,
 } from "./types";
@@ -82,10 +84,38 @@ function renderMessageWithInlineLink(
   );
 }
 
+const escapeRegExp = (text: string) =>
+  text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// Renders any mapped link text found in the message as a link
+function renderMessageWithLinks(text: string, links?: ValidationLinks) {
+  const labels = Object.keys(links ?? {}).filter((label) =>
+    text.includes(label),
+  );
+  if (!links || labels.length === 0) return <span>{text}</span>;
+
+  const parts = text.split(
+    new RegExp(`(${labels.map(escapeRegExp).join("|")})`),
+  );
+
+  return (
+    <span>
+      {parts.map((part, index) =>
+        links[part] ? (
+          <ValidationLink key={index} href={links[part]} label={part} />
+        ) : (
+          part
+        ),
+      )}
+    </span>
+  );
+}
+
 function renderMessage<TKey extends string>(
   key: TKey,
   error: ValidationItemError,
   configMap?: Partial<Record<TKey, ValidationUIConfig<TKey>>>, // <-- Optional
+  links?: ValidationLinks,
 ) {
   const config = configMap?.[key];
   const label = config?.resolveLabel(error);
@@ -117,18 +147,36 @@ function renderMessage<TKey extends string>(
       );
     case "message_only":
     default:
-      return <span>{message}</span>;
+      return renderMessageWithLinks(message, links);
   }
+}
+
+export interface ValidationMessageProps<TKey extends string = string> {
+  item: ValidationItem<TKey>;
+  config?: Partial<Record<TKey, ValidationUIConfig<TKey>>>;
+  links?: ValidationLinks;
+}
+
+// Renders a single validation message, e.g. inline under a field, using the
+// same config-driven formatting as the summary
+export function ValidationMessage<TKey extends string = string>({
+  item,
+  config,
+  links,
+}: Readonly<ValidationMessageProps<TKey>>) {
+  return renderMessage(item.key, item.error, config, links);
 }
 
 export interface ValidationSummaryProps<TKey extends string = string> {
   errors?: ValidationErrors<TKey>;
   config?: Partial<Record<TKey, ValidationUIConfig<TKey>>>; // <-- Make optional with '?'
+  links?: ValidationLinks;
 }
 
 export function ValidationErrorSummary<TKey extends string = string>({
   errors,
   config = {}, // <-- Provide default empty object fallback
+  links,
 }: Readonly<ValidationSummaryProps<TKey>>) {
   if (!errors?.length) return null;
 
@@ -161,7 +209,7 @@ export function ValidationErrorSummary<TKey extends string = string>({
           id={`validation-${key}-${index}`}
           alertType={toAlertType(error.severity)}
         >
-          {renderMessage(key, error, config)}
+          {renderMessage(key, error, config, links)}
         </AlertNote>
       ))}
     </div>

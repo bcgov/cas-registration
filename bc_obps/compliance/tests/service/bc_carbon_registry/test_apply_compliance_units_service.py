@@ -794,7 +794,7 @@ class TestApplyComplianceUnitsService:
 
         # Mock ownership validation to raise error (invalid ownership)
         mock_bccr_service.validate_holding_account_ownership.side_effect = UserError(
-            "The sub-account does not belong to the holding account."
+            "The provided holding account does not own the compliance sub-account for this operation."
         )
 
         # Test data
@@ -806,7 +806,9 @@ class TestApplyComplianceUnitsService:
         )
 
         # Act & Assert
-        with pytest.raises(UserError, match="The sub-account does not belong to the holding account."):
+        with pytest.raises(
+            UserError, match="The provided holding account does not own the compliance sub-account for this operation."
+        ):
             ApplyComplianceUnitsService.get_apply_compliance_units_page_data(
                 account_id="123",
                 compliance_report_version_id=1,
@@ -848,7 +850,7 @@ class TestApplyComplianceUnitsService:
 
         # Act & Assert
         with pytest.raises(
-            UserError, match="The holding account does not own the compliance sub-account for this operation."
+            UserError, match="The provided holding account does not own the compliance sub-account for this operation."
         ):
             ApplyComplianceUnitsService.apply_compliance_units(
                 account_id, test_data.compliance_report_version.id, payload

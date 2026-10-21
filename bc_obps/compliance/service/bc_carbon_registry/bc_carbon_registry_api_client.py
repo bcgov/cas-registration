@@ -25,7 +25,6 @@ from compliance.service.bc_carbon_registry.schema import (
 from requests.exceptions import Timeout, ConnectionError, HTTPError, RequestException
 from compliance.service.bc_carbon_registry.utils import log_error_message
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -246,8 +245,16 @@ class BCCarbonRegistryAPIClient:
             if account_type != account_type_id:
                 from common.exceptions import UserError
 
+                logger.warning(
+                    "BCCR account type mismatch. Expected account type ID: %s, found: %s", account_type_id, account_type
+                )
+                # Shown to the user as is, so keep it user-facing
+                if account_type_id == self.OPERATOR_OF_REGULATED_OPERATION_TYPE_ID:
+                    raise UserError(
+                        "Please enter a BCCR Account ID with the account type 'Operator of Regulated Operation', or contact GHGRegulator@gov.bc.ca if you have any questions."
+                    )
                 raise UserError(
-                    f"Account exists but does not match the required account type. Expected account type ID: {account_type_id}, found: {account_type}"
+                    "The BCCR account does not match the required account type. Please contact GHGRegulator@gov.bc.ca if you have any questions."
                 )
 
         return response

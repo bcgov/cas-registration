@@ -572,7 +572,10 @@ class TestBCCarbonRegistryAPIClient:
         mock_request.return_value = Mock(status_code=200, json=lambda: account_response)
 
         # Act & Assert
-        with pytest.raises(UserError, match="Account exists but does not match the required account type"):
+        with pytest.raises(
+            UserError,
+            match="Please enter a BCCR Account ID with the account type 'Operator of Regulated Operation', or contact GHGRegulator@gov.bc.ca",
+        ):
             client.get_account_details(MOCK_FIFTEEN_DIGIT_STRING)
 
     def test_get_account_details_validates_account_type_with_explicit_type(self, authenticated_client):

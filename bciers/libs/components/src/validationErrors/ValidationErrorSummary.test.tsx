@@ -204,4 +204,48 @@ describe("ValidationErrorSummary", () => {
     );
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
+
+  it("links mapped text in message-only entries", () => {
+    render(
+      <ValidationErrorSummary
+        errors={[
+          {
+            key: "user_error",
+            error: {
+              severity: "Error",
+              message:
+                "Please try again, or contact GHGRegulator@gov.bc.ca for help.",
+            },
+          },
+        ]}
+        links={{
+          "GHGRegulator@gov.bc.ca": "mailto:GHGRegulator@gov.bc.ca",
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole("link", { name: "GHGRegulator@gov.bc.ca" }),
+    ).toHaveAttribute("href", "mailto:GHGRegulator@gov.bc.ca");
+    expect(screen.getByText(/Please try again, or contact/)).toBeVisible();
+  });
+
+  it("does not add links when mapped text is not in the message", () => {
+    render(
+      <ValidationErrorSummary
+        errors={[
+          {
+            key: "user_error",
+            error: { severity: "Error", message: "Something went wrong." },
+          },
+        ]}
+        links={{
+          "GHGRegulator@gov.bc.ca": "mailto:GHGRegulator@gov.bc.ca",
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Something went wrong.")).toBeVisible();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
 });

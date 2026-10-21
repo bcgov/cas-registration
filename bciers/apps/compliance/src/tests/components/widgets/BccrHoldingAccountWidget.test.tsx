@@ -131,12 +131,21 @@ describe("BccrHoldingAccountWidget", () => {
     });
   });
 
-  it("shows error message for wrong account type", async () => {
+  it("shows a backend user_error inline with the email linked", async () => {
     const wrongAccountTypeError =
-      "Account exists but does not match the required account type. Expected account type ID: 11, found: 14";
-    mockValidateBccrAccount.mockRejectedValueOnce(
-      new Error(wrongAccountTypeError),
-    );
+      "Please enter a BCCR Account ID with the account type 'Operator of Regulated Operation', or contact GHGRegulator@gov.bc.ca if you have any questions.";
+    mockValidateBccrAccount.mockResolvedValueOnce({
+      error: wrongAccountTypeError,
+      validation: {
+        message: wrongAccountTypeError,
+        errors: [
+          {
+            key: "user_error",
+            error: { severity: "Error", message: wrongAccountTypeError },
+          },
+        ],
+      },
+    });
 
     render(<BccrHoldingAccountWidget {...defaultProps} />);
     const input = screen.getByRole("textbox");
@@ -157,31 +166,7 @@ describe("BccrHoldingAccountWidget", () => {
       ).toHaveAttribute("href", "mailto:GHGRegulator@gov.bc.ca");
       expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
     });
-  });
-
-  it("shows error message for wrong account type when returned the response.error", async () => {
-    const wrongAccountTypeError =
-      "Account exists but does not match the required account type";
-
-    mockValidateBccrAccount.mockResolvedValueOnce({
-      error: wrongAccountTypeError,
-      bccr_trading_name: null,
-    });
-
-    render(<BccrHoldingAccountWidget {...defaultProps} />);
-    const input = screen.getByRole("textbox");
-
-    fireEvent.change(input, { target: { value: "123456789012345" } });
-
-    await waitFor(() => {
-      expect(input).toHaveAttribute("aria-invalid", "true");
-      expect(
-        screen.getByText(
-          /please enter a bccr account id with the account type 'operator of regulated operation', or contact/i,
-        ),
-      ).toBeVisible();
-      expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
-    });
+    expect(mockOnError).not.toHaveBeenCalledWith(expect.any(Array));
   });
 
   it("shows error message for remote BCCR API errors", async () => {
@@ -207,6 +192,61 @@ describe("BccrHoldingAccountWidget", () => {
         }),
       ).toHaveAttribute("href", "mailto:GHGRegulator@gov.bc.ca");
     });
+  });
+
+  it("shows a returned non-account error inline as an invalid account", async () => {
+    mockValidateBccrAccount.mockResolvedValueOnce({
+      error:
+        "An internal server error has occurred. Please contact ghgregulator@gov.bc.ca for help.",
+    });
+
+    render(<BccrHoldingAccountWidget {...defaultProps} />);
+    const input = screen.getByRole("textbox");
+
+    fireEvent.change(input, { target: { value: "123456789012345" } });
+
+    await waitFor(() => {
+      expect(input).toHaveAttribute("aria-invalid", "true");
+      expect(
+        screen.getByText(
+          /please enter a valid bccr holding account id to move to the next step/i,
+        ),
+      ).toBeVisible();
+      expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
+    });
+    expect(mockOnError).not.toHaveBeenCalledWith(expect.any(Array));
+  });
+
+  it("shows the BCCR error inline for a backend bccr_error response", async () => {
+    mockValidateBccrAccount.mockResolvedValueOnce({
+      error: "The system cannot connect to the external application.",
+      validation: {
+        errors: [
+          {
+            key: "bccr_error",
+            error: {
+              severity: "Error",
+              message: "The system cannot connect to the external application.",
+            },
+          },
+        ],
+      },
+    });
+
+    render(<BccrHoldingAccountWidget {...defaultProps} />);
+    const input = screen.getByRole("textbox");
+
+    fireEvent.change(input, { target: { value: "123456789012345" } });
+
+    await waitFor(() => {
+      expect(input).toHaveAttribute("aria-invalid", "true");
+      expect(
+        screen.getByText(
+          /Remote BC Carbon Registry system issues, please try again later or contact/i,
+        ),
+      ).toBeVisible();
+    });
+    expect(mockOnError).not.toHaveBeenCalledWith(expect.any(Array));
   });
 
   it("renders input with correct help text", () => {

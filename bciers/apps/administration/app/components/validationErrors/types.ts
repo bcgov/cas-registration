@@ -1,8 +1,13 @@
 import { ValidationMessageKey as SharedKey } from "@bciers/components/validationErrors";
 
 /**
- * Application specific validation message keys, combined wit shared system keys
+ * Application-specific validation message keys
  */
+export const localValidationKeys = [
+  "no_bceid_access",
+  "operation_rep_required",
+] as const;
+
 export type ValidationMessageKey = SharedKey<
-  "no_bceid_access" | "operation_rep_required" | "operator_not_found"
+  (typeof localValidationKeys)[number]
 >;
