@@ -84,12 +84,9 @@ const CommentsSidebar: React.FC<Props> = ({
       )}
       {commentThreads.map((thread) => (
         <ThreadComponent
-         
           key={`thread-${thread.id}`}
-         
           thread={thread}
           canReply={canCreate}
-       
           userId={userId}
           onCommentDeleted={handleCommentDeleted}
         />

@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { Grid } from "@mui/material";
 import ReportComments from "../comments/ReportComments";
-import { getToken } from "@bciers/actions";
 
 export default function withReportComments<
   TPageProps extends { version_id: number },

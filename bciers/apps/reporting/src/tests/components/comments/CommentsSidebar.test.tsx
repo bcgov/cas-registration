@@ -19,16 +19,13 @@ describe("The Comments Sidebar", () => {
 
   it("shows a comments title and a new comment button", () => {
     render(
-      
       <CommentsSidebar
         userId={userId}
         version_id={42}
         threads={[]}
         facilities={[]}
         userRole={InternalFrontEndRoles.CAS_DIRECTOR}
-     
       />,
-    ,
     );
 
     expect(screen.getByRole("heading", { name: "Comments" })).toBeVisible();

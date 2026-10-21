@@ -28,6 +28,7 @@ const ReportComments: React.FC<{ version_id: number }> = async ({
       threads={threadsResponse.threads}
       facilities={threadsResponse.facilities}
       userRole={token.app_role}
+      userId={token.user_guid}
     />
   );
 };
