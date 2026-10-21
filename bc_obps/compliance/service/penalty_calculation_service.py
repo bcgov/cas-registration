@@ -271,10 +271,12 @@ class PenaltyCalculationService:
             faa_interest_paid = interest_line_items.aggregate(
                 total=Sum("elicensing_payments__amount", default=ZERO_DECIMAL),
             )["total"]
+
         if refresh_result.invoice and refresh_result.invoice.invoice_interest_balance is not None:
             faa_interest = (
                 faa_interest - faa_interest_paid if faa_interest else refresh_result.invoice.invoice_interest_balance
             )
+
         total_amount = (
             (penalty.penalty_amount + faa_interest - faa_interest_paid) if faa_interest else penalty.penalty_amount
         )
@@ -341,8 +343,10 @@ class PenaltyCalculationService:
             faa_interest_paid = interest_line_items.aggregate(
                 total=Sum("elicensing_payments__amount", default=ZERO_DECIMAL),
             )["total"]
+
         if refresh_result.invoice and refresh_result.invoice.invoice_interest_balance is not None:
             faa_interest = faa_interest if faa_interest else refresh_result.invoice.invoice_interest_balance
+
         total_amount = (
             (penalty_amount + faa_interest - faa_interest_paid)
             if faa_interest
@@ -577,6 +581,12 @@ class PenaltyCalculationService:
             faa_interest_paid = interest_line_items.aggregate(
                 total=Sum("elicensing_payments__amount", default=ZERO_DECIMAL),
             )["total"]
+
+        if refresh_result.invoice and refresh_result.invoice.invoice_interest_balance is not None:
+            faa_interest = (
+                faa_interest - faa_interest_paid if faa_interest else refresh_result.invoice.invoice_interest_balance
+            )
+
         total_amount = total_penalty + faa_interest - faa_interest_paid
 
         result = CalculatedPenaltyData(
@@ -882,6 +892,12 @@ class PenaltyCalculationService:
             faa_interest_paid = interest_line_items.aggregate(
                 total=Sum("elicensing_payments__amount", default=ZERO_DECIMAL),
             )["total"]
+
+        if refresh_result.invoice and refresh_result.invoice.invoice_interest_balance is not None:
+            faa_interest = (
+                faa_interest - faa_interest_paid if faa_interest else refresh_result.invoice.invoice_interest_balance
+            )
+
         total_amount = total_penalty + faa_interest - faa_interest_paid
 
         result = CalculatedPenaltyData(

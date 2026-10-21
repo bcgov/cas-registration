@@ -103,6 +103,16 @@ class ElicensingInvoiceService:
         invoice_number = invoice.invoice_number
         invoice_due_date = invoice.due_date.strftime("%b %-d, %Y") if invoice.due_date else "—"
         amount_due, billing_items, _, _, _ = cls.calculate_invoice_amount_due(invoice)
+        # Apply interest to the invoice if interest exists and invoice_interest_balance is needed
+        if invoice.invoice_interest_balance is not None and invoice.invoice_interest_balance > Decimal('0.00'):
+            billing_items.append(
+                {
+                    'date': f'{DATE_TODAY}',
+                    'description': 'FAA Interest',
+                    'amount': f'${invoice.invoice_interest_balance:,.2f}',
+                }
+            )
+            amount_due += invoice.invoice_interest_balance
 
         total_amount_due = f"${amount_due.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"
 
