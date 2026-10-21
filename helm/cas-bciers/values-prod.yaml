@@ -165,5 +165,3 @@ cas-logging-sidecar:
   host: ~
   index: "cas-bciers-prod-logs"
   prefix: "cas-bciers-prod-logs"
-  tag: "oc-cas-bciers"
-  logName: "cas-bciers-prod-logs"
