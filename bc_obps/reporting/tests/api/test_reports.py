@@ -205,8 +205,11 @@ class TestReportsEndpoint(CommonTestSetup):
     @patch("service.report_version_service.ReportVersionService.create_report_version")
     @patch("service.report_service.ReportService.get_report_by_id")
     def test_returns_data_as_provided_by_create_report_version(
-        self, mock_get_report_by_id: MagicMock, mock_create_report_version: MagicMock
+        self,
+        mock_get_report_by_id: MagicMock,
+        mock_create_report_version: MagicMock,
     ):
+        # Arrange: create user, operation, report, and report version
         user_operator = baker.make_recipe(
             'registration.tests.utils.user_operator',
             role='admin',
