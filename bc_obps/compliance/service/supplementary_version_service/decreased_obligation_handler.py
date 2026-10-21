@@ -668,18 +668,7 @@ class DecreasedObligationHandler:
         """
         invoice = ElicensingInvoice.objects.get(compliance_obligation__compliance_report_version_id=previous_version_id)
         # invoice_interest_balance should never be None here; fail loudly
-        interest_line_items = invoice.elicensing_line_items.filter(
-            line_item_type=ElicensingLineItem.LineItemType.INTEREST,
-            elicensing_invoice=invoice,
-        )
-        interest_amount = interest_line_items.aggregate(
-            total=Coalesce(Sum("base_amount"), ZERO_DECIMAL),
-        )["total"]
-        interest_paid = interest_line_items.aggregate(
-            total=Coalesce(Sum("elicensing_payments__amount"), ZERO_DECIMAL),
-        )["total"]
-
-        interest_not_paid = interest_amount > interest_paid
+        interest_not_paid = invoice.invoice_interest_balance > ZERO_DECIMAL  # type: ignore[operator]
         status = (
             ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
             if interest_not_paid

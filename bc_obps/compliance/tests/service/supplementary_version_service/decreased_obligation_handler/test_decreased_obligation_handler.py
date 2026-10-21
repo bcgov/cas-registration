@@ -1,12 +1,11 @@
-from datetime import date
 from decimal import Decimal
-import uuid
 import pytest
 import common.lib.pgtrigger as pgtrigger
 from model_bakery import baker
-from compliance.models import ComplianceReportVersion, ElicensingInvoice, ElicensingLineItem
+from compliance.models import ComplianceReportVersion, ElicensingInvoice
 from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
+from compliance.models.elicensing_line_item import ElicensingLineItem
 from reporting.models import ReportVersion
 from unittest.mock import MagicMock, patch
 from compliance.service.supplementary_version_service.decreased_obligation_handler import DecreasedObligationHandler
@@ -1684,15 +1683,7 @@ class TestMarkPreviousVersionFullyMet:
         assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
 
     def test_marks_interest_not_paid_when_interest_still_outstanding(self):
-        # FAA interest line item for the invoice
-        self.faa_line_item = ElicensingLineItem.objects.create(
-            guid=uuid.uuid4(),
-            object_id=1000000001,
-            fee_date=date.today(),
-            elicensing_invoice=self.invoice,
-            line_item_type=ElicensingLineItem.LineItemType.INTEREST,
-            base_amount=Decimal("25.00"),
-        )
+        self.invoice.invoice_interest_balance = Decimal("25.00")
         self.invoice.outstanding_balance = Decimal("25.00")
         self.invoice.save()
 
