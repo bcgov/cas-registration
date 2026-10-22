@@ -103,8 +103,12 @@ class ElicensingInvoiceService:
         invoice_number = invoice.invoice_number
         invoice_due_date = invoice.due_date.strftime("%b %-d, %Y") if invoice.due_date else "—"
         amount_due, billing_items, _, _, _ = cls.calculate_invoice_amount_due(invoice)
-        # Apply interest to the invoice if interest exists and invoice_interest_balance is needed
-        if invoice.invoice_interest_balance is not None and invoice.invoice_interest_balance > Decimal('0.00'):
+        # Apply interest to the invoice if interest exists and compliance obligation is not paid yet
+        if (
+            invoice.invoice_interest_balance is not None
+            and invoice.invoice_interest_balance > Decimal('0.00')
+            and invoice.invoice_fee_balance != Decimal('0.00')
+        ):
             billing_items.append(
                 {
                     'date': f'{DATE_TODAY}',
@@ -425,6 +429,9 @@ class ElicensingInvoiceService:
             Prefetch("elicensing_adjustments"),
         )
 
+        if invoice.invoice_fee_balance == Decimal('0.00'):
+            fee_line_items = fee_line_items.exclude(line_item_type=ElicensingLineItem.LineItemType.INTEREST)
+
         for line_item in fee_line_items:
             line_total, line_billing_items = ElicensingInvoiceService._build_line_item_entry(line_item)
             billing_items.extend(line_billing_items)
@@ -615,9 +622,17 @@ class ElicensingInvoiceService:
                 0,
                 output_field=DecimalField(max_digits=12, decimal_places=2),
             ),
-            faa_interest_total=Coalesce(
+            faa_sub_interest_total=Coalesce(
                 Subquery(faa_interest_total_subquery),
                 0,
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            ),
+            faa_interest_total=Case(
+                When(
+                    invoice_fee_balance__gt=Decimal("0.00"),
+                    then=F("invoice_interest_balance"),
+                ),
+                default=F("faa_sub_interest_total"),
                 output_field=DecimalField(max_digits=12, decimal_places=2),
             ),
         )
