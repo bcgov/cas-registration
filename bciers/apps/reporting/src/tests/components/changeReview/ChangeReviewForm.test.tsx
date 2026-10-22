@@ -6,6 +6,7 @@ import { HeaderStep } from "@reporting/src/app/components/taskList/types";
 const mockRouterPush = vi.fn();
 
 vi.mock("next/navigation", () => ({
+  usePathname: vi.fn(),
   useRouter: () => ({ push: mockRouterPush }),
 }));
 

@@ -16,7 +16,7 @@ import {
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
 import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilitiesInfoText";
-import SnackBar from "@bciers/components/form/components/SnackBar";
+import { useSnackbar } from "@bciers/components/snackbar";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { getUpdatedReportOperationDetails } from "@reporting/src/app/utils/getUpdatedReportOperationDetails";
 import {
@@ -84,7 +84,7 @@ export default function OperationReviewForm({
   });
 
   const [apiError, setApiError] = useState<string | null>(null);
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const { showSnackbar } = useSnackbar();
   const [navigationInfo, setNavigationInfo] = useState(navigationInformation);
 
   const router = useRouter();
@@ -154,7 +154,7 @@ export default function OperationReviewForm({
       setErrors([missingOperationRepresentativeError]);
     } else {
       setErrors(undefined);
-      setIsSnackbarOpen(true);
+      showSnackbar("Changes synced successfully");
     }
   };
 
@@ -235,11 +235,6 @@ export default function OperationReviewForm({
         continueUrl={navigationInfo.continueUrl}
         errors={renderedErrors}
         backButtonText="Back to All Reports"
-      />
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        message="Changes synced successfully"
-        setIsSnackbarOpen={setIsSnackbarOpen}
       />
     </>
   );

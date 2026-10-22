@@ -11,6 +11,7 @@ vi.mock("@bciers/utils/src/sessionUtils", () => ({
 // Mock the router
 const mockRouterPush = vi.fn();
 vi.mock("next/navigation", () => ({
+  usePathname: vi.fn(),
   useRouter: () => ({
     push: mockRouterPush,
   }),

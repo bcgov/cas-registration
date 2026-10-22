@@ -19,6 +19,7 @@ import {
 } from "@bciers/utils/src/environmentDetection";
 import SessionTimeoutHandler from "@bciers/components/auth/SessionTimeoutHandler";
 import SentryUserContext from "@bciers/components/sentry/SentryUserContext";
+import { SnackbarProvider } from "@bciers/components/snackbar";
 
 const rootMetadata: Metadata = {
   title: "B.C. OBPS",
@@ -81,20 +82,22 @@ export default async function RootLayout({
             }
             <NextAppDirEmotionCacheProvider options={{ key: "mui" }}>
               <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <Header />
-                <Bread
-                  separator={<span aria-hidden="true"> &gt; </span>}
-                  capitalizeLinks
-                  defaultLinks={defaultLinks}
-                  zone={zone}
-                />
-                <Main>
-                  <SessionTimeoutHandler />
-                  <SentryUserContext />
-                  {children}
-                </Main>
-                <Footer showMockTimePicker={showMockTimePicker} />
+                <SnackbarProvider>
+                  <CssBaseline />
+                  <Header />
+                  <Bread
+                    separator={<span aria-hidden="true"> &gt; </span>}
+                    capitalizeLinks
+                    defaultLinks={defaultLinks}
+                    zone={zone}
+                  />
+                  <Main>
+                    <SessionTimeoutHandler />
+                    <SentryUserContext />
+                    {children}
+                  </Main>
+                  <Footer showMockTimePicker={showMockTimePicker} />
+                </SnackbarProvider>
               </ThemeProvider>
             </NextAppDirEmotionCacheProvider>
           </SessionRoleContextProvider>
