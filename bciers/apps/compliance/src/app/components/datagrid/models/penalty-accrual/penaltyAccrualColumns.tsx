@@ -9,6 +9,7 @@ const penaltyAccrualColumns = (): GridColDef[] => {
       flex: 1,
       sortable: false,
       type: "string",
+      renderCell: ({ value }) => <span data-happo-hide="">{value}</span>,
     },
     {
       field: "daily_penalty",

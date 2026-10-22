@@ -206,10 +206,7 @@ async function runScenario(opts: {
 
   // Submit supplementary report decrease scenario
   await reports.route();
-  await reports.supplementaryReportObligationDecrease(
-    request,
-    scenario.decrease,
-  );
+  await reports.submitSupplementaryProductionChange(request, scenario.decrease);
 
   // Assert CRV status after decrease
   await summaries.route();

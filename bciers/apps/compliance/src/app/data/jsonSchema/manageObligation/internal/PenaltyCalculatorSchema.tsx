@@ -54,10 +54,8 @@ export const penaltyCalculatorSchema: RJSFSchema = {
   },
 };
 
-// block! overrides FieldTemplate's inline-block label, which otherwise leaves MUI's
-// inline-flex picker sitting beside its header rather than below it
 const numberedSectionOptions = {
-  labelOverrideStyle: "block! mb-4 font-normal text-bc-bg-blue",
+  labelOverrideStyle: "mb-4 font-normal text-bc-bg-blue",
 };
 
 // A factory, so minDate resolves when the page renders rather than at module load
@@ -77,7 +75,7 @@ export const createPenaltyCalculatorUiSchema = (): UiSchema => ({
   final_day_of_penalty_accrual: {
     "ui:widget": "DateWidget",
     "ui:FieldTemplate": FieldTemplate,
-    "ui:classNames": "text-bc-bg-blue [&>div]:max-w-50",
+    "ui:classNames": "text-bc-bg-blue [&>label]:block [&>div]:max-w-50",
     "ui:options": {
       ...numberedSectionOptions,
       simpleDateFormat: true,
