@@ -81,3 +81,8 @@ export type ValidationUIConfigInput<TKey extends string = string> = Omit<
   ValidationUIConfig<TKey>,
   "resolveHref" | "resolveLabel" | "resolveMessage" | "resolveFormattedMessage"
 >;
+
+/**
+ * Maps text that may appear in a validation message to the href it should link to
+ */
+export type ValidationLinks = Record<string, string>;

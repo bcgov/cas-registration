@@ -4,6 +4,12 @@ import {
   IssuanceStatus,
   PenaltyStatus,
 } from "@bciers/utils/src/enums";
+import type { ValidationErrors } from "@bciers/components/validationErrors";
+
+interface ValidationResponse {
+  message?: string;
+  errors?: ValidationErrors;
+}
 
 export interface DataGridSearchParams {
   page?: string;
@@ -19,9 +25,17 @@ export interface ComplianceReportVersionGridSearchParams extends DataGridSearchP
   penalty_status?: string;
   obligation_id?: string;
 }
+export interface BccrErrorResponse {
+  error: string;
+  validation?: ValidationResponse;
+}
+
 export interface BccrAccountDetailsResponse {
   bccr_trading_name?: string | null;
+  has_remote_bccr_errors?: boolean;
   error?: string;
+  // Structured backend errors, returned by actionHandler for 4xx responses
+  validation?: ValidationResponse;
 }
 
 export interface BccrComplianceAccountResponse {
