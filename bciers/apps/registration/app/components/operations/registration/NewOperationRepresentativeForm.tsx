@@ -37,7 +37,7 @@ interface NewOperationRepresentativeFormProps extends Omit<
 
 // With no operation representative selected, show the whole form to add one;
 // otherwise only the button to add another
-const withNewOperationRepresentativeForm = <
+const addMissingOperationRepresentative = <
   T extends {
     operation_representatives?: unknown[];
     new_operation_representative?: unknown[];
@@ -62,7 +62,7 @@ const NewOperationRepresentativeForm: FC<
   } = props;
 
   const [formState, setFormState] = useState(() =>
-    withNewOperationRepresentativeForm(formData),
+    addMissingOperationRepresentative(formData),
   );
   const [key, resetKey] = useKey();
   const [existingContactId, setExistingContactId] = useState("");
@@ -129,7 +129,7 @@ const NewOperationRepresentativeForm: FC<
     } else {
       // This is needed to update the form data and show the submit button
       setFormState(
-        withNewOperationRepresentativeForm({
+        addMissingOperationRepresentative({
           // Take the list from the event so deletions made in the
           // OperationRepresentativeWidget aren't discarded
           operation_representatives:

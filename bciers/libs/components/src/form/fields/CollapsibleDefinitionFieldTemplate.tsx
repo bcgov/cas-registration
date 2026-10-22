@@ -36,7 +36,9 @@ function CollapsibleDefinitionFieldTemplate({
               slotProps={{
                 title: {
                   variant: "h6",
-                  className: hasErrors ? "text-[#dc2626]" : "text-bc-bg-blue",
+                  className: hasErrors
+                    ? "text-bc-error-red"
+                    : "text-bc-bg-blue",
                 },
               }}
               className="text-[blue]"
