@@ -75,9 +75,8 @@ class OperationService:
         else:
             operation = OperationDataAccessService.get_by_id(operation_id)
         user: User = UserDataAccessService.get_by_guid(user_guid)
-        if user.is_industry_user():
-            if not operation.user_has_access(user.user_guid):
-                raise Exception(UNAUTHORIZED_MESSAGE)
+        if user.is_industry_user() and not operation.user_has_access(user.user_guid):
+            raise Exception(UNAUTHORIZED_MESSAGE)
         return operation
 
     @classmethod
@@ -92,7 +91,7 @@ class OperationService:
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
         base_qs = OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(user)
-        return filters.filter(base_qs).order_by(sort_by)
+        return filters.filter(base_qs).order_by(sort_by, f"{sort_direction}created_at", f"{sort_direction}id")
 
     @classmethod
     def list_current_users_unregistered_operations(

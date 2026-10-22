@@ -40,7 +40,7 @@ class FacilityDesignatedOperationTimelineService:
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
         base_qs = cls.get_timeline_by_operation_id(user, operation_id)
-        return filters.filter(base_qs).order_by(sort_by)
+        return filters.filter(base_qs).order_by(sort_by, f"{sort_direction}created_at", f"{sort_direction}id")
 
     @classmethod
     def get_current_timeline(
