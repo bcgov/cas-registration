@@ -748,6 +748,13 @@ class TestApplyComplianceUnitsService:
         with pytest.raises(ComplianceObligation.DoesNotExist):
             ApplyComplianceUnitsService.is_credit_usage_over_cap(crv.id)
 
+    def test_is_credit_usage_over_cap_no_fee_amount_raises(self):
+        obligation = baker.make_recipe('compliance.tests.utils.compliance_obligation')
+        obligation.fee_amount_dollars = None
+        obligation.save()
+        with pytest.raises(UserError, match="Unable to calculate unit cap: missing fee amount"):
+            ApplyComplianceUnitsService.is_credit_usage_over_cap(obligation.compliance_report_version_id)
+
     @patch(
         "compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
     )
