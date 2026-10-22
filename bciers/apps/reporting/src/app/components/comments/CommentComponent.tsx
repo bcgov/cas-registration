@@ -1,4 +1,4 @@
-import { Grid, Paper, Typography } from "@mui/material";
+import { Paper, Typography } from "@mui/material";
 import { Comment } from "./types";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
 
@@ -8,12 +8,12 @@ interface Props {
 
 const CommentComponent: React.FC<Props> = ({ comment }) => {
   return (
-    <Paper sx={{ p: 2, m: 1 }}>
-      <Grid sx={{ display: "flex", justifyContent: "space-between" }}>
+    <Paper className="p-4 m-2">
+      <div className="flex justify-between">
         <Typography variant="caption" className="font-bold">
           {comment.author}
         </Typography>
-        <Typography variant="caption" sx={{ color: "text.secondary" }}>
+        <Typography variant="caption" className="text-black/60">
           {comment.timestamp &&
             formatDate(
               new Date(comment.timestamp).toLocaleString("en-US", {
@@ -22,7 +22,7 @@ const CommentComponent: React.FC<Props> = ({ comment }) => {
               "MMM D, YYYY h:mm A",
             )}
         </Typography>
-      </Grid>
+      </div>
       <Typography variant="body2" className="mt-2">
         {comment.comment}
       </Typography>
