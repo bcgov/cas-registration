@@ -6,7 +6,7 @@ async function postCommentThread(
   facilityId?: string,
 ) {
   const endpoint = `reporting/v2/report-version/${reportVersionId}/threads`;
-  const pathToRevalidate = `reporting/v2/report-version/${reportVersionId}/threads`;
+  const pathToRevalidate = `reports/${reportVersionId}/`;
   const response = await actionHandler(endpoint, "POST", pathToRevalidate, {
     body: JSON.stringify({
       facility_id: facilityId,
