@@ -9,7 +9,7 @@ import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWith
 import { RJSFSchema } from "@rjsf/utils";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { getUpdatedFacilityReportDetails } from "@reporting/src/app/utils/getUpdatedFacilityReportDetails";
-import SnackBar from "@bciers/components/form/components/SnackBar";
+import { useSnackbar } from "@bciers/components/snackbar";
 import {
   useValidationErrors,
   handleApiResponse,
@@ -52,7 +52,7 @@ export const FacilityReview: React.FC<Props> = ({
   const [formData, setFormData] = useState<FacilityReviewFormData>(formsData);
   const { setErrors, renderedErrors } = useValidationErrors();
   const uiSchema = buildFacilityReviewUiSchema(operationId, facility_id);
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const { showSnackbar } = useSnackbar();
   const handleSubmit = async () => {
     const method = "POST";
     const endpoint = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
@@ -104,7 +104,7 @@ export const FacilityReview: React.FC<Props> = ({
       facility_bcghgid: getUpdatedFacilityData.facility_bcghgid,
     }));
     setErrors(undefined);
-    setIsSnackbarOpen(true);
+    showSnackbar("Changes synced successfully");
   };
 
   return (
@@ -139,11 +139,6 @@ export const FacilityReview: React.FC<Props> = ({
         saveButtonDisabled={false}
         taskListElements={navigationInformation.taskList}
         errors={renderedErrors}
-      />
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        message="Changes synced successfully"
-        setIsSnackbarOpen={setIsSnackbarOpen}
       />
     </>
   );

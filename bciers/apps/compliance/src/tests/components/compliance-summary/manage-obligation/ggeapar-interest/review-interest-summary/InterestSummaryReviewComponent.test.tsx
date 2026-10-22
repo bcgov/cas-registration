@@ -4,6 +4,7 @@ import InterestSummaryReviewComponent from "@/compliance/src/app/components/comp
 // Mock Next.js router used by ComplianceStepButtons
 const pushMock = vi.fn();
 vi.mock("next/navigation", () => ({
+  usePathname: vi.fn(),
   useRouter: () => ({ push: pushMock }),
 }));
 

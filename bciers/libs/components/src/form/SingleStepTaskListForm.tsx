@@ -12,7 +12,7 @@ import {
   createUnnestedFormData,
 } from "@bciers/components/form/formDataUtils";
 import { FormMode, FrontendMessages } from "@bciers/utils/src/enums";
-import SnackBar from "@bciers/components/form/components/SnackBar";
+import { useSnackbar } from "@bciers/components/snackbar";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 
 interface SingleStepTaskListFormProps {
@@ -34,6 +34,7 @@ interface SingleStepTaskListFormProps {
   handleDelete?: () => void;
   deleteButtonText?: string;
   customButtonSection?: React.ReactNode;
+  keepSnackbarOnNextNavigation?: boolean;
 }
 
 const SingleStepTaskListForm = ({
@@ -55,6 +56,7 @@ const SingleStepTaskListForm = ({
   showDeleteButton = false,
   deleteButtonText = "Delete",
   customButtonSection,
+  keepSnackbarOnNextNavigation = false,
 }: SingleStepTaskListFormProps) => {
   const formData = createNestedFormData(rawFormData, schema);
   const [formState, setFormState] = useState(formData);
@@ -63,7 +65,7 @@ const SingleStepTaskListForm = ({
     disabled || mode === FormMode.READ_ONLY,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const { showSnackbar, hideSnackbar } = useSnackbar();
 
   const formSections = schema.properties as RJSFSchema;
   const formSectionList = Object.keys(formSections);
@@ -89,7 +91,9 @@ const SingleStepTaskListForm = ({
       setIsDisabled(false);
     } else {
       setIsDisabled(true);
-      setIsSnackbarOpen(true);
+      showSnackbar(FrontendMessages.SUBMIT_CONFIRMATION, {
+        keepOnNextNavigation: keepSnackbarOnNextNavigation,
+      });
     }
   };
 
@@ -105,11 +109,6 @@ const SingleStepTaskListForm = ({
 
   return (
     <div className="w-full flex flex-row mt-8">
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        message={FrontendMessages.SUBMIT_CONFIRMATION}
-        setIsSnackbarOpen={setIsSnackbarOpen}
-      />
       {showTasklist && (
         <TaskList
           // Hide the task list on mobile
@@ -155,7 +154,7 @@ const SingleStepTaskListForm = ({
                         variant="contained"
                         onClick={() => {
                           setIsDisabled(false);
-                          setIsSnackbarOpen(false);
+                          hideSnackbar();
                           setModeState(FormMode.EDIT);
                         }}
                       >

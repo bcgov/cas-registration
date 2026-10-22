@@ -9,15 +9,14 @@ import {
   AccessRequestGridRenderCellParams,
   AccessRequestStatusAction,
 } from "@/administration/app/components/userOperators/types";
-import { useCallback, useState, useTransition } from "react";
+import { useCallback, useTransition } from "react";
 import handleAccessRequestStatus from "./handleAccessRequestStatus";
-import SnackBar from "@bciers/components/form/components/SnackBar";
+import { useSnackbar } from "@bciers/components/snackbar";
 import LoadingSpinner from "@bciers/components/loading/LoadingSpinner";
 import { BC_GOV_COMPONENTS_GREY } from "@bciers/styles";
 
 const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const { showSnackbar } = useSnackbar();
   const [isPending, startTransition] = useTransition();
 
   const {
@@ -71,10 +70,9 @@ const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
         userOperatorRole as UserOperatorRoles,
       );
 
-      setSnackbarMessage(
+      showSnackbar(
         `${res.first_name} ${res.last_name} is now ${res.status.toLowerCase()}`,
       );
-      setIsSnackbarOpen(true);
 
       params.api.updateRows([
         {
@@ -109,11 +107,6 @@ const ActionColumnCell = (params: AccessRequestGridRenderCellParams) => {
           </Button>
         ))}
       </Stack>
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        message={snackbarMessage}
-        setIsSnackbarOpen={setIsSnackbarOpen}
-      />
     </>
   );
 };

@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { URLSearchParams } from "url";
 
 vi.mock("next/navigation", () => ({
+  usePathname: vi.fn(),
   useSearchParams: vi.fn(),
 }));
 
