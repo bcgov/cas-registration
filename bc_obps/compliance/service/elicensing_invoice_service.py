@@ -429,7 +429,7 @@ class ElicensingInvoiceService:
             Prefetch("elicensing_adjustments"),
         )
 
-        if invoice.invoice_fee_balance == Decimal('0.00'):
+        if invoice.invoice_fee_balance != Decimal('0.00'):
             fee_line_items = fee_line_items.exclude(line_item_type=ElicensingLineItem.LineItemType.INTEREST)
 
         for line_item in fee_line_items:
