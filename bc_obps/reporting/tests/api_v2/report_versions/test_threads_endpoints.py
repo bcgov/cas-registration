@@ -42,7 +42,6 @@ class TestThreadsV2Endpoints(CommonTestSetup):
         thread.refresh_from_db()
         comment.refresh_from_db()
 
-        
         response = TestUtils.mock_get_with_auth_role(self, "cas_director", self.endpoint_under_test)
         assert response.status_code == 200
 
