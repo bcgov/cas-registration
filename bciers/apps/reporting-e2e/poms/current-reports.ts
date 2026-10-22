@@ -49,6 +49,13 @@ const REVIEW_OPERATION_INFO_URL_REGEX = new RegExp(
   "i",
 );
 
+type SupplementaryProductionChange = {
+  annualProduction: number;
+  productIndex: number;
+  reviewChangesReason?: string;
+  facilityId?: FacilityIDs;
+};
+
 export class CurrentReportsPOM {
   readonly page: Page;
 
@@ -783,28 +790,25 @@ export class CurrentReportsPOM {
   // -----------------
 
   /**
-   * Completes a supplementary report flow that **decreases an obligation**
-   * for an existing “Obligation Not Met” report.
+   * Creates and submits a supplementary report for the “Obligation Not Met” report,
+   * changing one product's annual production.
    *
-   * “Amount of decrease” in this flow is controlled by the production input(s)
+   * Production drives the emissions limit: more production lowers the obligation,
+   * less production raises it.
    *
    * @param apiContext Playwright API request context (required for stub submission)
-   * @param options Controls how much the obligation decreases (via production values)
+   * @param options The production change to make
+   * @returns The supplementary report version id
    */
-  async supplementaryReportObligationDecrease(
+  async submitSupplementaryProductionChange(
     apiContext: APIRequestContext,
     {
       annualProduction,
       productIndex,
       reviewChangesReason,
       facilityId = FacilityIDs.OBLIGATION_NOT_MET,
-    }: {
-      annualProduction: number;
-      productIndex: number;
-      reviewChangesReason?: string;
-      facilityId?: FacilityIDs;
-    },
-  ): Promise<void> {
+    }: SupplementaryProductionChange,
+  ): Promise<number> {
     const reportId = await this.createSupplementaryReportById(
       ReportIDs.OBLIGATION_NOT_MET,
     );
@@ -831,5 +835,7 @@ export class CurrentReportsPOM {
     await this.clickSaveAndContinue(new RegExp(this.getSignOffUrl(reportId)));
 
     await this.submitReportById(apiContext, reportId, false, true, true);
+
+    return reportId;
   }
 }

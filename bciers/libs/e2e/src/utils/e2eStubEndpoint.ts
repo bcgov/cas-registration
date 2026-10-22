@@ -29,13 +29,13 @@ type Options = {
  *   request issuance, mark director approval) without triggering real external integrations.
  * - This helper centralizes the "intercept → call stub endpoint → fulfill route" pattern.
  */
-export async function attachE2EStubEndpoint(
+export async function attachE2EStubEndpoint<T = unknown>(
   page: Page,
   api: APIRequestContext,
   buildStubData: (args: BuildStubDataArgs) => any,
   errorPrefix: string,
   options: Options = {},
-): Promise<void> {
+): Promise<T> {
   const expectedMethod = (options.method ?? "POST").toUpperCase();
 
   // call the stub endpoint
@@ -60,5 +60,7 @@ export async function attachE2EStubEndpoint(
       `${errorPrefix} stub endpoint failed: ${stubResponse.status()} – ${text}`,
     );
   }
-  return;
+
+  // The scenario's result, for callers that need ids it created or resolved
+  return (await stubResponse.json()) as T;
 }
