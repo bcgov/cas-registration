@@ -31,7 +31,7 @@ describe("CollapsibleDefinitionFieldTemplate", () => {
 
     expect(screen.getByText("Cement production")).toHaveClass(
       "MuiTypography-h6",
-      "text-[#dc2626]",
+      "text-bc-error-red",
     );
   });
 });
