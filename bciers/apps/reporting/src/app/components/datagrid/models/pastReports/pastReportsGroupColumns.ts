@@ -19,7 +19,8 @@ const pastReportsGroupColumns = (
     ),
     createColumnGroup("report_submitted_by", "Submitted by", EmptyGroupCell),
     createColumnGroup("report_status", "Status", SearchCell),
-    createColumnGroup("action", "Action", EmptyGroupCell),
+    createColumnGroup("report_id", "Actions", EmptyGroupCell),
+    createColumnGroup("more", "More Actions", EmptyGroupCell),
   ] as GridColumnGroupingModel;
   return columnGroupModel;
 };

@@ -1,6 +1,5 @@
 import {
   gridPageSizeSelector,
-  GridPagination,
   useGridApiContext,
   useGridSelector,
   gridFilteredTopLevelRowCountSelector,
@@ -17,8 +16,6 @@ const getPageCount = (rowCount: number, pageSize: number): number => {
   return 0;
 };
 
-// This is a custom pagination component that is used to override the default pagination component
-// It adds numbered pagination buttons to the default pagination component
 const Pagination = ({
   page = 0,
   onPageChange,
@@ -49,8 +46,4 @@ const Pagination = ({
   );
 };
 
-const CustomPagination = (props: any) => {
-  return <GridPagination ActionsComponent={Pagination} {...props} />;
-};
-
-export default CustomPagination;
+export default Pagination;

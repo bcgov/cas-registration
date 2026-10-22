@@ -21,11 +21,11 @@ const operationColumns = (
       field: "operation__bc_obps_regulated_operation",
       headerName: "BORO ID",
       width: 120,
-      valueGetter: (params) => {
+      valueGetter: (_value, row) => {
         const {
           operation__bc_obps_regulated_operation: boroId,
           operation__registration_purpose: purpose,
-        } = params?.row || {};
+        } = row || {};
 
         switch (true) {
           case !purpose:

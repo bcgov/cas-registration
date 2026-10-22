@@ -55,13 +55,9 @@ export const theme = createTheme({
         root: {
           fontSize: "1rem",
           textTransform: "capitalize",
-          backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
-        },
-        text: {
-          backgroundColor: "transparent",
-        },
-        outlined: {
-          backgroundColor: "transparent",
+          // MUI v9 paints contained buttons with this variable and changes it on hover;
+          // setting backgroundColor directly would cancel the hover colour
+          "--variant-containedBg": BC_GOV_BACKGROUND_COLOR_BLUE,
         },
       },
     },
@@ -130,6 +126,13 @@ export const theme = createTheme({
         colorInfo: {
           color: BC_GOV_LINKS_COLOR,
           borderColor: BC_GOV_LINKS_COLOR,
+        },
+      },
+    },
+    MuiListItemIcon: {
+      styleOverrides: {
+        root: {
+          minWidth: 56,
         },
       },
     },

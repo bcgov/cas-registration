@@ -72,7 +72,7 @@ const SearchCell = ({
   };
 
   return (
-    <div className="w-full pt-2">
+    <div className="w-full">
       <OutsideClickHandler onOutsideClick={handleResetFocus}>
         <TextField
           className="w-full px-2 py-1 [&_input]:p-2"

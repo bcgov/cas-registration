@@ -32,9 +32,10 @@ const SectionTaskListItem: React.FC<TaskListItemProps> = ({
           <ListItemIcon>{item.isChecked && <CheckCircle />}</ListItemIcon>
           <ListItemText
             primary={item.title}
-            primaryTypographyProps={
-              item.type === "Section" ? { fontWeight: "bold" } : {}
-            }
+            slotProps={{
+              primary:
+                item.type === "Section" ? { className: "font-bold" } : {},
+            }}
           />
           {item.elements && (open ? <ExpandLess /> : <ExpandMore />)}
         </ListItemButton>

@@ -14,7 +14,7 @@ import {
   GridColDef,
   GridColumnGroupingModel,
   GridSortDirection,
-  GridSortItem,
+  GridSortModel,
   GridRowIdGetter,
 } from "@mui/x-data-grid";
 import type { GridRowParams } from "@mui/x-data-grid";
@@ -54,9 +54,12 @@ const DescendingIcon = () => {
   return <SortIcon topFill="white" bottomFill="grey" />;
 };
 
-const experimentalFeatures = {
-  columnGrouping: true,
-  ariaV7: true,
+const UnsortedIcon = () => {
+  return <SortIcon />;
+};
+
+const slotProps = {
+  basePagination: { material: { ActionsComponent: Pagination } },
 };
 
 // The sort the grid falls back to when the URL doesn't specify one
@@ -73,7 +76,7 @@ const DataGrid: React.FC<Props> = ({
   getRowId,
   sx,
   pageSize,
-  rowSelection,
+  rowSelection = false,
   noDataMessage,
   hideFooter = false,
   getRowClassName: rowClassName,
@@ -84,7 +87,7 @@ const DataGrid: React.FC<Props> = ({
   const [loading, setLoading] = useState(false);
   const isRowsEmpty = !rows || rows.length === 0;
   const searchParams = useSearchParams();
-  const [sortModel, setSortModel] = useState<GridSortItem[]>([]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   // Track if this is the initial mount - skip fetch since server already provided initialData
   const isInitialMountRef = useRef(true);
@@ -110,8 +113,7 @@ const DataGrid: React.FC<Props> = ({
   const slots = {
     columnSortedAscendingIcon: AscendingIcon,
     columnSortedDescendingIcon: DescendingIcon,
-    columnUnsortedIcon: SortIcon,
-    pagination: Pagination,
+    columnUnsortedIcon: UnsortedIcon,
     noRowsOverlay: () => (
       <div className="flex items-center w-full h-full justify-center text-2xl">
         {noDataMessage || "No records found"}
@@ -146,7 +148,7 @@ const DataGrid: React.FC<Props> = ({
   }, [searchParams, fetchPageData, disabled]);
 
   const handleSortModelChange = useMemo(
-    () => (newSortModel: GridSortItem[]) => {
+    () => (newSortModel: GridSortModel) => {
       if (disabled) return;
 
       const sortField = newSortModel[0]?.field;
@@ -227,7 +229,6 @@ const DataGrid: React.FC<Props> = ({
       ...styles,
       // Add dynamic styles here
       "& .MuiDataGrid-overlayWrapper": {
-        height: isRowsEmpty && !loading ? "40vh" : "0",
         display: isRowsEmpty && !loading ? "block" : "none",
       },
       // Row class styling (works with getRowClassName returning "row--highlight")
@@ -260,9 +261,9 @@ const DataGrid: React.FC<Props> = ({
         columns={columns}
         columnGroupingModel={columnGroupModel}
         loading={loading}
-        rowCount={rowCount}
+        // Only meaningful for server-side pagination
+        rowCount={paginationMode === "server" ? rowCount : undefined}
         showCellVerticalBorder
-        experimentalFeatures={experimentalFeatures}
         disableColumnMenu
         initialState={initialState}
         getRowId={getRowId}
@@ -277,6 +278,7 @@ const DataGrid: React.FC<Props> = ({
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
         slots={slots}
+        slotProps={slotProps}
         sx={gridStyles}
         disableVirtualization
         rowSelection={rowSelection}

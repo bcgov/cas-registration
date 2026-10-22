@@ -6,32 +6,12 @@ import { useState, useLayoutEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Switch, { SwitchProps } from "@mui/material/Switch";
 
-/**
- * Helper to safely embed text in an SVG data URL
- */
-const textSvg = (text: string) =>
-  `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='16px' width='24px'><text x='0' y='15' fill='white' font-family='Arial, Helvetica, sans-serif' font-size='12'>${text}</text></svg>")`;
-
 const thumbWidth = 28;
 
-interface StyledSwitchProps extends SwitchProps {
-  trueLabel?: string;
-  falseLabel?: string;
-}
-
-const StyledSwitch = styled(
-  ({
-    trueLabel: _trueLabel,
-    falseLabel: _falseLabel,
-    ...props
-  }: StyledSwitchProps) => (
-    <Switch
-      focusVisibleClassName=".Mui-focusVisible"
-      disableRipple
-      {...props}
-    />
-  ),
-)(({ theme, trueLabel = "Yes", falseLabel = "No" }) => ({
+// The labels are rendered by the SwitchLabel spans in ToggleWidget
+const StyledSwitch = styled((props: SwitchProps) => (
+  <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
+))(({ theme }) => ({
   width: 64,
   height: 32,
   padding: 0,
@@ -46,14 +26,6 @@ const StyledSwitch = styled(
         backgroundColor: theme.palette.primary.main,
         opacity: 1,
         border: 0,
-        "&::after": {
-          backgroundImage: textSvg(trueLabel),
-          left: 6,
-          width: "auto",
-          height: 16,
-          backgroundSize: "contain",
-          backgroundRepeat: "no-repeat",
-        },
       },
       "&.Mui-disabled + .MuiSwitch-track": {
         opacity: 0.5,
@@ -82,22 +54,6 @@ const StyledSwitch = styled(
     transition: theme.transitions.create(["background-color"], {
       duration: 500,
     }),
-    "&::before, &::after": {
-      content: '""',
-      position: "absolute",
-      top: "50%",
-      transform: "translateY(-50%)",
-      width: "auto",
-      display: "flex",
-      height: 16,
-      alignItems: "center",
-    },
-    "&::after": {
-      backgroundImage: textSvg(falseLabel),
-      left: 6,
-      backgroundSize: "contain",
-      backgroundRepeat: "no-repeat",
-    },
   },
 }));
 
@@ -192,8 +148,6 @@ const ToggleWidget: React.FC<
         checked={value}
         onChange={(event) => onChange(event.target.checked)}
         disabled={disabled}
-        trueLabel={trueLabel}
-        falseLabel={falseLabel}
         sx={{
           width: totalWidth,
           "& .MuiSwitch-switchBase.Mui-checked": {

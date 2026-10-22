@@ -52,6 +52,7 @@ const section1: RJSFSchema = {
             allOf: [
               { format: "date_format" },
               { format: "starting_date_year" },
+              { format: "not_future_date" },
             ],
           },
         },

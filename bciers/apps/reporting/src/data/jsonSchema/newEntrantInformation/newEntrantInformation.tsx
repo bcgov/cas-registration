@@ -93,12 +93,7 @@ export const EmissionDataTitleWidget: FC<WidgetProps> = ({ id, value }) => {
 };
 
 export const newEntrantInfo = (
-  <Typography
-    className="text-[16px]"
-    variant="body2"
-    color="primary"
-    fontStyle="italic"
-  >
+  <Typography className="text-[16px] italic" variant="body2" color="primary">
     This section applies to operations that fall under{" "}
     <u>new entrant category</u>.
   </Typography>

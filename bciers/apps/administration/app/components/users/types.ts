@@ -3,7 +3,7 @@ import {
   Status,
   UserOperatorStatus,
 } from "@bciers/utils/src/enums";
-import { GridRenderCellParams } from "@mui/x-data-grid/models/params/gridCellParams";
+import { GridRenderCellParams } from "@mui/x-data-grid";
 import { ButtonOwnProps } from "@mui/material/Button";
 import type { ReactNode } from "react";
 import { UUID } from "crypto";
