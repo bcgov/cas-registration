@@ -10,7 +10,7 @@ const CommentComponent: React.FC<Props> = ({ comment }) => {
   return (
     <Paper sx={{ p: 2, m: 1 }}>
       <Grid sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Typography variant="caption" sx={{ fontWeight: "bold" }}>
+        <Typography variant="caption" className="font-bold">
           {comment.author}
         </Typography>
         <Typography variant="caption" sx={{ color: "text.secondary" }}>
@@ -23,7 +23,7 @@ const CommentComponent: React.FC<Props> = ({ comment }) => {
             )}
         </Typography>
       </Grid>
-      <Typography variant="body2" sx={{ mt: 1 }}>
+      <Typography variant="body2" className="mt-2">
         {comment.comment}
       </Typography>
     </Paper>
