@@ -37,6 +37,7 @@ class FacilityListItem(Schema):
 class CommentThreadsOut(Schema):
     threads: list[CommentThreadSchema]
     facilities: list[FacilityListItem]
+    can_create_comment_thread: bool
 
 
 class CommentThreadIn(Schema):

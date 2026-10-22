@@ -1,6 +1,6 @@
 from typing import Literal, Tuple
-from django.db.models import Prefetch
-from reporting.service.comment_service import CommentService
+from common.api.utils.current_user_utils import get_current_user
+from reporting.service.comment_thread_service import CommentThreadService
 from common.permissions import authorize
 from django.db import transaction
 from django.http import HttpRequest
@@ -14,7 +14,6 @@ from reporting.api_v2.response_builder import ResponseBuilder
 from reporting.api_v2.router import router
 from reporting.api_v2.schema import ReportingResponseSchema
 from reporting.constants import EMISSIONS_REPORT_TAGS, REPORT_COMMENTS_TAGS
-from reporting.models.comment import Comment
 from reporting.models.comment_thread import CommentThread
 from reporting.models.report_version import ReportVersion
 from reporting.schema.generic import Message
@@ -32,14 +31,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[200], dict]:
     report_id = ReportVersion.objects.get(id=version_id).report_id
 
-    threads = (
-        CommentThread.objects.select_related("facility")
-        .prefetch_related(
-            Prefetch("comments", queryset=Comment.objects.select_related("created_by").order_by("created_at"))
-        )
-        .filter(report_id=report_id)
-        .order_by("-created_at")
-    )
+    threads = CommentThreadService.get_threads(report_id=report_id)
 
     facilities_dict = ReportFacilitiesService.get_all_facilities_for_review(int(version_id))
 
@@ -47,7 +39,14 @@ def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[
         {"facility_id": facility["facility_id"], "facility_name": facility["facility__name"]}
         for facility in [*facilities_dict["current_facilities"], *facilities_dict["past_facilities"]]
     ]
-    response = ResponseBuilder().payload({"threads": threads, "facilities": facilities}).build()
+    user = get_current_user(request)
+    can_create_comment_thread = user.is_cas_analyst() or user.is_cas_director()
+
+    response = (
+        ResponseBuilder()
+        .payload({"threads": threads, "facilities": facilities, "can_create_comment_thread": can_create_comment_thread})
+        .build()
+    )
     return 200, response
 
 
@@ -62,7 +61,7 @@ def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[
 def create_thread(
     request: HttpRequest, version_id: str, payload: CommentThreadIn
 ) -> Tuple[Literal[201], CommentThread]:
-    thread = CommentService.create_thread(
+    thread = CommentThreadService.create_thread(
         version_id=int(version_id),
         comment=payload.comment,
         facility_id=payload.facility_id,

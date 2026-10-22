@@ -1,5 +1,5 @@
 export type Comment = {
-  id?: number;
+  id: number;
   version_id: number;
   author?: string;
   timestamp?: string;
@@ -22,4 +22,5 @@ export type FacilityItem = {
 export type ThreadsResponse = {
   threads: Thread[];
   facilities: FacilityItem[];
+  can_create_comment_thread: boolean;
 };

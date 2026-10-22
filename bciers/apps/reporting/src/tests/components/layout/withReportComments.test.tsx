@@ -37,6 +37,7 @@ describe("withReportComments", () => {
     vi.mocked(getCommentThreads).mockResolvedValue({
       threads: [],
       facilities: [],
+      can_create_comment_thread: true,
     });
     const comments = await ReportComments({ version_id: 42 });
     vi.mocked(ReportCommentsModule.default).mockReturnValue(comments);

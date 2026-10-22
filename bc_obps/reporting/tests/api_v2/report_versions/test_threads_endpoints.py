@@ -17,7 +17,7 @@ class TestThreadsV2Endpoints(CommonTestSetup):
     def test_get_returns_correct_data_when_empty(self):
         response = TestUtils.mock_get_with_auth_role(self, "cas_director", self.endpoint_under_test)
         assert response.status_code == 200
-        assert response.json() == {'payload': {'threads': [], 'facilities': []}}
+        assert response.json() == {'payload': {'threads': [], 'facilities': [], 'can_create_comment_thread': True}}
 
     def test_get_returns_correct_data_with_data(self):
         # facility in the response is based on timeline entries
@@ -42,6 +42,7 @@ class TestThreadsV2Endpoints(CommonTestSetup):
         thread.refresh_from_db()
         comment.refresh_from_db()
 
+        
         response = TestUtils.mock_get_with_auth_role(self, "cas_director", self.endpoint_under_test)
         assert response.status_code == 200
 
@@ -59,6 +60,15 @@ class TestThreadsV2Endpoints(CommonTestSetup):
         assert response_comments[0]['comment'] == comment.comment
         assert response_comments[0]['author'] == comment.created_by.get_full_name()
         assert response_comments[0]['version_id'] == self.report_version.id
+
+    def test_can_create_comment_thread_flag_is_role_dependent(self):
+        response = TestUtils.mock_get_with_auth_role(self, "cas_director", self.endpoint_under_test)
+        assert response.status_code == 200
+        assert response.json()['payload']['can_create_comment_thread'] is True
+
+        response = TestUtils.mock_get_with_auth_role(self, "cas_view_only", self.endpoint_under_test)
+        assert response.status_code == 200
+        assert response.json()['payload']['can_create_comment_thread'] is False
 
     def test_post_creates_thread_and_comment(self):
         assert CommentThread.objects.filter(report=self.report).count() == 0

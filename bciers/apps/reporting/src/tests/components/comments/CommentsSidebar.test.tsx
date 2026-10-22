@@ -1,7 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import CommentsSidebar from "@reporting/src/app/components/comments/CommentsSidebar";
 import * as NewThreadComponentModule from "@reporting/src/app/components/comments/NewThreadComponent";
-import { InternalFrontEndRoles } from "@bciers/utils/src/enums";
 
 describe("The Comments Sidebar", () => {
   it("shows a comments title and a new comment button", () => {
@@ -10,7 +9,7 @@ describe("The Comments Sidebar", () => {
         version_id={42}
         threads={[]}
         facilities={[]}
-        userRole={InternalFrontEndRoles.CAS_DIRECTOR}
+        canMakeComment={true}
       />,
     );
 
@@ -26,7 +25,7 @@ describe("The Comments Sidebar", () => {
         version_id={42}
         threads={[]}
         facilities={[]}
-        userRole={InternalFrontEndRoles.CAS_DIRECTOR}
+        canMakeComment={true}
       />,
     );
 
@@ -47,7 +46,7 @@ describe("The Comments Sidebar", () => {
       <CommentsSidebar
         version_id={42}
         facilities={[]}
-        userRole={InternalFrontEndRoles.CAS_DIRECTOR}
+        canMakeComment={true}
         threads={[
           {
             id: 10,
@@ -83,7 +82,7 @@ describe("The Comments Sidebar", () => {
         version_id={42}
         threads={[]}
         facilities={[]}
-        userRole={InternalFrontEndRoles.CAS_DIRECTOR}
+        canMakeComment={true}
       />,
     );
     fireEvent.click(
@@ -113,13 +112,13 @@ describe("The Comments Sidebar", () => {
     ).not.toBeInTheDocument();
     newThreadComponentSpy.mockRestore();
   });
-  it("does not show the new thread component when userRole is not CAS_DIRECTOR", () => {
+  it("does not show the new thread component when canMakeComment is false", () => {
     render(
       <CommentsSidebar
         version_id={42}
         threads={[]}
         facilities={[]}
-        userRole={InternalFrontEndRoles.CAS_VIEW_ONLY}
+        canMakeComment={false}
       />,
     );
     expect(
