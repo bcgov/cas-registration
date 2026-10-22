@@ -52,7 +52,7 @@ const DateWidget: React.FC<WidgetProps> = ({
   };
 
   // Ensure the value is in the correct format
-  const formattedValue = value ? dayjs(value).utc().format("YYYY-MM-DD") : null;
+  const formattedValue = value ? dayjs.utc(value).format("YYYY-MM-DD") : null;
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>

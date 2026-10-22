@@ -377,6 +377,13 @@ const assertFormPut = async (): Promise<void> => {
 describe("FacilityForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
+    // Pin today after the fixture starting dates so they never count as future dates
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(currentYear, 11, 15, 12));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("renders the empty SFO facility form when creating a new facility", async () => {
@@ -690,49 +697,44 @@ describe("FacilityForm component", () => {
 
   it("does not allow a typed starting date in the future", async () => {
     // Pin today so a later date in the current year exists
-    vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date(currentYear, 5, 15, 12));
-    try {
-      render(
-        <FacilityForm
-          schema={facilitiesLfoSchema}
-          uiSchema={facilitiesLfoUiSchema}
-          formData={{}}
-          isCreating
-        />,
-      );
-      // the starting date shows once a facility type is selected
-      const comboBoxInput = screen.getAllByRole(
-        "combobox",
-      )[0] as HTMLInputElement;
-      await userEvent.click(
-        comboBoxInput?.parentElement?.children[1]
-          ?.children[0] as HTMLInputElement,
-      );
-      await userEvent.click(screen.getByText("Large Facility"));
-      await userEvent.click(
-        screen.getByLabelText(/Did this facility begin operations+/i),
-      );
-      const startingDate = screen.getByLabelText(
-        /Date of facility starting operations+/i,
-      );
-      const saveButton = screen.getByRole("button", { name: "Save" });
+    render(
+      <FacilityForm
+        schema={facilitiesLfoSchema}
+        uiSchema={facilitiesLfoUiSchema}
+        formData={{}}
+        isCreating
+      />,
+    );
+    // the starting date shows once a facility type is selected
+    const comboBoxInput = screen.getAllByRole(
+      "combobox",
+    )[0] as HTMLInputElement;
+    await userEvent.click(
+      comboBoxInput?.parentElement?.children[1]
+        ?.children[0] as HTMLInputElement,
+    );
+    await userEvent.click(screen.getByText("Large Facility"));
+    await userEvent.click(
+      screen.getByLabelText(/Did this facility begin operations+/i),
+    );
+    const startingDate = screen.getByLabelText(
+      /Date of facility starting operations+/i,
+    );
+    const saveButton = screen.getByRole("button", { name: "Save" });
 
-      await typeDate(startingDate, `${currentYear}0616`);
-      fireEvent.click(saveButton);
-      expect(screen.getByText(/Date cannot be in the future/i)).toBeVisible();
+    await typeDate(startingDate, `${currentYear}0616`);
+    fireEvent.click(saveButton);
+    expect(screen.getByText(/Date cannot be in the future/i)).toBeVisible();
 
-      await typeDate(
-        startingDate,
-        `{Control>}a{/Control}{Backspace}${currentYear}0615`,
-      );
-      fireEvent.click(saveButton);
-      expect(
-        screen.queryByText(/Date cannot be in the future/i),
-      ).not.toBeInTheDocument();
-    } finally {
-      vi.useRealTimers();
-    }
+    await typeDate(
+      startingDate,
+      `{Control>}a{/Control}{Backspace}${currentYear}0615`,
+    );
+    fireEvent.click(saveButton);
+    expect(
+      screen.queryByText(/Date cannot be in the future/i),
+    ).not.toBeInTheDocument();
   });
 
   it(
