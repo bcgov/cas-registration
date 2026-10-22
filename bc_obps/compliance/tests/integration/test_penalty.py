@@ -103,18 +103,6 @@ class TestPenalty(ComplianceIntegrationTestBase):
         compliance_penalty.save()
         return invoice
 
-    def _fake_create_faa_interest_line_item(self, obligation: ComplianceObligation, interest_amount: Decimal):
-        """Create an FAA interest line item record."""
-        line_item = ElicensingLineItem.objects.create(
-            guid=uuid.uuid4(),
-            object_id=1000000001,
-            fee_date=date.today(),
-            elicensing_invoice=obligation.elicensing_invoice,
-            line_item_type=ElicensingLineItem.LineItemType.INTEREST,
-            base_amount=interest_amount,
-        )
-        return line_item
-
     # ------------------------------------------------------------------
     # Signal helpers
     # ------------------------------------------------------------------
@@ -383,8 +371,6 @@ class TestPenalty(ComplianceIntegrationTestBase):
             created_at_date=self.OBLIGATION_CREATED_DATE,
             invoice_due_date=self.INVOICE_DUE_DATE,
         )
-        # Create the FAA Interest line item
-        self._fake_create_faa_interest_line_item(self.initial_obligation, Decimal("25.00"))
 
         # Pay the fee but leave FAA interest outstanding.
         self._create_payment_and_mark_paid(
@@ -393,8 +379,9 @@ class TestPenalty(ComplianceIntegrationTestBase):
             received_date=self.PAYMENT_DATE_AFTER_DUE,
         )
         invoice = self.initial_obligation.elicensing_invoice
+        invoice.invoice_interest_balance = Decimal("25.00")
         invoice.outstanding_balance = Decimal("25.00")  # fee balance is 0, only interest remains
-        invoice.save(update_fields=["outstanding_balance"])
+        invoice.save(update_fields=["invoice_interest_balance", "outstanding_balance"])
 
         manager = ComplianceHandlerManager()
         manager.process_compliance_updates(self.initial_obligation.elicensing_invoice)
