@@ -1,8 +1,8 @@
 /* eslint import/no-extraneous-dependencies: ["error", { "devDependencies": true }] */
 
 import { act, fireEvent, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { expect } from "vitest";
+import { typeDate } from "@bciers/testConfig/helpers/form";
 
 // Facility form utils
 export const toggleAndFillStartDate = async (index: number, date: string) => {
@@ -20,7 +20,7 @@ export const toggleAndFillStartDate = async (index: number, date: string) => {
     /Date of facility starting operations+/i,
   )[index];
 
-  await userEvent.type(facilityStartDate, date);
+  await typeDate(facilityStartDate, date);
 };
 
 export const fillAddressFields = (index: number) => {

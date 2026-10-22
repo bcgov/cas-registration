@@ -3,6 +3,7 @@ import getAttachmentFileUrl from "@reporting/src/app/utils/getAttachmentFileUrl"
 import { act, render, screen } from "@testing-library/react";
 import { useSearchParams } from "next/navigation";
 import { URLSearchParams } from "url";
+import expectColumnHeader from "@bciers/testConfig/helpers/expectColumnHeader";
 
 vi.mock("next/navigation", () => ({
   usePathname: vi.fn(),
@@ -45,7 +46,7 @@ describe("The AttachmentsListGrid component", () => {
       "Type",
       "Download",
     ]) {
-      expect(screen.getByRole("columnheader", { name: column })).toBeVisible();
+      expectColumnHeader(column);
     }
 
     // 6 for the headers and 6 for the search cells

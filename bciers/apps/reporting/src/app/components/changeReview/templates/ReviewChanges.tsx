@@ -288,7 +288,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
         <ComplianceSummary changes={complianceChanges} />
       )}
       {changes.length === 0 && (
-        <Typography color="text.secondary">
+        <Typography color="textSecondary">
           No changes detected between the selected report versions.
         </Typography>
       )}

@@ -6,6 +6,9 @@ import * as generateInvoice from "@/compliance/src/app/utils/generateInvoice";
 
 import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
 import { ElicensingInvoice } from "@/compliance/src/app/types";
+import expectColumnHeader, {
+  queryColumnHeader,
+} from "@bciers/testConfig/helpers/expectColumnHeader";
 
 vi.mock("@/compliance/src/app/utils/generateInvoice", () => ({
   default: vi.fn(),
@@ -62,34 +65,15 @@ describe("ElicensingInvoicesDataGrid component", () => {
     );
 
     // Verify headers are present
-    expect(
-      screen.getByRole("columnheader", { name: "Compliance Period" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Operator Name" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Operation Name" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Invoice Type" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Invoice Number" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Invoice Total" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Total Adjustments" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Total Payments" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Outstanding Balance" }),
-    ).toBeVisible();
-
+    expectColumnHeader("Compliance Period");
+    expectColumnHeader("Operator Name");
+    expectColumnHeader("Operation Name");
+    expectColumnHeader("Invoice Type");
+    expectColumnHeader("Invoice Number");
+    expectColumnHeader("Invoice Total");
+    expectColumnHeader("Total Adjustments");
+    expectColumnHeader("Total Payments");
+    expectColumnHeader("Outstanding Balance");
     // Verify data displays
     const summaryRows = screen.getAllByRole("row");
     expect(summaryRows.length).toBe(4); // // header + search cell + 2 data rows
@@ -118,34 +102,15 @@ describe("ElicensingInvoicesDataGrid component", () => {
     );
 
     // Verify headers are present
-    expect(
-      screen.getByRole("columnheader", { name: "Compliance Period" }),
-    ).toBeVisible();
-    expect(
-      screen.queryByRole("columnheader", { name: "Operator Name" }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: "Operation Name" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Invoice Type" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Invoice Number" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Invoice Total" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Total Adjustments" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Total Payments" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Outstanding Balance" }),
-    ).toBeVisible();
-
+    expectColumnHeader("Compliance Period");
+    expect(queryColumnHeader("Operator Name")).not.toBeInTheDocument();
+    expectColumnHeader("Operation Name");
+    expectColumnHeader("Invoice Type");
+    expectColumnHeader("Invoice Number");
+    expectColumnHeader("Invoice Total");
+    expectColumnHeader("Total Adjustments");
+    expectColumnHeader("Total Payments");
+    expectColumnHeader("Outstanding Balance");
     // Verify data displays
     const summaryRows = screen.getAllByRole("row");
     expect(summaryRows.length).toBe(4); // header + search cell + 2 data rows

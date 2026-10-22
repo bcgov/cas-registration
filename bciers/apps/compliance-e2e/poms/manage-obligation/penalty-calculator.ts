@@ -1,5 +1,6 @@
 import { APIRequestContext, Locator, Page, expect } from "@playwright/test";
 import { attachE2EStubEndpoint } from "@bciers/e2e/utils/e2eStubEndpoint";
+import { fillDateFieldByLabel } from "@bciers/e2e/utils/helpers";
 import { DEFAULT_DAYS_OVERDUE } from "@/compliance-e2e/utils/constants";
 
 /**
@@ -28,6 +29,7 @@ export class PenaltyCalculatorPOM {
 
   // Field Locators
   readonly finalAccrualDateInput: Locator;
+  readonly finalAccrualDateField: Locator;
   readonly accrualDataCell: Locator;
   readonly ggeaparOption: Locator;
   readonly selectedPenaltyTypeInput: Locator;
@@ -37,6 +39,10 @@ export class PenaltyCalculatorPOM {
     this.page = page;
     this.finalAccrualDateInput = page.locator(
       "#root_final_day_of_penalty_accrual",
+    );
+    // The visible date sections sit in this group, over the hidden input
+    this.finalAccrualDateField = this.finalAccrualDateInput.locator(
+      "xpath=ancestor::*[@role='group'][1]",
     );
     this.ggeaparOption = page.getByText("GGEAPAR", { exact: true });
     this.selectedPenaltyTypeInput = page.locator(
@@ -118,16 +124,11 @@ export class PenaltyCalculatorPOM {
    * @param date ISO date, YYYY-MM-DD
    */
   async setFinalAccrualDate(date: string): Promise<void> {
-    const input = this.finalAccrualDateInput;
-    await expect(input).toBeVisible();
-
-    await input.click();
-    await input.press("ControlOrMeta+a");
-    await input.press("Backspace");
-    await this.page.keyboard.type(date.replaceAll("-", ""), { delay: 50 });
-    await input.blur();
-
-    await expect(input).toHaveValue(date, { timeout: 5_000 });
+    await fillDateFieldByLabel(
+      this.page,
+      /select final day of penalty accrual/i,
+      date,
+    );
     await expect(this.accrualDataCell).toBeVisible({ timeout: 15_000 });
   }
 
@@ -146,7 +147,7 @@ export class PenaltyCalculatorPOM {
    * produce a diff every day.
    */
   async hideDateInputFromScreenshot(): Promise<void> {
-    await this.finalAccrualDateInput.evaluate((el) => {
+    await this.finalAccrualDateField.evaluate((el) => {
       el.dataset.happoHide = "";
     });
   }

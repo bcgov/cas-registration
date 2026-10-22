@@ -63,7 +63,7 @@ export default function FacilityReportFinalReviewContent({
           facilityData={data}
           showProductionData={showProductionData}
         />
-        <Box justifyContent="flex-start" className="print:hidden flex mt-6">
+        <Box className="print:hidden flex justify-start mt-6">
           <Button
             variant="outlined"
             onClick={() => {

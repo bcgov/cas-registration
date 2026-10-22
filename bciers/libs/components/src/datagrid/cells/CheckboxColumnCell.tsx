@@ -1,7 +1,7 @@
 import Checkbox from "@mui/material/Checkbox";
 import FormControl from "@mui/material/FormControl";
 import { Box } from "@mui/material";
-import { GridRenderCellParams } from "@mui/x-data-grid/models/params/gridCellParams";
+import { GridRenderCellParams } from "@mui/x-data-grid";
 import { CheckboxRow } from "./types";
 
 const getCheckboxColumnCell = (
@@ -32,7 +32,7 @@ const getCheckboxColumnCell = (
         <Checkbox
           checked={Boolean(params.row.is_completed)}
           onChange={handleCheckboxChange}
-          inputProps={{ "aria-label": "Report Status" }}
+          slotProps={{ input: { "aria-label": "Report Status" } }}
         />
         <Box>Completed</Box>
       </FormControl>

@@ -125,7 +125,7 @@ describe("RJSF ToggleWidget", () => {
       />,
     );
 
-    const checkbox = screen.getByRole("checkbox");
+    const checkbox = screen.getByRole("switch");
 
     // OFF by default
     expect(screen.getByText("Cat")).toBeVisible();
@@ -149,7 +149,7 @@ describe("RJSF ToggleWidget", () => {
       />,
     );
 
-    const checkbox = screen.getByRole("checkbox");
+    const checkbox = screen.getByRole("switch");
 
     expect(checkbox).toBeDisabled();
 

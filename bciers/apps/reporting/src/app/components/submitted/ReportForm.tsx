@@ -53,7 +53,7 @@ const ReportForm: React.FC<Props> = ({
       )}
       <Button
         variant="outlined"
-        onClick={() => router.push(`/reporting/reports/current-reports`)}
+        onClick={() => router.push(`/reports/current-reports`)}
         className="print:hidden w-fit"
       >
         Back to All Reports

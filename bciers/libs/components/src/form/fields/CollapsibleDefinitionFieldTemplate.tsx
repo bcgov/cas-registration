@@ -30,19 +30,22 @@ function CollapsibleDefinitionFieldTemplate({
     <Paper className={`mb-4 ${classNames}`}>
       <Card className="text-left">
         <Grid container spacing={1} className="justify-between">
-          <Grid item xs={"auto"}>
+          <Grid size="auto">
             <CardHeader
               title={label}
-              titleTypographyProps={
-                hasErrors
-                  ? { variant: "h6", color: "#DC2626" }
-                  : { variant: "h6", color: "#38598A" }
-              }
+              slotProps={{
+                title: {
+                  variant: "h6",
+                  className: hasErrors
+                    ? "text-bc-error-red"
+                    : "text-bc-bg-blue",
+                },
+              }}
               className="text-[blue]"
             />
           </Grid>
           {!readonly && (
-            <Grid item xs={1}>
+            <Grid size={1}>
               <CardActions className="justify-end">
                 <IconButton onClick={() => setExpandCollapse(!expandCollapse)}>
                   {!expandCollapse ? <ExpandMoreIcon /> : <ExpandLessIcon />}

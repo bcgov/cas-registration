@@ -297,9 +297,9 @@ describe("The TransferDetailForm component", () => {
       });
       await userEvent.click(screen.getByText(/operation 2/i));
       expectComboBox(/operation\*/i, "Operation 2");
-      expect(
-        screen.getByRole("textbox", { name: /effective date of transfer/i }),
-      ).toHaveValue("2022-12-31");
+      expect(screen.getByLabelText(/effective date of transfer/i)).toHaveValue(
+        "2022-12-31",
+      );
 
       // submit the form
       await userEvent.click(

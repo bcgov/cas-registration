@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import OperatorsDataGrid from "apps/administration/app/components/operators/OperatorsDataGrid";
 import { UUID } from "crypto";
+import expectColumnHeader from "@bciers/testConfig/helpers/expectColumnHeader";
 
 useRouter.mockReturnValue({
   query: {},
@@ -49,21 +50,11 @@ describe("OperatorsDataGrid component", () => {
     render(<OperatorsDataGrid initialData={mockResponse} />);
 
     // correct headers
-    expect(
-      screen.getByRole("columnheader", { name: "Legal Name" }),
-    ).toBeVisible();
-    expect(
-      screen.queryByRole("columnheader", { name: "Business Structure" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: "CRA Business Number" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", {
-        name: "BC Corporate Registry Number",
-      }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Actions" })).toBeVisible();
+    expectColumnHeader("Legal Name");
+    expectColumnHeader("Business Structure");
+    expectColumnHeader("CRA Business Number");
+    expectColumnHeader("BC Corporate Registry Number");
+    expectColumnHeader("Actions", false);
     expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(4);
 
     // Check data displays

@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import { useSearchParams } from "@bciers/testConfig/mocks";
 import ComplianceSummariesDataGrid from "@/compliance/src/app/components/compliance-summaries/ComplianceSummariesDataGrid";
 import { ComplianceSummary } from "@/compliance/src/app/types";
+import expectColumnHeader from "@bciers/testConfig/helpers/expectColumnHeader";
 
 useSearchParams.mockReturnValue({
   get: vi.fn(),
@@ -162,31 +163,14 @@ describe("ComplianceSummariesDataGrid component", () => {
     );
 
     // Verify headers are present
-    expect(
-      screen.getByRole("columnheader", { name: "Operation Name" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Compliance Period" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", {
-        name: "Excess Emission as of Invoice Date",
-      }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Outstanding Balance" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Compliance Status" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Penalty Status" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "Obligation ID" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Actions" })).toBeVisible();
-
+    expectColumnHeader("Operation Name");
+    expectColumnHeader("Compliance Period");
+    expectColumnHeader("Excess Emission as of Invoice Date");
+    expectColumnHeader("Outstanding Balance", false);
+    expectColumnHeader("Compliance Status");
+    expectColumnHeader("Penalty Status");
+    expectColumnHeader("Obligation ID");
+    expectColumnHeader("Actions", false);
     // Verify data displays
     const summaryRows = screen.getAllByRole("row");
     expect(summaryRows).toHaveLength(11); // header + search cell + 9 data rows
