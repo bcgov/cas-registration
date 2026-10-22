@@ -49,13 +49,15 @@ class OperationDesignatedOperatorTimelineService:
         with an annotated boolean field 'has_been_transferred'.
         """
 
-        timeline = OperationDesignatedOperatorTimeline.objects.filter(
-            Q(end_date__year__gt=reporting_year) | Q(end_date__isnull=True),
-            start_date__year__lte=reporting_year,
-            operation_id=operation_id,
-        ).first()
-        if not timeline:
+        try:
+            timeline = OperationDesignatedOperatorTimeline.objects.get(
+                Q(end_date__year__gt=reporting_year) | Q(end_date__isnull=True),
+                start_date__year__lte=reporting_year,
+                operation_id=operation_id,
+            )
+        except OperationDesignatedOperatorTimeline.DoesNotExist:
             return None
+
         return OperationDesignatedOperatorTimelinePlus(
             operation=timeline.operation,
             operator=timeline.operator,
