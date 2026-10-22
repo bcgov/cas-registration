@@ -1,6 +1,7 @@
 import { useState, useMemo, type ReactNode } from "react";
 import {
   ValidationErrors,
+  ValidationLinks,
   ValidationUIConfig,
   ValidationErrorSummary,
 } from "@bciers/components/validationErrors";
@@ -8,6 +9,7 @@ import {
 export interface UseValidationErrorsOptions<TKey extends string = string> {
   config?: Partial<Record<TKey, ValidationUIConfig<TKey>>>;
   initialErrors?: ValidationErrors<TKey>;
+  links?: ValidationLinks;
 }
 
 export function useValidationErrors<TKey extends string = string>(
@@ -17,16 +19,25 @@ export function useValidationErrors<TKey extends string = string>(
   legacyInitialErrors?: ValidationErrors<TKey>,
 ) {
   // Support both passing (config, initialErrors) or options object
-  const config =
-    optionsOrConfig && "config" in optionsOrConfig
-      ? optionsOrConfig.config
-      : (optionsOrConfig as
-          Partial<Record<TKey, ValidationUIConfig<TKey>>> | undefined);
+  const isOptions =
+    !!optionsOrConfig &&
+    ("config" in optionsOrConfig ||
+      "initialErrors" in optionsOrConfig ||
+      "links" in optionsOrConfig);
+  const options = isOptions
+    ? (optionsOrConfig as UseValidationErrorsOptions<TKey>)
+    : undefined;
+
+  const config = isOptions
+    ? options?.config
+    : (optionsOrConfig as
+        Partial<Record<TKey, ValidationUIConfig<TKey>>> | undefined);
 
   const initialErrors =
-    optionsOrConfig && "initialErrors" in optionsOrConfig
-      ? optionsOrConfig.initialErrors
+    options && "initialErrors" in options
+      ? options.initialErrors
       : legacyInitialErrors;
+  const links = options?.links;
 
   const [errors, setErrors] = useState<ValidationErrors<TKey> | undefined>(
     initialErrors,
@@ -40,9 +51,10 @@ export function useValidationErrors<TKey extends string = string>(
         key="validation-errors"
         errors={errors}
         config={config}
+        links={links}
       />,
     ];
-  }, [errors, config]);
+  }, [errors, config, links]);
 
   return {
     errors,

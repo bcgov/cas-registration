@@ -269,7 +269,9 @@ class TestBCCarbonRegistryAccountService:
         }
 
         # Act & Assert
-        with pytest.raises(UserError, match="The sub-account does not belong to the holding account."):
+        with pytest.raises(
+            UserError, match="The provided holding account does not own the compliance sub-account for this operation."
+        ):
             service.validate_holding_account_ownership(
                 holding_account_id="123456789012345",
                 compliance_report_version_id=test_data.compliance_report_version.id,

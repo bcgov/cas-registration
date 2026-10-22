@@ -10,7 +10,14 @@ import {
   applyComplianceUnitsDataSchema,
   createApplyComplianceUnitsUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/applyComplianceUnitsSchema";
-import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
+import {
+  getBccrAccountDetails,
+  getBccrComplianceUnits,
+} from "@/compliance/src/app/utils/bccrAccountHandlers";
+import {
+  validationLinks,
+  validationUIConfig,
+} from "@/compliance/src/app/components/validationErrors/config";
 import {
   BccrComplianceAccountResponse,
   ApplyComplianceUnitsFormData,
@@ -48,7 +55,10 @@ export default function ApplyComplianceUnitsComponent({
   const [currentPhase, setCurrentPhase] = useState<
     "initial" | "confirmation" | "compliance_data"
   >("initial");
-  const { setErrors, renderedErrors } = useValidationErrors();
+  const { setErrors, renderedErrors } = useValidationErrors({
+    config: validationUIConfig,
+    links: validationLinks,
+  });
   const [status, setStatus] = useState<Status>("idle");
   // Keep track of the remaining cap from the API (what's left to apply)
   const [remainingCap, setRemainingCap] = useState<number>(0);
@@ -169,14 +179,13 @@ export default function ApplyComplianceUnitsComponent({
     setStatus("submitting");
     setErrors(undefined);
     try {
-      const response = await actionHandler(
-        `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
-        "GET",
-        "",
+      const response = await getBccrComplianceUnits(
+        e.formData?.bccr_holding_account_id as string,
+        complianceReportVersionId,
       );
 
       const isSuccess = handleApiResponse(response, setErrors);
-      if (!isSuccess) {
+      if (!isSuccess || "error" in response) {
         setStatus("idle");
         return;
       }

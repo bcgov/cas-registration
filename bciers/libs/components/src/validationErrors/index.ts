@@ -1,4 +1,7 @@
-export { ValidationErrorSummary } from "./ValidationErrorSummary";
+export {
+  ValidationErrorSummary,
+  ValidationMessage,
+} from "./ValidationErrorSummary";
 export { useValidationErrors } from "./useValidationErrors";
 export { handleApiResponse } from "./handleApiResponse";
 export { createValidationUIConfig, sharedValidationUIConfig } from "./config";

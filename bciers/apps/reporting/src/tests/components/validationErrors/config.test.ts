@@ -1,7 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { sharedValidationUIConfig } from "@bciers/components/validationErrors";
 import { validationUIConfig } from "@reporting/src/app/components/validationErrors/config";
-import type { ValidationMessageKey } from "@reporting/src/app/components/validationErrors/types";
+import {
+  localValidationKeys,
+  type ValidationMessageKey,
+} from "@reporting/src/app/components/validationErrors/types";
 import {
   facilityRoutes,
   reportRoutes,
@@ -39,41 +42,12 @@ describe("Reporting validationUIConfig", () => {
   };
 
   describe("validationUIConfig key parity", () => {
-    // Extract the shared keys dynamically
-    const sharedKeys = Object.keys(
-      sharedValidationUIConfig,
-    ) as ValidationMessageKey[];
+    it("has a config for every shared and local validation key", () => {
+      const sharedKeys = Object.keys(sharedValidationUIConfig);
+      const expectedKeys = [...sharedKeys, ...localValidationKeys];
 
-    // Define app-specific isolated keys
-    const localKeys: ValidationMessageKey[] = [
-      "error_required_fields",
-      "operation_boro_id",
-      "report_activity_json_validation",
-      "report_data_out_of_bounds_by_fuel_type",
-      "report_data_out_of_bounds_by_reporting_field",
-      "allocation_mismatch",
-      "missing_report_verification",
-      "verification_statement",
-      "attachment_not_scanned",
-      "missing_supplementary_report_required_attachment_confirmation",
-      "missing_supplementary_report_existing_attachment_confirmation",
-      "missing_supplementary_report_attachments_confirmation",
-      "missing_supplementary_report_version_change",
-      "missing_regulated_product",
-      "og_np_nc_allocation_mismatch",
-      "missing_operation_representative",
-    ];
-
-    //  Combine them for the final assertion
-    const expectedKeys: ValidationMessageKey[] = [...sharedKeys, ...localKeys];
-
-    it("has the expected number of configs", () => {
-      expect(Object.keys(validationUIConfig)).toHaveLength(expectedKeys.length);
-    });
-
-    it("has a config for every expected validation key", () => {
       expect(Object.keys(validationUIConfig).sort(sortAlphabetically)).toEqual(
-        [...expectedKeys].sort(sortAlphabetically),
+        expectedKeys.sort(sortAlphabetically),
       );
     });
   });

@@ -1,5 +1,6 @@
 import {
   createValidationUIConfig,
+  sharedValidationUIConfig,
   ValidationUIConfig,
 } from "@bciers/components/validationErrors";
 import { ValidationMessageKey } from "./types";
@@ -8,6 +9,8 @@ import { ghgRegulatorEmail } from "@bciers/utils/src/urls";
 export const validationUIConfig: Partial<
   Record<ValidationMessageKey, ValidationUIConfig<ValidationMessageKey>>
 > = {
+  ...sharedValidationUIConfig,
+
   no_bceid_access: createValidationUIConfig<ValidationMessageKey>({
     priority: 1,
     renderMode: "inline_link",
