@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { FacilityItem, Thread } from "./types";
 import postCommentThread from "../../utils/postCommentThread";
 import { useValidationErrors } from "@bciers/components/validationErrors/useValidationErrors";
-import { setClientError } from "@bciers/components/validationErrors/utils";
 import { handleApiResponse } from "@bciers/components/validationErrors/handleApiResponse";
 
 interface Props {
@@ -25,12 +24,20 @@ const NewThreadComponent: React.FC<Props> = ({
     facility?: string;
   }>({});
 
-  const { setErrors, renderedErrors } = useValidationErrors();
+  const { errors, setErrors, renderedErrors } = useValidationErrors();
   const [pending, startTransition] = useTransition();
 
   const handleSubmit = () => {
     if (!newThreadData.comment?.trim()) {
-      setClientError("Comment cannot be empty", setErrors);
+      setErrors([
+        {
+          key: "comment",
+          error: {
+            message: "Comment cannot be empty",
+            severity: "Error",
+          },
+        },
+      ]);
       return;
     }
 
@@ -57,6 +64,11 @@ const NewThreadComponent: React.FC<Props> = ({
     onCancel();
   };
 
+  const hasFieldError = (field: "comment" | "facility"): boolean =>
+    errors?.some(
+      ({ key, error }) => key === field && error.severity === "Error",
+    ) ?? false;
+
   // Factory to create change handlers based on the field it is for
   // And update its new value in the component state
   const changeHandlerFactory =
@@ -76,6 +88,7 @@ const NewThreadComponent: React.FC<Props> = ({
           label="Facility (optional)"
           defaultValue=""
           onChange={changeHandlerFactory("facility")}
+          error={hasFieldError("facility")}
         >
           <MenuItem value="">Select Facility</MenuItem>
           {facilities.map((facility) => (
@@ -89,6 +102,7 @@ const NewThreadComponent: React.FC<Props> = ({
           label="Comment"
           multiline
           rows={3}
+          error={hasFieldError("comment")}
           onChange={changeHandlerFactory("comment")}
         />
         {renderedErrors}
