@@ -5,7 +5,7 @@ from common.permissions import authorize
 from django.db import transaction
 from django.http import HttpRequest
 
-from reporting.api_v2._reports._report_id.comment_thread_schema import (
+from reporting.api_v2._report_versions._report_version_id.comment_thread_schema import (
     CommentThreadIn,
     CommentThreadSchema,
     CommentThreadsOut,
