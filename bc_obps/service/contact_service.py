@@ -50,7 +50,7 @@ class ContactService:
         sort_by = f"{sort_direction}{sort_field}"
         base_qs = ContactDataAccessService.get_all_contacts_for_user(user).select_related("operator")
 
-        return filters.filter(base_qs).order_by(sort_by)
+        return filters.filter(base_qs).order_by(sort_by, f"{sort_direction}created_at", f"{sort_direction}id")
 
     @classmethod
     def list_operation_representatives(

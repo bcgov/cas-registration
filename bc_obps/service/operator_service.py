@@ -150,4 +150,4 @@ class OperatorService:
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
         base_qs = OperatorDataAccessService.get_all_operators()
-        return filters.filter(base_qs).order_by(sort_by)
+        return filters.filter(base_qs).order_by(sort_by, f"{sort_direction}created_at", f"{sort_direction}id")

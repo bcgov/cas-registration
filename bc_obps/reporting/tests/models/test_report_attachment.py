@@ -44,8 +44,11 @@ class ReportAttachmentRlsTest(BaseTestCase):
             report_attachment_2010_submitted = make_recipe(
                 'reporting.tests.utils.report_attachment', report_version=t.report_version_2010_submitted
             )
+        # Set the type so it can't clash with the wci_352_362 attachment insert_function adds to this report version
         report_attachment_2010_draft = make_recipe(
-            'reporting.tests.utils.report_attachment', report_version=t.report_version_2010_draft
+            'reporting.tests.utils.report_attachment',
+            report_version=t.report_version_2010_draft,
+            attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
         )
         # Outside access bounds
         report_attachment_2013_draft = make_recipe(
