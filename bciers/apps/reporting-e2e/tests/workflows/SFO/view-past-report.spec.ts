@@ -2,6 +2,7 @@ import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import { OPERATION_NAMES } from "@/reporting-e2e/utils/enums";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { SubmittedPOM } from "@/reporting-e2e/poms/submitted";
 import { AnnualReportPOM } from "@/reporting-e2e/poms/annual-report";
 import { PastReportsPOM } from "@/reporting-e2e/poms/past-reports";
@@ -32,6 +33,7 @@ test.describe("SFO: view a submitted report for a past reporting year", () => {
       false,
     );
 
+    await analyzeAccessibility(page, "SFO Past Report - Submitted (external)");
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "SFO Past Report - Submitted",
       variant: "external",
@@ -62,6 +64,10 @@ internalTest.describe(
         await annualReport.verifySubmittedReportView(
           OPERATION_NAMES.BANGLES_SFO,
           false,
+        );
+        await analyzeAccessibility(
+          page,
+          "SFO Past Report - Submitted (internal)",
         );
         await takeStabilizedScreenshot(happoScreenshot, page, {
           component: "SFO Past Report - Submitted",

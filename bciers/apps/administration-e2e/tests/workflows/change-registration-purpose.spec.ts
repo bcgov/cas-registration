@@ -25,6 +25,7 @@ import {
   searchGridByUniqueValue,
   selectItemFromAutocomplete,
 } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
 
@@ -45,6 +46,7 @@ test.describe("Test changing registration purpose", () => {
     const row = await operationPage.findRowByBcghgId(
       ChangeRegistrationPurposeE2EValues.REGULATED_BCGHG_ID_FIELD_VALUE,
     );
+    await analyzeAccessibility(page, "Operations grid");
 
     // Go to operation details page
     await operationPage.goToOperation(row);
@@ -53,9 +55,11 @@ test.describe("Test changing registration purpose", () => {
       ChangeRegistrationPurposeE2EValues.REGULATED_OPERATION_NAME,
     );
     await expect(page.getByText(bcghgIdValue)).toBeVisible();
+    await analyzeAccessibility(page, "Operation details (read-only)");
 
     // Click Edit
     await clickButton(page, "Edit");
+    await analyzeAccessibility(page, "Operation details (edit)");
 
     // Set and use registrationPurpose via OperationPOM getter/setter
     const registrationPurpose = RegistrationPurposes.REPORTING_OPERATION;
@@ -80,6 +84,7 @@ test.describe("Test changing registration purpose", () => {
     await expect(
       page.getByRole("button", { name: changeRegistrationPurposeButton }),
     ).toBeVisible();
+    await analyzeAccessibility(page, "Change registration purpose modal");
 
     // Say cheese!
     let component = "Confirmation to change registration purpose";

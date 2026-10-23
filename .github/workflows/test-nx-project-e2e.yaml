@@ -153,8 +153,29 @@ jobs:
           HAPPO_ALL_BROWSERS: ${{ inputs.all_happo_browsers && 'true' || 'false' }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
+          # Record a11y violations instead of failing tests; the "Accessibility report" step below summarizes them
+          A11Y_MODE: report
         run: DEBUG=pw:api yarn nx run "$NX_PROJECT":${{ (github.event_name == 'schedule' || github.event_name == 'merge_group') && 'e2e' || 'e2e:ci' }} -- --project=chromium
         working-directory: ./bciers
+
+      - name: ♿ Accessibility report
+        if: ${{ !cancelled() }}
+        shell: bash
+        env:
+          RESULTS_FILE: bciers/a11y-results/${{ inputs.nx_project }}-e2e.json
+        run: |
+          if [ ! -f "$RESULTS_FILE" ]; then
+            echo "::warning::No accessibility results found at $RESULTS_FILE"
+            exit 0
+          fi
+          COUNT=$(jq '[.[].pages[].violations[]] | length' "$RESULTS_FILE")
+          if [ "$COUNT" -eq 0 ]; then
+            echo "No accessibility violations found."
+            exit 0
+          fi
+          echo "::warning::Found $COUNT accessibility violation(s). See the ♿ Accessibility report step log for details."
+          jq -r '.[] | .test as $test | .pages[] | .page as $page | .violations[] |
+            "[\(.impact // "unknown")] \(.id): \(.help)\n  Page:     \($page)\n  Test:     \($test)\n  Help:     \(.helpUrl)\n  Elements: \(.targets | join(", "))\n"' "$RESULTS_FILE"
 
 #      #     Reports weren't being used regularly though leaving this in here for debugging purposes.
 #      #     Uncomment these if they are required to debug problematic e2e issues

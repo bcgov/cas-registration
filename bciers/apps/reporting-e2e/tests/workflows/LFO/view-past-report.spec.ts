@@ -2,6 +2,7 @@ import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import { FacilityIDs, OPERATION_NAMES } from "@/reporting-e2e/utils/enums";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { SubmittedPOM } from "@/reporting-e2e/poms/submitted";
 import { AnnualReportPOM } from "@/reporting-e2e/poms/annual-report";
 import { PastReportsPOM } from "@/reporting-e2e/poms/past-reports";
@@ -20,6 +21,7 @@ test.describe("LFO: An industry user views a submitted report for a past reporti
     // ── 1. Navigate to the past reports grid ──
     const grid = new PastReportsPOM(page);
     await grid.route();
+    await analyzeAccessibility(page, "Past Reports Grid (external)");
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "Past Reports Grid",
       variant: "external",
@@ -44,6 +46,10 @@ test.describe("LFO: An industry user views a submitted report for a past reporti
       FacilityIDs.BANANA_LFO_1,
     );
     await submittedReport.verifyFacilitySubmittedReportView("Facility 1");
+    await analyzeAccessibility(
+      page,
+      "LFO Past Facility Report - Submitted (external)",
+    );
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Past Facility Report - Submitted",
       variant: "external",
@@ -60,6 +66,7 @@ internalTest.describe(
         // ── 1. Navigate to the past reports grid ──
         const grid = new PastReportsPOM(page);
         await grid.route();
+        await analyzeAccessibility(page, "Past Reports Grid (internal)");
         await takeStabilizedScreenshot(happoScreenshot, page, {
           component: "Past Reports Grid",
           variant: "internal",
@@ -87,6 +94,10 @@ internalTest.describe(
           FacilityIDs.BANANA_LFO_1,
         );
         await annualReport.verifyFacilitySubmittedReportView("Facility 1");
+        await analyzeAccessibility(
+          page,
+          "LFO Past Facility Report - Submitted (internal)",
+        );
         await takeStabilizedScreenshot(happoScreenshot, page, {
           component: "LFO Past Facility Report - Submitted",
           variant: "internal",

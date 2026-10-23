@@ -3,10 +3,10 @@ import { UserRole } from "@bciers/e2e/utils/enums";
 import { expect } from "@playwright/test";
 // 🛠️ Helpers
 import {
-  analyzeAccessibility,
   clickButton,
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { RegistrationPOM } from "../poms/registration";
 import {
   OperationRegistrationSteps,
@@ -102,7 +102,7 @@ test.describe("Test register operations", () => {
       component: componentName,
       variant: "default",
     });
-    await analyzeAccessibility(page);
+    await analyzeAccessibility(page, componentName);
   });
 
   test("Register an existing LFO operation", async ({

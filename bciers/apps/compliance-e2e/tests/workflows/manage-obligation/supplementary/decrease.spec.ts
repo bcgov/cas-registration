@@ -26,6 +26,7 @@ import { generateComplianceInvoice } from "@/compliance-e2e/utils/helpers";
 import { ComplianceSetupPOM } from "@/compliance-e2e/poms/compliance-setup";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 
 // 👤 run test using the storageState for role UserRole.INDUSTRY_USER_ADMIN
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
@@ -189,6 +190,7 @@ async function runScenario(opts: {
     linkName: GridActionText.MANAGE_OBLIGATION,
     urlPattern: REVIEW_OBLIGATION_URL_PATTERN,
   });
+  await analyzeAccessibility(page, "Review compliance obligation");
 
   // Assert invoice content (initial)
   const initialInvoice = await generateComplianceInvoice({
@@ -221,6 +223,11 @@ async function runScenario(opts: {
   } else {
     await assertNoEarnedCreditsForOperation(page);
   }
+
+  await analyzeAccessibility(
+    page,
+    `Compliance summaries grid after decrease (${scenario.expected.summariesStatus})`,
+  );
 
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Supplementary Report Decrease Obligation",

@@ -3,6 +3,7 @@ import { UserRole } from "@bciers/e2e/utils/enums";
 import { OPERATION_NAMES } from "@/reporting-e2e/utils/enums";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { SubmittedPOM } from "@/reporting-e2e/poms/submitted";
 import { AnnualReportPOM } from "@/reporting-e2e/poms/annual-report";
 
@@ -31,6 +32,7 @@ test.describe("SFO: view a submitted report for the current reporting year", () 
       false,
     );
 
+    await analyzeAccessibility(page, "SFO Report - Submitted (external)");
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "SFO Report - Submitted",
       variant: "external",
@@ -61,6 +63,7 @@ internalTest.describe(
           OPERATION_NAMES.BANGLES_SFO,
           false,
         );
+        await analyzeAccessibility(page, "SFO Report - Submitted (internal)");
         await takeStabilizedScreenshot(happoScreenshot, page, {
           component: "SFO Report - Submitted",
           variant: "internal",

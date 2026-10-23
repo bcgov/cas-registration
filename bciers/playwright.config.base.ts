@@ -1,5 +1,6 @@
 import { devices } from "@playwright/test";
 import { nxE2EPreset } from "@nx/playwright/preset";
+import { join } from "node:path";
 
 // For CI, you may want to set BASE_URL to the deployed application.
 const baseURL = process.env.BASE_URL || "http://localhost:3000";
@@ -19,7 +20,13 @@ const playwrightBaseConfig = {
   /* Opt out of parallel tests */
   workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: process.env.CI ? "blob" : "html",
+  // The a11y reporter collects violations recorded with A11Y_MODE=report (see analyzeAccessibility in libs/e2e/src/utils/a11y.ts)
+  reporter: [
+    [process.env.CI ? "blob" : "html"],
+    ...(process.env.A11Y_MODE === "report"
+      ? [[join(__dirname, "libs/e2e/src/reporters/a11y-reporter.ts")]]
+      : []),
+  ] as [string][],
   /* Configure projects for major browsers */
   use: {
     baseURL: baseURL,

@@ -15,6 +15,7 @@ import {
   checkAlertMessage,
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
@@ -38,6 +39,7 @@ test.describe("Test report version to compliance report version no obligation or
       ComplianceOperations.NO_OBLIGATION,
       ComplianceDisplayStatus.NO_OBLIGATION,
     );
+    await analyzeAccessibility(page, "Compliance summaries grid");
 
     // Assert no obligation message is displayed in the details panel
     await gridComplianceSummaries.openActionForOperation({
@@ -46,6 +48,7 @@ test.describe("Test report version to compliance report version no obligation or
       urlPattern: NO_OBLIGATION_URL_PATTERN,
     });
     await checkAlertMessage(page, NO_OBLIGATION_OR_CREDITS_ALERT_REGEX);
+    await analyzeAccessibility(page, "No obligation or earned credits details");
 
     // happo screenshot
     await takeStabilizedScreenshot(happoScreenshot, page, {

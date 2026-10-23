@@ -2,11 +2,11 @@ import { expect } from "@playwright/test";
 import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import {
-  analyzeAccessibility,
   takeStabilizedScreenshot,
   linkIsVisible,
   urlIsCorrect,
 } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { DashboardPOM } from "@/dashboard-e2e/poms/dashboard";
 import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
 import {
@@ -45,7 +45,7 @@ userRoles.forEach((role) => {
         component: component,
         variant: "default",
       });
-      await analyzeAccessibility(page);
+      await analyzeAccessibility(page, component);
 
       for (const linkToCheck of Object.values(ExternalDashboardLinks)) {
         if (role === "INDUSTRY_USER_ADMIN") {

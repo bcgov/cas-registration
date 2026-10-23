@@ -2,13 +2,13 @@ import { expect } from "@playwright/test";
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import {
-  analyzeAccessibility,
   takeStabilizedScreenshot,
   clickButton,
   stabilizeGrid,
   assertSuccessfulSnackbar,
   urlIsCorrect,
 } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { FrontendMessages } from "@bciers/utils/src/enums";
 import { ContactsPOM } from "@/administration-e2e/poms/contacts";
 
@@ -32,7 +32,7 @@ test.describe("Test add/edit contact", () => {
       component: "Add Contact form",
       variant: "filled",
     });
-    await analyzeAccessibility(page);
+    await analyzeAccessibility(page, "Add contact form");
 
     // Submit form
     await clickButton(page, /save/i);
@@ -65,7 +65,7 @@ test.describe("Test add/edit contact", () => {
       component: "Contacts grid",
       variant: "filled",
     });
-    await analyzeAccessibility(page, "Contacts grid", ["empty-table-header"]);
+    await analyzeAccessibility(page, "Contacts grid");
 
     await viewDetails.click();
     // Check for presence of heading
@@ -87,6 +87,6 @@ test.describe("Test add/edit contact", () => {
       component: "Contact form",
       variant: "filled",
     });
-    await analyzeAccessibility(page);
+    await analyzeAccessibility(page, "Contact form (read-only)");
   });
 });

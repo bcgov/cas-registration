@@ -8,6 +8,7 @@ import {
   takeStabilizedScreenshot,
   urlIsCorrect,
 } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import {
   UserAccessRequestActions,
   UserAccessRequestRoles,
@@ -43,6 +44,7 @@ test.describe("External User", () => {
     await accessRequestPage.goToUserAccessRequestPage();
     await urlIsCorrect(page, accessRequestPage.userAccessRequestURL);
     await accessRequestPage.pageIsStable();
+    await analyzeAccessibility(page, "Users and access requests grid");
 
     // Get specific row that has the unique email
     const row = await getRowByUniqueCellValue(

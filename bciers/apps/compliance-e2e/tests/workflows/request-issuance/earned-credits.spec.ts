@@ -4,6 +4,7 @@ import {
   setupTestEnvironment,
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import {
   ComplianceOperations,
   ComplianceDisplayStatus,
@@ -112,6 +113,13 @@ test.describe("Test earned credits request issuance flow", () => {
           linkName: GridActionText.REQUEST_ISSUANCE_CREDITS,
         });
 
+        if (caseIndex === 0) {
+          await analyzeAccessibility(
+            page,
+            "Industry - request issuance task list",
+          );
+        }
+
         // Click task list "Request Issuance of Earned Credits"
         await industryTaskList.clickRequestIssuance();
 
@@ -120,6 +128,7 @@ test.describe("Test earned credits request issuance flow", () => {
 
         // happo screenshot - earned credits request form (same across all cases, taken once)
         if (caseIndex === 0) {
+          await analyzeAccessibility(page, "Industry - request issuance form");
           await takeStabilizedScreenshot(happoScreenshot, page, {
             component: "Compliance earned credits - request issuance",
             variant: "Industry - request issuance form",
@@ -178,6 +187,10 @@ test.describe("Test earned credits request issuance flow", () => {
           if (caseIndex === 0) {
             await analystEarnedCredits.selectAnalystSuggestion(
               c.analystSuggestion,
+            );
+            await analyzeAccessibility(
+              page,
+              "Analyst - review request issuance form",
             );
             await takeStabilizedScreenshot(happoScreenshot, page, {
               component: "Compliance earned credits - analyst review",
@@ -258,6 +271,7 @@ test.describe("Test earned credits request issuance flow", () => {
             // happo screenshot - director review page with approve/decline buttons
             // Taken once (APPROVED case); the page looks identical for DECLINED.
             if (c.directorDecision === IssuanceStatus.APPROVED) {
+              await analyzeAccessibility(page, "Director - review by director");
               await takeStabilizedScreenshot(happoScreenshot, page, {
                 component: "Compliance earned credits - director review",
                 variant: "Director - review with approve and decline buttons",
@@ -278,6 +292,10 @@ test.describe("Test earned credits request issuance flow", () => {
 
             // Wait for form data to load before taking the screenshot
             await directorEarnedCredits.assertTrackStatusLoaded();
+            await analyzeAccessibility(
+              page,
+              `Director - track status after ${String(c.directorDecision)}`,
+            );
 
             await takeStabilizedScreenshot(happoScreenshot, page, {
               component: "Compliance earned credits - director review",
@@ -316,6 +334,10 @@ test.describe("Test earned credits request issuance flow", () => {
 
             const trackStatusOfIssuance = new TrackStatusOfIssuancePOM(page);
             await trackStatusOfIssuance.assertShowsDeclinedNote();
+            await analyzeAccessibility(
+              page,
+              "Industry - track status of issuance (declined)",
+            );
 
             // happo screenshot - industry-facing declined issuance detail page
             await takeStabilizedScreenshot(happoScreenshot, page, {
