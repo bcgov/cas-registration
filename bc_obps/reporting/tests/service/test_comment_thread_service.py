@@ -1,3 +1,4 @@
+import pytest
 from django.test import TestCase
 from model_bakery.baker import make_recipe
 from reporting.models.comment_thread import CommentThread
@@ -39,3 +40,21 @@ class TestCommentThreadService(TestCase):
         assert len(threads) == 2
         assert {t.id for t in threads} == {expected_thread_1.id, expected_thread_2.id}
         assert other_thread.id not in {t.id for t in threads}
+
+    @pytest.mark.parametrize("resolved", [True, False])
+    def test_resolve_thread_updates_resolved_state(self, resolved):
+        thread = make_recipe(
+            'reporting.tests.utils.comment_thread',
+            report=self.report_version.report,
+            report_version=self.report_version,
+        )
+
+        resolved_thread = CommentThreadService.resolve_thread(
+            version_id=self.report_version.id,
+            thread_id=thread.id,
+            resolved=resolved,
+        )
+        assert resolved_thread.resolved is resolved
+
+        thread.refresh_from_db()
+        assert thread.resolved is resolved
