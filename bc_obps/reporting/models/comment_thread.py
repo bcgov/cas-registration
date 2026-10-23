@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import ForeignKey
+from django.db.models import BooleanField, ForeignKey
 from registration.models.facility import Facility
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.rls_configs.comment_thread import (
@@ -29,6 +29,10 @@ class CommentThread(TimeStampedModel):
         blank=True,
         related_name="comment_threads",
         db_comment="The facility this thread is optionally associated with. Foreign key to registration.facility",
+    )
+    resolved = BooleanField(
+        default=False,
+        db_comment="Indicates whether the comment thread has been resolved",
     )
 
     class Meta(TimeStampedModel.Meta):
