@@ -146,7 +146,7 @@ class ElicensingDataRefreshService:
                 fee_record, _ = ElicensingLineItem.objects.update_or_create(
                     elicensing_invoice=invoice_record,
                     object_id=fee.feeObjectId,
-                    guid=fee.feeGUID,
+                    guid=fee.feeGUID or None,
                     line_item_type=fee_type,
                     defaults={
                         "fee_date": date.fromisoformat(fee.feeDate),

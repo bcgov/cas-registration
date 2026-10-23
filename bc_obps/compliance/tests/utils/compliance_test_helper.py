@@ -1,7 +1,7 @@
 from decimal import Decimal
 from registration.models import Operation
 from reporting.models import ReportingYear, ReportVersion
-from compliance.models import CompliancePeriod, ComplianceReportVersion
+from compliance.models import CompliancePeriod, ComplianceReportVersion, ElicensingLineItem
 from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
 
 from model_bakery.baker import make_recipe
@@ -222,7 +222,13 @@ class ComplianceTestHelper:
                 if create_invoice_data:
                     cls.generate_invoice_data(t)
                     t.invoice.invoice_fee_balance = Decimal('0')
-                    t.invoice.invoice_interest_balance = Decimal('50')
+                    t.invoice.invoice_interest_balance = Decimal('0')
+                    make_recipe(
+                        "compliance.tests.utils.elicensing_line_item",
+                        elicensing_invoice=t.invoice,
+                        base_amount=Decimal("50.00"),
+                        line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+                    )
                     t.invoice.outstanding_balance = Decimal('50')
 
             case ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION:

@@ -103,8 +103,12 @@ class ElicensingInvoiceService:
         invoice_number = invoice.invoice_number
         invoice_due_date = invoice.due_date.strftime("%b %-d, %Y") if invoice.due_date else "—"
         amount_due, billing_items, _, _, _ = cls.calculate_invoice_amount_due(invoice)
-        # Apply interest to the invoice if interest exists
-        if invoice.invoice_interest_balance is not None and invoice.invoice_interest_balance > Decimal('0.00'):
+        # Apply interest to the invoice if interest exists and compliance obligation is not paid yet
+        if (
+            invoice.invoice_interest_balance is not None
+            and invoice.invoice_interest_balance > Decimal('0.00')
+            and invoice.invoice_fee_balance != Decimal('0.00')
+        ):
             billing_items.append(
                 {
                     'date': f'{DATE_TODAY}',
@@ -420,12 +424,13 @@ class ElicensingInvoiceService:
         total_payments = Decimal("0.00")
         total_adjustments = Decimal("0.00")
 
-        fee_line_items: QuerySet[ElicensingLineItem] = invoice.elicensing_line_items.filter(
-            line_item_type=ElicensingLineItem.LineItemType.FEE
-        ).prefetch_related(
+        fee_line_items: QuerySet[ElicensingLineItem] = invoice.elicensing_line_items.prefetch_related(
             Prefetch("elicensing_payments"),
             Prefetch("elicensing_adjustments"),
         )
+
+        if invoice.invoice_fee_balance != Decimal('0.00'):
+            fee_line_items = fee_line_items.exclude(line_item_type=ElicensingLineItem.LineItemType.INTEREST)
 
         for line_item in fee_line_items:
             line_total, line_billing_items = ElicensingInvoiceService._build_line_item_entry(line_item)
@@ -455,7 +460,11 @@ class ElicensingInvoiceService:
         amount = line_item.base_amount
         entry = {
             "date": fee_date,
-            "description": line_item.description,
+            "description": (
+                "FAA Interest"
+                if line_item.line_item_type == ElicensingLineItem.LineItemType.INTEREST
+                else line_item.description
+            ),
             "amount": f"${amount:,.2f}",
         }
         return amount, [entry]
@@ -467,7 +476,10 @@ class ElicensingInvoiceService:
 
         for payment in line_item.elicensing_payments.all():
             date = payment.received_date.strftime("%b %-d, %Y") if payment.received_date else "—"
-            description = getattr(payment, "description", None) or f"Payment {payment.payment_object_id}"
+            if line_item.line_item_type == ElicensingLineItem.LineItemType.INTEREST:
+                description = "FAA Interest Payment"
+            else:
+                description = getattr(payment, "description", None) or f"Payment {payment.payment_object_id}"
             amount = payment.amount
             billing_items.append(
                 {
@@ -522,7 +534,6 @@ class ElicensingInvoiceService:
         total_payments_subquery = (
             ElicensingPayment.objects.filter(
                 elicensing_line_item__elicensing_invoice_id=OuterRef("pk"),
-                elicensing_line_item__line_item_type=ElicensingLineItem.LineItemType.FEE,
             )
             .values("elicensing_line_item__elicensing_invoice_id")
             .annotate(total=Sum("amount"))
@@ -536,6 +547,16 @@ class ElicensingInvoiceService:
             )
             .values("elicensing_line_item__elicensing_invoice_id")
             .annotate(total=Sum("amount"))
+            .values("total")
+        )
+
+        faa_interest_total_subquery = (
+            ElicensingLineItem.objects.filter(
+                elicensing_invoice_id=OuterRef("pk"),
+                line_item_type=ElicensingLineItem.LineItemType.INTEREST,
+            )
+            .values("elicensing_invoice_id")
+            .annotate(total=Sum("base_amount"))
             .values("total")
         )
 
@@ -599,6 +620,19 @@ class ElicensingInvoiceService:
             total_adjustments=Coalesce(
                 Subquery(total_adjustments_subquery),
                 0,
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            ),
+            faa_sub_interest_total=Coalesce(
+                Subquery(faa_interest_total_subquery),
+                0,
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            ),
+            faa_interest_total=Case(
+                When(
+                    invoice_fee_balance__gt=Decimal("0.00"),
+                    then=F("invoice_interest_balance"),
+                ),
+                default=F("faa_sub_interest_total"),
                 output_field=DecimalField(max_digits=12, decimal_places=2),
             ),
         )
