@@ -165,7 +165,7 @@ class TestElicensingOperatorService:
                 ),
                 InvoiceFee(
                     feeObjectId=2,
-                    feeGUID="00000000-0000-0000-0000-000000000000",
+                    feeGUID="",  # intentionally empty to mimic eLicensing auto generated fees
                     businessAreaCode='asdf',
                     feeDate="2025-11-30",
                     description="Interest",
