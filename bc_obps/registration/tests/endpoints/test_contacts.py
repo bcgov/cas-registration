@@ -72,7 +72,8 @@ class TestContactsEndpoint(CommonTestSetup):
         contact_baker(
             _quantity=30,
             first_name=cycle(["John", "Jane"]),
-            last_name=seq("Doe"),
+            # Suffix keeps last names from being substrings of each other (e.g. Doe2 vs Doe20) under icontains
+            last_name=seq("Doe", suffix="_"),
             email=seq("test_user", suffix="@example.com"),
         )
 

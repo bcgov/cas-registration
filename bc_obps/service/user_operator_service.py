@@ -135,18 +135,20 @@ class UserOperatorService:
         # Used to show internal users the list of user_operators to approve/deny
         base_qs = UserOperatorDataAccessService.get_user_operator_requests_for_irc_users()
 
+        sort_direction = "-" if sort_order == "desc" else ""
+        tiebreakers = (f"{sort_direction}created_at", f"{sort_direction}user_friendly_id", f"{sort_direction}id")
+
         # `created_at` and `user_friendly_id` are not case-insensitive fields and Lower() cannot be applied to them
         if sort_field in ['created_at', 'user_friendly_id']:
-            sort_direction = "-" if sort_order == "desc" else ""
-            return filters.filter(base_qs).order_by(f"{sort_direction}{sort_field}")
+            return filters.filter(base_qs).order_by(f"{sort_direction}{sort_field}", *tiebreakers)
 
         # Use Lower for case-insensitive ordering
         lower_sort_field = Lower(sort_field)
         if sort_order == "desc":
             # Apply descending order
-            return filters.filter(base_qs).order_by(lower_sort_field.desc())
+            return filters.filter(base_qs).order_by(lower_sort_field.desc(), *tiebreakers)
         # Apply ascending order
-        return filters.filter(base_qs).order_by(lower_sort_field)
+        return filters.filter(base_qs).order_by(lower_sort_field, *tiebreakers)
 
     @classmethod
     @transaction.atomic()
