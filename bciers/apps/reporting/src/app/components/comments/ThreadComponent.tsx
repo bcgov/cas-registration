@@ -38,7 +38,6 @@ const ThreadComponent: React.FC<Props> = ({
         <CommentComponent
           key={comment.id ?? "comment-pending-submission"}
           comment={comment}
-          disabled={thread.resolved}
         />
       ))}
       <Grid className="mt-2">
