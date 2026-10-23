@@ -1,4 +1,5 @@
 import { devices } from "@playwright/test";
+import type { ReporterDescription } from "@playwright/test";
 import { nxE2EPreset } from "@nx/playwright/preset";
 import { join } from "node:path";
 
@@ -24,9 +25,15 @@ const playwrightBaseConfig = {
   reporter: [
     [process.env.CI ? "blob" : "html"],
     ...(process.env.A11Y_MODE === "report"
-      ? [[join(__dirname, "libs/e2e/src/reporters/a11y-reporter.ts")]]
+      ? [
+          [
+            join(__dirname, "libs/e2e/src/reporters/a11y-reporter.ts"),
+            // bciers/a11y-results/<project>.json, no matter which app directory the tests run from
+            { outputDir: join(__dirname, "a11y-results") },
+          ] as ReporterDescription,
+        ]
       : []),
-  ] as [string][],
+  ] as ReporterDescription[],
   /* Configure projects for major browsers */
   use: {
     baseURL: baseURL,
