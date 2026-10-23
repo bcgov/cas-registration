@@ -1,8 +1,8 @@
 from model_bakery.baker import make_recipe
-
+from ninja.responses import NinjaJSONEncoder
+import pytest
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.models import CommentThread
-from ninja.responses import NinjaJSONEncoder
 
 
 class TestThreadsV2Endpoints(CommonTestSetup):
@@ -104,3 +104,28 @@ class TestThreadsV2Endpoints(CommonTestSetup):
             "facility_name": "Test Facility",
             "id": thread.id,
         }
+
+    @pytest.mark.parametrize("resolved", [True, False])
+    def test_patch_resolves_thread(self, resolved):
+        thread = make_recipe(
+            "reporting.tests.utils.comment_thread",
+            report=self.report,
+            report_version=self.report_version,
+            facility=self.facility,
+        )
+        endpoint = f"{self.endpoint_under_test}/{thread.id}/resolve"
+
+        response = TestUtils.mock_patch_with_auth_role(
+            self,
+            "cas_director",
+            self.content_type,
+            {"resolved": resolved},
+            endpoint,
+        )
+
+        assert response.status_code == 200
+        assert response.json()["id"] == thread.id
+        assert response.json()["resolved"] is resolved
+
+        thread.refresh_from_db()
+        assert thread.resolved is resolved
