@@ -5,6 +5,7 @@ import { REGULATED_OPERATION_REGISTRATION_PURPOSE } from "@reporting/src/app/uti
 import { OPERATION_NAMES } from "@/reporting-e2e/utils/enums";
 import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 test.describe.configure({ mode: "serial" });
@@ -26,6 +27,7 @@ test.describe("Start Past Report", () => {
 
     // Assert page displays - Report on a previous year
     await startPastReport.isLoaded();
+    await analyzeAccessibility(page, "Report on a previous year form");
 
     // Complete form
     await startPastReport.selectReportingYear("2024");

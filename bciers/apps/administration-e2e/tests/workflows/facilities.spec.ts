@@ -11,7 +11,6 @@ import {
   FacilityType,
 } from "@/administration-e2e/utils/enums";
 import {
-  analyzeAccessibility,
   assertSuccessfulSnackbar,
   checkBreadcrumbText,
   clickButton,
@@ -20,6 +19,7 @@ import {
   stabilizeGrid,
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 

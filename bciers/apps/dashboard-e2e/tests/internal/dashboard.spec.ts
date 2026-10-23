@@ -2,10 +2,10 @@ import { expect } from "@playwright/test";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import { DashboardPOM } from "@/dashboard-e2e/poms/dashboard";
 import {
-  analyzeAccessibility,
   takeStabilizedScreenshot,
   urlIsCorrect,
 } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 import { linkIsVisible } from "@bciers/e2e/utils/helpers";
 import {
@@ -52,7 +52,7 @@ userRoles.forEach((role) => {
         component: component,
         variant: "default",
       });
-      await analyzeAccessibility(page);
+      await analyzeAccessibility(page, component);
 
       for (const linkToCheck of Object.values(InternalDashboardLinks)) {
         const shouldBeVisible = getLinkVisibility(linkToCheck, role);

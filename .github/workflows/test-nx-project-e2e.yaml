@@ -153,8 +153,19 @@ jobs:
           HAPPO_ALL_BROWSERS: ${{ inputs.all_happo_browsers && 'true' || 'false' }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
           SMTP_CONNECTION_STRING: smtp://@localhost:1025
+          # Record a11y violations instead of failing tests; the "Accessibility report" step below summarizes them
+          A11Y_MODE: report
         run: DEBUG=pw:api yarn nx run "$NX_PROJECT":${{ (github.event_name == 'schedule' || github.event_name == 'merge_group') && 'e2e' || 'e2e:ci' }} -- --project=chromium
         working-directory: ./bciers
+
+      - name: 💾 save accessibility results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: a11y-results-${{ inputs.nx_project }}
+          path: bciers/a11y-results/${{ inputs.nx_project }}-e2e.json
+          if-no-files-found: ignore
+          retention-days: 1
 
 #      #     Reports weren't being used regularly though leaving this in here for debugging purposes.
 #      #     Uncomment these if they are required to debug problematic e2e issues
@@ -191,6 +202,38 @@ jobs:
 #          name: playwright-report-${{ inputs.nx_project }}
 #          path: playwright-report
 #          retention-days: 14
+
+  a11y-check:
+    name: ♿ accessibility
+    needs: [e2e-tests]
+    if: ${{ inputs.is_nx_affected && !cancelled() && needs.e2e-tests.result != 'skipped' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 📥 get accessibility results
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: a11y-results-${{ inputs.nx_project }}
+          path: a11y-results
+      - name: ♿ Accessibility report
+        shell: bash
+        env:
+          RESULTS_FILE: a11y-results/${{ inputs.nx_project }}-e2e.json
+        run: |
+          if [ ! -f "$RESULTS_FILE" ]; then
+            echo "::warning::No accessibility results found. The e2e run may have stopped before any page was scanned."
+            exit 0
+          fi
+          COUNT=$(jq '[.[].pages[].violations[]] | length' "$RESULTS_FILE")
+          if [ "$COUNT" -eq 0 ]; then
+            echo "No accessibility violations found."
+            exit 0
+          fi
+          jq -r '.[] | .test as $test | .pages[] | .page as $page | .violations[] |
+            "[\(.impact // "unknown")] \(.id): \(.help)\n  Page:     \($page)\n  Test:     \($test)\n  Help:     \(.helpUrl)\n  Elements: \(.targets | join(", "))\n"' "$RESULTS_FILE"
+          echo "::error::Found $COUNT accessibility violation(s)."
+          exit 1
 
   # Call Happo api and skip the project if it wasn't affected
   happo-skip-not-affected:

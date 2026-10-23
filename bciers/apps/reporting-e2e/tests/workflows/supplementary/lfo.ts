@@ -27,6 +27,7 @@ import { ReviewFacilitiesPOM } from "@/reporting-e2e/poms/LFO/review-facilities"
 import { FacilityGridPOM } from "@/reporting-e2e/poms/LFO/facility-grid";
 import { OperationEmissionSummaryPOM } from "@/reporting-e2e/poms/LFO/operation-emissions-summary";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 import { runLfoSubmitReport } from "@/reporting-e2e/tests/workflows/submit/lfo";
 import {
@@ -80,8 +81,13 @@ export async function runLfoSupplementaryScenario({
   await grid.searchByOperationName(operationName);
 
   if (!(await grid.hasSubmittedReport(operationName))) {
-    // No screenshots — the submit spec already captures these in this run.
-    await runLfoSubmitReport({ page, request, happoScreenshot: undefined });
+    // No screenshots or a11y scans — the submit spec already covers these pages in this run.
+    await runLfoSubmitReport({
+      page,
+      request,
+      happoScreenshot: undefined,
+      checkAccessibility: false,
+    });
     await grid.route();
     await grid.searchByOperationName(operationName);
   }
@@ -322,6 +328,7 @@ export async function runLfoSupplementaryScenario({
   await reviewChanges.verifySaveAndContinueDisabled();
   await reviewChanges.fillReason();
   await reviewChanges.verifySaveAndContinueEnabled();
+  await analyzeAccessibility(page, "Review Changes (LFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Review Changes",
     variant: "LFO",
@@ -347,6 +354,7 @@ export async function runLfoSupplementaryScenario({
   // ── 22. Verification ──
   await verifyFormTitle(page, "Verification");
   await report.verifySupplementaryVerification();
+  await analyzeAccessibility(page, "Verification (LFO - supplementary)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Verification",
     variant: "LFO - supplementary",
@@ -361,6 +369,7 @@ export async function runLfoSupplementaryScenario({
   await report.uploadVerificationStatement();
   await grid.fillAttachments();
   await grid.verifySaveAndContinueEnabled();
+  await analyzeAccessibility(page, "Attachments (LFO - supplementary)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Attachments",
     variant: "LFO - supplementary",
@@ -376,6 +385,7 @@ export async function runLfoSupplementaryScenario({
     isSupplementary: true,
     isRegulated,
   });
+  await analyzeAccessibility(page, "Sign-off (LFO - supplementary)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Sign-off",
     variant: "LFO - supplementary",
@@ -388,6 +398,7 @@ export async function runLfoSupplementaryScenario({
 
   // ── 25. Submission page ──
   await grid.verifySubmissionPage(true);
+  await analyzeAccessibility(page, "Submission (LFO - supplementary)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Submission",
     variant: "LFO - supplementary",
@@ -405,6 +416,7 @@ export async function runLfoSupplementaryScenario({
   const reportHistory = new ReportHistoryPOM(page);
   await reportHistory.validatePageElements(operationName);
   await reportHistory.verifyVersions(scenario.expectedVersions);
+  await analyzeAccessibility(page, "Report History (LFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Report History",
     variant: "LFO",

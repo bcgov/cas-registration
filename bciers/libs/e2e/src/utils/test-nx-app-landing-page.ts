@@ -4,6 +4,7 @@ import { test as happoTest } from "happo/playwright";
 import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
 import { setupTestEnvironment } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 
 // Only merge Happo if explicitly enabled (disabled during nightly builds)
 const isHappoEnabled = process.env.HAPPO_ENABLED === "true";
@@ -50,6 +51,9 @@ const testNxProjectLandingPage = async (zones: string[]) => {
 
         // ⏲️ Add a delay (in milliseconds) to wait before taking the screenshot
         await page.waitForTimeout(5000); // Wait for 5 seconds
+
+        // ♿ Check the landing page for accessibility violations
+        await analyzeAccessibility(page, `${zone} landing page`);
 
         // 📷 Cheese!
         const pageContent = page.locator("html");

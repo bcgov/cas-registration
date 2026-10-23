@@ -10,6 +10,7 @@ import { ComplianceSummariesPOM } from "@/compliance-e2e/poms/compliance-summari
 import { ReviewComplianceEarnedCreditsPOM } from "@/compliance-e2e/poms/request-issuance/review-compliance-earned-credits";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 
 // 👤 run test using the storageState for role UserRole.INDUSTRY_USER_ADMIN
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
@@ -46,6 +47,7 @@ test.describe("Test report version to compliance report version earned credits f
     await earnedCredits.assertIssuanceStatusValue(
       IssuanceStatus.ISSUANCE_NOT_REQUESTED,
     );
+    await analyzeAccessibility(page, "Request issuance of earned credits");
 
     // happo screenshot
     await takeStabilizedScreenshot(happoScreenshot, page, {
