@@ -9,6 +9,10 @@ permissions:
 if: >
   contains(github.event.issue.labels.*.name, 'AI Business Requirements')
 
+tools:
+  github:
+    min-integrity: unapproved
+
 safe-outputs:
   add-comment:
     max: 1
