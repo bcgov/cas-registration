@@ -210,9 +210,10 @@ class OperationService:
         eio_payload = FacilityIn(name=payload.name, type=Facility.Types.ELECTRICITY_IMPORT, operation_id=operation.id)
         try:
             facility = Facility.objects.get(operation=operation)
-            FacilityService.update_facility(user_guid, facility.id, eio_payload)
         except Facility.DoesNotExist:
             FacilityService.create_facilities_with_designated_operations(user_guid, [eio_payload])
+        else:
+            FacilityService.update_facility(user_guid, facility.id, eio_payload)
 
     @classmethod
     @transaction.atomic()

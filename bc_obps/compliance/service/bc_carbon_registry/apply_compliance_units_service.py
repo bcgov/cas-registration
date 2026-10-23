@@ -115,7 +115,8 @@ class ApplyComplianceUnitsService:
                 before the adjustment row exists.
 
         Raises:
-            UserError: If the obligation is missing or the fee_amount_dollars is not available.
+            DoesNotExist: If the compliance obligation does not exist.
+            UserError: If the obligation the fee_amount_dollars is not available.
         """
         obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
 
