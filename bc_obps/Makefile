@@ -136,7 +136,7 @@ update_email_snapshots:
 .PHONY: pythontests_parallel
 pythontests_parallel: ## run Python tests in parallel for faster execution
 pythontests_parallel:
-	$(POETRY_RUN) $(PYTEST) -n auto $(ARGS)
+	$(POETRY_RUN) $(PYTEST) -n 2 $(ARGS)
 
 .PHONY: clear_db
 clear_db: ## Clear all data in the datbase
