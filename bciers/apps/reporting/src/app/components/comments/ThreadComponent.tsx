@@ -2,6 +2,12 @@ import { Button, Grid, Typography } from "@mui/material";
 import { Thread } from "./types";
 import CommentComponent from "./CommentComponent";
 import ThreadFrame from "./ThreadFrame";
+import { useTransition } from "react";
+import { actionHandler } from "@bciers/actions";
+import {
+  handleApiResponse,
+  useValidationErrors,
+} from "@bciers/components/validationErrors";
 
 interface Props {
   thread: Thread;
@@ -14,10 +20,24 @@ const ThreadComponent: React.FC<Props> = ({
   canReply,
   onThreadUpdated,
 }) => {
-  const handleResolveThread = (resolved: boolean) => {
-    // Hit API
+  const [_, startTransition] = useTransition();
+  const { setErrors, renderedErrors } = useValidationErrors();
 
-    onThreadUpdated({ ...thread, resolved });
+  const handleResolveThread = (resolved: boolean) => {
+    startTransition(async () => {
+      // Hit API to resolve thread
+      const response = await actionHandler(
+        `reporting/v2/report-version/${thread.version_id}/threads/${thread.id}/resolve`,
+        "PATCH",
+        `reports/${thread.version_id}/`,
+        {
+          body: JSON.stringify({ resolved }),
+        },
+      );
+      if (handleApiResponse(response, setErrors)) {
+        onThreadUpdated({ ...thread, resolved });
+      }
+    });
   };
 
   return (
@@ -26,6 +46,7 @@ const ThreadComponent: React.FC<Props> = ({
       resolved={thread.resolved}
       onResolveClicked={handleResolveThread}
     >
+      {renderedErrors}
       {thread.facility_name && (
         <Typography
           variant="body2"
