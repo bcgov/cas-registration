@@ -1,10 +1,13 @@
 from decimal import Decimal
-import pytest
 from unittest.mock import patch
-from model_bakery import baker
-from compliance.service.bc_carbon_registry.project_service import BCCarbonRegistryProjectService
-from registration.models import Operation
+
+import pytest
 from common.exceptions import UserError
+from compliance.service.bc_carbon_registry.project_service import (
+    BCCarbonRegistryProjectService,
+)
+from model_bakery import baker
+from registration.models import Facility, Operation
 
 pytestmark = pytest.mark.django_db
 
@@ -263,7 +266,7 @@ class TestBCCarbonRegistryProjectService:
         compliance_report_version = create_compliance_report_version(sfo_operation_no_facility)
 
         # Act & Assert
-        with pytest.raises(UserError, match="SFO operation must have at least one facility."):
+        with pytest.raises(Facility.DoesNotExist):
             service.create_project(
                 account_id="123456789012345",
                 compliance_report_version=compliance_report_version,

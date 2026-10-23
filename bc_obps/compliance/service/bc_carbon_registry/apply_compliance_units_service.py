@@ -115,13 +115,13 @@ class ApplyComplianceUnitsService:
                 before the adjustment row exists.
 
         Raises:
-            UserError: If the obligation is missing or the fee_amount_dollars is not available.
+            DoesNotExist: If the compliance obligation does not exist.
+            UserError: If the obligation the fee_amount_dollars is not available.
         """
-        obligation = ComplianceObligation.objects.filter(
-            compliance_report_version_id=compliance_report_version_id
-        ).first()
-        if not obligation or not obligation.fee_amount_dollars:
-            raise UserError("Unable to calculate unit cap: missing obligation or fee amount.")
+        obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
+
+        if not obligation.fee_amount_dollars:
+            raise UserError("Unable to calculate unit cap: missing fee amount.")
 
         cap_limit = cls._calculate_apply_units_cap(compliance_report_version_id, pending_supplementary_adjustment)
         # Negative value (applications reduce the balance)

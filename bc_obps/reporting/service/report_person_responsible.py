@@ -32,10 +32,7 @@ class ReportContactService:
         data: ReportPersonResponsibleData,
     ) -> ReportPersonResponsible:
 
-        report_version: Optional[ReportVersion] = ReportVersion.objects.filter(id=version_id).first()
-
-        if report_version is None:
-            raise ValueError("ReportVersion with this ID does not exist.")
+        report_version = ReportVersion.objects.get(id=version_id)
 
         report_person_responsible, _created = ReportPersonResponsible.objects.update_or_create(
             report_version=report_version,

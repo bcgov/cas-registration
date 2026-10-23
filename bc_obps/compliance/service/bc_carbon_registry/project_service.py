@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 from common.exceptions import UserError
 from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
 from compliance.models.compliance_report_version import ComplianceReportVersion
@@ -29,11 +29,10 @@ class BCCarbonRegistryProjectService:
 
         address_related_fields: Dict[str, Any] = {}
         if operation_type == Operation.Types.SFO:
-            facility: Optional[Facility] = operation.facilities.first()  # SFO operations have a single facility
 
-            # Two below assertions are to make mypy happy, but we are sure that facility is not None
-            if not facility:
-                raise UserError("SFO operation must have at least one facility.")
+            # SFO operations have a single facility
+            facility: Facility = Facility.objects.get(operation=operation)
+
             if not all([facility.latitude_of_largest_emissions, facility.longitude_of_largest_emissions]):
                 raise UserError("Facility must have latitude and longitude for SFO operations.")
             address_related_fields = {

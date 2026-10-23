@@ -1,14 +1,17 @@
+from decimal import Decimal
+from unittest.mock import Mock, patch
+
+import pytest
+from common.exceptions import UserError
+from compliance.dataclass import BCCRUnit, ComplianceUnitsPageData, RefreshWrapperReturn
+from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
-import pytest
-from unittest.mock import patch, Mock
-from model_bakery import baker
-from common.exceptions import UserError
-from compliance.service.bc_carbon_registry.apply_compliance_units_service import ApplyComplianceUnitsService
-from compliance.dataclass import BCCRUnit, ComplianceUnitsPageData
-from decimal import Decimal
-from compliance.dataclass import RefreshWrapperReturn
+from compliance.service.bc_carbon_registry.apply_compliance_units_service import (
+    ApplyComplianceUnitsService,
+)
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
+from model_bakery import baker
 
 pytestmark = pytest.mark.django_db
 
@@ -742,8 +745,15 @@ class TestApplyComplianceUnitsService:
 
     def test_is_credit_usage_over_cap_no_obligation_raises(self):
         crv = baker.make_recipe('compliance.tests.utils.compliance_report_version')
-        with pytest.raises(UserError, match="missing obligation or fee amount"):
+        with pytest.raises(ComplianceObligation.DoesNotExist):
             ApplyComplianceUnitsService.is_credit_usage_over_cap(crv.id)
+
+    def test_is_credit_usage_over_cap_no_fee_amount_raises(self):
+        obligation = baker.make_recipe('compliance.tests.utils.compliance_obligation')
+        obligation.fee_amount_dollars = None
+        obligation.save()
+        with pytest.raises(UserError, match="Unable to calculate unit cap: missing fee amount"):
+            ApplyComplianceUnitsService.is_credit_usage_over_cap(obligation.compliance_report_version_id)
 
     @patch(
         "compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"

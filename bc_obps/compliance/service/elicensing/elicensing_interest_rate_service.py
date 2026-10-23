@@ -135,11 +135,10 @@ class ElicensingInterestRateService:
         ElicensingInterestRate.objects.update(is_current_rate=False)
 
         # Find and mark the current rate
-        current_rate = ElicensingInterestRate.objects.filter(start_date__lte=today, end_date__gte=today).first()
-
-        if current_rate:
+        try:
+            current_rate = ElicensingInterestRate.objects.get(start_date__lte=today, end_date__gte=today)
             current_rate.is_current_rate = True
             current_rate.save(update_fields=['is_current_rate'])
             logger.info(f"Set current rate to period starting {current_rate.start_date}")
-        else:
+        except ElicensingInterestRate.DoesNotExist:
             logger.warning(f"No interest rate found for today's date: {today}")
