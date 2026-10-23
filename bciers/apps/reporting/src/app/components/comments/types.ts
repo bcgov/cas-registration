@@ -12,6 +12,7 @@ export type Thread = {
   facility_name?: string;
   facility_id?: string;
   comments: Comment[];
+  resolved: boolean;
 };
 
 export type FacilityItem = {
