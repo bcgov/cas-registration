@@ -5,7 +5,7 @@ from ninja.pagination import PageNumberPagination
 from reporting.constants import PAGE_SIZE
 
 
-class ResponseBuilder:
+class ResponseBuilder[TPayload = dict]:
     """
     Builder to make API responses for GET requests.
 
@@ -17,7 +17,7 @@ class ResponseBuilder:
     ) -> None:
         self.response: dict = {}
 
-    def payload(self, payload: dict) -> Self:
+    def payload(self, payload: TPayload) -> Self:
         self.response["payload"] = payload
         return self
 
