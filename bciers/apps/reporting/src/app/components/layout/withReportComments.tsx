@@ -7,11 +7,11 @@ export default function withReportComments<
 >(WrappedPage: React.FC<TPageProps>) {
   const WrappedComponent: React.FC<TPageProps> = (props) => (
     <Grid container spacing={2}>
-      <Grid item md={8}>
+      <Grid size={8}>
         <WrappedPage {...props} />
       </Grid>
 
-      <Grid item md={4}>
+      <Grid size={4}>
         <Suspense fallback={<output>Loading comments...</output>}>
           <ReportComments version_id={props.version_id} />
         </Suspense>
