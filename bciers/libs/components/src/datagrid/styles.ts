@@ -26,6 +26,10 @@ const styles = {
         padding: 0,
         borderRadius: 0,
       },
+      // Only show the search input's focus ring, not the whole header cell's
+      "& .MuiDataGrid-columnHeader:focus-within:not(:focus)": {
+        outline: "none",
+      },
       "& .MuiDataGrid-columnHeader--last": {
         borderRight: "none",
       },
