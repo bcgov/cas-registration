@@ -275,7 +275,7 @@ cas-logging-sidecar:
     extraTransforms:
       filter_document_check_heartbeat:
         type: filter
-        inputs: [add_missing_timestamp]
+        inputs: [vector]
         condition:
           type: vrl
           source: |
