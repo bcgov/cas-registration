@@ -10,16 +10,19 @@ import type {
 import { A11Y_ANNOTATION_TYPE } from "../utils/a11y";
 
 // Collects the violations analyzeAccessibility records in A11Y_MODE=report and writes them out once the run ends:
-// - a JSON file per e2e project (A11Y_RESULTS_FILE, defaults to bciers/a11y-results/<project>.json, e.g. registration-e2e.json)
+// - a JSON file per e2e project (<outputDir>/<project>.json, e.g. bciers/a11y-results/registration-e2e.json)
 //   that the CI "Accessibility report" step prints
 // - a short summary in the terminal, for local runs
 // This lets CI report e2e and a11y results separately without running the tests twice.
 
-// bciers/a11y-results, no matter which app directory the tests are run from
-const DEFAULT_RESULTS_DIR = path.resolve(
-  __dirname,
-  "../../../../a11y-results",
-);
+// Options, passed from the playwright config: [reporterPath, { outputDir }]
+// (see https://playwright.dev/docs/test-reporters)
+interface A11yReporterOptions {
+  // Folder for the results; each e2e project writes <project>.json into it. Defaults to ./a11y-results
+  outputDir?: string;
+  // Exact results file; overrides outputDir. The A11Y_RESULTS_FILE env var overrides both
+  outputFile?: string;
+}
 
 interface A11yPageResult {
   page: string;
@@ -44,6 +47,8 @@ class A11yReporter implements Reporter {
   private results = new Map<string, A11yTestResult>();
   // e2e project name, taken from the folder of the playwright config (e.g. "registration-e2e")
   private projectName = "e2e";
+
+  constructor(private options: A11yReporterOptions = {}) {}
 
   onBegin(config: FullConfig) {
     if (config.configFile)
@@ -74,7 +79,11 @@ class A11yReporter implements Reporter {
     const results = [...this.results.values()];
     const outputFile =
       process.env.A11Y_RESULTS_FILE ??
-      path.join(DEFAULT_RESULTS_DIR, `${this.projectName}.json`);
+      this.options.outputFile ??
+      path.join(
+        this.options.outputDir ?? "a11y-results",
+        `${this.projectName}.json`,
+      );
     fs.mkdirSync(path.dirname(outputFile), { recursive: true });
     fs.writeFileSync(outputFile, JSON.stringify(results, null, 2));
 
