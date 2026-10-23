@@ -3,10 +3,20 @@ description: "Cache Yarn dependencies"
 runs:
   using: composite
   steps:
+    # Yarn 4 package download cache (`yarn config get cacheFolder`). A partial match is safe here:
+    # yarn verifies checksums and only fetches what's missing, so lockfile bumps don't re-download everything
     - uses: actions/cache@v6
-      id: yarn-cache
+      id: yarn-download-cache
+      with:
+        path: ~/.yarn/berry/cache
+        key: ${{ runner.os }}-yarn-download-cache-${{ hashFiles('yarn.lock', 'bciers/yarn.lock') }}-v3
+        restore-keys: |
+          ${{ runner.os }}-yarn-download-cache-
+    # Installed node_modules. Exact match only, so a stale tree is never restored
+    - uses: actions/cache@v6
+      id: yarn-node-modules-cache
       with:
         path: |
-          ~/.cache/yarn
+          ./node_modules
           ./bciers/node_modules
-        key: ${{ runner.os }}-yarn-cache-${{ hashFiles('bciers/yarn.lock') }}-v3
+        key: ${{ runner.os }}-yarn-node-modules-${{ hashFiles('yarn.lock', 'bciers/yarn.lock') }}-v3
