@@ -78,6 +78,10 @@ class ElicensingInvoiceListOut(ModelSchema):
         None,
         description="Sum of payments applied to the invoice. Calculated server-side.",
     )
+    faa_interest_total: Optional[Decimal] = Field(
+        None,
+        description="Computed FAA interest total. Calculated server-side.",
+    )
 
     class Meta:
         model = ElicensingInvoice
