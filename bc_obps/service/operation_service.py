@@ -208,8 +208,9 @@ class OperationService:
     def _create_or_update_eio(cls, user_guid: UUID, operation: Operation, payload: OperationData) -> None:
         # EIO operations have a facility with the same data as the operation
         eio_payload = FacilityIn(name=payload.name, type=Facility.Types.ELECTRICITY_IMPORT, operation_id=operation.id)
-        facility = operation.facilities.first()
-        if not facility:
+        try:
+            facility = Facility.objects.get(operation=operation)
+        except Facility.DoesNotExist:
             FacilityService.create_facilities_with_designated_operations(user_guid, [eio_payload])
         else:
             FacilityService.update_facility(user_guid, facility.id, eio_payload)

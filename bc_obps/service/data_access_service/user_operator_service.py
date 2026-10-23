@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Tuple
 from uuid import UUID
 from service.data_access_service.user_service import UserDataAccessService
 from registration.models import Operator, User, UserOperator
@@ -49,12 +49,12 @@ class UserOperatorDataAccessService:
         return user_operator, created
 
     @classmethod
-    def get_approved_user_operator(cls, user: User) -> Optional[UserOperator]:
+    def get_approved_user_operator(cls, user: User) -> UserOperator:
         """
         Return the approved UserOperator record associated with the user.
         Based on the Constraint, there should only be one UserOperator associated with a user and operator.
         """
-        return user.user_operators.only("operator_id").filter(status=UserOperator.Statuses.APPROVED).first()
+        return user.user_operators.only("operator_id").get(status=UserOperator.Statuses.APPROVED)
 
     @classmethod
     def get_user_operator_requests_for_irc_users(cls) -> QuerySet[UserOperator]:

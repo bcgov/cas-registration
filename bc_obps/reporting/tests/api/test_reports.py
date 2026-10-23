@@ -1,4 +1,3 @@
-from django.utils import timezone
 import json
 from typing import Any
 from unittest.mock import patch, MagicMock
@@ -56,13 +55,6 @@ class TestReportsEndpoint(CommonTestSetup):
 
     def test_error_if_no_reporting_year_exists(self):
         operation = operation_baker()
-        baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
-            operation=operation,
-            operator=operation.operator,
-            start_date=timezone.make_aware(timezone.datetime(2024, 1, 1)),
-            end_date=None,
-        )
 
         request_data = {"operation_id": str(operation.id), "reporting_year": 2111}
         response = self.send_authorized_post_request(request_data, operation)
@@ -71,13 +63,6 @@ class TestReportsEndpoint(CommonTestSetup):
 
     def test_error_if_report_exists(self):
         report = report_baker(reporting_year_id=2024)
-        baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
-            operation=report.operation,
-            operator=report.operation.operator,
-            start_date=timezone.make_aware(timezone.datetime(2022, 1, 1)),
-            end_date=None,
-        )
 
         request_data = {
             "operation_id": str(report.operation.id),
@@ -97,13 +82,6 @@ class TestReportsEndpoint(CommonTestSetup):
             status='Approved',
         )
         operation = operation_baker(operator_id=user_operator.operator_id)
-        baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
-            operation=operation,
-            operator=user_operator.operator,
-            start_date=timezone.make_aware(timezone.datetime(2022, 1, 1)),
-            end_date=None,
-        )
 
         assert Report.objects.count() == 0
         assert ReportVersion.objects.count() == 0

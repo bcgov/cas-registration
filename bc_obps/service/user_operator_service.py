@@ -40,10 +40,10 @@ class UserOperatorService:
 
     @classmethod
     def get_current_user_approved_user_operator_or_raise(cls, user: User) -> UserOperator:
-        user_operator = UserOperatorDataAccessService.get_approved_user_operator(user)
-        if not user_operator:
+        try:
+            return UserOperatorDataAccessService.get_approved_user_operator(user)
+        except UserOperator.DoesNotExist:
             raise Exception(UNAUTHORIZED_MESSAGE)
-        return user_operator
 
     # Function to create operator instance
     @classmethod
