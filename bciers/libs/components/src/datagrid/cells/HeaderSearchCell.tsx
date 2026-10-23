@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { TextField } from "@mui/material";
-import OutsideClickHandler from "react-outside-click-handler";
+import { ClickAwayListener, TextField } from "@mui/material";
 import { GridColumnGroupHeaderParams } from "@mui/x-data-grid";
 import debounce from "lodash.debounce";
 import { replaceUrlParams } from "@bciers/components/datagrid/replaceUrlParams";
@@ -73,7 +72,7 @@ const SearchCell = ({
 
   return (
     <div className="w-full">
-      <OutsideClickHandler onOutsideClick={handleResetFocus}>
+      <ClickAwayListener onClickAway={handleResetFocus}>
         <TextField
           className="w-full px-2 py-1 [&_input]:p-2"
           placeholder="Search"
@@ -98,7 +97,7 @@ const SearchCell = ({
             );
           }}
         />
-      </OutsideClickHandler>
+      </ClickAwayListener>
     </div>
   );
 };
