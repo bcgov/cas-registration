@@ -9,6 +9,10 @@ permissions:
 if: >
   contains(github.event.issue.labels.*.name, 'AI User Story')
 
+tools:
+  github:
+    min-integrity: unapproved
+
 safe-outputs:
   threat-detection: true
   update-issue:
