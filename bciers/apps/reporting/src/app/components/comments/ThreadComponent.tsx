@@ -6,13 +6,31 @@ import ThreadFrame from "./ThreadFrame";
 interface Props {
   thread: Thread;
   canReply: boolean;
+  onThreadUpdated: (thread: Thread) => void;
 }
 
-const ThreadComponent: React.FC<Props> = ({ thread, canReply }) => {
+const ThreadComponent: React.FC<Props> = ({
+  thread,
+  canReply,
+  onThreadUpdated,
+}) => {
+  const handleResolveThread = (resolved: boolean) => {
+    // Hit API
+
+    onThreadUpdated({ ...thread, resolved });
+  };
+
   return (
-    <ThreadFrame version_id={thread.version_id}>
+    <ThreadFrame
+      version_id={thread.version_id}
+      resolved={thread.resolved}
+      onResolveClicked={handleResolveThread}
+    >
       {thread.facility_name && (
-        <Typography variant="body2" sx={{ mt: 1 }}>
+        <Typography
+          variant="body2"
+          className="mt-2 group-[.resolved]:text-bc-component-grey"
+        >
           Facility Name:<span className="ml-2">{thread.facility_name}</span>
         </Typography>
       )}
@@ -20,10 +38,11 @@ const ThreadComponent: React.FC<Props> = ({ thread, canReply }) => {
         <CommentComponent
           key={comment.id ?? "comment-pending-submission"}
           comment={comment}
+          disabled={thread.resolved}
         />
       ))}
-      <Grid sx={{ m: 1 }}>
-        {canReply && (
+      <Grid className="mt-2">
+        {canReply && !thread.resolved && (
           <Button variant="outlined" color="primary" fullWidth>
             Reply
           </Button>
