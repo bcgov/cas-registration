@@ -17,7 +17,6 @@ analystTest.describe("CAS Analyst - Transfer Facility", () => {
         page,
         happoScreenshot,
         "CAS Analyst",
-        { includeAccessibility: true },
       );
     },
   );

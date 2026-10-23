@@ -24,6 +24,7 @@ import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
 import { SubmittedPOM } from "@/reporting-e2e/poms/submitted";
 import { DEFAULT_ANNUAL_PRODUCTION } from "@/reporting-e2e/poms/production-data";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 import { runSfoSubmitReport } from "@/reporting-e2e/tests/workflows/submit/sfo";
 import {
@@ -75,8 +76,13 @@ export async function runSfoSupplementaryScenario({
   await grid.route();
 
   if (!(await grid.hasSubmittedReport(operationName))) {
-    // No screenshots — the submit spec already captures these in this run.
-    await runSfoSubmitReport({ page, request, happoScreenshot: undefined });
+    // No screenshots or a11y scans — the submit spec already covers these pages in this run.
+    await runSfoSubmitReport({
+      page,
+      request,
+      happoScreenshot: undefined,
+      checkAccessibility: false,
+    });
     await grid.route();
   }
 
@@ -100,6 +106,10 @@ export async function runSfoSupplementaryScenario({
   await grid.verifyReportStatus(
     operationName,
     REPORT_STATUS.DRAFT_SUPPLEMENTARY,
+  );
+  await analyzeAccessibility(
+    page,
+    "Current Reports Grid (draft supplementary)",
   );
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Current Reports Grid",
@@ -273,6 +283,7 @@ export async function runSfoSupplementaryScenario({
   await reviewChanges.verifySaveAndContinueDisabled();
   await reviewChanges.fillReason();
   await reviewChanges.verifySaveAndContinueEnabled();
+  await analyzeAccessibility(page, "Review Changes (SFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Review Changes",
     variant: "SFO",
@@ -298,6 +309,7 @@ export async function runSfoSupplementaryScenario({
   // ── 17. Verification ──
   await verifyFormTitle(page, "Verification");
   await report.verifySupplementaryVerification();
+  await analyzeAccessibility(page, "Verification (SFO - supplementary)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Verification",
     variant: "SFO - supplementary",
@@ -312,6 +324,7 @@ export async function runSfoSupplementaryScenario({
   await report.uploadVerificationStatement();
   await grid.fillAttachments();
   await grid.verifySaveAndContinueEnabled();
+  await analyzeAccessibility(page, "Attachments (SFO - supplementary)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Attachments",
     variant: "SFO - supplementary",
@@ -327,6 +340,7 @@ export async function runSfoSupplementaryScenario({
     isSupplementary: true,
     isRegulated,
   });
+  await analyzeAccessibility(page, "Sign-off (SFO - supplementary)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Sign-off",
     variant: "SFO - supplementary",
@@ -339,6 +353,7 @@ export async function runSfoSupplementaryScenario({
 
   // ── 20. Submission page ──
   await grid.verifySubmissionPage(true);
+  await analyzeAccessibility(page, "Submission (SFO - supplementary)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Submission",
     variant: "SFO - supplementary",
@@ -356,6 +371,7 @@ export async function runSfoSupplementaryScenario({
   const reportHistory = new ReportHistoryPOM(page);
   await reportHistory.validatePageElements(operationName);
   await reportHistory.verifyVersions(scenario.expectedVersions);
+  await analyzeAccessibility(page, "Report History (SFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Report History",
     variant: "SFO",

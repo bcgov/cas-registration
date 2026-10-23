@@ -3,6 +3,7 @@ import { UserRole } from "@bciers/e2e/utils/enums";
 import { FacilityIDs, OPERATION_NAMES } from "@/reporting-e2e/utils/enums";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { SubmittedPOM } from "@/reporting-e2e/poms/submitted";
 import { AnnualReportPOM } from "@/reporting-e2e/poms/annual-report";
 import { ReportHistoryPOM } from "@/reporting-e2e/poms/report-history";
@@ -34,6 +35,7 @@ test.describe("LFO: view a submitted report for the current reporting year", () 
       true,
     );
 
+    await analyzeAccessibility(page, "LFO Report - Submitted (external)");
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Report - Submitted",
       variant: "external",
@@ -43,6 +45,10 @@ test.describe("LFO: view a submitted report for the current reporting year", () 
       FacilityIDs.BANANA_LFO_1,
     );
     await submittedReport.verifyFacilitySubmittedReportView("Facility 1");
+    await analyzeAccessibility(
+      page,
+      "LFO Facility Report - Submitted (external)",
+    );
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "LFO Facility Report - Submitted",
       variant: "external",
@@ -72,6 +78,7 @@ internalTest.describe(
           true,
         );
 
+        await analyzeAccessibility(page, "LFO Report - Submitted (internal)");
         await takeStabilizedScreenshot(happoScreenshot, page, {
           component: "LFO Report - Submitted",
           variant: "internal",
@@ -83,6 +90,10 @@ internalTest.describe(
           FacilityIDs.BANANA_LFO_1,
         );
         await submittedReport.verifyFacilitySubmittedReportView("Facility 1");
+        await analyzeAccessibility(
+          page,
+          "LFO Facility Report - Submitted (internal)",
+        );
         await takeStabilizedScreenshot(happoScreenshot, page, {
           component: "LFO Facility Report - Submitted",
           variant: "internal",

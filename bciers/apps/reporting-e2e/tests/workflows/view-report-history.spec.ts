@@ -2,6 +2,7 @@ import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import { OPERATION_NAMES } from "@/reporting-e2e/utils/enums";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { SubmittedPOM } from "@/reporting-e2e/poms/submitted";
 import { AnnualReportPOM } from "@/reporting-e2e/poms/annual-report";
 import { ReportHistoryPOM } from "@/reporting-e2e/poms/report-history";
@@ -24,6 +25,7 @@ test.describe("View Report History", () => {
     await grid.route(reportVersion);
     await grid.validatePageElements(OPERATION_NAMES.BANANA_LFO);
 
+    await analyzeAccessibility(page, "Report History Grid (external)");
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "Report History Grid",
       variant: "external",
@@ -53,6 +55,7 @@ internalTest.describe("View Report History", () => {
       const grid = new ReportHistoryPOM(page);
       await grid.route(reportVersion); // Navigate directly to the report history page for id reportVersion
 
+      await analyzeAccessibility(page, "Report History Grid (internal)");
       await takeStabilizedScreenshot(happoScreenshot, page, {
         component: "Report History Grid",
         variant: "internal",
