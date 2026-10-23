@@ -99,7 +99,7 @@
     "@babel/preset-env": "^8.0.0",
     "@babel/preset-typescript": "^8.0.0",
     "@eslint/eslintrc": "^3.3.3",
-    "@eslint/js": "^9.39.4",
+    "@eslint/js": "^10.0.0",
     "@nx-tools/nx-container": "^7.3.0",
     "@nx/devkit": "23.3.0",
     "@nx/eslint": "23.3.0",
