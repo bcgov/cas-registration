@@ -281,4 +281,12 @@ cas-logging-sidecar:
           source: |
             .app_name != "check-document-file-status" ||
             !match_any(to_string!(.message), [r'Iteration \d+ \(running indefinitely\)',r'Next check is in \d+ second\(s\).',r'Checked 0 documents'])
-    sinkInputs: [filter_document_check_heartbeat]
+      filter_backend_ready_live_heartbeat:
+        type: filter
+        inputs: [filter_document_check_heartbeat]
+        condition:
+          type: vrl
+          source: |
+            .app_name != "backend" ||
+            !match(to_string!(.message), r'"GET \/(liveness|readiness) HTTP\/1.1" 200')
+    sinkInputs: [filter_backend_ready_live_heartbeat]
