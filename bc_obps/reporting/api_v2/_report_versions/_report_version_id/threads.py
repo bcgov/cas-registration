@@ -9,6 +9,7 @@ from reporting.api_v2._report_versions._report_version_id.comment_thread_schema 
     CommentThreadIn,
     CommentThreadSchema,
     CommentThreadsOut,
+    ResolveThreadIn,
 )
 from reporting.api_v2.response_builder import ResponseBuilder
 from reporting.api_v2.router import router
@@ -68,3 +69,23 @@ def create_thread(
     )
 
     return 201, thread
+
+
+@router.patch(
+    "report-version/{version_id}/threads/{thread_id}/resolve",
+    response={200: CommentThreadSchema, custom_codes_4xx: Message},
+    tags=[*EMISSIONS_REPORT_TAGS, *REPORT_COMMENTS_TAGS],
+    description="Resolves a comment thread for a specific report version.",
+    auth=authorize("cas_director_analyst"),
+)
+@transaction.atomic
+def resolve_thread(
+    request: HttpRequest, version_id: str, thread_id: str, payload: ResolveThreadIn
+) -> Tuple[Literal[200], CommentThread]:
+    thread = CommentThreadService.resolve_thread(
+        version_id=int(version_id),
+        thread_id=int(thread_id),
+        resolved=payload.resolved,
+    )
+
+    return 200, thread

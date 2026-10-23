@@ -26,7 +26,7 @@ class CommentThreadSchema(ModelSchema):
 
     class Meta:
         model = CommentThread
-        fields = ["id"]
+        fields = ["id", "resolved"]
 
 
 class FacilityListItem(Schema):
@@ -48,3 +48,12 @@ class CommentThreadIn(Schema):
 
     facility_id: Optional[UUID] = None
     comment: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+
+
+class ResolveThreadIn(Schema):
+    """
+    Schema for resolving a comment thread.
+    Pass `resolved=False` to unresolve a comment thread. True or nothing will mark it as resolved.
+    """
+
+    resolved: bool = True
