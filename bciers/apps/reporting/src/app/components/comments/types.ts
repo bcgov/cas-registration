@@ -4,6 +4,7 @@ export type Comment = {
   author?: string;
   timestamp?: string;
   comment: string;
+  user_can_edit?: boolean;
 };
 
 export type Thread = {
@@ -12,6 +13,7 @@ export type Thread = {
   facility_name?: string;
   facility_id?: string;
   comments: Comment[];
+  
 };
 
 export type FacilityItem = {

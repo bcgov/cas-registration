@@ -1,6 +1,6 @@
 import { Alert } from "@mui/material";
 import CommentsSidebar from "./CommentsSidebar";
-import { getCommentThreads } from "../../utils/getCommentThreads";
+import { getCommentThreads } from "../../utils/comments/getCommentThreads";
 
 const ReportComments: React.FC<{ version_id: number }> = async ({
   version_id,

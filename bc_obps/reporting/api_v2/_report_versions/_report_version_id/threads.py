@@ -29,9 +29,10 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     auth=authorize("authorized_irc_user"),
 )
 def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[200], dict]:
+    user = get_current_user(request)
     report_id = ReportVersion.objects.get(id=version_id).report_id
 
-    threads = CommentThreadService.get_threads(report_id=report_id)
+    threads = CommentThreadService.get_threads(report_id=report_id, user_guid=user.guid)
 
     facilities_dict = ReportFacilitiesService.get_all_facilities_for_review(int(version_id))
 
@@ -39,7 +40,6 @@ def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[
         {"facility_id": facility["facility_id"], "facility_name": facility["facility__name"]}
         for facility in [*facilities_dict["current_facilities"], *facilities_dict["past_facilities"]]
     ]
-    user = get_current_user(request)
     can_create_comment_thread = user.is_cas_analyst() or user.is_cas_director()
 
     response = (

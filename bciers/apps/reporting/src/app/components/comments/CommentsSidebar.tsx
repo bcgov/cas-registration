@@ -26,6 +26,17 @@ const CommentsSidebar: React.FC<Props> = ({
     setCommentThreads((prevThreads) => [newThread, ...prevThreads]);
     setIsCreating(false);
   };
+  const handleCommentDeleted = (threadId: number, commentId: number) => {
+    setCommentThreads((prevThreads) =>
+      prevThreads.flatMap((thread) => {
+        if (thread.id !== threadId) return [thread];
+        const comments = thread.comments.filter(
+          (comment) => comment.id !== commentId,
+        );
+        return comments.length > 0 ? [{ ...thread, comments }] : [];
+      }),
+    );
+  };
 
   return (
     <Paper className="h-full bg-bc-light-grey-200 print:hidden">
@@ -59,6 +70,7 @@ const CommentsSidebar: React.FC<Props> = ({
           key={`thread-${thread.id}`}
           thread={thread}
           canReply={canMakeComment}
+          onCommentDeleted={handleCommentDeleted}
         />
       ))}
     </Paper>
