@@ -29,8 +29,11 @@ weasyprint = "^70.0"
 jsonschema = "^4.23.0"
 types-jsonschema = "^4.23.0.20241208"
 deepdiff = "^8.6.1"
-brotli = ">=1.2.0"
+brotli = ">=1.2.1"
 time-machine = "^3.0.0"
+brotlicffi = ">=1.2.1.0"
+certifi = ">=2026.10.18"
+pillow = ">=13.0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^26.3.1"
