@@ -2,7 +2,7 @@ import { Button, MenuItem, Stack, TextField } from "@mui/material";
 import ThreadFrame from "./ThreadFrame";
 import { useState, useTransition } from "react";
 import { FacilityItem, Thread } from "./types";
-import postCommentThread from "../../utils/postCommentThread";
+import postCommentThread from "../../utils/comments/postCommentThread";
 import { useValidationErrors } from "@bciers/components/validationErrors/useValidationErrors";
 import { handleApiResponse } from "@bciers/components/validationErrors/handleApiResponse";
 

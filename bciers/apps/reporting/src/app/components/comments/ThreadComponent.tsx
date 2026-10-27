@@ -1,24 +1,27 @@
 import { Button, Grid, Typography } from "@mui/material";
+import { useTransition } from "react";
 import { Thread } from "./types";
 import CommentComponent from "./CommentComponent";
 import ThreadFrame from "./ThreadFrame";
-import { useTransition } from "react";
 import { actionHandler } from "@bciers/actions";
 import {
   handleApiResponse,
   useValidationErrors,
 } from "@bciers/components/validationErrors";
+import { deleteComment } from "../../utils/comments/deleteComment";
 
 interface Props {
   thread: Thread;
   canUpdate: boolean;
   onThreadUpdated: (thread: Thread) => void;
+  onCommentDeleted: (threadId: number, commentId: number) => void;
 }
 
 const ThreadComponent: React.FC<Props> = ({
   thread,
   canUpdate,
   onThreadUpdated,
+  onCommentDeleted,
 }) => {
   const [_, startTransition] = useTransition();
   const { setErrors, renderedErrors } = useValidationErrors();
@@ -36,6 +39,14 @@ const ThreadComponent: React.FC<Props> = ({
       );
       if (handleApiResponse(response, setErrors)) {
         onThreadUpdated({ ...thread, resolved });
+      }
+    });
+  };
+  const handleCommentDelete = (commentId: number) => {
+    startTransition(async () => {
+      const resp = await deleteComment(commentId);
+      if (handleApiResponse(resp, setErrors)) {
+        onCommentDeleted(thread.id, commentId);
       }
     });
   };
@@ -59,6 +70,7 @@ const ThreadComponent: React.FC<Props> = ({
         <CommentComponent
           key={comment.id ?? "comment-pending-submission"}
           comment={comment}
+          handleDelete={handleCommentDelete}
         />
       ))}
       <Grid className="mt-2">
