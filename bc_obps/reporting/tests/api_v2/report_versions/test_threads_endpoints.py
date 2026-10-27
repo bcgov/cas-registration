@@ -103,6 +103,7 @@ class TestThreadsV2Endpoints(CommonTestSetup):
             ],
             "facility_name": "Test Facility",
             "id": thread.id,
+            "resolved": False,
         }
 
     @pytest.mark.parametrize("resolved", [True, False])

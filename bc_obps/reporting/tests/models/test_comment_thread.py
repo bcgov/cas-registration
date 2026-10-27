@@ -15,4 +15,5 @@ class CommentThreadModelTest(BaseTestCase):
             ("facility", "facility", None, None),
             ("report_version", "report version", None, None),
             ("comments", "comment", None, None),
+            ("resolved", "resolved", None, None),
         ]
