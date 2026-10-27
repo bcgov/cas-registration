@@ -1,5 +1,6 @@
 import pytest
 from model_bakery.baker import make_recipe
+from reporting.api_v2._report_versions._report_version_id.comment_thread_schema import CommentThreadSchema
 from reporting.models.comment_thread import CommentThread
 from reporting.service.comment_thread_service import CommentThreadService
 
@@ -13,14 +14,18 @@ class TestCommentThreadService:
 
     def test_create_thread(self):
         assert CommentThread.objects.all().count() == 0
-        CommentThreadService.create_thread(
+        thread = CommentThreadService.create_thread(
             version_id=self.report_version.id, facility_id=self.facility.id, comment="Test comment"
         )
         assert CommentThread.objects.all().count() == 1
-        thread = CommentThread.objects.first()
         assert thread.report_version_id == self.report_version.id
         assert thread.facility_id == self.facility.id
         assert thread.comments.first().comment == "Test comment"
+
+        response = CommentThreadSchema.model_validate(thread)
+        assert len(response.comments) == 1
+        assert response.comments[0].comment == "Test comment"
+        assert response.comments[0].user_can_edit is True
 
     def test_get_threads(self):
         other_report_version = make_recipe(
@@ -36,7 +41,8 @@ class TestCommentThreadService:
         other_thread = make_recipe('reporting.tests.utils.comment_thread')
         assert CommentThread.objects.all().count() == 3
 
-        threads = CommentThreadService.get_threads(report_id=self.report_version.report_id)
+        user = make_recipe('registration.tests.utils.cas_director')
+        threads = CommentThreadService.get_threads(report_id=self.report_version.report_id, user_guid=user.user_guid)
         # Assert that only threads related to the report are returned
         assert len(threads) == 2
         assert {t.id for t in threads} == {expected_thread_1.id, expected_thread_2.id}

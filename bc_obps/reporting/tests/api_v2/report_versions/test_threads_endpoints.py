@@ -99,6 +99,7 @@ class TestThreadsV2Endpoints(CommonTestSetup):
                     "timestamp": NinjaJSONEncoder().default(comment.created_at),
                     "id": comment.id,
                     "comment": comment.comment,
+                    "user_can_edit": True,
                 }
             ],
             "facility_name": "Test Facility",

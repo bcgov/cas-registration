@@ -12,6 +12,7 @@ class CommentSchema(ModelSchema):
     version_id: int | None = Field(None, alias="report_version_id")
     author: str | None = Field(None, alias="created_by.get_full_name")
     timestamp: datetime.datetime | None = Field(None, alias="created_at")
+    user_can_edit: bool
 
     class Meta:
         model = Comment
