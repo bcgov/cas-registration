@@ -9,6 +9,7 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { IssuanceRequestStatusTextWidget } from "@/compliance/src/app/data/jsonSchema/IssuanceRequestStatusTextWidget";
 import { AnalystSuggestion } from "@bciers/utils/src/enums";
+import { formatDate } from "@/compliance/src/app/utils/formatting";
 
 export const internalReviewCreditsIssuanceRequestSchema = (
   isCasAnalyst: boolean,
@@ -44,22 +45,6 @@ const getAnalystSubmissionInfoElement = (
   analystSubmittedDate?: string,
 ) => {
   if (!analystSubmittedBy && !analystSubmittedDate) return null;
-
-  const formatDate = (dateString: string) => {
-    try {
-      // Parse the date string as local date to avoid timezone issues
-      const [year, month, day] = dateString.split("-").map(Number);
-      const date = new Date(year, month - 1, day); // month is 0-indexed
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    } catch (_error) {
-      // Fallback to original format if parsing fails
-      return dateString;
-    }
-  };
 
   const formattedDate = analystSubmittedDate
     ? formatDate(analystSubmittedDate)
