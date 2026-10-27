@@ -12,14 +12,6 @@ class Rls:
     enable_rls = True
     schema = "erc"
     table = RegistrationTableNames.OPERATION
-    using_statement = """
-                    operator_id IN (
-        SELECT uo.operator_id
-        FROM erc.user_operator uo
-        WHERE uo.user_id = current_setting('my.guid', true)::uuid
-          AND uo.status = 'Approved'
-    )
-                    """
 
     role_grants_mapping = {
         RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
