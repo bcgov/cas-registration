@@ -14,6 +14,8 @@ from registration.tests.constants import (
     TIMESTAMP_COMMON_FIELDS,
     USER_FIXTURE,
 )
+from model_bakery.baker import make_recipe
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 
 
 class OperatorModelTest(BaseTestCase):
@@ -98,3 +100,72 @@ class OperatorModelTest(BaseTestCase):
 
         with self.assertRaises(ValidationError, msg="Operator with this Cra business number already exists."):
             invalid_operator.save()
+
+
+class OperatorRlsTest(BaseTestCase):
+
+    def test_operator_rls_industry_user(self):
+        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        approved_operator = approved_user_operator.operator
+        other_operator = make_recipe('registration.tests.utils.operator')
+
+        def select_function(cursor):
+            Operator.objects.all()
+
+        def insert_function(cursor):
+            Operator.objects.create(
+                legal_name="test",
+                trade_name="test",
+                cra_business_number=555444333,
+                bc_corporate_registry_number='ddd3333333',
+            )
+
+        def update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."operator"
+                    SET legal_name = 'updated'
+                    WHERE id = %s
+                """,
+                (str(approved_operator.id),),
+            )
+            return cursor.rowcount
+
+        def forbidden_update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."operator"
+                    SET legal_name = 'should not update'
+                    WHERE id = %s
+                """,
+                (str(other_operator.id),),
+            )
+            return cursor.rowcount
+
+        assert_policies_for_industry_user(
+            Operator,
+            approved_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+            forbidden_select_function=None,
+            forbidden_insert_function=None,
+            forbidden_update_function=forbidden_update_function,
+        )
+
+    def test_operator_rls_cas_user(self):
+        test_quantity = 2
+        make_recipe(
+            "registration.tests.utils.operator",
+        )
+        make_recipe(
+            "registration.tests.utils.operator",
+        )
+
+        def select_function(cursor):
+            assert Operator.objects.count() == test_quantity
+
+        assert_policies_for_cas_roles(
+            Operator,
+            select_function=select_function,
+        )
