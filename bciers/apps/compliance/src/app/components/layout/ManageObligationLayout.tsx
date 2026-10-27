@@ -21,7 +21,7 @@ export default async function ManageObligationLayout({
         lastUpdated={metadata?.last_refreshed_display ?? ""}
         dataIsFresh={metadata?.data_is_fresh ?? false}
       />
-      <main className="container mx-auto p-4">{children}</main>
+      <div className="container mx-auto p-4">{children}</div>
     </div>
   );
 }
