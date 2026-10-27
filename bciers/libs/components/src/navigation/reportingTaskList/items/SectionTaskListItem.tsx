@@ -27,8 +27,8 @@ const SectionTaskListItem: React.FC<TaskListItemProps> = ({
 
   // The child list and divider live inside this <li> so the parent <ul> only has <li> children
   return (
-    <ListItem disablePadding className="block">
-      <div className="flex px-4 py-2">
+    <ListItem className="block">
+      <div className="flex items-center min-h-10">
         <ListItemButton onClick={handleClick} selected={item.isActive}>
           <ListItemIcon>{item.isChecked && <CheckCircle />}</ListItemIcon>
           <ListItemText
