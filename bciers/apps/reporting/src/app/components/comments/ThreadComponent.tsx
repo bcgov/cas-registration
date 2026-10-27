@@ -11,13 +11,13 @@ import {
 
 interface Props {
   thread: Thread;
-  canReply: boolean;
+  canUpdate: boolean;
   onThreadUpdated: (thread: Thread) => void;
 }
 
 const ThreadComponent: React.FC<Props> = ({
   thread,
-  canReply,
+  canUpdate,
   onThreadUpdated,
 }) => {
   const [_, startTransition] = useTransition();
@@ -62,7 +62,7 @@ const ThreadComponent: React.FC<Props> = ({
         />
       ))}
       <Grid className="mt-2">
-        {canReply && !thread.resolved && (
+        {canUpdate && !thread.resolved && (
           <Button variant="outlined" color="primary" fullWidth>
             Reply
           </Button>

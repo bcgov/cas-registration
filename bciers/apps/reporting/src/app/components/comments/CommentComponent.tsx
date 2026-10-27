@@ -18,7 +18,7 @@ const CommentComponent: React.FC<Props> = ({ comment }) => {
         </Typography>
         <Typography
           variant="caption"
-          className="text-black/60 group-[.resolved]:text-black/30"
+          className="text-black/60 group-[.resolved]:text-bc-component-grey"
         >
           {comment.timestamp &&
             formatDate(

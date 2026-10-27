@@ -50,7 +50,7 @@ describe("The comment thread component", () => {
   it("has a non-functional reply button", () => {
     render(
       <ThreadComponent
-        canReply={true}
+        canUpdate={true}
         onThreadUpdated={vi.fn()}
         thread={{
           id: 1,
@@ -72,7 +72,7 @@ describe("The comment thread component", () => {
   it("does not show the reply button when canReply is false", () => {
     render(
       <ThreadComponent
-        canReply={false}
+        canUpdate={false}
         onThreadUpdated={vi.fn()}
         thread={{
           id: 1,
@@ -91,7 +91,7 @@ describe("The comment thread component", () => {
   it("hides the reply button on a resolved thread", () => {
     render(
       <ThreadComponent
-        canReply={true}
+        canUpdate={true}
         onThreadUpdated={vi.fn()}
         thread={{ id: 1, version_id: 42, resolved: true, comments: [] }}
       />,
@@ -114,7 +114,7 @@ describe("The comment thread component", () => {
       const thread = { id: 1, version_id: 42, resolved, comments: [] };
       render(
         <ThreadComponent
-          canReply={true}
+          canUpdate={true}
           onThreadUpdated={onThreadUpdated}
           thread={thread}
         />,
@@ -142,7 +142,7 @@ describe("The comment thread component", () => {
     const onThreadUpdated = vi.fn();
     render(
       <ThreadComponent
-        canReply={true}
+        canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         thread={{ id: 1, version_id: 42, resolved: false, comments: [] }}
       />,

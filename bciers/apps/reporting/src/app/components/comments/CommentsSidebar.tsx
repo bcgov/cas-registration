@@ -66,7 +66,7 @@ const CommentsSidebar: React.FC<Props> = ({
           <ThreadComponent
             key={`thread-${thread.id}`}
             thread={thread}
-            canReply={canMakeComment}
+            canUpdate={canMakeComment}
             onThreadUpdated={threadUpdated}
           />
         ))}
@@ -78,8 +78,8 @@ const CommentsSidebar: React.FC<Props> = ({
         .map((thread) => (
           <ThreadComponent
             key={`thread-${thread.id}`}
-            thread={{ ...thread, resolved: true }}
-            canReply={false}
+            thread={thread}
+            canUpdate={canMakeComment}
             onThreadUpdated={threadUpdated}
           />
         ))}
