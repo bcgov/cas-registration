@@ -23,7 +23,7 @@ from registration.tests.constants import (
 )
 from registration.tests.utils.bakers import operation_baker
 from itertools import cycle
-from model.bakery import baker
+from model_bakery import baker
 from model_bakery.baker import make_recipe
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 
