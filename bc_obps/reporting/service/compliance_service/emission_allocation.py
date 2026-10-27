@@ -1,10 +1,10 @@
+from dataclasses import dataclass
 from decimal import Decimal
 from typing import List
 
-from django.db.models import Sum
+from django.db.models import F, Q, Sum
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
-
 
 REPORTING_ONLY_CATEGORY_IDS = [10, 11, 12, 2, 7]
 
@@ -57,3 +57,40 @@ def get_fog_emissions(report_version_id: int) -> Decimal:
         "allocated_sum"
     ] or Decimal("0")
     return fog_allocated_amount
+
+
+@dataclass
+class UnregulatedProductAllocation:
+    product_name: str
+    allocated_emissions: Decimal
+
+
+def get_allocated_to_unregulated_products(report_version_id: int) -> List[UnregulatedProductAllocation]:
+    """
+    Returns the list of emissions allocated to each unregulated product in a report version.
+
+    Used in the "How was this calculated?"
+
+    Each product's amount = allocated in basic categories - allocated in reporting-only categories.
+    Reporting-only categories (fuel-excluded, fugitive, non-useful venting) are left out because the
+    panel already subtracts them on their own lines; including them here would subtract them twice.
+    """
+    rows = (
+        ReportProductEmissionAllocation.objects.filter(
+            report_version_id=report_version_id,
+            report_product__product__is_regulated=False,
+        )
+        .values(product_name=F("report_product__product__name"))
+        .annotate(
+            basic=Sum("allocated_quantity", filter=Q(emission_category__category_type="basic")),
+            reporting_only=Sum("allocated_quantity", filter=Q(emission_category_id__in=REPORTING_ONLY_CATEGORY_IDS)),
+        )
+        .order_by("product_name")
+    )
+    return [
+        UnregulatedProductAllocation(
+            product_name=row["product_name"],
+            allocated_emissions=(row["basic"] or Decimal("0")) - (row["reporting_only"] or Decimal("0")),
+        )
+        for row in rows
+    ]
