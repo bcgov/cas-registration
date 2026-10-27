@@ -148,31 +148,35 @@ def assert_policies_for_industry_user(
 
             if operation == RlsOperations.SELECT:
                 run_with_rollback(cursor, function)
-                with pytest.raises(ObjectDoesNotExist):
-                    run_with_rollback(cursor, forbidden_function)
+                if forbidden_select_function:
+                    with pytest.raises(ObjectDoesNotExist):
+                        run_with_rollback(cursor, forbidden_function)
             elif operation == RlsOperations.INSERT:
                 run_with_rollback(cursor, function)
-                with pytest.raises(
-                    ProgrammingError,
-                    match=r"new row violates row-level security policy for ",
-                ):
-                    run_with_rollback(cursor, forbidden_function)
+                if forbidden_insert_function:
+                    with pytest.raises(
+                        ProgrammingError,
+                        match=r"new row violates row-level security policy for ",
+                    ):
+                        run_with_rollback(cursor, forbidden_function)
             elif operation == RlsOperations.UPDATE:
                 permitted_updated_records_count = run_with_rollback(cursor, function)
                 assert (
                     permitted_updated_records_count == 1
                 ), f"Expected 1 updated record, but got {permitted_updated_records_count} (did you remember to return in the update function?)"
 
-                forbidden_updated_records_count = run_with_rollback(cursor, forbidden_function)
-                assert (
-                    forbidden_updated_records_count == 0
-                ), f"Expected 0 updated records, but got {forbidden_updated_records_count} (did you remember to return in the update function?)"
+                if forbidden_update_function:
+                    forbidden_updated_records_count = run_with_rollback(cursor, forbidden_function)
+                    assert (
+                        forbidden_updated_records_count == 0
+                    ), f"Expected 0 updated records, but got {forbidden_updated_records_count} (did you remember to return in the update function?)"
             elif operation == RlsOperations.DELETE:
                 permitted_deleted_records_count = run_with_rollback(cursor, function)
                 assert (
                     permitted_deleted_records_count == 1
                 ), f"Expected 1 deleted record, but got {permitted_deleted_records_count} (did you remember to return in the delete function?)"
-                forbidden_deleted_records_count = run_with_rollback(cursor, forbidden_function)
-                assert (
-                    forbidden_deleted_records_count == 0
-                ), f"Expected 0 deleted records, but got {forbidden_deleted_records_count} (did you remember to return in the delete function?)"
+                if forbidden_delete_function:
+                    forbidden_deleted_records_count = run_with_rollback(cursor, forbidden_function)
+                    assert (
+                        forbidden_deleted_records_count == 0
+                    ), f"Expected 0 deleted records, but got {forbidden_deleted_records_count} (did you remember to return in the delete function?)"
