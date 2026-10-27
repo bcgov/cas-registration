@@ -44,11 +44,11 @@ interface A11yTestResult {
 
 class A11yReporter implements Reporter {
   // Keyed by test id so a retry replaces the earlier attempt instead of being counted twice
-  private results = new Map<string, A11yTestResult>();
+  private readonly results = new Map<string, A11yTestResult>();
   // e2e project name, taken from the folder of the playwright config (e.g. "registration-e2e")
   private projectName = "e2e";
 
-  constructor(private options: A11yReporterOptions = {}) {}
+  constructor(private readonly options: A11yReporterOptions = {}) {}
 
   onBegin(config: FullConfig) {
     if (config.configFile)
