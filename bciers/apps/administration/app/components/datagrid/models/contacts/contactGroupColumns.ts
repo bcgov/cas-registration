@@ -43,8 +43,8 @@ const contactGroupColumns = (
   ];
 
   if (isExternalUser) {
-    // remove operator_legal_name and operation_name columns for external users
-    columnGroupModel.splice(3, 2);
+    // remove operator_legal_name columns for external users
+    columnGroupModel.splice(3, 1);
   }
 
   return columnGroupModel;

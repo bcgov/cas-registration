@@ -30,7 +30,7 @@ describe("Cancel Access Requests component", () => {
       <CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID} />,
     );
     expect(
-      screen.getByRole("button", { name: "Cancel Access Request" }),
+      screen.getByRole("button", { name: "Cancel Request" }),
     ).toBeVisible();
   });
 
@@ -42,7 +42,7 @@ describe("Cancel Access Requests component", () => {
     );
 
     await userEvent.click(
-      screen.getByRole("button", { name: "Cancel Access Request" }),
+      screen.getByRole("button", { name: "Cancel Request" }),
     );
     // make sure the modal is displayed
     expect(
@@ -80,7 +80,7 @@ describe("Cancel Access Requests component", () => {
     );
 
     await userEvent.click(
-      screen.getByRole("button", { name: "Cancel Access Request" }),
+      screen.getByRole("button", { name: "Cancel Request" }),
     );
 
     await userEvent.click(
@@ -104,7 +104,7 @@ describe("Cancel Access Requests component", () => {
       <CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID} />,
     );
     await userEvent.click(
-      screen.getByRole("button", { name: "Cancel Access Request" }),
+      screen.getByRole("button", { name: "Cancel Request" }),
     );
     await userEvent.click(
       screen.getByRole("button", { name: /yes, cancel this request/i }),
