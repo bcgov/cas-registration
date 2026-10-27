@@ -110,7 +110,7 @@ class OperatorRlsTest(BaseTestCase):
         other_operator = make_recipe('registration.tests.utils.operator')
 
         def select_function(cursor):
-            Operator.objects.all()
+            Operator.objects.get(id=other_operator.id)
 
         def insert_function(cursor):
             Operator.objects.create(
