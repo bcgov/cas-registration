@@ -1,5 +1,5 @@
 from uuid import UUID
-from django.db.models import Prefetch
+from django.db.models import Prefetch, prefetch_related_objects
 from reporting.models.comment import Comment
 from reporting.models.comment_thread import CommentThread
 from reporting.models.report_version import ReportVersion
@@ -8,7 +8,8 @@ from reporting.models.report_version import ReportVersion
 class CommentThreadService:
 
     @staticmethod
-    def get_threads(report_id: int) -> list[CommentThread]:
+    def get_threads(report_id: int, user_guid: UUID) -> list[CommentThread]:
+        # Adds user_can_edit attribute to each comment based on the user_guid
         # Retrieves all comment threads for a given report ID, including comments ordered by creation
         threads = list(
             CommentThread.objects.select_related(
@@ -20,6 +21,9 @@ class CommentThreadService:
             .filter(report_id=report_id)
             .order_by("-created_at")
         )
+        for thread in threads:
+            for comment in thread.comments.all():
+                comment.user_can_edit = comment.created_by_id == user_guid
         return threads
 
     @staticmethod
@@ -35,6 +39,9 @@ class CommentThreadService:
             report_version_id=version_id,
             comment=comment,
         )
+        prefetch_related_objects([thread], Prefetch("comments", queryset=Comment.objects.select_related("created_by")))
+        for created_comment in thread.comments.all():
+            created_comment.user_can_edit = True
         return thread
 
     @staticmethod
