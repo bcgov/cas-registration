@@ -35,6 +35,9 @@ class CommentThreadService:
             .filter(report_id=report_id)
             .order_by("-created_at")
         )
+        for thread in threads:
+            for comment in thread.comments.all():
+                comment.user_can_edit = comment.created_by_id == user_guid
         return threads
 
     @staticmethod
