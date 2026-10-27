@@ -35,6 +35,10 @@ const Pagination = ({
 
   return (
     <MuiPagination
+      // MUI renders a <nav aria-label="pagination navigation">, so a page with two grids has duplicate landmarks
+      // Render a plain div instead and drop the label, which a div can't carry
+      {...({ as: "div" } as object)}
+      aria-label={undefined}
       color="primary"
       className={className}
       count={pageCount}

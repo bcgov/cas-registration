@@ -25,9 +25,10 @@ const SectionTaskListItem: React.FC<TaskListItemProps> = ({
   const [open, setOpen] = useState<boolean>(hasExpandedChild(item));
   const handleClick = () => setOpen(!open);
 
+  // The child list and divider live inside this <li> so the parent <ul> only has <li> children
   return (
-    <>
-      <ListItem>
+    <ListItem disablePadding className="block">
+      <div className="flex px-4 py-2">
         <ListItemButton onClick={handleClick} selected={item.isActive}>
           <ListItemIcon>{item.isChecked && <CheckCircle />}</ListItemIcon>
           <ListItemText
@@ -39,9 +40,9 @@ const SectionTaskListItem: React.FC<TaskListItemProps> = ({
           />
           {item.elements && (open ? <ExpandLess /> : <ExpandMore />)}
         </ListItemButton>
-      </ListItem>
+      </div>
       <Collapse in={open}>
-        <List component="div" disablePadding className="pl-4">
+        <List disablePadding className="pl-4">
           {item.elements &&
             item.elements.map((elt) => {
               const TaskListChildItem = elementFactory(elt);
@@ -56,7 +57,7 @@ const SectionTaskListItem: React.FC<TaskListItemProps> = ({
         </List>
       </Collapse>
       {item.type === "Section" && <Divider variant="inset" />}
-    </>
+    </ListItem>
   );
 };
 
