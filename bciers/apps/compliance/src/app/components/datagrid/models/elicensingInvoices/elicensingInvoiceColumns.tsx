@@ -1,5 +1,8 @@
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { formatMonetaryValue } from "@/compliance/src/app/utils/formatting";
+import {
+  formatDate,
+  formatMonetaryValue,
+} from "@/compliance/src/app/utils/formatting";
 import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
 import generateInvoice from "@/compliance/src/app/utils/generateInvoice";
 import Link from "@mui/material/Link";
@@ -94,6 +97,12 @@ const elicensingInvoiceColumns = (isInternalUser: boolean): GridColDef[] => {
       headerName: "Outstanding Balance",
       flex: 1,
       valueFormatter: (value) => formatMonetaryValue(Number(value)),
+    },
+    {
+      field: "due_date",
+      headerName: "Due Date",
+      flex: 1,
+      valueFormatter: (value) => formatDate(value),
     },
   ];
 };
