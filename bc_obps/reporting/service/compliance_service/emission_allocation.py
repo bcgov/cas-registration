@@ -67,9 +67,8 @@ class UnregulatedProductAllocation:
 
 def get_allocated_to_unregulated_products(report_version_id: int) -> List[UnregulatedProductAllocation]:
     """
-    Returns the list of emissions allocated to each unregulated product in a report version.
-
-    Used in the "How was this calculated?"
+    Returns the list of emissions allocated to each unregulated product in a report version,
+    used in emissions attributable for compliance equation.
 
     Each product's amount = allocated in basic categories - allocated in reporting-only categories.
     Reporting-only categories (fuel-excluded, fugitive, non-useful venting) are left out because the
