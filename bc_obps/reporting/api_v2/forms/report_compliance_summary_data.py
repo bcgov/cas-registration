@@ -5,9 +5,10 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
 from reporting.api_v2.forms.form_schema import ReportingFormSchema
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.compliance_data import (
-    ComplianceDataSchemaOut,
+    ComplianceSummaryDataSchemaOut,
+    EafcTotalsSchema,
     RegulatoryValuesSchema,
-    ReportProductComplianceSchema,
+    ReportProductComplianceSummarySchema,
 )
 from reporting.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -24,7 +25,10 @@ class ComplianceDataSchemaSerialized(Schema):
     excess_emissions: float
     credited_emissions: float
     regulatory_values: RegulatoryValuesSchema
-    products: List[ReportProductComplianceSchema]
+    products: List[ReportProductComplianceSummarySchema]
+    production_period: Literal["annual", "apr_dec", "jan_mar"]
+    is_new_entrant: bool
+    eafc_totals: EafcTotalsSchema
 
 
 @router.get(
@@ -47,7 +51,7 @@ def get_compliance_summary_form_data(
 
     # Trigger compliance schema resolvers through model_validate
     # Return a dict for FormResponseBuilder payload through model_dump
-    payload = ComplianceDataSchemaOut.model_validate(
+    payload = ComplianceSummaryDataSchemaOut.model_validate(
         compliance_data,
         from_attributes=True,
     ).model_dump(exclude_none=True)

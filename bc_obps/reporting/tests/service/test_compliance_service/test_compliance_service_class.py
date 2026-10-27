@@ -112,6 +112,24 @@ class TestComplianceSummaryServiceClass(TestCase):
             prorated = (allocated_2025 * (apr_dec / annual)).quantize(Decimal("0.0001"), rounding="ROUND_HALF_UP")
             self.assertEqual(allocated_2024, prorated)
 
+    def test_apr_dec_eafc_breakdown(self):
+        build_data = ComplianceTestInfrastructure.build()
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        assert result.production_period == ProductionPeriod.APR_DEC
+        assert result.is_new_entrant is False
+
+        # The per-product annual values add up to the annual EAFC shown in step 1 (within rounding)
+        annual_total = sum((p.allocated_for_compliance_annual for p in result.products), Decimal("0"))
+        assert abs(annual_total - result.eafc_totals.annual_eafc) <= Decimal("0.0001") * 6
+
+        # Each product's prorated value is its annual value scaled by its Apr-Dec share of production
+        for product in result.products:
+            apr_dec = Decimal(product.apr_dec_production)
+            annual = Decimal(product.annual_production)
+            expected = Decimal("0") if annual == 0 else product.allocated_for_compliance_annual * apr_dec / annual
+            assert abs(product.allocated_compliance_emissions - expected) <= Decimal("0.0001")
+
     def test_apr_dec_product_level_behavior_zero_production(self):
         """Test Apr–Dec allocation behavior when annual production is zero."""
         # Build 2024 data with zero production
@@ -151,6 +169,8 @@ class TestComplianceSummaryServiceClass(TestCase):
         # 10000.0001 * (12500/50000) = 2500
         # total_annual_allocated_emissions * (jan_mar_production / annual_production)
         self.assertEqual(product.allocated_compliance_emissions, Decimal('2500'))
+        self.assertEqual(product.allocated_for_compliance_annual, Decimal('10000.0001'))
+        assert result.production_period == ProductionPeriod.JAN_MAR
 
     def test_production_period_returns_annual_for_opted_in_not_final_year(self):
         """Test that annual production is used for opted-in operations NOT in their final reporting year."""
@@ -217,6 +237,10 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.emissions_limit == 0
         assert result.excess_emissions == 0
         assert result.credited_emissions == 0
+        assert result.is_new_entrant is True
+        assert result.emissions_attributable_for_compliance == 0
+        # Step 1 of the breakdown still shows the real (non-zero) annual EAFC
+        assert result.eafc_totals.annual_eafc > 0
 
     def test_saves_compliance_data(self):
         build_data = ComplianceTestInfrastructure.build()
@@ -273,7 +297,12 @@ class TestComplianceSummaryServiceClass(TestCase):
         build_data = ComplianceTestInfrastructure.build_pulp_and_paper_2025()
         result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
 
-        assert dataclasses.asdict(result) == {
+        result_dict = dataclasses.asdict(result)
+        # For an annual report, annual EAFC equals emissions attributable for compliance (within rounding)
+        eafc_totals = result_dict.pop('eafc_totals')
+        assert abs(eafc_totals['annual_eafc'] - result.emissions_attributable_for_compliance) <= Decimal('0.0001') * 6
+
+        assert result_dict == {
             'credited_emissions': Decimal('0.0000'),
             'emissions_attributable_for_compliance': Decimal('30000.9989'),
             'emissions_attributable_for_reporting': Decimal('40501.0489'),
@@ -288,6 +317,7 @@ class TestComplianceSummaryServiceClass(TestCase):
             'products': [
                 {
                     'allocated_compliance_emissions': Decimal('6000.0001'),
+                    'allocated_for_compliance_annual': Decimal('6000.0001'),
                     'allocated_industrial_process_emissions': Decimal('0'),
                     'annual_production': 200.0,
                     'jan_mar_production': None,
@@ -301,6 +331,7 @@ class TestComplianceSummaryServiceClass(TestCase):
                 },
                 {
                     'allocated_compliance_emissions': Decimal('8000.0280'),
+                    'allocated_for_compliance_annual': Decimal('8000.0280'),
                     'allocated_industrial_process_emissions': Decimal('6000.02800'),
                     'annual_production': 10000.0,
                     'jan_mar_production': None,
@@ -314,6 +345,7 @@ class TestComplianceSummaryServiceClass(TestCase):
                 },
                 {
                     'allocated_compliance_emissions': Decimal('16000.9708'),
+                    'allocated_for_compliance_annual': Decimal('16000.9708'),
                     'allocated_industrial_process_emissions': Decimal('14000.97080'),
                     'annual_production': 15000.0,
                     'jan_mar_production': None,
@@ -327,6 +359,8 @@ class TestComplianceSummaryServiceClass(TestCase):
                 },
             ],
             'reporting_only_emissions': Decimal('10500.0500'),
+            'production_period': ProductionPeriod.ANNUAL,
+            'is_new_entrant': False,
         }
 
     def test_compliance_summary_rounding(self):

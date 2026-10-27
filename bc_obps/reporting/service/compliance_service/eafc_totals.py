@@ -27,7 +27,6 @@ def get_eafc_totals(report_version_id: int, use_legacy_rounding: bool) -> EafcTo
         annual_eafc = attributable for reporting - excluded by fuels - non-useful venting - fugitive
                       - remaining other excluded (category 13 only) - allocated to unregulated products
 
-   
     Full-year reports: annual_eafc is the emissions attributable for compliance.
     Partial-year reports (2024 Apr-Dec, 2025 opt-out Jan-Mar): annual_eafc is the full-year value before
     proration. Proration is per product, by that product's share of production in the period

@@ -1,5 +1,5 @@
 import dataclasses
-from typing import List, Optional
+from typing import List, Literal, Optional, Type, TypeVar
 from ninja import Schema
 from reporting.service.compliance_service.compliance_service import ComplianceData
 from reporting.service.compliance_service.regulatory_values import RegulatoryValues
@@ -39,15 +39,52 @@ class ComplianceDataSchemaOut(Schema):
 
     @staticmethod
     def resolve_products(obj: ComplianceData) -> List[ReportProductComplianceSchema]:
-        return list(
-            map(
-                lambda p: ReportProductComplianceSchema(
-                    **dataclasses.asdict(p),
-                    reduction_factor=float(
-                        p.reduction_factor_override or obj.industry_regulatory_values.reduction_factor
-                    ),
-                    tightening_rate=float(p.tightening_rate_override or obj.industry_regulatory_values.tightening_rate),
-                ),
-                obj.products,
-            )
+        return build_product_schemas(obj, ReportProductComplianceSchema)
+
+
+class EafcTotalsSchema(Schema):
+    attributable_for_reporting: float
+    excluded_by_fuels: float
+    non_useful_venting: float
+    fugitive: float
+    remaining_npnc: float
+    allocated_to_unregulated_products: float
+    annual_eafc: float
+
+
+class ReportProductComplianceSummarySchema(ReportProductComplianceSchema):
+    allocated_for_compliance_annual: float
+
+
+class ComplianceSummaryDataSchemaOut(ComplianceDataSchemaOut):
+    """
+    Compliance Summary page only: adds the data for the "How was this calculated?" breakdown.
+    Kept separate from ComplianceDataSchemaOut, which Final Review also uses.
+    """
+
+    products: List[ReportProductComplianceSummarySchema]  # type: ignore[assignment]
+    production_period: Literal["annual", "apr_dec", "jan_mar"]
+    is_new_entrant: bool
+    eafc_totals: EafcTotalsSchema
+
+    @staticmethod
+    def resolve_products(obj: ComplianceData) -> List[ReportProductComplianceSummarySchema]:  # type: ignore[override]
+        return build_product_schemas(obj, ReportProductComplianceSummarySchema)
+
+    @staticmethod
+    def resolve_production_period(obj: ComplianceData) -> str:
+        return obj.production_period.value
+
+
+ProductSchemaT = TypeVar("ProductSchemaT", bound=ReportProductComplianceSchema)
+
+
+def build_product_schemas(obj: ComplianceData, schema: Type[ProductSchemaT]) -> List[ProductSchemaT]:
+    return [
+        schema(
+            **dataclasses.asdict(p),
+            reduction_factor=float(p.reduction_factor_override or obj.industry_regulatory_values.reduction_factor),
+            tightening_rate=float(p.tightening_rate_override or obj.industry_regulatory_values.tightening_rate),
         )
+        for p in obj.products
+    ]
