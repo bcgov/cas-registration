@@ -2,18 +2,16 @@ import fs from "node:fs";
 import path from "node:path";
 import type {
   FullConfig,
-  FullResult,
   Reporter,
   TestCase,
   TestResult,
 } from "@playwright/test/reporter";
-import { A11Y_ANNOTATION_TYPE } from "../utils/a11y";
+import { A11Y_ATTACHMENT_PREFIX } from "../utils/a11y";
 
-// Collects the violations analyzeAccessibility records in A11Y_MODE=report and writes them out once the run ends:
-// - a JSON file per e2e project (<outputDir>/<project>.json, e.g. bciers/a11y-results/registration-e2e.json)
-//   that the CI "Accessibility report" step prints
-// - a short summary in the terminal, for local runs
-// This lets CI report e2e and a11y results separately without running the tests twice.
+// Collects the violations analyzeAccessibility records in A11Y_MODE=report and, once the run ends, writes them to
+// a JSON file per e2e project (<outputDir>/<project>.json, e.g. bciers/a11y-results/registration-e2e.json).
+// The CI "♿ accessibility" check prints that file, so e2e and a11y results are reported separately
+// without running the tests twice.
 
 // Options, passed from the playwright config: [reporterPath, { outputDir }]
 // (see https://playwright.dev/docs/test-reporters)
@@ -36,6 +34,35 @@ interface A11yPageResult {
   }[];
 }
 
+// Shape of the "a11y-<page>.json" attachment: the page plus the full axe violations
+interface A11yAttachment {
+  page: string;
+  url: string;
+  violations: {
+    id: string;
+    impact?: string | null;
+    help: string;
+    helpUrl: string;
+    nodes: { target: string[] }[];
+  }[];
+}
+
+// Keep only what the results file needs from the full axe details
+const toPageResult = (body: string): A11yPageResult => {
+  const { page, url, violations }: A11yAttachment = JSON.parse(body);
+  return {
+    page,
+    url,
+    violations: violations.map(({ id, impact, help, helpUrl, nodes }) => ({
+      id,
+      impact,
+      help,
+      helpUrl,
+      targets: nodes.map((node) => node.target.join(" ")),
+    })),
+  };
+};
+
 interface A11yTestResult {
   test: string;
   file: string;
@@ -56,12 +83,12 @@ class A11yReporter implements Reporter {
   }
 
   onTestEnd(test: TestCase, result: TestResult) {
-    const pages = result.annotations
-      .filter((annotation) => annotation.type === A11Y_ANNOTATION_TYPE)
-      .map(
-        (annotation) =>
-          JSON.parse(annotation.description ?? "{}") as A11yPageResult,
-      );
+    const pages = result.attachments
+      .filter(
+        (attachment) =>
+          attachment.name.startsWith(A11Y_ATTACHMENT_PREFIX) && attachment.body,
+      )
+      .map((attachment) => toPageResult(attachment.body!.toString()));
 
     if (pages.length === 0) {
       this.results.delete(test.id);
@@ -75,7 +102,7 @@ class A11yReporter implements Reporter {
     });
   }
 
-  onEnd(_result: FullResult) {
+  onEnd() {
     const results = [...this.results.values()];
     const outputFile =
       process.env.A11Y_RESULTS_FILE ??
@@ -86,31 +113,6 @@ class A11yReporter implements Reporter {
       );
     fs.mkdirSync(path.dirname(outputFile), { recursive: true });
     fs.writeFileSync(outputFile, JSON.stringify(results, null, 2));
-
-    // eslint-disable-next-line no-console
-    console.log(this.toTerminalSummary(results, outputFile));
-  }
-
-  private toTerminalSummary(results: A11yTestResult[], outputFile: string) {
-    const lines = results.flatMap(({ test, pages }) =>
-      pages.flatMap(({ page, violations }) =>
-        violations.map(
-          (violation) =>
-            `  - [${violation.impact ?? "unknown"}] ${violation.id} (${violation.targets.length} nodes) on "${page}" in ${test}`,
-        ),
-      ),
-    );
-    const header =
-      lines.length === 0
-        ? `♿ ${this.projectName}: no accessibility violations found.`
-        : `♿ ${this.projectName}: ${lines.length} accessibility violation(s):`;
-    return [
-      "",
-      header,
-      ...lines,
-      `  Results: ${path.relative(process.cwd(), outputFile)}`,
-      "",
-    ].join("\n");
   }
 
   printsToStdio() {

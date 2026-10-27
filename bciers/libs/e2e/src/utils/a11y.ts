@@ -4,9 +4,12 @@ import AxeBuilder from "@axe-core/playwright";
 // Accessibility (a11y) checks for e2e tests, run with axe-core.
 // See docs/frontend/testing/playwright.md#accessibility-testing-with-playwright-and-axe
 
-// Test annotation used to hand accessibility violations from analyzeAccessibility to the a11y reporter
-// (libs/e2e/src/reporters/a11y-reporter.ts)
+// In A11Y_MODE=report, for each scanned page with violations, analyzeAccessibility adds an "a11y" annotation
+// (the page and a bullet per violation, shown at the top of the test in the HTML report) and an "a11y-<page>.json"
+// attachment with the full axe details.
+// The attachment is what the a11y reporter (libs/e2e/src/reporters/a11y-reporter.ts) reads
 export const A11Y_ANNOTATION_TYPE = "a11y";
+export const A11Y_ATTACHMENT_PREFIX = "a11y-";
 
 type AxeViolation = Awaited<
   ReturnType<AxeBuilder["analyze"]>
@@ -92,22 +95,22 @@ export async function analyzeAccessibility(
   const testInfo = test.info();
   // eslint-disable-next-line no-console
   console.log(`[Accessibility Violation: ${label}]\n${summary}`);
+  // One annotation per scanned page: the page name, then a bullet per violation.
+  // The HTML report keeps the line breaks, so it reads as a list at the top of the test
+  const bullets = violations.map((violation) => {
+    const elements = violation.nodes.map((node) => node.target.join(" "));
+    return (
+      `• [${violation.impact ?? "unknown"}] ${violation.id}: ${violation.help}. ` +
+      `${elements.length} element(s): ${elements.join(", ")}. ${violation.helpUrl.split("?")[0]}`
+    );
+  });
   testInfo.annotations.push({
     type: A11Y_ANNOTATION_TYPE,
-    description: JSON.stringify({
-      page: label,
-      url: page.url(),
-      violations: violations.map((violation) => ({
-        id: violation.id,
-        impact: violation.impact,
-        help: violation.help,
-        helpUrl: violation.helpUrl,
-        targets: violation.nodes.map((node) => node.target.join(" ")),
-      })),
-    }),
+    description: [label, ...bullets].join("\n"),
   });
-  await testInfo.attach(`a11y-${label}.json`, {
-    body: JSON.stringify(violations, null, 2),
+  // The full axe details (each element's HTML and what to fix) for the HTML report. The a11y reporter reads this too
+  await testInfo.attach(`${A11Y_ATTACHMENT_PREFIX}${label}.json`, {
+    body: JSON.stringify({ page: label, url: page.url(), violations }, null, 2),
     contentType: "application/json",
   });
 }

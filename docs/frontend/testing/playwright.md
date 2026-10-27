@@ -372,7 +372,7 @@ How violations are handled depends on the `A11Y_MODE` environment variable:
 
 CI runs the e2e tests once with `A11Y_MODE=report`, so accessibility violations never fail the e2e check. The results are then handed to a separate `♿ accessibility` check for each app (e.g. `test-registration-e2e / ♿ accessibility`), which prints each violation (rule, impact, page, test, help link and affected elements) in its log.
 
-To see every violation locally without the tests stopping at the first one, use the `e2e:a11y` script. It runs the given e2e projects one after another in report mode, prints a summary at the end, and writes `bciers/a11y-results/<project>.json` (git-ignored):
+To see every violation locally without the tests stopping at the first one, use the `e2e:a11y` script. It runs the given e2e projects one after another in report mode, prints each violation as it's found, and writes them all to `bciers/a11y-results/<project>.json` (git-ignored):
 
 ```bash
 # one project
@@ -381,6 +381,8 @@ yarn e2e:a11y registration-e2e
 # several projects, run one at a time because they share the database
 yarn e2e:a11y administration-e2e,dashboard-e2e
 ```
+
+The violations also show up in the HTML report (`yarn playwright show-report`). Tests with violations still pass, so open a test to see them. At the top there's an `a11y` annotation for each scanned page, with a bullet per violation (impact, rule, affected elements and help link), and under Attachments an `a11y-<description>.json` file with the full axe details, including each element's HTML and what to fix.
 
 If this step fails the library will provide details about why it failed and how to fix it.
 
