@@ -15,4 +15,18 @@ describe("The comment component", () => {
     expect(screen.getByText("Yet you stand before me.")).toBeInTheDocument();
     expect(screen.getByText("The Pagemaster")).toBeInTheDocument();
   });
+
+  it("styles text as resolved when inside a resolved thread frame", () => {
+    render(
+      <div className="resolved group">
+        <CommentComponent
+          comment={{ id: 1, version_id: 1, author: "A", comment: "Done" }}
+        />
+      </div>,
+    );
+
+    expect(screen.getByText("Done")).toHaveClass(
+      "group-[.resolved]:text-bc-component-grey",
+    );
+  });
 });

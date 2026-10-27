@@ -1,6 +1,14 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { actionHandler } from "@bciers/testConfig/mocks";
 import CommentsSidebar from "@reporting/src/app/components/comments/CommentsSidebar";
 import * as NewThreadComponentModule from "@reporting/src/app/components/comments/NewThreadComponent";
+import { Thread } from "@reporting/src/app/components/comments/types";
 
 describe("The Comments Sidebar", () => {
   it("shows a comments title and a new comment button", () => {
@@ -52,6 +60,7 @@ describe("The Comments Sidebar", () => {
             id: 10,
             version_id: 42,
             facility_name: "Facility One",
+            resolved: false,
             comments: [
               {
                 id: 11,
@@ -94,6 +103,7 @@ describe("The Comments Sidebar", () => {
       await onThreadCreated({
         id: 20,
         version_id: 42,
+        resolved: false,
         comments: [
           {
             id: 21,
@@ -124,5 +134,85 @@ describe("The Comments Sidebar", () => {
     expect(
       screen.queryByRole("button", { name: "Add internal Comment" }),
     ).not.toBeInTheDocument();
+  });
+
+  const makeThread = (id: number, resolved: boolean, comment: string) =>
+    ({
+      id,
+      version_id: 123,
+      resolved,
+      comments: [{ id, version_id: 123, comment }],
+    }) as Thread;
+
+  it("separates open and resolved threads and disables replies on resolved ones", () => {
+    render(
+      <CommentsSidebar
+        version_id={42}
+        facilities={[]}
+        canMakeComment={true}
+        threads={[
+          makeThread(1, false, "Open comment"),
+          makeThread(2, true, "Resolved comment"),
+        ]}
+      />,
+    );
+
+    const heading = screen.getByText("Resolved Comments");
+    const open = screen.getByText("Open comment");
+    const resolved = screen.getByText("Resolved comment");
+    expect(
+      heading.compareDocumentPosition(open) & Node.DOCUMENT_POSITION_PRECEDING,
+    ).toBeTruthy();
+    expect(
+      heading.compareDocumentPosition(resolved) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(screen.getAllByRole("button", { name: "Reply" })).toHaveLength(1);
+    expect(screen.getAllByRole("button", { name: "Resolve" })).toHaveLength(1);
+    expect(screen.getAllByRole("button", { name: "Unresolve" })).toHaveLength(
+      1,
+    );
+  });
+
+  it("moves a thread to the resolved section after resolving it", async () => {
+    actionHandler.mockResolvedValueOnce({ id: 1, resolved: true });
+    render(
+      <CommentsSidebar
+        version_id={42}
+        facilities={[]}
+        canMakeComment={true}
+        threads={[makeThread(1, false, "Open comment")]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Resolve" }));
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Unresolve" }),
+      ).toBeInTheDocument(),
+    );
+    expect(
+      screen.queryByRole("button", { name: "Reply" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("moves a thread back to the open section after unresolving it", async () => {
+    actionHandler.mockResolvedValueOnce({ id: 2, resolved: false });
+    render(
+      <CommentsSidebar
+        version_id={42}
+        facilities={[]}
+        canMakeComment={true}
+        threads={[makeThread(2, true, "Resolved comment")]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Unresolve" }));
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Resolve" })).toBeVisible(),
+    );
+    expect(screen.getByRole("button", { name: "Reply" })).toBeVisible();
   });
 });
