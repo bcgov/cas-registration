@@ -5,7 +5,7 @@ export const FAAInterestAlertNote = () => {
     <AlertNote>
       Automatic overdue penalty accrues daily at 0.38% of the unpaid balance
       until the obligation is paid in full. If automatic overdue penalty is not
-      paid by due date, FAA interest will be incurred.
+      paid by the due date, FAA interest will be incurred.
     </AlertNote>
   );
 };
