@@ -35,7 +35,6 @@ from reporting.service.report_operation_opt_out_service import (
     ReportOperationOptOutService,
 )
 
-
 @dataclass
 class ReportProductComplianceData:
     name: str
