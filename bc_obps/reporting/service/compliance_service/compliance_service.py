@@ -305,6 +305,7 @@ class ComplianceService:
             )
 
         # Emissions allocated to funny category and no other than basic
+        # This works because the loop above only iterates over the regulated products. Emission from category 13 only are O&G NPNC emissions which is unregulated.
         total_allocated_to_only_category_13 = get_emissions_from_only_funny_category_13(report_version_id)
         total_allocated_reporting_only += total_allocated_to_only_category_13
 
