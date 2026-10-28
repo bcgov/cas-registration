@@ -24,6 +24,7 @@
     "clean-cache": "nx reset && rm -rf apps/dashboard/.next apps/administration/.next apps/registration/.next apps/reporting/.next apps/compliance/.next",
     "dev-all": "yarn clean-cache && nx run-many -t dev -p dashboard,administration,registration,reporting,compliance --maxParallel=5",
     "dev": "nx dev reporting",
+    "e2e:a11y": "A11Y_MODE=report PW_TEST_HTML_REPORT_OPEN=never nx run-many -t e2e --parallel=1 --output-style=stream --skip-nx-cache -p",
     "dash": "nx dev dashboard -p 3000",
     "dash:build": "nx build dashboard",
     "dash:e2e": "nx run dashboard:e2e",
@@ -94,7 +95,7 @@
     "uuid": "^14.0.1"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.9.0",
+    "@axe-core/playwright": "^4.14.0",
     "@babel/core": "^8.0.0",
     "@babel/preset-env": "^8.0.0",
     "@babel/preset-typescript": "^8.0.0",

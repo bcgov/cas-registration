@@ -10,7 +10,7 @@ import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { SFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
-import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
+import { createScanPage, verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 import { WorkflowRunnerArgs } from "@bciers/e2e/utils/types";
 import { PRODUCTION_DATA } from "@/reporting-e2e/poms/production-data";
 
@@ -18,7 +18,10 @@ export async function runSfoSubmitReport({
   page,
   request,
   happoScreenshot,
+  checkAccessibility = true,
 }: WorkflowRunnerArgs) {
+  const scanPage = createScanPage(page, checkAccessibility);
+
   // ── 0. Open the current reporting year so the "Start" button is available ──
   const setup = new ReportSetUpPOM(page);
   await setup.primeReportingYear("open");
@@ -38,6 +41,7 @@ export async function runSfoSubmitReport({
   // ── 3. Review Operation Information ──
   await verifyFormTitle(page, "Review Operation Information");
   await report.verifyBugleSfoOperationInfo();
+  await scanPage("Review Operation Information (SFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Review Operation Information",
     variant: "SFO",
@@ -49,6 +53,7 @@ export async function runSfoSubmitReport({
   // ── 4. Person Responsible — select "Bill Blue" (contact linked to the op) ──
   await verifyFormTitle(page, "Person Responsible for Submitting Report");
   await report.fillPersonResponsible("Bill Blue");
+  await scanPage("Person Responsible (SFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Person Responsible",
     variant: "SFO",
@@ -63,6 +68,7 @@ export async function runSfoSubmitReport({
     "General stationary combustion excluding line tracing (at SFO)",
   );
   await facilityReport.fillGscActivity();
+  await scanPage("Activities (SFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Activities",
     variant: "SFO",
@@ -74,6 +80,7 @@ export async function runSfoSubmitReport({
   // ── 6. Non-Attributable Emissions (no entries needed) ──
   await verifyFormTitle(page, "Non-Attributable Emissions");
   await facilityReport.fillNonAttributable();
+  await scanPage("Non-Attributable Emissions (SFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Non-Attributable Emissions",
     variant: "SFO",
@@ -86,6 +93,7 @@ export async function runSfoSubmitReport({
 
   // ── 7. Emission Summary (read-only) ──
   await facilityReport.verifyEmissionSummary();
+  await scanPage("Emission Summary (SFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Emission Summary",
     variant: "SFO",
@@ -99,6 +107,7 @@ export async function runSfoSubmitReport({
   // ── 8. Production Data — select Cement equivalent, fill annual production ──
   await verifyFormTitle(page, "Production Data");
   await facilityReport.fillProductionData([...PRODUCTION_DATA.ALL_PRODUCTS]);
+  await scanPage("Production Data (SFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Production Data",
     variant: "SFO",
@@ -112,6 +121,7 @@ export async function runSfoSubmitReport({
   // ── 9. Allocation of Emissions ──
   await verifyFormTitle(page, "Allocation of Emissions");
   await facilityReport.fillAllocationOfEmissions();
+  await scanPage("Allocation of Emissions (SFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Allocation of Emissions",
     variant: "SFO",
@@ -123,6 +133,7 @@ export async function runSfoSubmitReport({
   // ── 10. Additional Reporting Data ──
   await verifyFormTitle(page, "Additional Reporting Data");
   await report.fillAdditionalData();
+  await scanPage("Additional Reporting Data (SFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Additional Reporting Data",
     variant: "SFO",
@@ -133,6 +144,7 @@ export async function runSfoSubmitReport({
 
   // ── 11. Compliance Summary (read-only) ──
   await report.verifyComplianceSummary();
+  await scanPage("Compliance Summary (SFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Compliance Summary",
     variant: "SFO",
@@ -142,6 +154,7 @@ export async function runSfoSubmitReport({
   // ── 12. Report Validation (read-only) ──
   await verifyFormTitle(page, "Report validation");
   await report.verifyReportValidation();
+  await scanPage("Report Validation (SFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Report Validation",
     variant: "SFO",
@@ -152,6 +165,7 @@ export async function runSfoSubmitReport({
 
   // ── 13. Final Review (read-only) ──
   await report.verifyFinalReview();
+  await scanPage("Final Review (SFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Final Review",
     variant: "SFO",
@@ -163,6 +177,7 @@ export async function runSfoSubmitReport({
   // ── 14. Verification ──
   await verifyFormTitle(page, "Verification");
   await report.fillVerification();
+  await scanPage("Verification (SFO - non-supplementary)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Verification",
     variant: "SFO - non-supplementary",
@@ -173,6 +188,7 @@ export async function runSfoSubmitReport({
 
   // ── 15. Attachments — upload verification statement PDF ──
   await report.uploadVerificationStatement();
+  await scanPage("Attachments (SFO - non-supplementary)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Attachments",
     variant: "SFO - non-supplementary",
@@ -184,6 +200,7 @@ export async function runSfoSubmitReport({
 
   // ── 16. Sign-off and submit ──
   await grid.completeSignOffAcknowledgements();
+  await scanPage("Sign-off (SFO - non-supplementary)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Sign-off",
     variant: "SFO - non-supplementary",
@@ -193,6 +210,7 @@ export async function runSfoSubmitReport({
 
   // ── 17. Submission page — verify success content ──
   await grid.verifySubmissionPage();
+  await scanPage("Submission (SFO - non-supplementary)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Submission",
     variant: "SFO - non-supplementary",

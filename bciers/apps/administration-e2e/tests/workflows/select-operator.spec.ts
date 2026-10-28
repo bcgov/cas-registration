@@ -14,12 +14,12 @@ import {
 import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
 import {
-  analyzeAccessibility,
   assertSuccessfulSnackbar,
   linkIsVisible,
   takeStabilizedScreenshot,
   urlIsCorrect,
 } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
 import { FrontendMessages } from "@bciers/utils/src/enums";
 
@@ -52,7 +52,7 @@ test.describe("Test select operator paths", () => {
       variant: "default",
     });
     // ♿️ Analyze accessibility
-    await analyzeAccessibility(page);
+    await analyzeAccessibility(page, "Select operator form");
 
     // 👉 Action accept operator
     await selectOperatorPage.acceptOperator();
@@ -68,7 +68,10 @@ test.describe("Test select operator paths", () => {
       variant: "default",
     });
     // ♿️ Analyze accessibility
-    await analyzeAccessibility(page);
+    await analyzeAccessibility(
+      page,
+      "Select operator access request confirmation",
+    );
   });
 
   test("Select by CRA number existing operator with no admin", async ({
@@ -99,7 +102,10 @@ test.describe("Test select operator paths", () => {
       variant: "default",
     });
     // ♿️ Analyze accessibility
-    await analyzeAccessibility(page);
+    await analyzeAccessibility(
+      page,
+      "Select operator admin access request confirmation",
+    );
   });
 
   test("Add new operator", async ({ page, happoScreenshot }) => {
@@ -116,7 +122,7 @@ test.describe("Test select operator paths", () => {
       variant: "filled",
     });
     // ♿️ Analyze accessibility
-    await analyzeAccessibility(page);
+    await analyzeAccessibility(page, "Add operator form");
 
     await selectOperatorPage.buttonSave.click();
     await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);

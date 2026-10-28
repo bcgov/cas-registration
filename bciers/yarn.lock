@@ -100,14 +100,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@axe-core/playwright@npm:^4.9.0":
-  version: 4.11.3
-  resolution: "@axe-core/playwright@npm:4.11.3"
+"@axe-core/playwright@npm:^4.14.0":
+  version: 4.14.0
+  resolution: "@axe-core/playwright@npm:4.14.0"
   dependencies:
-    axe-core: "npm:~4.11.4"
+    axe-core: "npm:~4.14.0"
   peerDependencies:
     playwright-core: ">= 1.0.0"
-  checksum: 10c0/da1854726dbc461a71ac25e0435f5dd9b7d143dc9142f53b1aeb4a8d7edcb4533eddb59949e8a07c4f4e3dce85ae43b7f249b3801e8b255f605fc974b94616fe
+  checksum: 10c0/a42bca2305bbb80a374be9ff6642cac7b45f5f0aef1be9170ae42617c3423501ab1a33c8581641a71554a0c6a69f6ca512a5cc6e320ed197339a9ac4edfa713c
   languageName: node
   linkType: hard
 
@@ -2573,7 +2573,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bciers/source@workspace:."
   dependencies:
-    "@axe-core/playwright": "npm:^4.9.0"
+    "@axe-core/playwright": "npm:^4.14.0"
     "@babel/core": "npm:^8.0.0"
     "@babel/preset-env": "npm:^8.0.0"
     "@babel/preset-typescript": "npm:^8.0.0"
@@ -7077,10 +7077,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axe-core@npm:^4.10.0, axe-core@npm:~4.11.4":
-  version: 4.11.4
-  resolution: "axe-core@npm:4.11.4"
-  checksum: 10c0/c4aa83fc3eac5f7a0d0cb1a28f9d073acf0c06ce8daacc38608faa278c57ce084c028c850746b98817ae4c101c30c1a32e95ea34748c4b4c7419b9b81221ef84
+"axe-core@npm:^4.10.0, axe-core@npm:~4.14.0":
+  version: 4.14.0
+  resolution: "axe-core@npm:4.14.0"
+  checksum: 10c0/8aaa0bf748e0dcf202e8f837951a37b28b4b62d639bed58c07a6890bf035ed6a11ede9f4006db9ca8041db821dc80476c27cff08fd70afa9195ee58fb995a958
   languageName: node
   linkType: hard
 

@@ -1,6 +1,7 @@
 import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { ReportAttachmentsListPOM } from "@/reporting-e2e/poms/report-attachments-list";
 
 const internalTest = setupBeforeAllTest(UserRole.CAS_ANALYST);
@@ -18,6 +19,7 @@ internalTest.describe(
         await attachmentsList.verifyPageTitle();
         await attachmentsList.assertGridHasRows();
 
+        await analyzeAccessibility(page, "Report Attachments List (default)");
         await takeStabilizedScreenshot(happoScreenshot, page, {
           component: "Report Attachments List",
           variant: "default",

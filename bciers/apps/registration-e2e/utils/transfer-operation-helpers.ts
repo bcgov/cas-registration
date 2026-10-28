@@ -12,10 +12,10 @@
  */
 import { Page } from "@playwright/test";
 import {
-  analyzeAccessibility,
   stabilizeGrid,
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { TransferPOM } from "../poms/transfer";
 import { TransferE2EValues, TransferStatus } from "./enums";
 
@@ -32,7 +32,7 @@ export async function transfersGridTest(
     component: `${roleLabel} - Transfers grid`,
     variant: "default",
   });
-  await analyzeAccessibility(page);
+  await analyzeAccessibility(page, `${roleLabel} - Transfers grid`);
 }
 
 export async function futureOperationTransferTest(
@@ -53,7 +53,10 @@ export async function futureOperationTransferTest(
     component: `${roleLabel} - Transfer operation form - filled`,
     variant: "filled",
   });
-  await analyzeAccessibility(page);
+  await analyzeAccessibility(
+    page,
+    `${roleLabel} - Transfer operation form - filled`,
+  );
 
   await transferPage.assertTransferSuccess("future");
   await takeStabilizedScreenshot(happoScreenshot, page, {
@@ -83,7 +86,10 @@ export async function pastOperationTransferTest(
   );
 
   await transferPage.assertTransferSuccess("past");
-  await analyzeAccessibility(page);
+  await analyzeAccessibility(
+    page,
+    `${roleLabel} - Transfer operation success - past date`,
+  );
 
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: `${roleLabel} - Transfer operation success - past date`,
@@ -108,7 +114,10 @@ export async function editPendingOperationTransferTest(
   );
 
   await transferPage.assertEditDetailsVisible();
-  await analyzeAccessibility(page);
+  await analyzeAccessibility(
+    page,
+    `${roleLabel} - Transfer detail - read only`,
+  );
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: `${roleLabel} - Transfer detail - read only`,
     variant: "default",
@@ -134,6 +143,10 @@ export async function cancelPendingOperationTransferTest(
 
   await transferPage.clickCancelTransfer();
   await transferPage.assertCancelConfirmationModal();
+  await analyzeAccessibility(
+    page,
+    `${roleLabel} - Cancel transfer - confirmation modal`,
+  );
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: `${roleLabel} - Cancel transfer - confirmation modal`,
     variant: "default",

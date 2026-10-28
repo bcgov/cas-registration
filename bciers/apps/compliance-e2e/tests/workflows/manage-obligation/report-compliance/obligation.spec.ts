@@ -18,6 +18,7 @@ import {
 
 import { ComplianceSetupPOM } from "@/compliance-e2e/poms/compliance-setup";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 
 // 👤 run test using the storageState for role UserRole.INDUSTRY_USER_ADMIN
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
@@ -48,6 +49,7 @@ test.describe("Test report version to compliance report version manage obligatio
       ComplianceOperations.OBLIGATION_NOT_MET,
       ComplianceDisplayStatus.OBLIGATION_NOT_MET,
     );
+    await analyzeAccessibility(page, "Compliance summaries grid");
 
     // happo screenshot
     await takeStabilizedScreenshot(happoScreenshot, page, {
@@ -63,10 +65,12 @@ test.describe("Test report version to compliance report version manage obligatio
     });
 
     const manageObligationTaskList = new ManageObligationTaskListPOM(page);
+    await analyzeAccessibility(page, "Manage obligation task list");
     await manageObligationTaskList.clickDownloadPaymentInstructions();
 
     const paymentInstructions = new PaymentInstructionsPOM(page);
     await paymentInstructions.assertHasInvoiceNumber();
+    await analyzeAccessibility(page, "Payment instructions");
     await paymentInstructions.hideFromScreenshot();
 
     // happo screenshot
@@ -85,6 +89,7 @@ test.describe("Test report version to compliance report version manage obligatio
     await trackPayments.assertPageLoaded();
     await trackPayments.assertHasPayments();
     await trackPayments.assertShowsOutstandingBalanceStatus();
+    await analyzeAccessibility(page, "Pay obligation and track payments");
 
     // happo screenshot
     await takeStabilizedScreenshot(happoScreenshot, page, {

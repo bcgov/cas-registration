@@ -341,17 +341,48 @@ In the HTML report click on the trace icon next to the test name file name.
 
 [Playwright accessiblity testing documentation](https://playwright.dev/docs/accessibility-testing)
 
-Accessibility is important. To test a page for accessibility issues import the `analyzeAccessibility` helper function in a playwright e2e test and pass it the page object:
+Accessibility is important. Every e2e spec should call the `analyzeAccessibility` helper at least once. Call it once for each distinct page or screen, after the page has finished loading (e.g. after `waitForGridReady` or once the form heading is visible) and before the test changes anything on it. Give it a description so violations are easy to trace back to a screen:
 
 ```javascript
-import { analyzeAccessibility, setupTestEnvironment } from "@/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 
 ...
 
 // ♿️ Analyze accessibility
-await analyzeAccessibility(page);
+await analyzeAccessibility(page, "Contacts grid");
 
+// Optional: skip rules or parts of the page. Add a comment explaining why
+await analyzeAccessibility(page, "Contacts grid", {
+  disableRules: ["empty-table-header"],
+  exclude: [".some-third-party-widget"],
+});
 ```
+
+The helper runs axe's default rule set, which covers WCAG A/AA plus best practices.
+
+#### `A11Y_MODE`
+
+How violations are handled depends on the `A11Y_MODE` environment variable:
+
+| Mode             | Behaviour                                                                                                                                                               |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fail` (default) | A violation fails the test right away, with a summary of the rule, impact, help link and affected selectors. Use this locally.                                          |
+| `report`         | A violation is attached to the test (`a11y-<description>.json`) and the test carries on. The a11y reporter collects every violation into `a11y-results/<project>.json`. |
+| `off`            | Skips the scan.                                                                                                                                                         |
+
+CI runs the e2e tests once with `A11Y_MODE=report`, so accessibility violations never fail the e2e check. The results are then handed to a separate `♿ accessibility` check for each app (e.g. `test-registration-e2e / ♿ accessibility`), which prints each violation (rule, impact, page, test, help link and affected elements) in its log.
+
+To see every violation locally without the tests stopping at the first one, use the `e2e:a11y` script. It runs the given e2e projects one after another in report mode, prints each violation as it's found, and writes them all to `bciers/a11y-results/<project>.json` (git-ignored):
+
+```bash
+# one project
+yarn e2e:a11y registration-e2e
+
+# several projects, run one at a time because they share the database
+yarn e2e:a11y administration-e2e,dashboard-e2e
+```
+
+The violations also show up in the HTML report (`yarn playwright show-report`). Tests with violations still pass, so open a test to see them. At the top there's an `a11y` annotation for each scanned page, with a bullet per violation (impact, rule, affected elements and help link), and under Attachments an `a11y-<description>.json` file with the full axe details, including each element's HTML and what to fix.
 
 If this step fails the library will provide details about why it failed and how to fix it.
 

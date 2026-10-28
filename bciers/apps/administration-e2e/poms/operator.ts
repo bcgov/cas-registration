@@ -136,7 +136,7 @@ export class OperatorPOM {
       name: OperatorButtonText.YES_OPERATOR,
     });
     this.cancelAccessRequest = page.getByRole("button", {
-      name: OperatorButtonText.CANCEL_ACCESS_REQUEST,
+      name: OperatorButtonText.CANCEL_REQUEST,
     });
     // Initialize Field Locators
     this.fieldBCCrn = page.getByLabel(OperatorFormField.BC_CRN);

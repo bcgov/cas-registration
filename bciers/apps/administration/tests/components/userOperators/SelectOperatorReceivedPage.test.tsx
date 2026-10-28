@@ -18,9 +18,7 @@ const mockOperatorState = (hasAdmin: boolean): void => {
 };
 
 const expectCancelRequestButton = () => {
-  expect(
-    screen.getByRole("button", { name: "Cancel Access Request" }),
-  ).toBeVisible();
+  expect(screen.getByRole("button", { name: "Cancel Request" })).toBeVisible();
 };
 
 describe("Select Operator Received Page", () => {

@@ -1,6 +1,7 @@
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import {
   DEFAULT_DAYS_OVERDUE,
   LATE_SUBMISSION_DAYS_AFTER_DEADLINE,
@@ -55,6 +56,10 @@ test.describe("GGEAPAR interest flow - CAS analyst", () => {
     // Switch to GGEAPAR and verify the alert
     await penaltyCalculator.selectGgeaparPenaltyType();
     await penaltyCalculator.assertGgeaparNotApplicable();
+    await analyzeAccessibility(
+      page,
+      "Penalty calculator - GGEAPAR not applicable",
+    );
 
     // The final accrual date defaults to today, so it would change the screenshot daily
     await penaltyCalculator.hideDateInputFromScreenshot();
@@ -96,6 +101,7 @@ test.describe("GGEAPAR interest flow - CAS analyst", () => {
     await penaltyCalculator.setFinalAccrualDate(PENALTY_TARGET_ACCRUAL_DATE);
     await penaltyCalculator.assertPenaltyGridLoaded();
     await penaltyCalculator.assertGgeaparNotApplicableHidden();
+    await analyzeAccessibility(page, "Penalty calculator - GGEAPAR accruing");
 
     await penaltyCalculator.hideDateInputFromScreenshot();
     await takeStabilizedScreenshot(happoScreenshot, page, {

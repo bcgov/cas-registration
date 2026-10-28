@@ -24,4 +24,6 @@ export type WorkflowRunnerArgs = {
   page: Page;
   request: APIRequestContext;
   happoScreenshot: HappoScreenshot;
+  // Set to false when a workflow is only re-run as setup and its pages are already scanned elsewhere
+  checkAccessibility?: boolean;
 };

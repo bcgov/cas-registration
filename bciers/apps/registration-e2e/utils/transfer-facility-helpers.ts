@@ -11,10 +11,8 @@
  *                         e.g. "CAS Analyst" or "CAS Director"
  */
 import { Page } from "@playwright/test";
-import {
-  analyzeAccessibility,
-  takeStabilizedScreenshot,
-} from "@bciers/e2e/utils/helpers";
+import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { TransferPOM } from "../poms/transfer";
 import { TransferE2EValues, TransferStatus } from "./enums";
 
@@ -22,7 +20,6 @@ export async function futureFacilityTransferTest(
   page: Page,
   happoScreenshot: any,
   roleLabel: string,
-  options: { includeAccessibility?: boolean } = {},
 ) {
   const transferPage = new TransferPOM(page);
   await transferPage.routeToTransferEntity();
@@ -39,9 +36,10 @@ export async function futureFacilityTransferTest(
     component: `${roleLabel} - Transfer facility form - filled`,
     variant: "filled",
   });
-  if (options.includeAccessibility) {
-    await analyzeAccessibility(page);
-  }
+  await analyzeAccessibility(
+    page,
+    `${roleLabel} - Transfer facility form - filled`,
+  );
 
   await transferPage.assertTransferSuccess("future");
   await takeStabilizedScreenshot(happoScreenshot, page, {
@@ -87,6 +85,10 @@ export async function editPendingFacilityTransferTest(
   );
 
   await transferPage.assertEditDetailsVisible();
+  await analyzeAccessibility(
+    page,
+    `${roleLabel} - Transfer facility detail - read only`,
+  );
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: `${roleLabel} - Transfer facility detail - read only`,
     variant: "default",
@@ -108,6 +110,10 @@ export async function cancelPendingFacilityTransferTest(
 
   await transferPage.clickCancelTransfer();
   await transferPage.assertCancelConfirmationModal();
+  await analyzeAccessibility(
+    page,
+    `${roleLabel} - Cancel facility transfer - confirmation modal`,
+  );
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: `${roleLabel} - Cancel facility transfer - confirmation modal`,
     variant: "default",

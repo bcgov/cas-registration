@@ -11,46 +11,7 @@ import {
 import { baseUrlSetup, GRID_ROOT } from "@bciers/e2e/utils/constants";
 import { DataTestID, MessageTextResponse } from "@bciers/e2e/utils/enums";
 import { HappoScreenshot } from "@bciers/e2e/utils/types";
-import AxeBuilder from "@axe-core/playwright";
 import path from "node:path";
-
-// 🛠️ Function: analyze the accessibility of the page. Use the description argument to indicate what screen/form/etc. is being tested.
-export async function analyzeAccessibility(
-  page: Page,
-  description: string = "",
-  disableRules?: string[],
-) {
-  const builder = new AxeBuilder({
-    page,
-  });
-
-  if (disableRules && disableRules.length > 0)
-    builder.disableRules(disableRules);
-
-  // Let transitions finish first (e.g. a button fading from disabled to enabled),
-  // otherwise axe can check a colour mid-transition. Endless ones like spinners are skipped
-  await page.waitForFunction(() =>
-    document
-      .getAnimations()
-      .every(
-        (animation) =>
-          animation.playState !== "running" ||
-          animation.effect?.getComputedTiming().endTime === Infinity,
-      ),
-  );
-
-  const accessibilityScanResults = await builder.analyze();
-
-  if (accessibilityScanResults.violations.length > 0) {
-    // eslint-disable-next-line no-console
-    console.log(
-      `[Accessibility Violation: ${description}]`,
-      accessibilityScanResults.violations,
-    );
-  }
-
-  expect(accessibilityScanResults.violations).toEqual([]);
-}
 
 /**
  * Clicks a button by accessible name and optionally waits for navigation.

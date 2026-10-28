@@ -1,6 +1,7 @@
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { PenaltyStatus } from "@/compliance-e2e/utils/enums";
 import {
   DEFAULT_DAYS_OVERDUE,
@@ -51,6 +52,10 @@ internalTest.describe("Automatic overdue penalty flow - CAS analyst", () => {
       // Select a final accrual date to populate calculation rows in the grid
       await penaltyCalculator.setFinalAccrualDate(PENALTY_TARGET_ACCRUAL_DATE);
       await penaltyCalculator.assertPenaltyGridLoaded();
+      await analyzeAccessibility(
+        page,
+        "Penalty calculator - automatic overdue",
+      );
 
       await penaltyCalculator.hideDateInputFromScreenshot();
       await takeStabilizedScreenshot(happoScreenshot, page, {

@@ -8,13 +8,13 @@ import {
 } from "@/administration-e2e/utils/enums";
 import { OperationPOM } from "@/administration-e2e/poms/operation";
 import {
-  analyzeAccessibility,
   takeStabilizedScreenshot,
   assertSuccessfulSnackbar,
   clickButton,
   urlIsCorrect,
   waitForSnackbarToHide,
 } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 
 const test = setupBeforeAllTest(UserRole.CAS_DIRECTOR);
 
@@ -62,6 +62,6 @@ test.describe("Issue BCGHG and BORO ID", () => {
 
     await waitForSnackbarToHide(page, SnackbarMessages.ISSUED_BCGHG_ID);
     await waitForSnackbarToHide(page, SnackbarMessages.ISSUED_BORO_ID);
-    await analyzeAccessibility(page);
+    await analyzeAccessibility(page, "BORO ID and BCGHG ID issued");
   });
 });

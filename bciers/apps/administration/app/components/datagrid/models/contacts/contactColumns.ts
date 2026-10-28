@@ -29,7 +29,7 @@ const contactColumns = (
   ];
 
   if (isExternalUser) {
-    // remove operator_legal_name columns for external users
+    // remove operator_legal_name column for external users
     columns.splice(3, 1);
   }
 

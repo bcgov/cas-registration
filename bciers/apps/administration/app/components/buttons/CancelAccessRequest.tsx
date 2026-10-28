@@ -59,7 +59,6 @@ export default function CancelAccessRequest({
 
       <button
         className="button-link mt-8 text-[#D8292F]"
-        aria-label="Cancel Access Request"
         onClick={() => setModalOpen(true)}
       >
         Cancel Request
