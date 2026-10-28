@@ -62,8 +62,10 @@ def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[
 def create_thread(
     request: HttpRequest, version_id: str, payload: CommentThreadIn
 ) -> Tuple[Literal[201], CommentThread]:
+    user = get_current_user(request)
     thread = CommentThreadService.create_thread(
         version_id=int(version_id),
+        user_guid=user.user_guid,
         comment=payload.comment,
         facility_id=payload.facility_id,
     )
@@ -82,9 +84,11 @@ def create_thread(
 def resolve_thread(
     request: HttpRequest, version_id: str, thread_id: str, payload: ResolveThreadIn
 ) -> Tuple[Literal[200], CommentThread]:
+    user = get_current_user(request)
     thread = CommentThreadService.resolve_thread(
         version_id=int(version_id),
         thread_id=int(thread_id),
+        user_guid=user.user_guid,
         resolved=payload.resolved,
     )
 
