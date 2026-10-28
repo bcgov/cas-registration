@@ -16,7 +16,6 @@ from reporting.api_v2.forms.form_response_builder import FormResponseBuilder
 from reporting.service.compliance_service.compliance_service import ComplianceService
 from ..router import router
 
-
 class ComplianceDataSchemaSerialized(Schema):
     emissions_attributable_for_reporting: float
     reporting_only_emissions: float
@@ -29,7 +28,7 @@ class ComplianceDataSchemaSerialized(Schema):
     production_period: Literal["annual", "apr_dec", "jan_mar"]
     is_new_entrant: bool
     eafc_totals: EafcTotalsSchema
-
+    
 
 @router.get(
     "report-version/{version_id}/forms/compliance-summary-data",
