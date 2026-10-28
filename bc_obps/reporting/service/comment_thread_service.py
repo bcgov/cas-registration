@@ -36,3 +36,10 @@ class CommentThreadService:
             comment=comment,
         )
         return thread
+
+    @staticmethod
+    def resolve_thread(version_id: int, thread_id: int, resolved: bool = True) -> CommentThread:
+        thread = CommentThread.objects.get(id=thread_id, report_version_id=version_id)
+        thread.resolved = resolved
+        thread.save()
+        return thread

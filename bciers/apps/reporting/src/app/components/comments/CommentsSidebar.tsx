@@ -27,6 +27,15 @@ const CommentsSidebar: React.FC<Props> = ({
     setIsCreating(false);
   };
 
+  const threadUpdated = (update: Thread) => {
+    setCommentThreads((prevThreads) =>
+      prevThreads.map((thread) => (thread.id === update.id ? update : thread)),
+    );
+  };
+
+  const openThreads = commentThreads.filter((thread) => !thread.resolved);
+  const resolvedThreads = commentThreads.filter((thread) => thread.resolved);
+
   return (
     <Paper className="h-full bg-bc-light-grey-200 print:hidden">
       <Box className="p-4 pb-8 bg-bc-white">
@@ -54,11 +63,25 @@ const CommentsSidebar: React.FC<Props> = ({
           version_id={version_id}
         />
       )}
-      {commentThreads.map((thread) => (
+      {openThreads.map((thread) => (
         <ThreadComponent
           key={`thread-${thread.id}`}
           thread={thread}
-          canReply={canMakeComment}
+          canUpdate={canMakeComment}
+          onThreadUpdated={threadUpdated}
+        />
+      ))}
+      {resolvedThreads.length > 0 && (
+        <Typography className="p-4 pb-0" color="primary">
+          Resolved Comments
+        </Typography>
+      )}
+      {resolvedThreads.map((thread) => (
+        <ThreadComponent
+          key={`thread-${thread.id}`}
+          thread={thread}
+          canUpdate={canMakeComment}
+          onThreadUpdated={threadUpdated}
         />
       ))}
     </Paper>
