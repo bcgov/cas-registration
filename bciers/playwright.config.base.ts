@@ -24,7 +24,7 @@ const playwrightBaseConfig = {
   // The a11y reporter collects violations recorded with A11Y_MODE=report (see analyzeAccessibility in libs/e2e/src/utils/a11y.ts)
   reporter: [
     [process.env.CI ? "blob" : "html"],
-    ...(process.env.A11Y_MODE === "report"
+    ...(process.env.A11Y_MODE?.toLowerCase() === "report"
       ? [
           [
             join(__dirname, "libs/e2e/src/reporters/a11y-reporter.ts"),
