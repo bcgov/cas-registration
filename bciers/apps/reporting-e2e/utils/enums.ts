@@ -12,6 +12,8 @@ export enum ReportIDs {
   OBLIGATION_NOT_MET = "3",
   EARNED_CREDITS = "4",
   NO_OBLIGATION = "5",
+  // 2024 (Apr-Dec production) draft report for the "Obligation not met" operation
+  OBLIGATION_NOT_MET_2024 = "8",
 }
 
 // Matching facility ids for report record ids
@@ -112,6 +114,7 @@ export const REPORT_ID_TO_OPERATION_NAME: Record<ReportIDs, string> = {
   [ReportIDs.OBLIGATION_NOT_MET]: OPERATION_NAMES.OBLIGATION_NOT_MET,
   [ReportIDs.EARNED_CREDITS]: OPERATION_NAMES.EARNED_CREDITS,
   [ReportIDs.NO_OBLIGATION]: OPERATION_NAMES.NO_OBLIGATION,
+  [ReportIDs.OBLIGATION_NOT_MET_2024]: OPERATION_NAMES.OBLIGATION_NOT_MET,
 };
 
 export enum REPORT_STATUS {

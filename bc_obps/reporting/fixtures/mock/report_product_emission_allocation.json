@@ -83,5 +83,39 @@
       "updated_by_id": null,
       "report_emission_allocation": 3
     }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 10000.0,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "emission_category": 5,
+      "report_product": 6,
+      "report_version": 8,
+      "updated_by_id": null,
+      "report_emission_allocation": 4
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 1000.0,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "emission_category": 5,
+      "report_product": 7,
+      "report_version": 8,
+      "updated_by_id": null,
+      "report_emission_allocation": 4
+    }
   }
 ]

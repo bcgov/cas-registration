@@ -35,6 +35,7 @@ from reporting.service.report_operation_opt_out_service import (
     ReportOperationOptOutService,
 )
 
+
 @dataclass
 class ReportProductComplianceData:
     name: str
@@ -85,7 +86,8 @@ class ComplianceData:
     # Used for the "How was this calculated?" breakdown (not persisted)
     production_period: ProductionPeriod
     is_new_entrant: bool
-    eafc_totals: EafcTotals
+    # Only calculated when requested (Compliance Summary page)
+    eafc_totals: EafcTotals | None = None
 
     def as_record_defaults(self) -> dict[str, Decimal | int]:
         return {
@@ -203,7 +205,7 @@ class ComplianceService:
         return ProductionPeriod.ANNUAL
 
     @staticmethod
-    def get_calculated_compliance_data(report_version_id: int) -> ComplianceData:
+    def get_calculated_compliance_data(report_version_id: int, include_eafc_totals: bool = False) -> ComplianceData:
         # Fetch the ReportVersion once (bring in reporting_year and operation) to avoid extra queries
         report_version_record = ReportVersion.objects.select_related("report__reporting_year", "report_operation").get(
             pk=report_version_id
@@ -369,7 +371,11 @@ class ComplianceService:
             products=compliance_product_list,
             production_period=production_period,
             is_new_entrant=is_new_entrant,
-            eafc_totals=get_eafc_totals(report_version_id, use_legacy_rounding=has_2024_reporting_year),
+            eafc_totals=(
+                get_eafc_totals(report_version_id, use_legacy_rounding=has_2024_reporting_year)
+                if include_eafc_totals
+                else None
+            ),
         )
 
         return return_object
