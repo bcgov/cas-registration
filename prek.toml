@@ -162,13 +162,13 @@ rev = "2.4.1"
 id = "poetry-check"
 args = ["-C", "./bc_obps"]
 priority = 3
-language_version = "3.14"
+language_version = "3.15"
 
 [[repos.hooks]]
 id = "poetry-lock"
 args = ["-C", "./bc_obps"]
 priority = 3
-language_version = "3.14"
+language_version = "3.15"
 
 # Security scanning
 
