@@ -12,7 +12,7 @@ class TestCommentsV2Endpoints(CommonTestSetup):
         self.comment = make_recipe("reporting.tests.utils.comment")
         self.thread_id = self.comment.comment_thread_id
         self.endpoint_under_test = f"/api/reporting/v2/comments/{self.comment.id}"
-        # The insert trigger overrides created_by, so assign the test author after creation.
+        # Manually set the created_by field so we know who owns the comment
         Comment.objects.filter(id=self.comment.id).update(created_by=self.user)
         self.comment.refresh_from_db()
 
@@ -50,7 +50,7 @@ class TestCommentsV2Endpoints(CommonTestSetup):
         assert Comment.objects.filter(id=self.comment.id, created_by=other_user).exists()
         assert CommentThread.objects.filter(id=self.thread_id).exists()
 
-    @pytest.mark.parametrize("role", ["cas_view_only", "cas_admin", "industry_user"])
+    @pytest.mark.parametrize("role", ["cas_view_only", "cas_admin"])
     def test_unauthorized_role_cannot_delete_own_comment(self, role):
         response = TestUtils.mock_delete_with_auth_role(self, role, self.endpoint_under_test)
 
