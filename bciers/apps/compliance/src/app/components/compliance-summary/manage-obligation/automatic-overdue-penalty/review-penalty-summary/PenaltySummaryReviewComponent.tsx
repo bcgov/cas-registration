@@ -42,11 +42,6 @@ const PenaltySummaryReviewComponent = ({
   const [isGeneratingPenaltyInvoice, setIsGeneratingPenaltyInvoice] =
     useState(false);
 
-  const displayPenaltyStatus =
-    data.penalty_status === "Not Paid" ? "Due" : data.penalty_status;
-
-  const formData = { ...data, penalty_status: displayPenaltyStatus };
-
   const handleGeneratePenaltyInvoice = async () => {
     setErrors(undefined);
     setIsGeneratingPenaltyInvoice(true);
@@ -65,7 +60,7 @@ const PenaltySummaryReviewComponent = ({
       <FormBase
         schema={createPenaltySummaryReviewSchema(reportingYear)}
         uiSchema={penaltySummaryReviewUiSchema}
-        formData={formData}
+        formData={data}
         className="w-full"
       >
         {renderedErrors}

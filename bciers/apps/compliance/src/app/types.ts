@@ -222,6 +222,8 @@ export interface AutomaticOverduePenalty {
   total_penalty: string;
   faa_interest: string;
   total_amount: string;
+  due_date: string;
+  invoice_number: string;
 }
 
 export interface LateSubmissionPenalty {
@@ -231,6 +233,8 @@ export interface LateSubmissionPenalty {
   penalty_amount: string;
   faa_interest: string;
   total_amount: string;
+  due_date?: string;
+  invoice_number?: string;
 }
 
 export interface PenaltyData {

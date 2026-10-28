@@ -31,11 +31,6 @@ const InterestSummaryReviewComponent = ({
   const [isGeneratingInterestInvoice, setIsGeneratingInterestInvoice] =
     useState(false);
 
-  const displayPenaltyStatus =
-    data.penalty_status === "Not Paid" ? "Due" : data.penalty_status;
-
-  const formData = { ...data, penalty_status: displayPenaltyStatus };
-
   const handleGenerateInterestInvoice = async () => {
     setErrors(undefined);
     setIsGeneratingInterestInvoice(true);
@@ -49,11 +44,13 @@ const InterestSummaryReviewComponent = ({
     setIsGeneratingInterestInvoice(false);
   };
 
+  console.log(data);
+
   return (
     <FormBase
       schema={interestSummaryReviewSchema}
       uiSchema={interestSummaryReviewUiSchema}
-      formData={formData}
+      formData={data}
       className="w-full"
     >
       {renderedErrors}
