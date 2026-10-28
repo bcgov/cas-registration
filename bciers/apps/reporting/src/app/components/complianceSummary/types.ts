@@ -14,6 +14,18 @@ export type ComplianceSummaryFormProduct = {
 
 export type ProductionPeriod = "annual" | "apr_dec" | "jan_mar";
 
+export type EafcEmissionRow = {
+  activity: string;
+  source_type: string;
+  fuel_name?: string;
+  emissions: string;
+};
+
+export type EafcUnregulatedProductRow = {
+  product_name: string;
+  allocated_emissions: string;
+};
+
 export type EafcTotals = {
   attributable_for_reporting: string;
   excluded_by_fuels: string;
@@ -22,6 +34,12 @@ export type EafcTotals = {
   remaining_npnc: string;
   allocated_to_unregulated_products: string;
   annual_eafc: string;
+  attributable_for_reporting_rows: EafcEmissionRow[];
+  excluded_by_fuels_rows: EafcEmissionRow[];
+  non_useful_venting_rows: EafcEmissionRow[];
+  fugitive_rows: EafcEmissionRow[];
+  remaining_npnc_rows: EafcEmissionRow[];
+  unregulated_product_rows: EafcUnregulatedProductRow[];
 };
 
 export type ComplianceSummaryFormPayload = {

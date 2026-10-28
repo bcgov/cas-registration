@@ -354,6 +354,12 @@ export class CurrentReportsPOM {
     await this.page.goto(this.getSignOffUrl(reportId));
   }
 
+  async gotoComplianceSummary(reportId: string | number) {
+    await this.page.goto(
+      `${this.url}/${reportId}/${ReportRoutes.COMPLIANCE_SUMMARY}`,
+    );
+  }
+
   // -----------------
   // helpers
   // -----------------

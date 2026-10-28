@@ -139,6 +139,7 @@ class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
         assert payload["production_period"] == "annual"
         assert payload["is_new_entrant"] is False
         assert payload["eafc_totals"]["annual_eafc"] == approx(90.0)
+        mock_get_calculated_compliance_data.assert_called_once_with(self.report_version.id, include_eafc_totals=True)
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_compliance_summary_form_data")

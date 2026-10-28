@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.test import SimpleTestCase
 from reporting.schema.compliance_data import ComplianceDataSchemaOut, ComplianceSummaryDataSchemaOut
 from reporting.service.compliance_service.compliance_service import ComplianceData, ReportProductComplianceData
-from reporting.service.compliance_service.eafc_totals import EafcTotals
+from reporting.service.compliance_service.eafc_totals import EafcEmissionRow, EafcTotals
 from reporting.service.compliance_service.parameters import ProductionPeriod
 from reporting.service.compliance_service.regulatory_values import RegulatoryValues
 
@@ -62,6 +62,16 @@ def build_compliance_data() -> ComplianceData:
             remaining_npnc=Decimal("0.01"),
             allocated_to_unregulated_products=Decimal("0"),
             annual_eafc=Decimal("99.99"),
+            attributable_for_reporting_rows=[
+                EafcEmissionRow(
+                    activity="Oil and gas", source_type="Flaring stacks", fuel_name=None, emissions=Decimal("100")
+                )
+            ],
+            remaining_npnc_rows=[
+                EafcEmissionRow(
+                    activity="GSC", source_type="GSC of fuel", fuel_name="Diesel", emissions=Decimal("0.01")
+                )
+            ],
         ),
     )
 
@@ -132,6 +142,16 @@ class TestComplianceDataSchema(SimpleTestCase):
             "remaining_npnc": 0.01,
             "allocated_to_unregulated_products": 0.0,
             "annual_eafc": 99.99,
+            "attributable_for_reporting_rows": [
+                {"activity": "Oil and gas", "source_type": "Flaring stacks", "fuel_name": None, "emissions": 100.0}
+            ],
+            "excluded_by_fuels_rows": [],
+            "non_useful_venting_rows": [],
+            "fugitive_rows": [],
+            "remaining_npnc_rows": [
+                {"activity": "GSC", "source_type": "GSC of fuel", "fuel_name": "Diesel", "emissions": 0.01}
+            ],
+            "unregulated_product_rows": [],
         }
         assert dumped["products"][0]["allocated_for_compliance_annual"] == 567.89
         assert dumped["products"][1]["allocated_for_compliance_annual"] == 1.0
