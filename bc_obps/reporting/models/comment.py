@@ -24,7 +24,6 @@ class Comment(TimeStampedModel):
     comment = models.TextField(
         db_comment="The comment about a report",
     )
-    user_can_edit: bool
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "Table containing comments about a report, which are associated with a thread"
