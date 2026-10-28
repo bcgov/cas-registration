@@ -1,3 +1,4 @@
+from typing import Sequence
 from uuid import UUID
 from django.db.models import Prefetch, QuerySet, F
 from django.db.models.lookups import Exact
@@ -35,9 +36,7 @@ class CommentThreadService:
             .filter(report_id=report_id)
             .order_by("-created_at")
         )
-        for thread in threads:
-            for comment in thread.comments.all():
-                comment.user_can_edit = comment.created_by_id == user_guid
+        CommentThreadService.set_comments_user_can_edit(threads, user_guid)
         return threads
 
     @staticmethod
@@ -64,4 +63,5 @@ class CommentThreadService:
         )
         thread.resolved = resolved
         thread.save()
+        CommentThreadService.set_comments_user_can_edit([thread], user_guid)
         return thread
