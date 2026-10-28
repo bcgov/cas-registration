@@ -20,9 +20,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     # Set the home and working directory to /app
     HOME=/app \
     # Prevent apt-get from prompting during installs
-    DEBIAN_FRONTEND=noninteractive \
-    # Set asdf version
-    ASDF_VERSION=0.15.0
+    DEBIAN_FRONTEND=noninteractive
 
 WORKDIR ${HOME}
 
@@ -37,11 +35,11 @@ FROM base AS builder
 
 # Refresh package lists from repositories
 RUN apt-get update && \
-# Install minimal tools and dependencies
+    # Install minimal tools and dependencies
     apt-get install -y --no-install-recommends build-essential curl && \
-# Remove apt cache to reduce image size
+    # Remove apt cache to reduce image size
     apt-get clean && \
-# Delete package lists to further slim the image
+    # Delete package lists to further slim the image
     rm -rf /var/lib/apt/lists/*
 
 # Add bin path for poetry
@@ -51,9 +49,6 @@ ENV PATH="/app/.local/bin:${PATH}"
 COPY --chown=${USER_ID}:0 .tool-versions pyproject.toml poetry.lock ${HOME}/
 
 USER ${USER_ID}
-
-# Use bash with environment sourcing for asdf commands
-SHELL ["/bin/bash", "-c"]
 
 # Configure Poetry and install dependencies
 # Extract Poetry version from .tool-versions
@@ -95,7 +90,7 @@ RUN apt-get update && \
 # Copy application from the builder stage
 COPY --from=builder --chown=${USER_ID}:0 ${HOME}/ ${HOME}/
 
-# Remove asdf and Poetry files
+# Remove package manager and Poetry files
 RUN rm .tool-versions pyproject.toml poetry.lock
 
 USER ${USER_ID}
