@@ -16,16 +16,13 @@ endif
 help: ## Show this help.
 	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
 
-.PHONY: install_backend_asdf_tools
-install_backend_asdf_tools: ## install languages runtimes and tools specified in .tool-versions of the backend
-install_backend_asdf_tools:
-	@echo "Installing backend asdf tools"
-	@cat .tool-versions | cut -f 1 -d ' ' | xargs -n 1 asdf plugin add || true
-	@asdf plugin update --all
-	@#MAKELEVEL=0 is required because of https://www.postgresql.org/message-id/1118.1538056039%40sss.pgh.pa.us
-	@MAKELEVEL=0 POSTGRES_EXTRA_CONFIGURE_OPTIONS='--with-libxml' asdf install
-	@asdf reshim
-	@echo "Done installing backend asdf tools"
+.PHONY: install_backend_tools
+install_backend_tools: ## install languages runtimes and tools specified in .tool-versions of the backend
+install_backend_tools:
+	@echo "Installing backend tools"
+	@POSTGRES_EXTRA_CONFIGURE_OPTIONS='--with-libxml' mise install
+	@mise reshim
+	@echo "Done installing backend tools"
 
 .PHONY: install_poetry
 install_poetry: ## install poetry (MacOS/Linux only)
@@ -35,7 +32,7 @@ install_poetry:
 
 .PHONY: install_dev_tools
 install_dev_tools: ## install development tools
-install_dev_tools: stop_pg install_backend_asdf_tools install_poetry start_pg
+install_dev_tools: stop_pg install_backend_tools install_poetry start_pg
 
 .PHONY: install_poetry_deps
 install_poetry_deps: ## install poetry dependencies
