@@ -31,6 +31,8 @@ class AutomaticOverduePenaltyOut(_PenaltyStatusBase):
     total_penalty: Decimal
     faa_interest: Decimal
     total_amount: Decimal
+    due_date: str
+    invoice_number: str
 
 
 class PenaltyWithPaymentsOut(_PenaltyStatusBase):

@@ -237,9 +237,10 @@ class PenaltyCalculationService:
         current_compliance_penalty_rate = CompliancePenaltyRateService.get_current_compliance_penalty_rate()
         daily_penalty_rate = current_compliance_penalty_rate.rate
         obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
-        penalty = CompliancePenalty.objects.get(
+        penalty = CompliancePenalty.objects.select_related("elicensing_invoice").get(
             compliance_obligation=obligation, penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
         )
+        invoice = penalty.elicensing_invoice
         faa_interest = refresh_result.invoice.invoice_interest_balance if refresh_result.invoice else Decimal('0.00')
         total_amount = penalty.penalty_amount + faa_interest if faa_interest else penalty.penalty_amount
 
@@ -250,6 +251,8 @@ class PenaltyCalculationService:
             "total_penalty": penalty.penalty_amount,
             "faa_interest": faa_interest,
             "total_amount": total_amount,
+            "invoice_number": invoice.invoice_number if invoice else None,
+            "due_date": str(invoice.due_date) if invoice else None,
         }
 
     @classmethod
@@ -270,6 +273,8 @@ class PenaltyCalculationService:
                 - penalty_amount: Total penalty amount
                 - faa_interest: FAA interest amount (currently 0.00)
                 - total_amount: Total amount including FAA interest
+                - invoice_number: Elicensing invoice number for the penalty (if invoice exists)
+                - due_date: the due date associated with the invoice (if an invoice exists)
         """
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id,
@@ -278,9 +283,11 @@ class PenaltyCalculationService:
         obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
 
         # Check if late submission penalty exists
-        late_submission_penalty = CompliancePenalty.objects.filter(
-            compliance_obligation=obligation, penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION
-        ).first()
+        late_submission_penalty = (
+            CompliancePenalty.objects.select_related("elicensing_invoice")
+            .filter(compliance_obligation=obligation, penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION)
+            .first()
+        )
 
         if not late_submission_penalty:
             return {
@@ -295,6 +302,16 @@ class PenaltyCalculationService:
         penalty_amount = late_submission_penalty.penalty_amount
         faa_interest = refresh_result.invoice.invoice_interest_balance if refresh_result.invoice else Decimal('0.00')
         total_amount = penalty_amount + faa_interest if faa_interest else late_submission_penalty.penalty_amount
+        invoice_number = (
+            late_submission_penalty.elicensing_invoice.invoice_number
+            if late_submission_penalty.elicensing_invoice
+            else None
+        )
+        due_date = (
+            str(late_submission_penalty.elicensing_invoice.due_date)
+            if late_submission_penalty.elicensing_invoice
+            else None
+        )
 
         return {
             "has_penalty": True,
@@ -303,6 +320,8 @@ class PenaltyCalculationService:
             "penalty_amount": penalty_amount,
             "faa_interest": faa_interest,
             "total_amount": total_amount,
+            "invoice_number": invoice_number,
+            "due_date": due_date,
         }
 
     @classmethod
