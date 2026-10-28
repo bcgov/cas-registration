@@ -16,6 +16,7 @@ from reporting.api_v2.forms.form_response_builder import FormResponseBuilder
 from reporting.service.compliance_service.compliance_service import ComplianceService
 from ..router import router
 
+
 class ComplianceDataSchemaSerialized(Schema):
     emissions_attributable_for_reporting: float
     reporting_only_emissions: float
@@ -28,7 +29,7 @@ class ComplianceDataSchemaSerialized(Schema):
     production_period: Literal["annual", "apr_dec", "jan_mar"]
     is_new_entrant: bool
     eafc_totals: EafcTotalsSchema
-    
+
 
 @router.get(
     "report-version/{version_id}/forms/compliance-summary-data",
@@ -46,7 +47,7 @@ def get_compliance_summary_form_data(
     version_id: int,
 ) -> Tuple[Literal[200], dict]:
     # Get compliance dataclass
-    compliance_data = ComplianceService.get_calculated_compliance_data(version_id)
+    compliance_data = ComplianceService.get_calculated_compliance_data(version_id, include_eafc_totals=True)
 
     # Trigger compliance schema resolvers through model_validate
     # Return a dict for FormResponseBuilder payload through model_dump

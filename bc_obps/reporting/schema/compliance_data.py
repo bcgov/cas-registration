@@ -42,6 +42,18 @@ class ComplianceDataSchemaOut(Schema):
         return build_product_schemas(obj, ReportProductComplianceSchema)
 
 
+class EafcEmissionRowSchema(Schema):
+    activity: str
+    source_type: str
+    fuel_name: Optional[str] = None
+    emissions: float
+
+
+class EafcUnregulatedProductRowSchema(Schema):
+    product_name: str
+    allocated_emissions: float
+
+
 class EafcTotalsSchema(Schema):
     attributable_for_reporting: float
     excluded_by_fuels: float
@@ -50,6 +62,12 @@ class EafcTotalsSchema(Schema):
     remaining_npnc: float
     allocated_to_unregulated_products: float
     annual_eafc: float
+    attributable_for_reporting_rows: List[EafcEmissionRowSchema]
+    excluded_by_fuels_rows: List[EafcEmissionRowSchema]
+    non_useful_venting_rows: List[EafcEmissionRowSchema]
+    fugitive_rows: List[EafcEmissionRowSchema]
+    remaining_npnc_rows: List[EafcEmissionRowSchema]
+    unregulated_product_rows: List[EafcUnregulatedProductRowSchema]
 
 
 class ReportProductComplianceSummarySchema(ReportProductComplianceSchema):

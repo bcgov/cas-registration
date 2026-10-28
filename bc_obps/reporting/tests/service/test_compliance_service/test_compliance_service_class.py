@@ -114,13 +114,16 @@ class TestComplianceSummaryServiceClass(TestCase):
 
     def test_apr_dec_eafc_breakdown(self):
         build_data = ComplianceTestInfrastructure.build()
-        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+        result = ComplianceService.get_calculated_compliance_data(
+            build_data.report_version_1.id, include_eafc_totals=True
+        )
 
         assert result.production_period == ProductionPeriod.APR_DEC
         assert result.is_new_entrant is False
 
         # The per-product annual values add up to the annual EAFC shown in step 1 (within rounding)
         annual_total = sum((p.allocated_for_compliance_annual for p in result.products), Decimal("0"))
+        assert result.eafc_totals is not None
         assert abs(annual_total - result.eafc_totals.annual_eafc) <= Decimal("0.0001") * 6
 
         # Each product's prorated value is its annual value scaled by its Apr-Dec share of production
@@ -229,10 +232,19 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.excess_emissions == Decimal('49232.7564')
         assert result.credited_emissions == 0
 
+    def test_eafc_totals_only_calculated_when_requested(self):
+        build_data = ComplianceTestInfrastructure.build()
+
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        assert result.eafc_totals is None
+
     def test_new_entrant(self):
         build_data = ComplianceTestInfrastructure.new_entrant()
         ## TESTS ##
-        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+        result = ComplianceService.get_calculated_compliance_data(
+            build_data.report_version_1.id, include_eafc_totals=True
+        )
 
         assert result.emissions_limit == 0
         assert result.excess_emissions == 0
@@ -240,6 +252,7 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.is_new_entrant is True
         assert result.emissions_attributable_for_compliance == 0
         # Step 1 of the breakdown still shows the real (non-zero) annual EAFC
+        assert result.eafc_totals is not None
         assert result.eafc_totals.annual_eafc > 0
 
     def test_saves_compliance_data(self):
@@ -295,7 +308,9 @@ class TestComplianceSummaryServiceClass(TestCase):
     def test_compliance_summary_with_pulp_and_paper_regulatory_override(self):
         # Sheet 6
         build_data = ComplianceTestInfrastructure.build_pulp_and_paper_2025()
-        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+        result = ComplianceService.get_calculated_compliance_data(
+            build_data.report_version_1.id, include_eafc_totals=True
+        )
 
         result_dict = dataclasses.asdict(result)
         # For an annual report, annual EAFC equals emissions attributable for compliance (within rounding)

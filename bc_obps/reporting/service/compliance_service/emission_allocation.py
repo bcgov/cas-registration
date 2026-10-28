@@ -8,6 +8,7 @@ from reporting.models.report_product_emission_allocation import ReportProductEmi
 
 REPORTING_ONLY_CATEGORY_IDS = [10, 11, 12, 2, 7]
 
+
 def get_allocated_emissions_by_report_product_emission_category(
     report_version_id: int, product_id: int, emission_category_ids: List[int]
 ) -> Decimal:
