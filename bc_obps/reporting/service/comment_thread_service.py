@@ -1,6 +1,6 @@
 from typing import Sequence
 from uuid import UUID
-from django.db.models import Prefetch, prefetch_related_objects
+from django.db.models import BooleanField, Case, Prefetch, When, prefetch_related_objects
 from reporting.models.comment import Comment
 from reporting.models.comment_thread import CommentThread
 from reporting.models.report_version import ReportVersion
@@ -12,16 +12,30 @@ class CommentThreadService:
     def set_comments_user_can_edit(threads: Sequence[CommentThread], user_guid: UUID) -> None:
         """
         Prepares threads for serialization: prefetches each thread's comments (with authors,
-        ordered by creation) in a single query and sets the user_can_edit attribute required
-        by CommentSchema. Call this on any thread(s) included in an API response.
+        ordered by creation) in a single query, annotating each comment with the user_can_edit
+        flag required by CommentSchema. A comment is editable only by the user who created it.
         """
+        # prefetch_related_objects skips instances whose comments are already prefetched, which
+        # could leave annotations from a previous prefetch, so we clear any cached comments first
+        for thread in threads:
+            cache = getattr(thread, "_prefetched_objects_cache", None)
+            if cache is not None:
+                cache.pop("comments", None)
         prefetch_related_objects(
             threads,
-            Prefetch("comments", queryset=Comment.objects.select_related("created_by").order_by("created_at")),
+            Prefetch(
+                "comments",
+                queryset=Comment.objects.select_related("created_by")
+                .annotate(
+                    user_can_edit=Case(
+                        When(created_by_id=user_guid, then=True),
+                        default=False,
+                        output_field=BooleanField(),
+                    )
+                )
+                .order_by("created_at"),
+            ),
         )
-        for thread in threads:
-            for comment in thread.comments.all():
-                comment.user_can_edit = comment.created_by_id == user_guid
 
     @staticmethod
     def get_threads(report_id: int, user_guid: UUID) -> list[CommentThread]:
