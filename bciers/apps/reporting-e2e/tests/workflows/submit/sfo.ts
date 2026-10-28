@@ -10,8 +10,7 @@ import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { SFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
-import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
-import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
+import { createScanPage, verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 import { WorkflowRunnerArgs } from "@bciers/e2e/utils/types";
 import { PRODUCTION_DATA } from "@/reporting-e2e/poms/production-data";
 
@@ -21,9 +20,7 @@ export async function runSfoSubmitReport({
   happoScreenshot,
   checkAccessibility = true,
 }: WorkflowRunnerArgs) {
-  const scanPage = async (description: string) => {
-    if (checkAccessibility) await analyzeAccessibility(page, description);
-  };
+  const scanPage = createScanPage(page, checkAccessibility);
 
   // ── 0. Open the current reporting year so the "Start" button is available ──
   const setup = new ReportSetUpPOM(page);

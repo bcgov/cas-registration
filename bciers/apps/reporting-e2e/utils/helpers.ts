@@ -2,6 +2,7 @@ import { Locator, Page, expect } from "@playwright/test";
 import { ReportRoutes } from "./enums";
 import { ACTION_BUTTON_TEXT, REPORTING_REPORTS_BASE_PATH } from "./constants";
 import { clickButton } from "@bciers/e2e/utils/helpers";
+import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 
 export async function verifyFormTitle(
   page: Page,
@@ -55,3 +56,10 @@ export async function clickViewReportDetails(
     waitForUrl: routeRegex,
   });
 }
+
+// Scans the page, unless the workflow is only re-run as setup and its pages were already scanned
+export const createScanPage =
+  (page: Page, checkAccessibility = true) =>
+  async (description: string) => {
+    if (checkAccessibility) await analyzeAccessibility(page, description);
+  };

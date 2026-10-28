@@ -12,9 +12,8 @@ import { LFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 import { ReviewFacilitiesPOM } from "@/reporting-e2e/poms/LFO/review-facilities";
 import { FacilityGridPOM } from "@/reporting-e2e/poms/LFO/facility-grid";
 import { OperationEmissionSummaryPOM } from "@/reporting-e2e/poms/LFO/operation-emissions-summary";
-import { verifyFormTitle } from "@/reporting-e2e/utils/helpers";
+import { createScanPage, verifyFormTitle } from "@/reporting-e2e/utils/helpers";
 import { takeStabilizedScreenshot } from "@bciers/e2e/utils/helpers";
-import { analyzeAccessibility } from "@bciers/e2e/utils/a11y";
 import { WorkflowRunnerArgs } from "@bciers/e2e/utils/types";
 
 export async function runLfoSubmitReport({
@@ -23,9 +22,7 @@ export async function runLfoSubmitReport({
   happoScreenshot,
   checkAccessibility = true,
 }: WorkflowRunnerArgs) {
-  const scanPage = async (description: string) => {
-    if (checkAccessibility) await analyzeAccessibility(page, description);
-  };
+  const scanPage = createScanPage(page, checkAccessibility);
 
   // ── 0. Open the current reporting year so the "Start" button is available ──
   const setup = new ReportSetUpPOM(page);
