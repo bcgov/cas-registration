@@ -55,6 +55,9 @@ export class InternalReviewComplianceEarnedCreditsPOM {
       .locator('label:has(input[type="radio"]:checked)')
       .innerText();
     expect(selectedText).toMatch(new RegExp(suggestion, "i"));
+    await expect(
+      this.page.getByRole("button", { name: CONTINUE_BUTTON_TEXT }),
+    ).toBeEnabled();
   }
 
   /**
