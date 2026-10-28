@@ -80,6 +80,7 @@ const CommentsSidebar: React.FC<Props> = ({
           thread={thread}
           canUpdate={canMakeComment}
           onThreadUpdated={threadUpdated}
+          onCommentDeleted={handleCommentDeleted}
         />
       ))}
       {resolvedThreads.length > 0 && (
