@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import ReportComments from "@reporting/src/app/components/comments/ReportComments";
-import { getCommentThreads } from "@reporting/src/app/utils/getCommentThreads";
+import { getCommentThreads } from "@reporting/src/app/utils/comments/getCommentThreads";
 
-vi.mock("@reporting/src/app/utils/getCommentThreads", () => ({
+vi.mock("@reporting/src/app/utils/comments/getCommentThreads", () => ({
   getCommentThreads: vi.fn(),
 }));
 

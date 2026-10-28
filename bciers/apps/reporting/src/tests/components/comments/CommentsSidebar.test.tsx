@@ -215,4 +215,89 @@ describe("The Comments Sidebar", () => {
     );
     expect(screen.getByRole("button", { name: "Reply" })).toBeVisible();
   });
+
+  const makeDeletableThread = (
+    threadId: number,
+    comments: { id: number; comment: string }[],
+  ) =>
+    ({
+      id: threadId,
+      version_id: 42,
+      resolved: false,
+      comments: comments.map(({ id, comment }) => ({
+        id,
+        version_id: 42,
+        comment,
+        user_can_edit: true,
+      })),
+    }) as Thread;
+
+  it("removes a comment from its thread after deleting it", async () => {
+    actionHandler.mockResolvedValueOnce({ success: true });
+    render(
+      <CommentsSidebar
+        version_id={42}
+        facilities={[]}
+        canMakeComment={true}
+        threads={[
+          makeDeletableThread(1, [
+            { id: 11, comment: "First comment" },
+            { id: 12, comment: "Second comment" },
+          ]),
+        ]}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "Delete comment" })[0],
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByText("First comment")).not.toBeInTheDocument(),
+    );
+    expect(screen.getByText("Second comment")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Reply" })).toBeVisible();
+  });
+
+  it("removes the whole thread after deleting its last comment", async () => {
+    actionHandler.mockResolvedValueOnce({ success: true });
+    render(
+      <CommentsSidebar
+        version_id={42}
+        facilities={[]}
+        canMakeComment={true}
+        threads={[
+          makeDeletableThread(1, [{ id: 11, comment: "Only comment" }]),
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete comment" }));
+
+    await waitFor(() =>
+      expect(screen.queryByText("Only comment")).not.toBeInTheDocument(),
+    );
+    expect(
+      screen.queryByRole("button", { name: "Reply" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps a comment visible when deleting it fails", async () => {
+    actionHandler.mockResolvedValueOnce({ error: "Could not delete" });
+    render(
+      <CommentsSidebar
+        version_id={42}
+        facilities={[]}
+        canMakeComment={true}
+        threads={[
+          makeDeletableThread(1, [{ id: 11, comment: "Sticky comment" }]),
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete comment" }));
+
+    expect(await screen.findByText("Could not delete")).toBeVisible();
+    expect(screen.getByText("Sticky comment")).toBeVisible();
+  });
 });
