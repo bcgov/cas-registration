@@ -5,7 +5,7 @@ import { formatDate } from "@reporting/src/app/utils/formatDate";
 
 interface Props {
   comment: Comment;
-  handleDelete: (commentId: number) => void;
+  handleDelete: (reportVersionId: number, commentId: number) => void;
 }
 
 const CommentComponent: React.FC<Props> = ({ comment, handleDelete }) => {
@@ -36,7 +36,7 @@ const CommentComponent: React.FC<Props> = ({ comment, handleDelete }) => {
               title="Delete comment"
               aria-label="Delete comment"
               size="small"
-              onClick={() => handleDelete(comment.id)}
+              onClick={() => handleDelete(comment.version_id, comment.id)}
             >
               <DeleteOutlined fontSize="small" />
             </IconButton>

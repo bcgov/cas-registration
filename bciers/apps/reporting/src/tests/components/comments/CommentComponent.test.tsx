@@ -66,6 +66,6 @@ describe("The comment component", () => {
 
     fireEvent.click(deleteButton);
 
-    expect(handleDelete).toHaveBeenCalledWith(7);
+    expect(handleDelete).toHaveBeenCalledWith(1, 7);
   });
 });

@@ -714,7 +714,7 @@ ENDPOINTS = {
         {
             "method": "delete",
             "endpoint_name": "delete_comment",
-            "kwargs": {"comment_id": MOCK_INT},
+            "kwargs": {"version_id": MOCK_INT, "comment_id": MOCK_INT},
         },
     ],
     "cas_admin": [

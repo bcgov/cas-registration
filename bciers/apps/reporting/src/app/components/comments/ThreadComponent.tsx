@@ -42,9 +42,9 @@ const ThreadComponent: React.FC<Props> = ({
       }
     });
   };
-  const handleCommentDelete = (commentId: number) => {
+  const handleCommentDelete = (reportVersionId: number, commentId: number) => {
     startTransition(async () => {
-      const resp = await deleteComment(commentId);
+      const resp = await deleteComment(reportVersionId, commentId);
       if (handleApiResponse(resp, setErrors)) {
         onCommentDeleted(thread.id, commentId);
       }
