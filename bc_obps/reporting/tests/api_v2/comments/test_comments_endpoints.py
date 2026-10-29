@@ -32,7 +32,7 @@ class TestCommentsV2Endpoints(CommonTestSetup):
         assert not CommentThread.objects.filter(id=self.thread.id).exists()
 
     @pytest.mark.parametrize("role", ["cas_director", "cas_analyst"])
-    def test_delete_preserves_thread_and_remaining_comment(self, role):
+    def test_delete_preserves_thread_and_remaining_comments(self, role):
         another_comment = make_recipe(
             "reporting.tests.utils.comment", comment_thread_id=self.thread.id, report_version_id=self.report_version.id
         )
