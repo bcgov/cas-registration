@@ -46,7 +46,7 @@ describe("InternalInterestSummaryReviewComponent", () => {
 
     expect(
       screen.getByText(
-        /Financial Administration Act \(FAA\) interest is incurred and accrues at/i,
+        /GGEAPAR interest accrues daily at an annual rate of prime + 3/i,
       ),
     ).toBeVisible();
 
@@ -59,7 +59,6 @@ describe("InternalInterestSummaryReviewComponent", () => {
     expect(screen.getByText("GGEAPAR Interest Amount:")).toBeVisible();
     expect(screen.getByText("$100.00")).toBeVisible();
 
-    expect(screen.getByText("FAA Interest (Annual):")).toBeVisible();
     expect(screen.getByText("$10.00")).toBeVisible();
 
     expect(screen.getByText("Total Amount:")).toBeVisible();

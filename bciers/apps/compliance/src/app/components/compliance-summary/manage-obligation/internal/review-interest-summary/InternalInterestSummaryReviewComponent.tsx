@@ -34,8 +34,6 @@ const InternalInterestSummaryReviewComponent = ({
     ? `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`
     : undefined;
 
-  console.log(data);
-
   return (
     <FormBase
       schema={interestSummaryReviewSchema}
