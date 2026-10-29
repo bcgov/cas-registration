@@ -212,6 +212,9 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     const spinner = screen.getByTestId("spinner");
     expect(spinner).toBeVisible();
     expect(continueButton).toBeDisabled();
+
+    // Let the delayed request settle here, otherwise its router.push leaks into a later test
+    await waitFor(() => expect(mockRouterPush).toHaveBeenCalled());
   });
 
   it("clears existing error when form data changes", async () => {
