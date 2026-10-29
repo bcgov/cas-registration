@@ -253,7 +253,7 @@ class FacilityRlsTest(BaseTestCase):
             return cursor.rowcount
 
         assert_policies_for_industry_user(
-            Operation,
+            Facility,
             approved_user_operator.user,
             select_function=select_function,
             insert_function=insert_function,
