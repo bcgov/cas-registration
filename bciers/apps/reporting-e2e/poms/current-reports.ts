@@ -237,7 +237,7 @@ export class CurrentReportsPOM {
 
     await expect(row).toBeVisible();
 
-    const moreActionsButton = row.locator("#basic-button");
+    const moreActionsButton = row.getByRole("button", { name: "More actions" });
     await expect(moreActionsButton).toBeVisible();
 
     await moreActionsButton.click();

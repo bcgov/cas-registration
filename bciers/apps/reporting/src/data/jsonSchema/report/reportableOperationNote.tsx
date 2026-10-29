@@ -7,7 +7,12 @@ export const infoNote = (
     Only operations missing a report for the selected reporting year are shown.
     If you don't see an operation you expected, then it hasn't been registered
     yet.{" "}
-    <Tooltip title="Link opens in a new tab" placement="top" arrow>
+    <Tooltip
+      title="Link opens in a new tab"
+      placement="top"
+      arrow
+      describeChild
+    >
       <Link
         href="/administration/operations?isNewTab=true"
         target="_blank"

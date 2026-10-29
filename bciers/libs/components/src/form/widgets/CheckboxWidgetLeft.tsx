@@ -13,17 +13,18 @@ const CheckboxWidgetLeft: React.FC<WidgetProps> = ({
   return (
     <div className="flex items-center">
       <Checkbox
-        id={id}
         checked={typeof value === "undefined" ? false : value}
         value={value}
+        slotProps={{ input: { id } }}
         required={required}
-        aria-label={label}
         disabled={disabled || readonly}
         onChange={(event: { target: { checked: any } }) =>
           onChange(event.target.checked)
         }
       />
-      <label className="font-bold mr-4">{label}</label>
+      <label htmlFor={id} className="font-bold mr-4">
+        {label}
+      </label>
     </div>
   );
 };

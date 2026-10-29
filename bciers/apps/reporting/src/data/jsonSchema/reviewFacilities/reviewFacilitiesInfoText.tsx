@@ -34,7 +34,7 @@ export const getInfoNote = (operationId: string) => (
 );
 
 export const instructionNote = (
-  <Typography variant="subtitle2" color="primary">
+  <Typography variant="subtitle2" component="p" color="primary">
     <i>
       Select the facilities that apply to your operation, prior to Dec 31 of the
       current reporting year period
