@@ -47,7 +47,11 @@ function CollapsibleDefinitionFieldTemplate({
           {!readonly && (
             <Grid size={1}>
               <CardActions className="justify-end">
-                <IconButton onClick={() => setExpandCollapse(!expandCollapse)}>
+                <IconButton
+                  aria-label={expandCollapse ? "Collapse" : "Expand"}
+                  aria-expanded={expandCollapse}
+                  onClick={() => setExpandCollapse(!expandCollapse)}
+                >
                   {!expandCollapse ? <ExpandMoreIcon /> : <ExpandLessIcon />}
                 </IconButton>
               </CardActions>

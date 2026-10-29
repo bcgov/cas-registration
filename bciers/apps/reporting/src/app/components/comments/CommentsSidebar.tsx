@@ -39,7 +39,8 @@ const CommentsSidebar: React.FC<Props> = ({
   return (
     <Paper className="h-full bg-bc-light-grey-200 print:hidden">
       <Box className="p-4 pb-8 bg-bc-white">
-        <Typography variant="h6" className="p-4 pl-0">
+        {/* h2 keeps the heading order valid after the report's h2 sections; the h6 variant keeps the look */}
+        <Typography variant="h6" component="h2" className="p-4 pl-0">
           Comments
         </Typography>
         {canMakeComment && (
