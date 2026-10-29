@@ -6,7 +6,6 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { UUID } from "crypto";
-import userEvent from "@testing-library/user-event";
 import { expect } from "vitest";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectRadio from "@bciers/testConfig/helpers/expectRadio";
@@ -62,10 +61,12 @@ const renderTransferForm = () => {
 // Selecting an operator triggers an async fetch + state update, so let act() flush it
 const selectOperator = async (label: RegExp, operatorName: string) => {
   const input = screen.getByLabelText(label);
-  await userEvent.clear(input);
-  await userEvent.type(input, "Operator");
+  // Clear first so the listbox re-opens when the field already has a value
+  fireEvent.change(input, { target: { value: "" } });
+  fireEvent.change(input, { target: { value: "Operator" } });
+  const option = await screen.findByRole("option", { name: operatorName });
   await act(async () => {
-    fireEvent.click(screen.getByRole("option", { name: operatorName }));
+    fireEvent.click(option);
   });
 };
 
@@ -114,27 +115,24 @@ const selectEntityAndAssertFields = async (entity: string) => {
   }
 };
 
+// Selecting a "from" operation triggers the facilities fetch, so let act() flush it
 const selectOperation = async (label: RegExp, operationName: string) => {
-  await waitFor(() => {
-    fireEvent.change(screen.getByLabelText(label), {
-      target: { value: "Operation" },
-    });
-    expect(
-      screen.getByRole("option", { name: operationName }),
-    ).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("option", { name: operationName }));
+  fireEvent.change(screen.getByLabelText(label), {
+    target: { value: "Operation" },
+  });
+  const option = await screen.findByRole("option", { name: operationName });
+  await act(async () => {
+    fireEvent.click(option);
   });
 };
 
 const selectDateOfTransfer = async (date: string) => {
-  await waitFor(() => {
-    const dateOfTransfer = screen.getByLabelText(
-      /effective date of transfer\*/i,
-    );
-    expect(dateOfTransfer).toBeVisible();
-    fireEvent.change(dateOfTransfer, { target: { value: date } });
-    expect(dateOfTransfer).toHaveValue(date);
-  });
+  const dateOfTransfer = await screen.findByLabelText(
+    /effective date of transfer\*/i,
+  );
+  expect(dateOfTransfer).toBeVisible();
+  fireEvent.change(dateOfTransfer, { target: { value: date } });
+  expect(dateOfTransfer).toHaveValue(date);
 };
 
 describe("The TransferForm component", () => {
@@ -211,28 +209,24 @@ describe("The TransferForm component", () => {
     await selectEntityAndAssertFields("Facility");
   });
 
-  it(
-    "fetches facilities when operation changes",
-    { timeout: 10000 },
-    async () => {
-      renderTransferForm();
-      await selectOperator(/current operator\*/i, "Operator 1");
-      await selectOperator(/select the new operator\*/i, "Operator 2");
-      await selectEntityAndAssertFields("Facility");
-      await selectOperation(
-        /select the operation that the facility\(s\) currently belongs to\*/i,
-        "Operation 1",
-      );
-      expect(fetchFacilitiesPageData).toHaveBeenCalledWith(
-        "8be4c7aa-6ab3-4aad-9206-0ef914fea065",
-        {
-          paginate_result: false,
-          end_date: true,
-          status: "Active",
-        },
-      );
-    },
-  );
+  it("fetches facilities when operation changes", async () => {
+    renderTransferForm();
+    await selectOperator(/current operator\*/i, "Operator 1");
+    await selectOperator(/select the new operator\*/i, "Operator 2");
+    await selectEntityAndAssertFields("Facility");
+    await selectOperation(
+      /select the operation that the facility\(s\) currently belongs to\*/i,
+      "Operation 1",
+    );
+    expect(fetchFacilitiesPageData).toHaveBeenCalledWith(
+      "8be4c7aa-6ab3-4aad-9206-0ef914fea065",
+      {
+        paginate_result: false,
+        end_date: true,
+        status: "Active",
+      },
+    );
+  });
 
   it("submits the form and shows success screen", async () => {
     actionHandler.mockResolvedValueOnce({});
@@ -287,41 +281,37 @@ describe("The TransferForm component", () => {
     ).toBeVisible();
   });
 
-  it(
-    "displays an error message when the request fails",
-    { timeout: 10000 },
-    async () => {
-      const errorMessage = "Unable to complete the request.";
-      actionHandler.mockResolvedValueOnce({
-        error: errorMessage,
-      });
-      renderTransferForm();
-      await selectOperator(/current operator\*/i, "Operator 1");
-      await selectOperator(/select the new operator\*/i, "Operator 2");
-      await selectEntityAndAssertFields("Operation");
-      await selectOperation(/operation\*/i, "Operation 1");
-      await selectDateOfTransfer("2022-12-31");
-      expectButton("Transfer Entity");
-      await act(async () => {
-        fireEvent.click(
-          screen.getByRole("button", {
-            name: /transfer entity/i,
-          }),
-        );
-      });
-      expect(await screen.findByText(errorMessage)).toBeVisible();
-      expect(actionHandler).toHaveBeenCalledTimes(1);
-      expect(actionHandler).toHaveBeenCalledWith(
-        "registration/transfer-events",
-        "POST",
-        "/transfers",
-        expect.anything(),
+  it("displays an error message when the request fails", async () => {
+    const errorMessage = "Unable to complete the request.";
+    actionHandler.mockResolvedValueOnce({
+      error: errorMessage,
+    });
+    renderTransferForm();
+    await selectOperator(/current operator\*/i, "Operator 1");
+    await selectOperator(/select the new operator\*/i, "Operator 2");
+    await selectEntityAndAssertFields("Operation");
+    await selectOperation(/operation\*/i, "Operation 1");
+    await selectDateOfTransfer("2022-12-31");
+    expectButton("Transfer Entity");
+    await act(async () => {
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: /transfer entity/i,
+        }),
       );
-      expect(
-        screen.queryByText(
-          /operation has been transferred from operator 1 to operator 2\./i,
-        ),
-      ).not.toBeInTheDocument();
-    },
-  );
+    });
+    expect(await screen.findByText(errorMessage)).toBeVisible();
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledWith(
+      "registration/transfer-events",
+      "POST",
+      "/transfers",
+      expect.anything(),
+    );
+    expect(
+      screen.queryByText(
+        /operation has been transferred from operator 1 to operator 2\./i,
+      ),
+    ).not.toBeInTheDocument();
+  });
 });
