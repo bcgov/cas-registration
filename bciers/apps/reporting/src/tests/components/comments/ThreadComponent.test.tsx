@@ -191,7 +191,7 @@ describe("The comment thread component", () => {
 
     await waitFor(() => expect(onCommentDeleted).toHaveBeenCalledWith(1, 7));
     expect(actionHandler).toHaveBeenCalledWith(
-      "reporting/v2/comments/7",
+      "reporting/v2/report-version/42/comments/7",
       "DELETE",
     );
   });
