@@ -35,17 +35,6 @@ const CommentsSidebar: React.FC<Props> = ({
 
   const openThreads = commentThreads.filter((thread) => !thread.resolved);
   const resolvedThreads = commentThreads.filter((thread) => thread.resolved);
-  const handleCommentDeleted = (threadId: number, commentId: number) => {
-    setCommentThreads((prevThreads) =>
-      prevThreads.flatMap((thread) => {
-        if (thread.id !== threadId) return [thread];
-        const comments = thread.comments.filter(
-          (comment) => comment.id !== commentId,
-        );
-        return comments.length > 0 ? [{ ...thread, comments }] : [];
-      }),
-    );
-  };
 
   return (
     <Paper className="h-full bg-bc-light-grey-200 print:hidden">
@@ -80,7 +69,6 @@ const CommentsSidebar: React.FC<Props> = ({
           thread={thread}
           canUpdate={canMakeComment}
           onThreadUpdated={threadUpdated}
-          onCommentDeleted={handleCommentDeleted}
         />
       ))}
       {resolvedThreads.length > 0 && (
@@ -94,7 +82,6 @@ const CommentsSidebar: React.FC<Props> = ({
           thread={thread}
           canUpdate={canMakeComment}
           onThreadUpdated={threadUpdated}
-          onCommentDeleted={handleCommentDeleted}
         />
       ))}
     </Paper>

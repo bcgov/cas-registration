@@ -14,14 +14,12 @@ interface Props {
   thread: Thread;
   canUpdate: boolean;
   onThreadUpdated: (thread: Thread) => void;
-  onCommentDeleted: (threadId: number, commentId: number) => void;
 }
 
 const ThreadComponent: React.FC<Props> = ({
   thread,
   canUpdate,
   onThreadUpdated,
-  onCommentDeleted,
 }) => {
   const [_, startTransition] = useTransition();
   const { setErrors, renderedErrors } = useValidationErrors();
@@ -44,9 +42,9 @@ const ThreadComponent: React.FC<Props> = ({
   };
   const handleCommentDelete = (reportVersionId: number, commentId: number) => {
     startTransition(async () => {
-      const resp = await deleteComment(reportVersionId, commentId);
+      const resp = await deleteComment(reportVersionId, thread.id, commentId);
       if (handleApiResponse(resp, setErrors)) {
-        onCommentDeleted(thread.id, commentId);
+        onThreadUpdated(resp as Thread);
       }
     });
   };
