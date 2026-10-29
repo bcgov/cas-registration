@@ -5,6 +5,9 @@ from registration.models import (
 )
 from django.core.exceptions import ValidationError
 from registration.tests.constants import DOCUMENT_FIXTURE, TIMESTAMP_COMMON_FIELDS, USER_FIXTURE
+from django.db import connection
+from rls.middleware.rls import RlsMiddleware
+import uuid
 
 
 class UserModelTest(BaseTestCase):
@@ -292,3 +295,82 @@ class UserModelTest(BaseTestCase):
     def test_get_user_full_name(self):
         user = User.objects.first()
         self.assertEqual(user.get_full_name(), f"{user.first_name} {user.last_name}")
+
+
+class UserRlsTest(BaseTestCase):
+    def test_user_rls_all_users(self):
+        user = User.objects.first()
+
+        def select_function(cursor):
+            RlsMiddleware._set_user_guid_and_role(cursor, user)
+            cursor.execute(
+                """
+                    select * from "erc"."user"
+                    WHERE user_guid = (current_setting('my.guid', true)::uuid)
+                """
+            )
+            return cursor.rowcount
+
+        def forbidden_select_function(cursor):
+            RlsMiddleware._set_user_guid_and_role(cursor, user)
+            cursor.execute(
+                """
+                    select * from "erc"."user"
+                    where user_guid != (current_setting('my.guid', true)::uuid)
+                """
+            )
+            return cursor.rowcount
+
+        def insert_function(cursor, guid):
+            buisiness_guid = str(uuid.uuid4())
+            cursor.execute(
+                """
+                    insert into erc.user (user_guid, business_guid, bceid_business_name, app_role_id, first_name, last_name, position_title, email, phone_number)
+                    values (%s, %s, 'business', 'industry_user', 'a', 'b', 'c', 'd@d.ca', '')
+                """,
+                (
+                    guid,
+                    buisiness_guid,
+                ),
+            )
+            return cursor.rowcount
+
+        def update_function(cursor):
+            cursor.execute(
+                """
+                    update "erc"."user"
+                    set first_name = 'updated'
+                    where user_guid = (current_setting('my.guid', true)::uuid)
+                """
+            )
+            return cursor.rowcount
+
+        def forbidden_update_function(cursor):
+            cursor.execute(
+                """
+                    update "erc"."user"
+                    set first_name = 'updated'
+                    where user_guid != (current_setting('my.guid', true)::uuid)
+                """
+            )
+            return cursor.rowcount
+
+        with connection.cursor() as cursor:
+            for role in ['industry_user', 'cas_analyst', 'cas_director', 'cas_view_only', 'cas_admin']:
+                set_role_statement = f'set role {role}'
+                cursor.execute(set_role_statement)
+                assert select_function(cursor) == 1
+                assert forbidden_select_function(cursor) == 0
+                assert update_function(cursor) == 1
+                if role != 'cas_admin':
+                    assert forbidden_update_function(cursor) == 0
+                cursor.execute('set role postgres')
+                insert_guid = str(uuid.uuid4())
+                cursor.execute(
+                    'set my.guid = %s',
+                    [
+                        insert_guid,
+                    ],
+                )
+                cursor.execute(set_role_statement)
+                assert insert_function(cursor, insert_guid) == 1
