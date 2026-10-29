@@ -77,7 +77,6 @@
     "eslint": "^9.39.2",
     "eslint-config-next": "16.4.2",
     "eslint-plugin-import": "^2.32.0",
-    "jsonwebtoken": "^9.0.2",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
     "mui-tel-input": "^11.0.0",
