@@ -5,7 +5,9 @@ from django.forms import model_to_dict
 
 from registration.models.operation import Operation
 from reporting.models import ReportOperationRepresentative, ReportVersion
+from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
+from reporting.service.report_product_service import ReportProductService
 from service.activity_service import ActivityService
 from service.data_access_service.regulated_product_service import RegulatedProductDataAccessService
 from service.facility_report_service import FacilityReportService
@@ -56,6 +58,10 @@ class ReportOperationService:
     @classmethod
     @transaction.atomic()
     def update_report_operation(cls, version_id: int) -> dict:
+        """
+        Sync from registration
+        """
+
         report_operation = ReportOperation.objects.get(report_version__id=version_id)
         operation = report_operation.report_version.report.operation
         operator = report_operation.report_version.report.operator
@@ -88,6 +94,11 @@ class ReportOperationService:
         existing_representatives.filter(representative_name__in=(existing_names - contact_names)).delete()
 
         report_operation.save()
+
+        # Update empty records for unregulated products for all facility reports associated with this report version
+        facility_report_ids = FacilityReport.objects.filter(report_version__id=version_id).values_list("id", flat=True)
+        ReportProductService.update_empty_records_for_unregulated_products(version_id, facility_report_ids)
+
         return cls.get_report_operation_data_by_version_id(version_id)
 
     @classmethod
