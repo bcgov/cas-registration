@@ -2637,7 +2637,7 @@ __metadata:
     eslint-plugin-react: "npm:^7.37.5"
     eslint-plugin-react-hooks: "npm:7.1.1"
     globals: "npm:^17.0.0"
-    happo: "npm:6.25.3"
+    happo: "npm:7.0.0"
     jiti: "npm:2.7.0"
     jsdom: "npm:~30.1.0"
     jsonc-eslint-parser: "npm:^3.0.0"
@@ -8990,9 +8990,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"happo@npm:6.25.3":
-  version: 6.25.3
-  resolution: "happo@npm:6.25.3"
+"happo@npm:7.0.0":
+  version: 7.0.0
+  resolution: "happo@npm:7.0.0"
   dependencies:
     async-retry: "npm:^1.3.3"
     base64-stream: "npm:^1.0.0"
@@ -9006,7 +9006,7 @@ __metadata:
     valibot: "npm:^1.5.0"
   bin:
     happo: dist/cli/main.js
-  checksum: 10c0/436f60735251ecb33f3dfd514e45f92d3d4102ac811c2744385995eafb004758b183941c2f7916b3b7d2dfc9cb25ca752acad789a4f8f17dd826188c97166332
+  checksum: 10c0/e93956c08137ceb0fb04ec74b2f9b45f7bb9ed5db62e591dab93f76b8272d79d7d060e4f65cbf69a4f22ae77e0a22043f4c71965633c202c8cdfdb0cac958eb5
   languageName: node
   linkType: hard
 
