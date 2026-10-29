@@ -2591,7 +2591,7 @@ __metadata:
     "@mui/x-data-grid": "npm:^9.15.0"
     "@mui/x-date-pickers": "npm:^9.15.0"
     "@nx-tools/nx-container": "npm:^7.3.0"
-    "@nx/devkit": "npm:23.3.0"
+    "@nx/devkit": "npm:24.0.0"
     "@nx/eslint": "npm:23.3.0"
     "@nx/eslint-plugin": "npm:23.3.0"
     "@nx/js": "npm:23.3.0"
@@ -4214,6 +4214,21 @@ __metadata:
   peerDependencies:
     nx: ">= 22 <= 24 || ^23.0.0-0"
   checksum: 10c0/14d62c1180b8ed38794a550f0601538f29c4079d87988d55bab806f958605cf9e19b3af91be713ad04e6f78889b71c892cc4feac6158ed12f21dc9f1de345486
+  languageName: node
+  linkType: hard
+
+"@nx/devkit@npm:24.0.0":
+  version: 24.0.0
+  resolution: "@nx/devkit@npm:24.0.0"
+  dependencies:
+    ejs: "npm:5.0.1"
+    minimatch: "npm:10.2.5"
+    semver: "npm:^7.6.3"
+    tslib: "npm:^2.3.0"
+    yargs-parser: "npm:21.1.1"
+  peerDependencies:
+    nx: ">= 23 <= 25 || ^24.0.0-0"
+  checksum: 10c0/c8488eb67566ec0e3561656277a27333ba2a84f2c6c88417333e844bc436468f73a6f9610e7ab6449b090963c7534a2da7175d8b55ef34647b45b5dec62bb889
   languageName: node
   linkType: hard
 
