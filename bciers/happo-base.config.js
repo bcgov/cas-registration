@@ -3,18 +3,18 @@ require("dotenv").config({ path: path.resolve(__dirname, ".env") });
 
 const VIEWPORT = "1366x768";
 const MAXHEIGHT = 20000;
-const CHUNKS = 4;
 
 const allBrowsers = process.env.HAPPO_ALL_BROWSERS === "true";
 
 const targetConfig = {
   viewport: VIEWPORT,
   maxHeight: MAXHEIGHT,
-  chunks: CHUNKS,
   hideBehavior: "ignore",
 };
 
 const baseConfig = {
+  // Keep per-project "Happo (<project>)" status checks; the develop ruleset requires them
+  group: false,
   integration: {
     type: "playwright",
     downloadAllAssets: true,

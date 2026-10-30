@@ -244,8 +244,9 @@ jobs:
       - uses: actions/checkout@v7
       - name: dev env setup
         uses: ./.github/actions/dev-env-setup-frontend
-      - name: run happo skip node script
+      - name: run happo skip
         shell: bash
+        working-directory: ./bciers
         env:
           CAS_REGISTRATION_HAPPO_API_KEY: ${{ secrets.CAS_REGISTRATION_HAPPO_API_KEY }}
           CAS_REGISTRATION_HAPPO_API_SECRET: ${{ secrets.CAS_REGISTRATION_HAPPO_API_SECRET }}
@@ -259,6 +260,5 @@ jobs:
           CAS_REPORTING_HAPPO_API_SECRET: ${{ secrets.CAS_REPORTING_HAPPO_API_SECRET }}
           HAPPO_PROJECT: cas-${{ inputs.nx_project }}
           COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
-        run: |
-          cd bciers
-          node libs/e2e/src/utils/happo-skip.js
+        # Uses bciers/happo.config.mts, which resolves the project and credentials from HAPPO_PROJECT
+        run: yarn happo skip --afterSha "$COMMIT_SHA"
