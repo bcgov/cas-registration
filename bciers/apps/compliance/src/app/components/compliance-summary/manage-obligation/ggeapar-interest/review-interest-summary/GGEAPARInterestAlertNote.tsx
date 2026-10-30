@@ -3,8 +3,9 @@ import AlertNote from "@bciers/components/form/components/AlertNote";
 export const GGEAPARInterestAlertNote = () => {
   return (
     <AlertNote>
-      Financial Administration Act (FAA) interest is incurred and accrues at
-      prime + 3.00% annually if the GGEAPAR interest is not paid on time.
+      GGEAPAR interest accrues daily at an annual rate of prime + 3% until the
+      obligation is paid in full. If GGEAPAR interest is not paid by the due
+      date, FAA interest will be incurred.
     </AlertNote>
   );
 };

@@ -16,6 +16,8 @@ export const interestSummaryReviewSchema: RJSFSchema = {
     interest_header: readOnlyObjectField("GGEAPAR Interest"),
     interest_alert: readOnlyStringField(),
     penalty_status: readOnlyStringField("Status:"),
+    due_date: readOnlyStringField("Due date:"),
+    invoice_number: readOnlyStringField("Invoice number:"),
     penalty_charge_rate: {
       type: "string",
       title: "GGEAPAR Interest Rate (Annual):",
@@ -23,7 +25,6 @@ export const interestSummaryReviewSchema: RJSFSchema = {
       default: "Prime + 3.00%",
     },
     penalty_amount: readOnlyStringField("GGEAPAR Interest Amount:"),
-    faa_interest: readOnlyStringField("FAA Interest (Annual):"),
     total_amount: readOnlyStringField("Total Amount:"),
   },
 };
@@ -41,8 +42,9 @@ export const interestSummaryReviewUiSchema: UiSchema = {
     },
   },
   penalty_status: commonReadOnlyOptions,
+  due_date: commonReadOnlyOptions,
+  invoice_number: commonReadOnlyOptions,
   penalty_charge_rate: commonReadOnlyOptions,
   penalty_amount: currencyUiConfig,
-  faa_interest: currencyUiConfig,
   total_amount: currencyUiConfig,
 };
