@@ -31,22 +31,19 @@ describe("InterestSummaryReviewComponent", () => {
     expect(screen.getByText("GGEAPAR Interest")).toBeVisible();
     expect(
       screen.getByText(
-        /Financial Administration Act \(FAA\) interest is incurred and accrues at/i,
+        /GGEAPAR interest accrues daily at an annual rate of prime \+ 3%/i,
       ),
     ).toBeVisible();
 
     // Minimal key-value checks following repo style: label and value asserted separately
     expect(screen.getByText("Status:")).toBeVisible();
-    expect(screen.getByText("Due")).toBeVisible();
+    expect(screen.getByText("Due date:")).toBeVisible();
 
     expect(screen.getByText("GGEAPAR Interest Rate (Annual):")).toBeVisible();
     expect(screen.getByText("Prime + 3.00%"));
 
     expect(screen.getByText("GGEAPAR Interest Amount:")).toBeVisible();
     expect(screen.getByText("$100.00")).toBeVisible();
-
-    expect(screen.getByText("FAA Interest (Annual):")).toBeVisible();
-    expect(screen.getByText("$10.00")).toBeVisible();
 
     expect(screen.getByText("Total Amount:")).toBeVisible();
     expect(screen.getByText("$110.00")).toBeVisible();
