@@ -538,3 +538,88 @@ class TestReportService(TestCase):
             Activity.objects.filter(id__in=[1, 2, 3]),
             ordered=False,
         )
+
+    def test_lfo_creates_unregulated_product_entries_for_all_facilities(self):
+        operator = baker.make_recipe('registration.tests.utils.operator')
+        operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
+        facilities = baker.make_recipe('registration.tests.utils.facility', operation=operation, _quantity=3)
+
+        unregulated_products = baker.make_recipe(
+            'registration.tests.utils.regulated_product', is_regulated=False, _quantity=2
+        )
+
+        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
+        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+        baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+
+        facility_reports = [
+            baker.make_recipe(
+                'reporting.tests.utils.facility_report',
+                report_version=report_version,
+                facility=f,
+            )
+            for f in facilities
+        ]
+
+        for f_report in facility_reports:
+            assert not ReportProduct.objects.filter(facility_report=f_report, product__in=unregulated_products).exists()
+
+        data = ReportOperationIn(
+            operator_legal_name="Updated Legal Name",
+            operator_trade_name="Updated Trade Name",
+            operation_name="Updated Operation Name",
+            operation_type="Linear Facilities Operation",
+            operation_bcghgid="Updated BC GHID",
+            bc_obps_regulated_operation_id="Updated Regulated Operation ID",
+            activities=[1, 18, 14],
+            regulated_products=[p.id for p in unregulated_products],
+            operation_representative_name=[1, 2],
+            operation_report_type="New Report Type",
+            registration_purpose="OBPS Regulated Operation",
+        )
+        ReportService.save_report_operation(report_version.id, data)
+
+        for f_report in facility_reports:
+            for product in unregulated_products:
+                assert ReportProduct.objects.filter(facility_report=f_report, product=product).exists()
+
+    def test_sfo_creates_unregulated_product_entries_for_all_facilities(self):
+        operator = baker.make_recipe('registration.tests.utils.operator')
+        operation = operation_baker(type=Operation.Types.SFO, operator_id=operator.id)
+        facility = baker.make_recipe('registration.tests.utils.facility', operation=operation)
+
+        unregulated_products = baker.make_recipe(
+            'registration.tests.utils.regulated_product', is_regulated=False, _quantity=2
+        )
+
+        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
+        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+        baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+
+        facility_report = baker.make_recipe(
+            'reporting.tests.utils.facility_report',
+            report_version=report_version,
+            facility=facility,
+        )
+
+        assert not ReportProduct.objects.filter(
+            facility_report=facility_report, product__in=unregulated_products
+        ).exists()
+
+        data = ReportOperationIn(
+            operator_legal_name="Updated Legal Name",
+            operator_trade_name="Updated Trade Name",
+            operation_name="Updated Operation Name",
+            operation_type="Single Facility Operation",
+            operation_bcghgid="Updated BC GHID",
+            bc_obps_regulated_operation_id="Updated Regulated Operation ID",
+            activities=[1, 18, 14],
+            regulated_products=[p.id for p in unregulated_products],
+            operation_representative_name=[1, 2],
+            operation_report_type="New Report Type",
+            registration_purpose="OBPS Regulated Operation",
+        )
+        ReportService.save_report_operation(report_version.id, data)
+
+        for product in unregulated_products:
+            assert ReportProduct.objects.filter(facility_report=facility_report, product=product).exists()
