@@ -8,6 +8,7 @@ import {
 } from "@mui/x-data-grid";
 import createColumnGroup from "@bciers/components/datagrid/createColumnGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
+import EmptyGroupCell from "@bciers/components/datagrid/cells/EmptyGroupCell";
 import { fetchFacilitiesPageData } from "@reporting/src/app/components/reportInformation/facilities/fetchFacilitiesPageData";
 import { ReportingOrigin } from "@reporting/src/app/components/taskList/types";
 
@@ -85,7 +86,10 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
 
   // Column group for search
   const columnGroup = useMemo<GridColumnGroupingModel>(
-    () => [createColumnGroup("facility_name", "Facility Name", SearchCell)],
+    () => [
+      createColumnGroup("facility_name", "Facility Name", SearchCell),
+      createColumnGroup("action", "Action", EmptyGroupCell),
+    ],
     [SearchCell],
   );
 

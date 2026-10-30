@@ -9,11 +9,11 @@ export const infoNote = () => (
       refer to the{" "}
       <Link
         href={
-          " https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/reporting/verify"
+          "https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/reporting/verify"
         }
         target="_blank"
         rel="noopener noreferrer"
-        className="text-bc-link-blue no-underline"
+        className="text-bc-link-blue underline"
       >
         verification guidance webpage.
       </Link>
