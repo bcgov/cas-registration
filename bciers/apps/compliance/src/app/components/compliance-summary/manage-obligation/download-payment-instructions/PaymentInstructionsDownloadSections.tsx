@@ -69,7 +69,12 @@ export const PaymentRemarks = () => {
         <li>
           Pay 5 business days in advance of the due date to allow for processing
           to avoid{" "}
-          <Tooltip title="Link opens in a new tab" placement="top" arrow>
+          <Tooltip
+            title="Link opens in a new tab"
+            placement="top"
+            arrow
+            describeChild
+          >
             <a
               href={penaltiesRegulationLink}
               target="_blank"
@@ -81,7 +86,12 @@ export const PaymentRemarks = () => {
             </a>
           </Tooltip>{" "}
           and/or{" "}
-          <Tooltip title="Link opens in a new tab" placement="top" arrow>
+          <Tooltip
+            title="Link opens in a new tab"
+            placement="top"
+            arrow
+            describeChild
+          >
             <a
               href={interestRegulationLink}
               target="_blank"

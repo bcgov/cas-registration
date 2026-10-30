@@ -22,7 +22,7 @@ export const PenaltySummaryField = ({
   <div className="w-full">
     <p className="mb-2 text-bc-bg-blue">{label ?? "Penalty summary"}</p>
     <div className="flex w-full flex-nowrap gap-4">
-      <div className={`${tileStyles} bg-red-50 text-bc-error-red`}>
+      <div className={`${tileStyles} bg-red-50 text-red-700`}>
         <p className="text-sm font-medium">Total penalty amount</p>
         <p className="mt-1 text-2xl font-bold">
           {formatMonetaryValue(Number(formData?.total_penalty_amount ?? 0))}
