@@ -1,8 +1,8 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import NewThreadComponent from "@reporting/src/app/components/comments/NewThreadComponent";
-import postCommentThread from "@reporting/src/app/utils/postCommentThread";
+import postCommentThread from "@reporting/src/app/utils/comments/postCommentThread";
 
-vi.mock("@reporting/src/app/utils/postCommentThread", () => ({
+vi.mock("@reporting/src/app/utils/comments/postCommentThread", () => ({
   default: vi.fn(),
 }));
 
