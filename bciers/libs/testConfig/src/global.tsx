@@ -1,8 +1,7 @@
-/* eslint-disable import/no-extraneous-dependencies*/
 import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
 import * as matchers from "@testing-library/jest-dom/matchers";
 import { afterAll, afterEach, expect, vi } from "vitest";
-import { axe, toHaveNoViolations } from "./helpers/axe";
+import { checkA11yAfterTest, toHaveNoViolations } from "./helpers/axe";
 import {
   actionHandler,
   auth,
@@ -48,14 +47,13 @@ declare module "vitest" {
 expect.extend(matchers);
 expect.extend(toHaveNoViolations);
 
-// Check what every test rendered for a11y violations. RTL's auto-cleanup would empty the DOM before this
-// hook runs, so it's disabled (must happen before @testing-library/react is first imported) and done here
+// Check what every test rendered for a11y violations (opt out with skipA11yCheck). RTL's auto-cleanup would
+// empty the DOM before this hook runs, so it's disabled (must happen before @testing-library/react is first
+// imported) and done here
 process.env.RTL_SKIP_AUTO_CLEANUP = "true";
 afterEach(async () => {
   try {
-    if (document.body.innerHTML.trim()) {
-      expect(await axe(document.body)).toHaveNoViolations();
-    }
+    await checkA11yAfterTest();
   } finally {
     const { cleanup } = await import("@testing-library/react");
     cleanup();
