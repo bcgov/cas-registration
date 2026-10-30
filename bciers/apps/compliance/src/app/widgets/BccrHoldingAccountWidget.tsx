@@ -132,7 +132,7 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
 
   let statusIcon: React.ReactNode = null;
   if (isLoading) {
-    statusIcon = <CircularProgress size={20} />;
+    statusIcon = <CircularProgress size={20} aria-label="Validating account" />;
   } else if (isValid === true) {
     statusIcon = <CheckCircleIcon color="success" />;
   } else if (showError) {

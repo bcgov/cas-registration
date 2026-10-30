@@ -47,6 +47,7 @@ vi.mock(
     default: ({ reasonForChange, onReasonChange, onSubmit }: any) => (
       <div data-testid="reason-for-change">
         <input
+          aria-label="Reason for change"
           data-testid="reason-input"
           value={reasonForChange}
           onChange={(e) => onReasonChange(e.target.value)}

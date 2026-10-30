@@ -790,7 +790,7 @@ describe("the OperationInformationForm component", () => {
       useSessionRole.mockReturnValue(appRole);
       const uiSchema = await createAdministrationOperationInformationUiSchema();
 
-      render(
+      const { unmount } = render(
         <OperationInformationForm
           eioSchema={testSchema}
           uiSchema={uiSchema}
@@ -843,6 +843,7 @@ describe("the OperationInformationForm component", () => {
       expect(
         screen.queryByRole("button", { name: `＋ Issue BCGHG ID` }),
       ).not.toBeInTheDocument();
+      unmount();
     }
   });
 

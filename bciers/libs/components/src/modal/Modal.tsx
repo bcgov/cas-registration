@@ -28,7 +28,6 @@ const Modal: React.FC<Props> = ({
       onClose={onClose}
       open={open}
       closeAfterTransition
-      aria-labelledby={title}
       maxWidth={maxWidth}
       fullWidth={fullWidth}
       data-testid="modal"

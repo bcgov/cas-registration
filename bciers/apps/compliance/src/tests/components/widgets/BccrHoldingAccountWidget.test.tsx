@@ -8,6 +8,7 @@ import {
 } from "@testing-library/react";
 import { WidgetProps } from "@rjsf/utils";
 import { vi } from "vitest";
+import { skipA11yCheck } from "@bciers/testConfig/helpers/axe";
 
 const mockValidateBccrAccount = vi.fn();
 const mockOnChange = vi.fn();
@@ -30,6 +31,8 @@ const defaultProps = {
 describe("BccrHoldingAccountWidget", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // The widget is rendered without the RJSF field template that provides its id and label
+    skipA11yCheck(["label", "label-title-only"]);
   });
 
   it("renders input field with correct attributes", () => {

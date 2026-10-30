@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import MuiAccordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -20,6 +20,7 @@ const Accordion = ({
   title,
 }: Props) => {
   const [isExpanded, setIsExpanded] = useState(expanded);
+  const id = useId();
 
   useEffect(() => {
     // Update isExpanded state when isExpandAll prop changes
@@ -45,6 +46,8 @@ const Accordion = ({
       onChange={() => setIsExpanded(!isExpanded)}
     >
       <AccordionSummary
+        id={`${id}-header`}
+        aria-controls={`${id}-content`}
         expandIcon={<ArrowDropDownIcon className="text-white text-[48px]" />}
         className="bg-bc-bg-blue text-white text-[24px] font-bold"
       >

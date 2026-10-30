@@ -28,6 +28,7 @@ const elicensingInvoiceGroupColumns = (
     createColumnGroup("invoice_total", "Invoice Total", EmptyGroupCell),
     createColumnGroup("total_adjustments", "Total Adjustments", EmptyGroupCell),
     createColumnGroup("total_payments", "Total Payments", EmptyGroupCell),
+    createColumnGroup("faa_interest_total", "FAA Interest", EmptyGroupCell),
     createColumnGroup(
       "outstanding_balance",
       "Outstanding Balance",

@@ -57,7 +57,7 @@ describe("UserOperatorReview component", () => {
   it("does not render the approve/decline buttons when user is cas_view_only or cas_admin", async () => {
     for (const role of [FrontEndRoles.CAS_ADMIN, FrontEndRoles.CAS_VIEW_ONLY]) {
       useSessionRole.mockReturnValue(role);
-      render(
+      const { unmount } = render(
         <UserOperatorReviewForm
           operatorSchema={await createOperatorSchema()}
           formData={{}}
@@ -70,6 +70,7 @@ describe("UserOperatorReview component", () => {
       expect(
         screen.queryByRole("button", { name: /Decline/i }),
       ).not.toBeInTheDocument();
+      unmount();
     }
   });
 
@@ -79,7 +80,7 @@ describe("UserOperatorReview component", () => {
       FrontEndRoles.CAS_DIRECTOR,
     ]) {
       useSessionRole.mockReturnValue(role);
-      render(
+      const { unmount } = render(
         <UserOperatorReviewForm
           operatorSchema={await createOperatorSchema()}
           formData={{}}
@@ -92,6 +93,7 @@ describe("UserOperatorReview component", () => {
       expect(
         screen.queryByRole("button", { name: /Decline/i }),
       ).not.toBeInTheDocument();
+      unmount();
     }
   });
 });

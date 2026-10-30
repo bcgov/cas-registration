@@ -49,7 +49,6 @@ const LogoutWarningModal: React.FC<LogoutWarningModalProps> = ({
       id="session-expiry-modal"
       open={showModal}
       closeAfterTransition
-      aria-labelledby="Session Expiring Soon"
       maxWidth="sm"
     >
       <DialogTitle className="bg-bc-bg-blue text-white p-5 flex text-lg font-bold">

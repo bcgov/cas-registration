@@ -2,15 +2,15 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import FuelAmountFieldTemplate from "./FuelAmountFieldTemplate";
 import type { FieldTemplateProps } from "@rjsf/utils";
+import { skipA11yCheck } from "@bciers/testConfig/helpers/axe";
 
 vi.mock("@bciers/components/icons/AlertIcon", () => ({
   default: () => <div data-testid="alert-icon" />,
 }));
 
-const defaultProps: FieldTemplateProps = {
+const defaultProps: Omit<FieldTemplateProps, "children"> = {
   id: "root_fuel_0_annualFuelAmount",
   label: "Annual Fuel Amount",
-  children: <input data-testid="field-input" />,
   uiSchema: {},
   registry: { formContext: {} } as any,
   classNames: "",
@@ -27,7 +27,15 @@ const defaultProps: FieldTemplateProps = {
 
 const renderWidget = (overrides: Partial<FieldTemplateProps> = {}) => {
   const mergedProps = { ...defaultProps, ...overrides };
-  return render(<FuelAmountFieldTemplate {...mergedProps} />);
+  // RJSF renders the widget with the same id the template's <label htmlFor> points to
+  const children = overrides.children ?? (
+    <input id={mergedProps.id} data-testid="field-input" />
+  );
+  return render(
+    <FuelAmountFieldTemplate {...mergedProps}>
+      {children}
+    </FuelAmountFieldTemplate>,
+  );
 };
 
 describe("FuelAmountFieldTemplate", () => {
@@ -62,6 +70,8 @@ describe("FuelAmountFieldTemplate", () => {
   });
 
   it("does not render label when ui:options.label is false", () => {
+    // With the label turned off, the surrounding form provides the field's name (e.g. a table column header)
+    skipA11yCheck(["label"]);
     renderWidget({
       uiSchema: { "ui:options": { label: false } },
     });
