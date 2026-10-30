@@ -1,4 +1,5 @@
 from django.test import TestCase
+from model_bakery import baker
 import pytest
 from registration.models.regulated_product import RegulatedProduct
 from reporting.models.report_product import ReportProduct
@@ -73,6 +74,40 @@ class TestReportProductService(TestCase):
         assert rp2.storage_quantity_end_of_period == 9876
         assert rp2.quantity_sold_during_period == 1234567890
         assert rp2.quantity_throughput_during_period == 0
+
+    def test_save_data_inserts_records_for_unregulated_products(self):
+        unregulated_product = baker.make_recipe(
+            "registration.tests.utils.regulated_product",
+            is_regulated=False,
+        )
+        self.report_operation.regulated_products.add(unregulated_product)
+
+        assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 0
+
+        ReportProductService.save_production_data(
+            self.report_version_id,
+            self.facility_id,
+            self.test_data,
+            self.test_user_guid,
+        )
+
+        assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 3
+
+        unregulated_report_product = ReportProduct.objects.get(
+            facility_report=self.facility_report, product_id=unregulated_product.id
+        )
+        assert unregulated_report_product.annual_production == 0
+        assert unregulated_report_product.production_data_apr_dec == 0
+        assert unregulated_report_product.production_data_jan_mar == 0
+        assert unregulated_report_product.production_methodology == "other"
+        assert (
+            unregulated_report_product.production_methodology_description
+            == "auto-generated report_product record for unregulated product"
+        )
+        assert unregulated_report_product.storage_quantity_start_of_period is None
+        assert unregulated_report_product.storage_quantity_end_of_period is None
+        assert unregulated_report_product.quantity_sold_during_period is None
+        assert unregulated_report_product.quantity_throughput_during_period is None
 
     def test_deletes_report_product_records_when_not_in_submitted_data(self):
         ReportProductService.save_production_data(
