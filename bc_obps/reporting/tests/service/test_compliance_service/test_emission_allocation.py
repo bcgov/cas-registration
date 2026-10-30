@@ -173,7 +173,7 @@ class TestEmissionAllocation(TestCase):
             json_data={"equivalentEmission": 1000.0001},
         ),
 
-        # Funny emission to not double-count
+        # Funny emission to not double-count (fuel-excluded category 10)
         make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=report_version,
@@ -183,7 +183,29 @@ class TestEmissionAllocation(TestCase):
                 EmissionCategory.objects.get(pk=13),
             },
             json_data={"equivalentEmission": 2000.0002},
-        ),
+        )
+
+        # Funny emission to not double-count (fugitive category 2)
+        make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=report_version,
+            emission_categories={
+                EmissionCategory.objects.get(pk=2),
+                EmissionCategory.objects.get(pk=13),
+            },
+            json_data={"equivalentEmission": 500.0005},
+        )
+
+        # Funny emission to not double-count (non-useful venting category 7)
+        make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=report_version,
+            emission_categories={
+                EmissionCategory.objects.get(pk=7),
+                EmissionCategory.objects.get(pk=13),
+            },
+            json_data={"equivalentEmission": 700.0007},
+        )
 
         # Funny emission to be added at the end of the compliance calculation
         make_recipe(

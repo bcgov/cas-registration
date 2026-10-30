@@ -1,11 +1,10 @@
-from reporting.models import EmissionCategory
-from reporting.models.report_emission import ReportEmission
 from decimal import Decimal
-from django.db.models import Sum, OuterRef, Subquery
 from typing import Dict, List
 
-# Fugitive, venting non-useful, fuel_excluded, other_excluded
-REPORTING_ONLY_CATEGORY_IDS = [2, 7, 10, 11, 12, 13, 14]
+from django.db.models import OuterRef, Subquery, Sum
+from reporting.constants import FACILITY_REPORTING_ONLY_CATEGORY_IDS as REPORTING_ONLY_CATEGORY_IDS
+from reporting.models import EmissionCategory
+from reporting.models.report_emission import ReportEmission
 
 
 class EmissionCategoryService:

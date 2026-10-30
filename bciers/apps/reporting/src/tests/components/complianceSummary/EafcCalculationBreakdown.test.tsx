@@ -350,11 +350,29 @@ describe("EafcCalculationBreakdown", () => {
   });
 
   it.each([
-    ["apr_dec", "April 1 - December 31", 2024, ["750 tonnes", "0 tonnes"]],
-    ["jan_mar", "January 1 - March 31", 2025, ["250 tonnes", "0 tonnes"]],
+    [
+      "apr_dec",
+      "April 1 - December 31",
+      2024,
+      ["750 tonnes", "0 tonnes"],
+      "= (815.2500 × 750 ÷ 1,000) + (0 × 0 ÷ 0)",
+    ],
+    [
+      "jan_mar",
+      "January 1 - March 31",
+      2025,
+      ["250 tonnes", "0 tonnes"],
+      "= (815.2500 × 250 ÷ 1,000) + (0 × 0 ÷ 0)",
+    ],
   ] as const)(
-    "renders Step 1 as Annual EAFC and the Step 2 proration for %s",
-    async (productionPeriod, periodLabel, reportingYear, periodProduction) => {
+    "renders Annual EAFC and the proration for %s",
+    async (
+      productionPeriod,
+      periodLabel,
+      reportingYear,
+      periodProduction,
+      expectedSubstitution,
+    ) => {
       renderBreakdown({
         productionPeriod,
         reportingYear,
@@ -364,7 +382,7 @@ describe("EafcCalculationBreakdown", () => {
 
       expect(
         screen.getByRole("heading", {
-          name: "Step 1: Calculate annual emissions attributable for compliance",
+          name: "Annual emissions attributable for compliance",
         }),
       ).toBeVisible();
       expect(screen.getByTestId("eafc-step1-result")).toHaveTextContent(
@@ -372,7 +390,7 @@ describe("EafcCalculationBreakdown", () => {
       );
       expect(
         screen.getByRole("heading", {
-          name: `Step 2: Prorate to ${periodLabel}, ${reportingYear}`,
+          name: `Prorate to ${periodLabel}, ${reportingYear}`,
         }),
       ).toBeVisible();
       expect(
@@ -381,6 +399,9 @@ describe("EafcCalculationBreakdown", () => {
         }),
       ).toBeVisible();
 
+      expect(screen.getByTestId("eafc-step2-substitution")).toHaveTextContent(
+        expectedSubstitution,
+      );
       expect(screen.getByTestId("eafc-step2-result")).toHaveTextContent(
         "= 611.4375 tCO2e",
       );
@@ -420,7 +441,38 @@ describe("EafcCalculationBreakdown", () => {
     },
   );
 
-  it("shows the new entrant note instead of Step 2", async () => {
+  it("renders the proration substitution for a single product", async () => {
+    renderBreakdown({
+      productionPeriod: "apr_dec",
+      reportingYear: 2024,
+      products: [
+        {
+          name: "Renewable diesel",
+          unit: "litres",
+          annual_production: "10000",
+          apr_dec_production: "7500",
+          jan_mar_production: "0",
+          emission_intensity: "0.5",
+          allocated_industrial_process_emissions: "0",
+          allocated_compliance_emissions: "13500",
+          allocated_for_compliance_annual: "18000",
+          reduction_factor: "0.65",
+          tightening_rate: "0.01",
+        },
+      ],
+      emissionsAttributableForCompliance: "13500",
+    });
+    await expand();
+
+    expect(screen.getByTestId("eafc-step2-substitution")).toHaveTextContent(
+      "= (18000.0000 × 7,500 ÷ 10,000)",
+    );
+    expect(screen.getByTestId("eafc-step2-result")).toHaveTextContent(
+      "= 13500.0000 tCO2e",
+    );
+  });
+
+  it("shows only the new entrant note without the annual calculation or proration", async () => {
     renderBreakdown({
       isNewEntrant: true,
       productionPeriod: "apr_dec",
@@ -428,17 +480,17 @@ describe("EafcCalculationBreakdown", () => {
     });
     await expand();
 
-    expect(
-      screen.getByRole("heading", {
-        name: "Annual emissions attributable for compliance",
-      }),
-    ).toBeVisible();
-    expect(screen.getByTestId("eafc-step1-result")).toHaveTextContent(
-      "= 815.2500 tCO2e",
-    );
     expect(screen.getByTestId("eafc-new-entrant-note")).toHaveTextContent(
       "New entrant operations have no compliance obligation, so emissions attributable for compliance = 0.",
     );
-    expect(screen.queryByText(/Step 2/)).not.toBeInTheDocument();
+    expect(screen.queryByTestId("eafc-formula")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("eafc-substitution")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("eafc-step1-result")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Prorate to/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", {
+        name: /emissions attributable for compliance/i,
+      }),
+    ).not.toBeInTheDocument();
   });
 });

@@ -223,20 +223,16 @@ const EafcCalculationBreakdown: React.FC<Props> = ({
   const panelId = useId();
 
   const isPartialYear = productionPeriod !== "annual";
-  const showsAnnualEafc = isPartialYear || isNewEntrant;
+  const showsAnnualEafc = isPartialYear;
   const showStep2 = isPartialYear && !isNewEntrant;
 
   const resultValue = showsAnnualEafc
     ? eafcTotals.annual_eafc
     : emissionsAttributableForCompliance;
 
-  let step1Title = "Emissions attributable for compliance";
-  if (showStep2) {
-    step1Title =
-      "Step 1: Calculate annual emissions attributable for compliance";
-  } else if (showsAnnualEafc) {
-    step1Title = "Annual emissions attributable for compliance";
-  }
+  const step1Title = showsAnnualEafc
+    ? "Annual emissions attributable for compliance"
+    : "Emissions attributable for compliance";
 
   const sections = getSections(eafcTotals);
   const showUnregulatedProducts =
@@ -250,6 +246,25 @@ const EafcCalculationBreakdown: React.FC<Props> = ({
       formatEmissions(eafcTotals.allocated_to_unregulated_products),
     );
   }
+
+  const prorationSubstitution = showStep2
+    ? products
+        .map((product) => {
+          const annualEmissions = formatEmissions(
+            product.allocated_for_compliance_annual,
+          );
+          const periodProduction = formatQuantity(
+            product[
+              PERIOD_PRODUCTION_FIELD[
+                productionPeriod as Exclude<ProductionPeriod, "annual">
+              ]
+            ],
+          );
+          const annualProduction = formatQuantity(product.annual_production);
+          return `(${annualEmissions} × ${periodProduction} ÷ ${annualProduction})`;
+        })
+        .join(" + ") || "0"
+    : "";
 
   return (
     <div className="mb-4">
@@ -283,112 +298,127 @@ const EafcCalculationBreakdown: React.FC<Props> = ({
         className="mt-2 p-6 border border-solid border-bc-bg-blue rounded bg-bc-white"
         data-testid="eafc-calculation-breakdown"
       >
-        <div className="p-4 rounded bg-bc-bg-grey">
-          <h3 className="text-lg font-bold my-0">{step1Title}</h3>
-          <p className="my-0" data-testid="eafc-formula">
-            = {formulaTerms.join(" - ")}
-          </p>
-          <p className="my-0" data-testid="eafc-substitution">
-            = {substitutionTerms.join(" - ")}
-          </p>
-          <p className="my-0 font-bold" data-testid="eafc-step1-result">
-            = {formatEmissions(resultValue)} {UNIT}
-          </p>
-        </div>
-
-        {sections.map((section) => (
-          <EmissionsSection key={section.title} section={section} />
-        ))}
-        {showUnregulatedProducts && (
-          <UnregulatedProductsSection
-            rows={eafcTotals.unregulated_product_rows ?? []}
-            remainingNpnc={eafcTotals.remaining_npnc}
-            value={eafcTotals.allocated_to_unregulated_products}
-          />
-        )}
-
-        {isNewEntrant && (
-          <p className="mt-4 mb-0" data-testid="eafc-new-entrant-note">
+        {isNewEntrant ? (
+          <p className="my-0" data-testid="eafc-new-entrant-note">
             <b>Note:</b> New entrant operations have no compliance obligation,
             so emissions attributable for compliance = 0.
           </p>
-        )}
-
-        {showStep2 && (
+        ) : (
           <>
-            <div className="mt-6 p-4 rounded bg-bc-bg-grey">
-              <h3 className="text-lg font-bold my-0">
-                Step 2: Prorate to {PERIOD_LABELS[productionPeriod]},{" "}
-                {reportingYear}
-              </h3>
-              <p className="my-0">
-                = sum of (annual emissions attributable for compliance ×
-                production for {PERIOD_LABELS[productionPeriod]} ÷ annual
-                production), per regulated product
+            <div className="p-4 rounded bg-bc-bg-grey">
+              <h3 className="text-lg font-bold my-0">{step1Title}</h3>
+              <p className="my-0" data-testid="eafc-formula">
+                = {formulaTerms.join(" - ")}
               </p>
-              <p className="my-0 font-bold" data-testid="eafc-step2-result">
-                = {formatEmissions(emissionsAttributableForCompliance)} {UNIT}
+              <p className="my-0" data-testid="eafc-substitution">
+                = {substitutionTerms.join(" - ")}
+              </p>
+              <p className="my-0 font-bold" data-testid="eafc-step1-result">
+                = {formatEmissions(resultValue)} {UNIT}
               </p>
             </div>
-            <table className="w-full mt-4 border-collapse text-left">
-              <thead>
-                <tr>
-                  <th scope="col" className={headerCellClass}>
-                    Product
-                  </th>
-                  <th scope="col" className={headerCellClass}>
-                    Annual emissions
-                  </th>
-                  <th scope="col" className={headerCellClass}>
-                    Production for {PERIOD_LABELS[productionPeriod]}
-                  </th>
-                  <th scope="col" className={headerCellClass}>
-                    Annual production
-                  </th>
-                  <th
-                    scope="col"
-                    className={`${headerCellClass} pr-0 text-right`}
-                  >
-                    Prorated emissions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => (
-                  <tr key={product.name}>
-                    <th scope="row" className={`${bodyCellClass} font-normal`}>
-                      {product.name}
-                    </th>
-                    <td className={bodyCellClass}>
-                      {formatEmissions(product.allocated_for_compliance_annual)}
-                    </td>
-                    <td className={bodyCellClass}>
-                      {formatQuantity(
-                        product[PERIOD_PRODUCTION_FIELD[productionPeriod]],
-                      )}{" "}
-                      {product.unit}
-                    </td>
-                    <td className={bodyCellClass}>
-                      {formatQuantity(product.annual_production)} {product.unit}
-                    </td>
-                    <td className={`${bodyCellClass} pr-0 text-right`}>
-                      {formatEmissions(product.allocated_compliance_emissions)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td colSpan={4} />
-                  <td
-                    className="py-1 text-sm font-bold text-right whitespace-nowrap"
-                    data-testid="eafc-step2-total"
-                  >
-                    total {formatEmissions(emissionsAttributableForCompliance)}
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
+
+            {sections.map((section) => (
+              <EmissionsSection key={section.title} section={section} />
+            ))}
+            {showUnregulatedProducts && (
+              <UnregulatedProductsSection
+                rows={eafcTotals.unregulated_product_rows ?? []}
+                remainingNpnc={eafcTotals.remaining_npnc}
+                value={eafcTotals.allocated_to_unregulated_products}
+              />
+            )}
+
+            {showStep2 && (
+              <>
+                <div className="mt-6 p-4 rounded bg-bc-bg-grey">
+                  <h3 className="text-lg font-bold my-0">
+                    Prorate to {PERIOD_LABELS[productionPeriod]},{" "}
+                    {reportingYear}
+                  </h3>
+                  <p className="my-0">
+                    = sum of (annual emissions attributable for compliance ×
+                    production for {PERIOD_LABELS[productionPeriod]} ÷ annual
+                    production), per regulated product
+                  </p>
+                  <p className="my-0" data-testid="eafc-step2-substitution">
+                    = {prorationSubstitution}
+                  </p>
+                  <p className="my-0 font-bold" data-testid="eafc-step2-result">
+                    = {formatEmissions(emissionsAttributableForCompliance)}{" "}
+                    {UNIT}
+                  </p>
+                </div>
+                <table className="w-full mt-4 border-collapse text-left">
+                  <thead>
+                    <tr>
+                      <th scope="col" className={headerCellClass}>
+                        Product
+                      </th>
+                      <th scope="col" className={headerCellClass}>
+                        Annual emissions
+                      </th>
+                      <th scope="col" className={headerCellClass}>
+                        Production for {PERIOD_LABELS[productionPeriod]}
+                      </th>
+                      <th scope="col" className={headerCellClass}>
+                        Annual production
+                      </th>
+                      <th
+                        scope="col"
+                        className={`${headerCellClass} pr-0 text-right`}
+                      >
+                        Prorated emissions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.map((product) => (
+                      <tr key={product.name}>
+                        <th
+                          scope="row"
+                          className={`${bodyCellClass} font-normal`}
+                        >
+                          {product.name}
+                        </th>
+                        <td className={bodyCellClass}>
+                          {formatEmissions(
+                            product.allocated_for_compliance_annual,
+                          )}
+                        </td>
+                        <td className={bodyCellClass}>
+                          {formatQuantity(
+                            product[PERIOD_PRODUCTION_FIELD[productionPeriod]],
+                          )}{" "}
+                          {product.unit}
+                        </td>
+                        <td className={bodyCellClass}>
+                          {formatQuantity(product.annual_production)}{" "}
+                          {product.unit}
+                        </td>
+                        <td className={`${bodyCellClass} pr-0 text-right`}>
+                          {formatEmissions(
+                            product.allocated_compliance_emissions,
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colSpan={4} />
+                      <td
+                        className="py-1 text-sm font-bold text-right whitespace-nowrap"
+                        data-testid="eafc-step2-total"
+                      >
+                        total{" "}
+                        {formatEmissions(emissionsAttributableForCompliance)}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </>
+            )}
           </>
         )}
       </div>

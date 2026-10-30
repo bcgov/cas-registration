@@ -12,8 +12,14 @@ export enum ReportIDs {
   OBLIGATION_NOT_MET = "3",
   EARNED_CREDITS = "4",
   NO_OBLIGATION = "5",
+  // 2024 (Apr-Dec production) draft report for the "No obligation" operation, with emissions in every EAFC term
+  NO_OBLIGATION_2024 = "7",
   // 2024 (Apr-Dec production) draft report for the "Obligation not met" operation
   OBLIGATION_NOT_MET_2024 = "8",
+  // 2025 draft report for the "Bullet LFO" New Entrant Operation
+  NEW_ENTRANT = "11",
+  // 2025 (Jan-Mar production) draft report for the "Bin LFO" Opted-in Operation, opted out in 2025
+  OPTED_OUT = "12",
 }
 
 // Matching facility ids for report record ids
@@ -107,14 +113,19 @@ export const OPERATION_NAMES = {
   BANANA_LFO: "Banana LFO - Registered",
   BANGLES_SFO: "Bangles SFO - Registered - has Multiple Operators",
   BUGLE_SFO: "Bugle SFO - Registered",
+  BULLET_LFO: "Bullet LFO - Registered",
   BEES_LFO: "Bees LFO - Registered - name from admin",
+  BIN_LFO: "Bin LFO - Registered",
 } as const;
 
 export const REPORT_ID_TO_OPERATION_NAME: Record<ReportIDs, string> = {
   [ReportIDs.OBLIGATION_NOT_MET]: OPERATION_NAMES.OBLIGATION_NOT_MET,
   [ReportIDs.EARNED_CREDITS]: OPERATION_NAMES.EARNED_CREDITS,
   [ReportIDs.NO_OBLIGATION]: OPERATION_NAMES.NO_OBLIGATION,
+  [ReportIDs.NO_OBLIGATION_2024]: OPERATION_NAMES.NO_OBLIGATION,
   [ReportIDs.OBLIGATION_NOT_MET_2024]: OPERATION_NAMES.OBLIGATION_NOT_MET,
+  [ReportIDs.NEW_ENTRANT]: OPERATION_NAMES.BULLET_LFO,
+  [ReportIDs.OPTED_OUT]: OPERATION_NAMES.BIN_LFO,
 };
 
 export enum REPORT_STATUS {
