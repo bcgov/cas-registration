@@ -37,6 +37,7 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
 }) => {
   // Use a stacked layout on small screens and a responsive flex with fixed widths on md+
   const isReasonForChange = fieldKey === "reason_for_change";
+  const inputId = React.useId();
 
   const formatValue = (val: any) => {
     if (val === null || val === undefined) {
@@ -75,7 +76,9 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
         className={`flex flex-col md:flex-row md:gap-x-12 gap-y-2 items-start`}
       >
         <div className={`w-full md:w-3/12`}>
-          <label className="font-semibold">{label}</label>
+          <label htmlFor={inputId} className="font-semibold">
+            {label}
+          </label>
         </div>
 
         <div
@@ -83,6 +86,7 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
         >
           {typeof value === "number" && !isYear ? (
             <NumberField.Root
+              id={inputId}
               name={label}
               disabled
               value={transformToNumberOrUndefined(value)}

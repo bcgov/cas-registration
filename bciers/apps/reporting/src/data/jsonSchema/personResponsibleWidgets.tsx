@@ -13,7 +13,12 @@ export const infoNote = (
       <Typography variant="body2">
         See that information is incorrect or need to add a new contact? Update
         it here in{" "}
-        <Tooltip title={"Link opens in a new tab"} placement="top" arrow>
+        <Tooltip
+          title={"Link opens in a new tab"}
+          placement="top"
+          arrow
+          describeChild
+        >
           <Link
             href="/administration/contacts?isNewTab=true"
             target="_blank"

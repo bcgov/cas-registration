@@ -94,7 +94,11 @@ export function SourceTypeBoxTemplate({
           {!readonly && (
             <Grid size={1}>
               <CardActions className="justify-end mr-7.5">
-                <IconButton onClick={() => setExpand(!expand)}>
+                <IconButton
+                  aria-label={expand ? "Collapse" : "Expand"}
+                  aria-expanded={expand}
+                  onClick={() => setExpand(!expand)}
+                >
                   {expand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </IconButton>
               </CardActions>

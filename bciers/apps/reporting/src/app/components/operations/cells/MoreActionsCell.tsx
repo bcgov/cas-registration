@@ -29,6 +29,9 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
     React.useState<boolean>(false);
   const open = Boolean(anchorEl);
   const router = useRouter();
+  // Every row renders this cell, so the ids must be unique per row
+  const buttonId = React.useId();
+  const menuId = React.useId();
 
   // Determine if Report History should be enabled:
   // If there's a reportId and either we have a reportVersionId,
@@ -130,8 +133,9 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
   return (
     <div>
       <Button
-        id="basic-button"
-        aria-controls={open ? "basic-menu" : undefined}
+        id={buttonId}
+        aria-label="More actions"
+        aria-controls={open ? menuId : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
         onClick={handleClick}
@@ -139,13 +143,13 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
         <MoreVertIcon />
       </Button>
       <Menu
-        id="basic-menu"
+        id={menuId}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
         slotProps={{
           list: {
-            "aria-labelledby": "basic-button",
+            "aria-labelledby": buttonId,
           },
         }}
       >
