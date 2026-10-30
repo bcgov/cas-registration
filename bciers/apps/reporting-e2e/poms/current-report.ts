@@ -12,9 +12,17 @@ import { ReportValidationPOM } from "@/reporting-e2e/poms/report-validation";
 
 export class CurrentReportPOM {
   readonly page: Page;
+  readonly eafcBreakdownToggle: Locator;
+  readonly eafcBreakdownPanel: Locator;
 
   constructor(page: Page) {
     this.page = page;
+    this.eafcBreakdownToggle = this.page.getByRole("button", {
+      name: "How was this calculated?",
+    });
+    this.eafcBreakdownPanel = this.page.getByTestId(
+      "eafc-calculation-breakdown",
+    );
   }
 
   // -----------------
@@ -89,16 +97,18 @@ export class CurrentReportPOM {
 
   // Opens the "How was this calculated?" panel under Emissions attributable for compliance
   async openEafcCalculationBreakdown(): Promise<Locator> {
-    const toggle = this.page.getByRole("button", {
-      name: "How was this calculated?",
-    });
-    await expect(toggle).toHaveAttribute("aria-expanded", "false");
-    await toggle.click();
-    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await expect(this.eafcBreakdownToggle).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+    await this.eafcBreakdownToggle.click();
+    await expect(this.eafcBreakdownToggle).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+    await expect(this.eafcBreakdownPanel).toBeVisible();
 
-    const panel = this.page.getByTestId("eafc-calculation-breakdown");
-    await expect(panel).toBeVisible();
-    return panel;
+    return this.eafcBreakdownPanel;
   }
 
   async verifyFinalReview(): Promise<void> {

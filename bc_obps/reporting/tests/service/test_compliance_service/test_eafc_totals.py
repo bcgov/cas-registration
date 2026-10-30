@@ -138,15 +138,16 @@ class TestEafcTotals(TestCase):
         npnc_fugitive_emission.emission_categories.set([2, 13])
 
         # NPNC emissions must be allocated to unregulated products, under their basic category
-        for category_id, amount in [(5, "55.55"), (2, "70.0007")]:
-            make_recipe(
-                REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
-                report_emission_allocation=build_data.report_emission_allocation,
-                report_version=report_version,
-                report_product=build_data.report_product_4,
-                emission_category=EmissionCategory.objects.get(pk=category_id),
-                allocated_quantity=Decimal(amount),
-            )
+        build_data.allocation_7.allocated_quantity = Decimal("70.0007")
+        build_data.allocation_7.save()
+        make_recipe(
+            REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
+            report_emission_allocation=build_data.report_emission_allocation,
+            report_version=report_version,
+            report_product=build_data.report_product_4,
+            emission_category=EmissionCategory.objects.get(pk=5),
+            allocated_quantity=Decimal("55.55"),
+        )
 
         totals = get_eafc_totals(report_version.id, use_legacy_rounding=False)
         compliance_data = ComplianceService.get_calculated_compliance_data(report_version.id)

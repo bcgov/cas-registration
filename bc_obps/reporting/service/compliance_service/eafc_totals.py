@@ -4,19 +4,20 @@ from decimal import Decimal
 from typing import Callable, Dict, List, Tuple
 
 from django.db.models import Exists, F, OuterRef, Sum
+from reporting.constants import (
+    BASIC_CATEGORY_IDS,
+    COMPLIANCE_REPORTING_ONLY_CATEGORY_IDS as REPORTING_ONLY_CATEGORY_IDS,
+    FUEL_EXCLUDED_CATEGORY_IDS,
+    FUGITIVE_CATEGORY_ID,
+    NON_USEFUL_VENTING_CATEGORY_ID,
+    NPNC_CATEGORY_ID,
+)
 from reporting.models.report_emission import ReportEmission
 from reporting.service.compliance_service.emission_allocation import (
-    REPORTING_ONLY_CATEGORY_IDS,
     UnregulatedProductAllocation,
     get_allocated_to_unregulated_products,
 )
 from reporting.service.utils import round_using_appropriate_strategy
-
-FUGITIVE_CATEGORY_ID = 2
-NON_USEFUL_VENTING_CATEGORY_ID = 7
-BASIC_CATEGORY_IDS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-FUEL_EXCLUDED_CATEGORY_IDS = [10, 11, 12]
-NPNC_CATEGORY_ID = 13
 
 
 @dataclass
@@ -74,13 +75,7 @@ class _TermEmissions:
 
 def get_term_emissions(report_version_id: int) -> Dict[str, _TermEmissions]:
     """
-    Returns the emissions behind each term of the equation, from a single query.
-
-    An emission in more than one category is counted once per category, matching the category totals
-    (e.g. a fugitive emission is in both attributable for reporting and fugitive).
-
-    Remaining NPNC = NPNC emissions - emissions excluded by fuel, non-useful venting, fugitive.
-    Those emissions are already subtracted on their own lines, so they are left out to avoid subtracting them twice.
+    Returns the emissions behind each term of the allocated emissions for compliance equation
     """
     category_link = ReportEmission.emission_categories.through
     rows = (
@@ -151,9 +146,6 @@ def get_eafc_totals(report_version_id: int, use_legacy_rounding: bool) -> EafcTo
     non_useful_venting = round_term(terms["non_useful_venting"].total)
     fugitive = round_term(terms["fugitive"].total)
     remaining_npnc = round_term(remaining_npnc_unrounded)
-    # NPNC emissions must be allocated to unregulated products (see report_emission_allocation_other_excluded_category),
-    # so they are already in the unregulated products' allocations. They are subtracted on their own line, so take
-    # them out here to avoid subtracting them twice.
     allocated_to_unregulated_products = round_term(allocated_to_unregulated - remaining_npnc_unrounded)
 
     return EafcTotals(

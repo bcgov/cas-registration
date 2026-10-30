@@ -3,10 +3,12 @@ from decimal import Decimal
 from typing import List
 
 from django.db.models import F, Q, Sum
+from reporting.constants import (
+    COMPLIANCE_REPORTING_ONLY_CATEGORY_IDS as REPORTING_ONLY_CATEGORY_IDS,
+    NPNC_CATEGORY_ID,
+)
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
-
-REPORTING_ONLY_CATEGORY_IDS = [10, 11, 12, 2, 7]
 
 
 def get_allocated_emissions_by_report_product_emission_category(
@@ -33,15 +35,15 @@ def get_reporting_only_allocated(report_version_id: int, product_id: int) -> Dec
 def get_emissions_from_only_funny_category_13(report_version_id: int) -> Decimal:
     """
     We need to total up the emissions associated with category 13 without double-counting
-    (i.e. the ones that are not already under 10,11,12 fuel_excluded)
+    (i.e. the ones that are not already under reporting-only categories: fuel_excluded, fugitive, non-useful venting)
     and subtract them from the total attributable for compliance,
     since they're not based on a single product and therefore are not allocated anywhere.
     """
     records = ReportEmission.objects_with_decimal_emissions.filter(
         report_version_id=report_version_id,
-        emission_categories__id=13,
+        emission_categories__id=NPNC_CATEGORY_ID,
     ).exclude(
-        emission_categories__id__in=[10, 11, 12],
+        emission_categories__id__in=REPORTING_ONLY_CATEGORY_IDS,
     )
     return records.aggregate(emission_total=Sum("emission"))["emission_total"] or Decimal("0")
 

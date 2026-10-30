@@ -49,7 +49,6 @@ class ReportProductComplianceData:
     allocated_compliance_emissions: Decimal
     reduction_factor_override: Decimal | None
     tightening_rate_override: Decimal | None
-    # Full-year allocated emissions for compliance, before proration (not persisted)
     allocated_for_compliance_annual: Decimal
 
     def as_record_defaults(self) -> dict[str, Decimal | str | None]:
@@ -83,10 +82,9 @@ class ComplianceData:
     credited_emissions: Decimal
     industry_regulatory_values: RegulatoryValues
     products: List[ReportProductComplianceData]
-    # Used for the "How was this calculated?" breakdown (not persisted)
+
     production_period: ProductionPeriod
     is_new_entrant: bool
-    # Only calculated when requested (Compliance Summary page)
     eafc_totals: EafcTotals | None = None
 
     def as_record_defaults(self) -> dict[str, Decimal | int]:
