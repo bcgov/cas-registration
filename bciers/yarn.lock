@@ -2593,7 +2593,7 @@ __metadata:
     "@nx-tools/nx-container": "npm:^7.3.0"
     "@nx/devkit": "npm:24.0.0"
     "@nx/eslint": "npm:24.0.0"
-    "@nx/eslint-plugin": "npm:23.3.0"
+    "@nx/eslint-plugin": "npm:24.0.0"
     "@nx/js": "npm:23.3.0"
     "@nx/next": "npm:23.3.0"
     "@nx/playwright": "npm:23.3.0"
@@ -4231,12 +4231,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nx/eslint-plugin@npm:23.3.0":
-  version: 23.3.0
-  resolution: "@nx/eslint-plugin@npm:23.3.0"
+"@nx/eslint-plugin@npm:24.0.0":
+  version: 24.0.0
+  resolution: "@nx/eslint-plugin@npm:24.0.0"
   dependencies:
-    "@nx/devkit": "npm:23.3.0"
-    "@nx/js": "npm:23.3.0"
+    "@nx/devkit": "npm:24.0.0"
+    "@nx/js": "npm:24.0.0"
     "@phenomnomnominal/tsquery": "npm:~6.2.0"
     "@typescript-eslint/type-utils": "npm:^8.0.0"
     "@typescript-eslint/utils": "npm:^8.0.0"
@@ -4254,7 +4254,7 @@ __metadata:
       optional: true
     eslint-config-prettier:
       optional: true
-  checksum: 10c0/f398b05db4531060201e3846fc1eb5e49e9798c98b24245eafcac3d8b0dbb282d63d2af2e7813f2db9b93a380c562e35ab09e6ed1964cf0feb589d4cea1e8864
+  checksum: 10c0/622471afba40688f962f51d8f0a3630475af810df92e24792e3ef1b0b995cbc8b9274f98b0efb56a50a0253051a0548eaa2e49b909ae0b85748c75a0f75fa4ed
   languageName: node
   linkType: hard
 
