@@ -14,6 +14,8 @@ from registration.tests.constants import (
     USER_FIXTURE,
 )
 from registration.tests.utils.bakers import user_operator_baker
+from model_bakery.baker import make_recipe
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 
 
 class UserOperatorModelTest(BaseTestCase):
@@ -70,3 +72,112 @@ class UserOperatorModelTest(BaseTestCase):
         self.assertEqual(
             user_operator_2_friendly_id, user_operator_1_friendly_id + 1, "User friendly IDs should increment"
         )
+
+
+class UserOperatorRlsTest(BaseTestCase):
+
+    def test_user_operator_rls_industry_user(self):
+        user = make_recipe('registration.tests.utils.industry_operator_user')
+        other_user = make_recipe('registration.tests.utils.industry_operator_user')
+        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        other_user_operator = make_recipe('registration.tests.utils.user_operator')
+
+        def select_function(cursor):
+            UserOperator.objects.get(id=other_user_operator.id)
+
+        def insert_function(cursor):
+            UserOperator.objects.create(user=user, operator=approved_user_operator.operator)
+
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
+                    INSERT INTO "erc"."user_operator" (
+                        user_id,
+                        operator_id
+                    ) VALUES (
+                        %s,
+                        %s
+                    )
+                """,
+                (other_user.user_guid, other_user_operator.operator.id),
+            )
+
+        def update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."user_operator"
+                    SET status = 'Declined'
+                    WHERE id = %s
+                """,
+                (other_user_operator.id,),
+            )
+            return cursor.rowcount
+
+        def delete_function(cursor):
+            user = User.objects.all().first()
+            print("U_S_E_R: ", user)
+            op = UserOperator.objects.first()
+            # print("OP: ", op)
+            # op.user = user
+            # op.save()
+            # print("OP: ", op)
+            cursor.execute(
+                """
+                    Update "erc"."user_operator" set user_id = %s where id=%s;
+                    DELETE from "erc"."user_operator"
+                    WHERE user_id = %s
+                """,
+                (
+                    user.user_guid,
+                    op.id,
+                    user.user_guid,
+                ),
+            )
+            return cursor.rowcount
+
+        def forbidden_delete_function(cursor):
+            op = UserOperator.objects.first()
+            cursor.execute(
+                """
+                    DELETE from "erc"."user_operator"
+                    WHERE id = %s
+                """,
+                (op.id,),
+            )
+            return cursor.rowcount
+
+        assert_policies_for_industry_user(
+            UserOperator,
+            user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+            delete_function=delete_function,
+            forbidden_select_function=None,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=None,
+            forbidden_delete_function=forbidden_delete_function,
+        )
+
+    def test_user_operator_rls_cas_users(self):
+        test_quantity = 2
+        op = make_recipe("registration.tests.utils.user_operator", status="Pending")
+        make_recipe(
+            "registration.tests.utils.user_operator",
+        )
+
+        def select_function(cursor):
+            assert UserOperator.objects.count() == test_quantity
+
+        def update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."user_operator"
+                    SET status = 'Approved'
+                    WHERE id = %s
+                """,
+                (str(op.id),),
+            )
+            return cursor.rowcount
+
+        assert_policies_for_cas_roles(UserOperator, select_function=select_function, update_function=update_function)
