@@ -14,6 +14,7 @@ dayjs.extend(utc);
 const DateWidget: React.FC<WidgetProps> = ({
   disabled,
   id,
+  label,
   onChange,
   rawErrors,
   readonly,
@@ -72,6 +73,10 @@ const DateWidget: React.FC<WidgetProps> = ({
           },
           textField: {
             id,
+          },
+          // MUI only names the calendar dialog from its own `label`, which RJSF renders separately
+          popper: {
+            "aria-label": label ? `${label} calendar` : "Calendar",
           },
         }}
         sx={styles}

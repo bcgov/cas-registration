@@ -37,6 +37,7 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
     <CircularProgress
       data-testid="progressbarsave"
       role="progressbar"
+      aria-label="Saving"
       size={24}
     />
   ) : isSuccess ? (
@@ -46,7 +47,12 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
   );
 
   const saveAndContinueButtonContent = isSaving ? (
-    <CircularProgress data-testid="progressbar" role="progressbar" size={24} />
+    <CircularProgress
+      data-testid="progressbar"
+      role="progressbar"
+      aria-label="Saving"
+      size={24}
+    />
   ) : isRedirecting ? (
     "✅ Redirecting..."
   ) : buttonText ? (

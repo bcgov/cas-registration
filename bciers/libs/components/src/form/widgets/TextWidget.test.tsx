@@ -4,6 +4,7 @@ import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import TextWidget from "./TextWidget";
 import { checkTextWidgetValidationStyles } from "@bciers/testConfig/helpers/form";
+import { skipA11yCheck } from "@bciers/testConfig/helpers/axe";
 
 const stringFieldLabel = "String test field";
 const numberFieldLabel = "Number test field";
@@ -114,6 +115,8 @@ describe("RJSF TextWidget", () => {
   });
 
   it("calls onChange when text input value changes", () => {
+    // Rendered without the RJSF field template that provides the label
+    skipA11yCheck(["label"]);
     const handleChange = vi.fn();
     render(
       <TextWidget

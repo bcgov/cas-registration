@@ -1,6 +1,15 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  render as rtlRender,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import SectionTaskListItem from "./SectionTaskListItem";
 import { TaskListElement } from "../types";
+
+// Items are <li>s, so render them inside a list as ReportingTaskList does
+const render = (ui: React.ReactElement) =>
+  rtlRender(ui, { wrapper: ({ children }) => <ul>{children}</ul> });
 
 describe("The Section task list item", () => {
   it("displays the title", () => {
@@ -28,7 +37,7 @@ describe("The Section task list item", () => {
   });
 
   it("renders the nested items with the factory", () => {
-    const mockFactory = vi.fn().mockReturnValue(() => <div>test</div>);
+    const mockFactory = vi.fn().mockReturnValue(() => <li>test</li>);
     const item: any = {
       type: "Section",
       title: "Test title",
@@ -46,9 +55,7 @@ describe("The Section task list item", () => {
   });
 
   it("starts collapsed if no item is marked expanded", () => {
-    const mockFactory = vi
-      .fn()
-      .mockReturnValue(() => <div>some text here</div>);
+    const mockFactory = vi.fn().mockReturnValue(() => <li>some text here</li>);
     const item: TaskListElement = {
       type: "Section",
       title: "Test title",
@@ -64,9 +71,7 @@ describe("The Section task list item", () => {
   });
 
   it("starts expanded if one item is marked expanded", () => {
-    const mockFactory = vi
-      .fn()
-      .mockReturnValue(() => <div>some text here</div>);
+    const mockFactory = vi.fn().mockReturnValue(() => <li>some text here</li>);
     const item: TaskListElement = {
       type: "Section",
       title: "Test title",
@@ -82,9 +87,7 @@ describe("The Section task list item", () => {
   });
 
   it("collapses or expands on click", async () => {
-    const mockFactory = vi
-      .fn()
-      .mockReturnValue(() => <div>some text here</div>);
+    const mockFactory = vi.fn().mockReturnValue(() => <li>some text here</li>);
     const item: TaskListElement = {
       type: "Section",
       title: "Test title",

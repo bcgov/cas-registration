@@ -75,7 +75,7 @@ const AttachmentElement: React.FC<Props> = ({
         ref={hiddenFileInput}
         onChange={handleChange}
         type="file"
-        className="hidden"
+        hidden
         value=""
         accept={accept}
         data-testid="attachment-file-picker"
