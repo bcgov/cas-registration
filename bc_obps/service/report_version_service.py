@@ -5,6 +5,7 @@ from registration.models import Operation
 from registration.models.contact import Contact
 from reporting.models.report import Report
 from reporting.models.report_operation import ReportOperation
+from reporting.service.report_product_service import ReportProductService
 from service.data_access_service.facility_service import FacilityDataAccessService
 from reporting.models import ReportOperationRepresentative
 from django.db.models import Min, F
@@ -93,6 +94,7 @@ class ReportVersionService:
                 is_completed=False,
             )
             facility_report.activities.add(*list(operation.activities.all()))
+            ReportProductService.update_empty_records_for_unregulated_products(report_version.id, [facility_report.id])
 
         return report_version
 
