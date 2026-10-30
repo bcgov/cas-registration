@@ -117,5 +117,158 @@
       "updated_by_id": null,
       "report_emission_allocation": 4
     }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 11000.0,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "emission_category": 5,
+      "report_product": 8,
+      "report_version": 11,
+      "updated_by_id": null,
+      "report_emission_allocation": 5
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version": 7,
+      "report_emission_allocation": 6,
+      "report_product": 9,
+      "emission_category": 5,
+      "allocated_quantity": 21000.0
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 10,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version": 7,
+      "report_emission_allocation": 6,
+      "report_product": 9,
+      "emission_category": 10,
+      "allocated_quantity": 3000.0
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 11,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version": 7,
+      "report_emission_allocation": 6,
+      "report_product": 10,
+      "emission_category": 5,
+      "allocated_quantity": 2000.0
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 12,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version": 7,
+      "report_emission_allocation": 6,
+      "report_product": 10,
+      "emission_category": 1,
+      "allocated_quantity": 2500.0
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 13,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version": 7,
+      "report_emission_allocation": 6,
+      "report_product": 10,
+      "emission_category": 7,
+      "allocated_quantity": 1500.0
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 14,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version": 7,
+      "report_emission_allocation": 6,
+      "report_product": 10,
+      "emission_category": 2,
+      "allocated_quantity": 800.0
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 15,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version": 7,
+      "report_emission_allocation": 6,
+      "report_product": 10,
+      "emission_category": 13,
+      "allocated_quantity": 4800.0
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 16,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 12000.0,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "emission_category": 5,
+      "report_product": 11,
+      "report_version": 12,
+      "updated_by_id": null,
+      "report_emission_allocation": 7
+    }
   }
 ]

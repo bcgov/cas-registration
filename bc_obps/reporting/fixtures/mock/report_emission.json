@@ -88,5 +88,177 @@
         5
       ]
     }
+  },
+  {
+    "model": "reporting.reportemission",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "emission": 11000,
+        "equivalentEmission": 11000.0
+      },
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "gas_type_id": 1,
+      "updated_by_id": null,
+      "report_fuel_id": 5,
+      "report_source_type_id": 5,
+      "report_version_id": 11,
+      "report_unit_id": null,
+      "emission_categories": [
+        5
+      ]
+    }
+  },
+  {
+    "model": "reporting.reportemission",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version_id": 7,
+      "report_source_type_id": 6,
+      "report_fuel_id": 6,
+      "report_unit_id": null,
+      "gas_type_id": 1,
+      "json_data": {
+        "emission": 20000,
+        "equivalentEmission": 20000.0
+      },
+      "emission_categories": [
+        5
+      ]
+    }
+  },
+  {
+    "model": "reporting.reportemission",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version_id": 7,
+      "report_source_type_id": 6,
+      "report_fuel_id": 7,
+      "report_unit_id": null,
+      "gas_type_id": 1,
+      "json_data": {
+        "emission": 3000,
+        "equivalentEmission": 3000.0
+      },
+      "emission_categories": [
+        5,
+        10
+      ]
+    }
+  },
+  {
+    "model": "reporting.reportemission",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version_id": 7,
+      "report_source_type_id": 7,
+      "report_fuel_id": null,
+      "report_unit_id": null,
+      "gas_type_id": 1,
+      "json_data": {
+        "emission": 1500,
+        "equivalentEmission": 1500.0
+      },
+      "emission_categories": [
+        7,
+        13
+      ]
+    }
+  },
+  {
+    "model": "reporting.reportemission",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version_id": 7,
+      "report_source_type_id": 8,
+      "report_fuel_id": 8,
+      "report_unit_id": null,
+      "gas_type_id": 1,
+      "json_data": {
+        "emission": 2500,
+        "equivalentEmission": 2500.0
+      },
+      "emission_categories": [
+        1,
+        13
+      ]
+    }
+  },
+  {
+    "model": "reporting.reportemission",
+    "pk": 10,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version_id": 7,
+      "report_source_type_id": 9,
+      "report_fuel_id": null,
+      "report_unit_id": 7,
+      "gas_type_id": 1,
+      "json_data": {
+        "emission": 800,
+        "equivalentEmission": 800.0
+      },
+      "emission_categories": [
+        2,
+        13
+      ]
+    }
+  },
+  {
+    "model": "reporting.reportemission",
+    "pk": 11,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "emission": 12000,
+        "equivalentEmission": 12000.0
+      },
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "gas_type_id": 1,
+      "updated_by_id": null,
+      "report_fuel_id": 9,
+      "report_source_type_id": 10,
+      "report_version_id": 12,
+      "report_unit_id": null,
+      "emission_categories": [
+        5
+      ]
+    }
   }
 ]

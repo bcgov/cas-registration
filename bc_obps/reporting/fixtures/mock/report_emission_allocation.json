@@ -62,5 +62,53 @@
       "report_version": 8,
       "updated_by_id": null
     }
+  },
+  {
+    "model": "reporting.reportemissionallocation",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-05-26T11:02:35.564129-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocation_methodology": "OBPS Allocation Calculator",
+      "allocation_other_methodology_description": "",
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "facility_report": 49,
+      "report_version": 11,
+      "updated_by_id": null
+    }
+  },
+  {
+    "model": "reporting.reportemissionallocation",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-05-26T11:02:35.564129-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version": 7,
+      "facility_report": 26,
+      "allocation_methodology": "OBPS Allocation Calculator",
+      "allocation_other_methodology_description": ""
+    }
+  },
+  {
+    "model": "reporting.reportemissionallocation",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-05-26T11:02:35.564129-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocation_methodology": "OBPS Allocation Calculator",
+      "allocation_other_methodology_description": "",
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "facility_report": 50,
+      "report_version": 12,
+      "updated_by_id": null
+    }
   }
 ]

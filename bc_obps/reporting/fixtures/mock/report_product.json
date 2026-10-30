@@ -154,5 +154,96 @@
       "updated_by_id": null,
       "production_data_apr_dec": 600
     }
+  },
+  {
+    "model": "reporting.reportproduct",
+    "pk": 8,
+    "fields": {
+      "facility_report": 49,
+      "product": 3,
+      "report_version": 11,
+      "created_at": "2025-05-26T10:36:35.714914-04:00",
+      "updated_at": "2025-05-26T10:51:37.437043-04:00",
+      "archived_at": null,
+      "annual_production": 1000,
+      "production_methodology": "OBPS Calculator",
+      "production_methodology_description": null,
+      "storage_quantity_start_of_period": 250,
+      "storage_quantity_end_of_period": 250,
+      "quantity_sold_during_period": 250,
+      "quantity_throughput_during_period": 250,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": "00000000-0000-0000-0000-000000000005"
+    }
+  },
+  {
+    "model": "reporting.reportproduct",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-05-26T10:36:35.714914-04:00",
+      "updated_at": "2025-05-26T10:51:37.437043-04:00",
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": "00000000-0000-0000-0000-000000000005",
+      "product": 21,
+      "annual_production": 10000,
+      "production_data_apr_dec": 7500,
+      "storage_quantity_start_of_period": 1000,
+      "storage_quantity_end_of_period": 1000,
+      "quantity_sold_during_period": 1000,
+      "quantity_throughput_during_period": 1000,
+      "report_version": 7,
+      "facility_report": 26,
+      "production_methodology": "OBPS Calculator",
+      "production_methodology_description": null
+    }
+  },
+  {
+    "model": "reporting.reportproduct",
+    "pk": 10,
+    "fields": {
+      "created_at": "2025-05-26T10:36:35.714914-04:00",
+      "updated_at": "2025-05-26T10:51:37.437043-04:00",
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": "00000000-0000-0000-0000-000000000005",
+      "product": 38,
+      "annual_production": 0,
+      "production_data_apr_dec": 0,
+      "storage_quantity_start_of_period": 0,
+      "storage_quantity_end_of_period": 0,
+      "quantity_sold_during_period": 0,
+      "quantity_throughput_during_period": 0,
+      "report_version": 7,
+      "facility_report": 26,
+      "production_methodology": "OBPS Calculator",
+      "production_methodology_description": null
+    }
+  },
+  {
+    "model": "reporting.reportproduct",
+    "pk": 11,
+    "fields": {
+      "created_at": "2025-05-26T10:36:35.714914-04:00",
+      "updated_at": "2025-05-26T10:51:37.437043-04:00",
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": "00000000-0000-0000-0000-000000000005",
+      "report_version": 12,
+      "facility_report": 50,
+      "product": 2,
+      "annual_production": 4000,
+      "production_data_jan_mar": 1000,
+      "production_methodology": "OBPS Calculator",
+      "production_methodology_description": null,
+      "storage_quantity_start_of_period": 500,
+      "storage_quantity_end_of_period": 500,
+      "quantity_sold_during_period": 500,
+      "quantity_throughput_during_period": 500
+    }
   }
 ]

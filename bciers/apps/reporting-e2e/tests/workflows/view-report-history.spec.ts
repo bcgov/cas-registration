@@ -42,7 +42,7 @@ test.describe("View Report History", () => {
     await grid.route(reportVersion); // Navigate back to the report history page
 
     // Click "Continue" for the report history — navigates to the 'Review Operation Information' page for the selected version
-    await grid.continueReportFromHistory(12); // Continue from the draft report from the Report History page
+    await grid.continueReportFromHistory(14); // Continue from the draft report from the Report History page
     const operationInformation = new ReportOperationPOM(page);
     await operationInformation.verifyFieldVisibility();
   });

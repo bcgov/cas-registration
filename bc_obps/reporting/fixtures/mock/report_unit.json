@@ -74,5 +74,81 @@
       "report_version_id": 8,
       "type": "Unit"
     }
+  },
+  {
+    "model": "reporting.reportunit",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "gscUnitName": "GSC Unit Name 1",
+        "gscUnitType": "Kiln"
+      },
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "report_source_type_id": 5,
+      "updated_by_id": null,
+      "report_version_id": 11,
+      "type": "Unit"
+    }
+  },
+  {
+    "model": "reporting.reportunit",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version_id": 7,
+      "report_source_type_id": 6,
+      "type": "Unit",
+      "json_data": {
+        "gscUnitName": "GSC Unit Name 1",
+        "gscUnitType": "Kiln"
+      }
+    }
+  },
+  {
+    "model": "reporting.reportunit",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version_id": 7,
+      "report_source_type_id": 9,
+      "type": "Unit",
+      "json_data": {
+        "type": "Source sub-type",
+        "sourceSubType": "Onshore Petroleum and Natural Gas Production - Other fugitive emission sources"
+      }
+    }
+  },
+  {
+    "model": "reporting.reportunit",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "gscUnitName": "GSC Unit Name 1",
+        "gscUnitType": "Kiln"
+      },
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "report_source_type_id": 10,
+      "updated_by_id": null,
+      "report_version_id": 12,
+      "type": "Unit"
+    }
   }
 ]

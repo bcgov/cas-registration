@@ -74,5 +74,83 @@
       "updated_by_id": null,
       "report_version_id": 8
     }
+  },
+  {
+    "model": "reporting.reportactivity",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "gscWithProductionOfUsefulEnergy": true
+      },
+      "activity_id": 1,
+      "activity_base_schema_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "facility_report_id": 49,
+      "updated_by_id": null,
+      "report_version_id": 11
+    }
+  },
+  {
+    "model": "reporting.reportactivity",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version_id": 7,
+      "facility_report_id": 26,
+      "activity_id": 1,
+      "activity_base_schema_id": 1,
+      "json_data": {
+        "gscWithProductionOfUsefulEnergy": true
+      }
+    }
+  },
+  {
+    "model": "reporting.reportactivity",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version_id": 7,
+      "facility_report_id": 26,
+      "activity_id": 32,
+      "activity_base_schema_id": 16,
+      "json_data": {
+        "dehydratorVenting": true,
+        "associatedGasFlaring": true,
+        "otherFugitiveSources": true
+      }
+    }
+  },
+  {
+    "model": "reporting.reportactivity",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "gscWithProductionOfUsefulEnergy": true
+      },
+      "activity_id": 1,
+      "activity_base_schema_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "facility_report_id": 50,
+      "updated_by_id": null,
+      "report_version_id": 12
+    }
   }
 ]

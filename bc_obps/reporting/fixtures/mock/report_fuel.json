@@ -78,5 +78,104 @@
       "report_unit_id": 4,
       "report_version_id": 8
     }
+  },
+  {
+    "model": "reporting.reportfuel",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "fuelDescription": "Diesel fuel",
+        "annualFuelAmount": 12000
+      },
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "fuel_type_id": 15,
+      "updated_by_id": null,
+      "report_source_type_id": 5,
+      "report_unit_id": 5,
+      "report_version_id": 11
+    }
+  },
+  {
+    "model": "reporting.reportfuel",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version_id": 7,
+      "report_source_type_id": 6,
+      "report_unit_id": 6,
+      "fuel_type_id": 15,
+      "json_data": {
+        "fuelDescription": "Diesel fuel",
+        "annualFuelAmount": 20000
+      }
+    }
+  },
+  {
+    "model": "reporting.reportfuel",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version_id": 7,
+      "report_source_type_id": 6,
+      "report_unit_id": 6,
+      "fuel_type_id": 11,
+      "json_data": {
+        "fuelDescription": "Combustible tall oil",
+        "annualFuelAmount": 3000
+      }
+    }
+  },
+  {
+    "model": "reporting.reportfuel",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version_id": 7,
+      "report_source_type_id": 8,
+      "report_unit_id": null,
+      "fuel_type_id": 37,
+      "json_data": {
+        "annualFuelAmount": 2500
+      }
+    }
+  },
+  {
+    "model": "reporting.reportfuel",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "fuelDescription": "Diesel fuel",
+        "annualFuelAmount": 12000
+      },
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "fuel_type_id": 15,
+      "updated_by_id": null,
+      "report_source_type_id": 10,
+      "report_unit_id": 8,
+      "report_version_id": 12
+    }
   }
 ]
