@@ -5,8 +5,12 @@ import {
   gridFilteredTopLevelRowCountSelector,
   useGridRootProps,
 } from "@mui/x-data-grid";
-import MuiPagination from "@mui/material/Pagination";
+import MuiPagination, { PaginationProps } from "@mui/material/Pagination";
 import { TablePaginationProps } from "@mui/material/TablePagination";
+
+const MuiPaginationAs = MuiPagination as React.FC<
+  PaginationProps & { as: React.ElementType }
+>;
 
 const getPageCount = (rowCount: number, pageSize: number): number => {
   if (pageSize > 0 && rowCount > 0) {
@@ -34,7 +38,11 @@ const Pagination = ({
   );
 
   return (
-    <MuiPagination
+    <MuiPaginationAs
+      // MUI renders a <nav aria-label="pagination navigation">, so a page with two grids has duplicate landmarks
+      // Render a plain div instead and drop the label, which a div can't carry
+      as="div"
+      aria-label={undefined}
       color="primary"
       className={className}
       count={pageCount}
