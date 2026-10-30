@@ -353,12 +353,14 @@ class TestPenaltyCalculationService:
         )
         result = PenaltyCalculationService.get_automatic_overdue_penalty_data(self.compliance_report_version.id)
         assert result == {
-            "penalty_status": compliance_penalty.status,
+            "penalty_status": compliance_penalty.status.value,
             "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             "penalty_charge_rate": self.compliance_penalty_rate.rate * 100,
             "total_penalty": Decimal("1000000.00"),
-            "faa_interest": Decimal("0"),
+            "faa_interest": Decimal("0.00"),
             "total_amount": Decimal("1000000.00"),
+            "due_date": "2024-11-30",
+            "invoice_number": compliance_penalty.elicensing_invoice.invoice_number,
         }
 
     @patch(
