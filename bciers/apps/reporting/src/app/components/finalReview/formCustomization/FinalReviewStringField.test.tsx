@@ -1,9 +1,15 @@
 import { render, screen } from "@testing-library/react";
 import FinalReviewStringField from "./FinalReviewStringField";
-import { describe, it, expect } from "vitest";
+import { beforeEach, describe, it, expect } from "vitest";
 import { FieldProps } from "@rjsf/utils";
+import { skipA11yCheck } from "@bciers/testConfig/helpers/axe";
 
 describe("FinalReviewStringField", () => {
+  beforeEach(() => {
+    // Rendered without the RJSF field template that provides the id and label
+    skipA11yCheck(["label"]);
+  });
+
   it("renders a number with decimals and thousand separators when schema type is number", () => {
     const numberProps = {
       schema: { type: "number" },

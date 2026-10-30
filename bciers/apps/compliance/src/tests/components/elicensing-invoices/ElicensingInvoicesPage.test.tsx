@@ -8,9 +8,11 @@ const mockResponse = {
   rows: [
     {
       id: 1,
+      invoice_number: "OBI702922",
     },
     {
       id: 2,
+      invoice_number: "OBI702923",
     },
   ],
   row_count: 2,

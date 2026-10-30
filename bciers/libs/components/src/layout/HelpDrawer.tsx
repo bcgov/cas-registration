@@ -1,6 +1,6 @@
-import { Button, Drawer, Link, Box } from "@mui/material";
+import { Button, Drawer, IconButton, Link, Box } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useState } from "react";
+import { useId, useState } from "react";
 import {
   actLink,
   bcObpsGuidanceLink,
@@ -14,6 +14,7 @@ import {
 
 export default function HelpDrawer() {
   const [open, setOpen] = useState(false);
+  const titleId = useId();
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
@@ -26,13 +27,17 @@ export default function HelpDrawer() {
       onClick={toggleDrawer(false)}
     >
       <div className="flex justify-between items-center">
-        <h1 className={`w-full text-lg`}>Help</h1>
-        <Link href="#" onClick={toggleDrawer(true)}>
+        <h1 id={titleId} className={`w-full text-lg`}>
+          Help
+        </h1>
+        <IconButton aria-label="Close help" onClick={toggleDrawer(false)}>
           <CloseIcon />
-        </Link>
+        </IconButton>
       </div>
 
-      <h4 className={`text-bc-bg-blue text-sm w-full`}>Getting Started</h4>
+      <h2 className={`text-bc-bg-blue text-sm w-full my-[1.33em]`}>
+        Getting Started
+      </h2>
       <Link
         href={bcObpsLink}
         target="_blank"
@@ -85,9 +90,9 @@ export default function HelpDrawer() {
         </Box>
       </Link>
 
-      <h4 className={`text-bc-bg-blue text-sm w-full`}>
+      <h2 className={`text-bc-bg-blue text-sm w-full my-[1.33em]`}>
         Administration guidance
-      </h4>
+      </h2>
       <Link
         href={boundaryMapGuidanceLink}
         target="_blank"
@@ -105,7 +110,9 @@ export default function HelpDrawer() {
         </Box>
       </Link>
 
-      <h4 className={`text-bc-bg-blue text-sm w-full`}>Reporting guidance</h4>
+      <h2 className={`text-bc-bg-blue text-sm w-full my-[1.33em]`}>
+        Reporting guidance
+      </h2>
       <Link
         href={wciMethodologiesLink}
         target="_blank"
@@ -123,7 +130,9 @@ export default function HelpDrawer() {
         </Box>
       </Link>
 
-      <h4 className={`text-bc-bg-blue text-sm w-full`}>Regulations and acts</h4>
+      <h2 className={`text-bc-bg-blue text-sm w-full my-[1.33em]`}>
+        Regulations and acts
+      </h2>
       <Link
         href={actLink}
         target="_blank"
@@ -165,18 +174,21 @@ export default function HelpDrawer() {
 
   return (
     <>
-      <Link href="#" className="text-white mx-8">
-        <Button
-          aria-label="Help"
-          color="inherit"
-          variant="text"
-          className="font-bold text-lg underline"
-          onClick={toggleDrawer(true)}
-        >
-          Help
-        </Button>
-      </Link>
-      <Drawer open={open} onClose={toggleDrawer(false)} anchor="right">
+      <Button
+        aria-label="Help"
+        color="inherit"
+        variant="text"
+        className="text-white mx-8 font-bold text-lg underline"
+        onClick={toggleDrawer(true)}
+      >
+        Help
+      </Button>
+      <Drawer
+        open={open}
+        onClose={toggleDrawer(false)}
+        anchor="right"
+        slotProps={{ paper: { "aria-labelledby": titleId } }}
+      >
         {DrawerList}
       </Drawer>
     </>

@@ -15,7 +15,8 @@ const OperationFacilitiesActionCell = (isInternalUser: boolean) => {
     if (isSfo) {
       actionText = "View Facility";
       if (!sfoFacilityId) {
-        actionText = !isInternalUser ? "Edit details" : "";
+        if (isInternalUser) return null;
+        actionText = "Edit details";
       }
     }
 

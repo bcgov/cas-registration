@@ -234,7 +234,7 @@ const FileWidget: React.FC<WidgetProps> = (props) => {
         onChange={handleChange}
         type="file"
         required={required}
-        className="hidden"
+        hidden
         disabled={disabled || readonly}
         value=""
         accept={options.accept ? String(options.accept) : undefined}

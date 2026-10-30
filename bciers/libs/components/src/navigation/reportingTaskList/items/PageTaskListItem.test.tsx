@@ -1,7 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { render as rtlRender, screen } from "@testing-library/react";
 import PageTaskListItem from "./PageTaskListItem";
 import { TaskListElement } from "../types";
 import { useRouter } from "@bciers/testConfig/mocks";
+
+// Items are <li>s, so render them inside a list as ReportingTaskList does
+const render = (ui: React.ReactElement) =>
+  rtlRender(ui, { wrapper: ({ children }) => <ul>{children}</ul> });
 
 const mockRouter = {
   push: vi.fn(),
