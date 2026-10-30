@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -26,22 +26,27 @@ const SimpleAccordion: React.FC<SimpleAccordionProps> = ({
   title,
   children,
   defaultExpanded = true,
-}) => (
-  <Accordion
-    defaultExpanded={defaultExpanded}
-    elevation={0}
-    className="shadow-none border-0 bg-transparent"
-  >
-    <AccordionSummary
-      expandIcon={<ExpandIcon />}
-      className="bg-transparent min-h-0 ps-0 pr-1 py-0 group cursor-pointer"
+}) => {
+  const id = useId();
+  return (
+    <Accordion
+      defaultExpanded={defaultExpanded}
+      elevation={0}
+      className="shadow-none border-0 bg-transparent"
     >
-      <div className="font-medium text-md text-bc-bg-blue">{title}</div>
-    </AccordionSummary>
-    <AccordionDetails className="p-0 bg-transparent">
-      {children}
-    </AccordionDetails>
-  </Accordion>
-);
+      <AccordionSummary
+        id={`${id}-header`}
+        aria-controls={`${id}-content`}
+        expandIcon={<ExpandIcon />}
+        className="bg-transparent min-h-0 ps-0 pr-1 py-0 group cursor-pointer"
+      >
+        <div className="font-medium text-md text-bc-bg-blue">{title}</div>
+      </AccordionSummary>
+      <AccordionDetails className="p-0 bg-transparent">
+        {children}
+      </AccordionDetails>
+    </Accordion>
+  );
+};
 
 export default SimpleAccordion;
