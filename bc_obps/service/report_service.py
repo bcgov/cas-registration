@@ -11,6 +11,7 @@ from reporting.models import ReportOperationRepresentative
 from reporting.models.report import Report
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
+from reporting.service.report_product_service import ReportProductService
 from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
 from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
@@ -215,6 +216,11 @@ class ReportService:
             facility_reports: QuerySet[FacilityReport] = FacilityReport.objects.filter(
                 report_version__id=report_version_id
             )
+
+            # Update empty records for unregulated products for all facility reports associated with this report version
+            facility_report_ids = facility_reports.values_list("id", flat=True)
+            ReportProductService.update_empty_records_for_unregulated_products(report_version_id, facility_report_ids)
+
             # For facility reports that haven't yet been marked Completed,
             # add all operation-level activities as defaults (without removing any existing facility-level selections the user may have made)
             uncompleted_reports = (f for f in facility_reports if not f.is_completed)
@@ -226,6 +232,10 @@ class ReportService:
                 )
         else:
             facility_report: FacilityReport = FacilityReport.objects.get(report_version__id=report_version_id)
+
+            # Update empty records for unregulated products for all facility reports associated with this report version
+            ReportProductService.update_empty_records_for_unregulated_products(report_version_id, [facility_report.id])
+
             facility_report_save_data = SaveFacilityReportData(
                 facility_name=report_operation.operation_name,
                 facility_type=facility_report.facility_type,

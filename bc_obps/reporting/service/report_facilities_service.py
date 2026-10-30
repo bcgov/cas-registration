@@ -5,6 +5,7 @@ from uuid import UUID
 
 from reporting.models import ReportVersion, FacilityReport, ReportOperation
 from registration.models import Facility, FacilityDesignatedOperationTimeline, FacilitySnapshot
+from reporting.service.report_product_service import ReportProductService
 from reporting.service.sync_validation_service import SyncValidationService
 
 
@@ -84,6 +85,9 @@ class ReportFacilitiesService:
         default_activities = ReportOperation.objects.get(report_version=report_version).activities.all()
         for fr in created:
             fr.activities.set(default_activities)
+
+        # Re-populate empty unregulated product records for the newly created facility reports
+        ReportProductService.update_empty_records_for_unregulated_products(report_version.id, [f.id for f in created])
 
     @staticmethod
     def _get_latest_snapshots(operation_id: UUID, facility_ids: set[UUID]) -> dict:

@@ -1,4 +1,5 @@
 import pytest
+from reporting.models.report_product import ReportProduct
 from model_bakery import baker
 from registration.models import Operation
 from reporting.service.report_operation_service import ReportOperationService
@@ -106,6 +107,19 @@ class TestReportOperationService:
         assert self.report_operation.operation_name == "New Operation Name"
         assert self.report_operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert self.report_operation.naics_code == self.operation.naics_code
+
+    def test_update_report_service_creates_empty_report_products_for_unregulated_products(self):
+        """Validate that calling the sync method creates empty report products for unregulated products"""
+        unregulated_product = baker.make_recipe("registration.tests.utils.regulated_product", is_regulated=False)
+        self.report_operation.regulated_products.add(unregulated_product)
+
+        assert not ReportProduct.objects.filter(
+            report_version=self.report_version, product=unregulated_product
+        ).exists()
+
+        ReportOperationService.update_report_operation(self.report_version.id)
+
+        assert ReportProduct.objects.filter(report_version=self.report_version, product=unregulated_product).exists()
 
     def test_get_report_operation_by_version_id(self):
         self.report_operation.naics_code = self.operation.naics_code

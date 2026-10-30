@@ -1,4 +1,4 @@
-from typing import List
+from typing import Iterable, List
 from uuid import UUID
 
 from django.db.models import QuerySet
@@ -15,40 +15,40 @@ class ReportProductService:
     def update_empty_records_for_unregulated_products(
         cls,
         report_version_id: int,
-        facility_report_id: int,
+        facility_report_ids: Iterable[int],
     ) -> None:
         """
         Adds a "zero" report_product record for unregulated products reported by this operation (for emission allocation purposes only)
         """
+        for facility_report_id in facility_report_ids:
+            reported_unregulated_products = (
+                ReportOperation.objects.get(report_version_id=report_version_id)
+                .regulated_products.filter(is_regulated=False)
+                .exclude(
+                    id__in=ReportProduct.objects.filter(
+                        report_version_id=report_version_id,
+                        facility_report_id=facility_report_id,
+                    ).values_list("product_id", flat=True)
+                )
+                .values_list("id", flat=True)
+            )
 
-        reported_unregulated_products = (
-            ReportOperation.objects.get(report_version_id=report_version_id)
-            .regulated_products.filter(is_regulated=False)
-            .exclude(
-                id__in=ReportProduct.objects.filter(
+            for product_id in reported_unregulated_products:
+                ReportProduct.objects.update_or_create(
                     report_version_id=report_version_id,
                     facility_report_id=facility_report_id,
-                ).values_list("product_id", flat=True)
-            )
-            .values_list("id", flat=True)
-        )
-
-        for product_id in reported_unregulated_products:
-            ReportProduct.objects.update_or_create(
-                report_version_id=report_version_id,
-                facility_report_id=facility_report_id,
-                product_id=product_id,
-                defaults={
-                    "report_version_id": report_version_id,
-                    "facility_report_id": facility_report_id,
-                    "product_id": product_id,
-                    "annual_production": 0,
-                    "production_data_jan_mar": 0,
-                    "production_data_apr_dec": 0,
-                    "production_methodology": "other",
-                    "production_methodology_description": "auto-generated report_product record for unregulated product",
-                },
-            )
+                    product_id=product_id,
+                    defaults={
+                        "report_version_id": report_version_id,
+                        "facility_report_id": facility_report_id,
+                        "product_id": product_id,
+                        "annual_production": 0,
+                        "production_data_jan_mar": 0,
+                        "production_data_apr_dec": 0,
+                        "production_methodology": "other",
+                        "production_methodology_description": "auto-generated report_product record for unregulated product",
+                    },
+                )
 
     @classmethod
     @transaction.atomic()
@@ -93,7 +93,7 @@ class ReportProductService:
                 },
             )
 
-        ReportProductService.update_empty_records_for_unregulated_products(report_version_id, facility_report.id)
+        ReportProductService.update_empty_records_for_unregulated_products(report_version_id, [facility_report.id])
 
     @classmethod
     def get_production_data(cls, report_version_id: int, facility_id: UUID) -> QuerySet[ReportProduct]:

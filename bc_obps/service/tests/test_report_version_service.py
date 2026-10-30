@@ -3,6 +3,7 @@ from common.tests.utils.model_inspection import get_cascading_models
 from model_bakery import baker
 import pytest
 from registration.models import Operation
+from reporting.models.report_product import ReportProduct
 from reporting.models.report_version import ReportVersion
 from service.report_version_service import ReportVersionService
 
@@ -25,6 +26,33 @@ class TestReportVersionService(TestCase):
     def test_create_report_version(self):
         # This functionality is tested as part of the report_service
         pass
+
+    def test_create_report_version_creates_empty_records_for_unregulated_products(self):
+        report = baker.make_recipe(
+            "reporting.tests.utils.report",
+            operation__registration_purpose="OBPS Regulated Operation",
+            operation__type="Linear Facilities Operation",
+            reporting_year_id=2024,
+        )
+        facilities = baker.make_recipe(
+            "registration.tests.utils.facility",
+            operation=report.operation,
+            designated_operations__end_date=None,
+            designated_operations__operation=report.operation,
+            _quantity=3,
+        )
+        unregulated_products = baker.make_recipe(
+            "registration.tests.utils.regulated_product",
+            is_regulated=False,
+            _quantity=3,
+        )
+        report.operation.regulated_products.add(*unregulated_products)
+
+        ReportVersionService.create_report_version(report)
+
+        for f in facilities:
+            for p in unregulated_products:
+                assert ReportProduct.objects.filter(facility_report__facility=f, product=p).exists()
 
     def test_delete_report_version(self):
         report = baker.make_recipe("reporting.tests.utils.report", reporting_year_id=2024)
