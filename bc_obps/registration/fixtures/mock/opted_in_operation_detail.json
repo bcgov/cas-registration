@@ -1,0 +1,19 @@
+[
+  {
+    "model": "registration.optedinoperationdetail",
+    "pk": 1,
+    "fields": {
+      "created_by": "00000000-0000-0000-0000-000000000028",
+      "created_at": "2024-07-05T23:25:37.892Z",
+      "meets_section_3_emissions_requirements": true,
+      "meets_electricity_import_operation_criteria": false,
+      "meets_entire_operation_requirements": true,
+      "meets_section_6_emissions_requirements": true,
+      "meets_naics_code_11_22_562_classification_requirements": true,
+      "meets_producing_gger_schedule_a1_regulated_product": true,
+      "meets_reporting_and_regulated_obligations": true,
+      "meets_notification_to_director_on_criteria_change": true,
+      "final_reporting_year": 2025
+    }
+  }
+]

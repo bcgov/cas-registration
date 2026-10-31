@@ -139,5 +139,280 @@
       "report_version_id": 5,
       "updated_by_id": null
     }
+  },
+  {
+    "model": "reporting.reportrawactivitydata",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "sourceTypes": {
+          "gscWithProductionOfUsefulEnergy": {
+            "units": [
+              {
+                "fuels": [
+                  {
+                    "fuelType": {
+                      "fuelName": "Diesel",
+                      "fuelClassification": "Non-biomass"
+                    },
+                    "emissions": [
+                      {
+                        "gasType": "CO2",
+                        "emission": 11000,
+                        "methodology": {
+                          "methodology": "Default EF"
+                        }
+                      }
+                    ],
+                    "fuelDescription": "Diesel fuel",
+                    "annualFuelAmount": 12000
+                  }
+                ],
+                "gscUnitName": "GSC Unit Name 1",
+                "gscUnitType": "Kiln"
+              }
+            ]
+          }
+        },
+        "gscWithProductionOfUsefulEnergy": true
+      },
+      "activity_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "facility_report_id": 27,
+      "report_version_id": 8,
+      "updated_by_id": null
+    }
+  },
+  {
+    "model": "reporting.reportrawactivitydata",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "sourceTypes": {
+          "gscWithProductionOfUsefulEnergy": {
+            "units": [
+              {
+                "fuels": [
+                  {
+                    "fuelType": {
+                      "fuelName": "Diesel",
+                      "fuelClassification": "Non-biomass"
+                    },
+                    "emissions": [
+                      {
+                        "gasType": "CO2",
+                        "emission": 11000,
+                        "methodology": {
+                          "methodology": "Default EF"
+                        }
+                      }
+                    ],
+                    "fuelDescription": "Diesel fuel",
+                    "annualFuelAmount": 12000
+                  }
+                ],
+                "gscUnitName": "GSC Unit Name 1",
+                "gscUnitType": "Kiln"
+              }
+            ]
+          }
+        },
+        "gscWithProductionOfUsefulEnergy": true
+      },
+      "activity_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "facility_report_id": 49,
+      "report_version_id": 11,
+      "updated_by_id": null
+    }
+  },
+  {
+    "model": "reporting.reportrawactivitydata",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version_id": 7,
+      "facility_report_id": 26,
+      "activity_id": 1,
+      "json_data": {
+        "gscWithProductionOfUsefulEnergy": true,
+        "sourceTypes": {
+          "gscWithProductionOfUsefulEnergy": {
+            "units": [
+              {
+                "gscUnitName": "GSC Unit Name 1",
+                "gscUnitType": "Kiln",
+                "fuels": [
+                  {
+                    "fuelType": {
+                      "fuelName": "Diesel",
+                      "fuelClassification": "Non-biomass"
+                    },
+                    "fuelDescription": "Diesel fuel",
+                    "annualFuelAmount": 20000,
+                    "emissions": [
+                      {
+                        "gasType": "CO2",
+                        "emission": 20000,
+                        "methodology": {
+                          "methodology": "Default EF"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "fuelType": {
+                      "fuelName": "Combustible Tall Oil",
+                      "fuelClassification": "Woody Biomass"
+                    },
+                    "fuelDescription": "Combustible tall oil",
+                    "annualFuelAmount": 3000,
+                    "emissions": [
+                      {
+                        "gasType": "CO2",
+                        "emission": 3000,
+                        "methodology": {
+                          "methodology": "Default EF"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "model": "reporting.reportrawactivitydata",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "updated_by_id": null,
+      "report_version_id": 7,
+      "facility_report_id": 26,
+      "activity_id": 32,
+      "json_data": {
+        "dehydratorVenting": true,
+        "associatedGasFlaring": true,
+        "otherFugitiveSources": true,
+        "sourceTypes": {
+          "dehydratorVenting": {
+            "emissions": [
+              {
+                "gasType": "CO2",
+                "emission": 1500,
+                "methodology": {
+                  "methodology": "Replacement Methodology"
+                }
+              }
+            ]
+          },
+          "associatedGasFlaring": {
+            "fuels": [
+              {
+                "fuelType": {
+                  "fuelName": "Natural Gas",
+                  "fuelClassification": "Non-biomass"
+                },
+                "annualFuelAmount": 2500,
+                "emissions": [
+                  {
+                    "gasType": "CO2",
+                    "emission": 2500,
+                    "methodology": {
+                      "methodology": "Replacement Methodology"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "otherFugitiveSources": {
+            "units": [
+              {
+                "type": "Source sub-type",
+                "sourceSubType": "Onshore Petroleum and Natural Gas Production - Other fugitive emission sources",
+                "emissions": [
+                  {
+                    "gasType": "CO2",
+                    "emission": 800,
+                    "methodology": {
+                      "methodology": "Replacement Methodology"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    "model": "reporting.reportrawactivitydata",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "gscWithProductionOfUsefulEnergy": true,
+        "sourceTypes": {
+          "gscWithProductionOfUsefulEnergy": {
+            "units": [
+              {
+                "gscUnitName": "GSC Unit Name 1",
+                "gscUnitType": "Kiln",
+                "fuels": [
+                  {
+                    "fuelType": {
+                      "fuelName": "Diesel",
+                      "fuelClassification": "Non-biomass"
+                    },
+                    "fuelDescription": "Diesel fuel",
+                    "annualFuelAmount": 12000,
+                    "emissions": [
+                      {
+                        "gasType": "CO2",
+                        "emission": 12000,
+                        "methodology": {
+                          "methodology": "Default EF"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "activity_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "00000000-0000-0000-0000-000000000005",
+      "facility_report_id": 50,
+      "report_version_id": 12,
+      "updated_by_id": null
+    }
   }
 ]

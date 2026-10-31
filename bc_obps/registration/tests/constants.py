@@ -1,7 +1,8 @@
 OPERATOR_FIXTURE = ("mock/operator.json",)
 USER_FIXTURE = ("mock/user.json",)
 ADDRESS_FIXTURE = ("mock/address.json",)
-OPERATION_FIXTURE = ("mock/operation.json",)
+# Operations reference their opt-in details, so those are loaded with them
+OPERATION_FIXTURE = ("mock/opted_in_operation_detail.json", "mock/operation.json")
 CONTACT_FIXTURE = ("mock/contact.json",)
 DOCUMENT_FIXTURE = ("mock/document.json",)
 BC_OBPS_REGULATED_OPERATION_FIXTURE = ("mock/bc_obps_regulated_operation.json",)

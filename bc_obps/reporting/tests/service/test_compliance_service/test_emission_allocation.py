@@ -6,7 +6,9 @@ from registration.models.regulated_product import RegulatedProduct
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.report_product import ReportProduct
 from reporting.service.compliance_service.emission_allocation import (
+    UnregulatedProductAllocation,
     get_allocated_emissions_by_report_product_emission_category,
+    get_allocated_to_unregulated_products,
     get_emissions_from_only_funny_category_13,
     get_fog_emissions,
     get_reporting_only_allocated,
@@ -239,3 +241,48 @@ class TestEmissionAllocation(TestCase):
 
         fog_allocated_emissions = get_fog_emissions(report_version.id)
         assert fog_allocated_emissions == Decimal("22")
+
+    def test_get_allocated_to_unregulated_products(self):
+        report_version = make_recipe("reporting.tests.utils.report_version")
+        refineries_line_tracing = RegulatedProduct.objects.get(name="Refineries line tracing", is_regulated=False)
+        fog = RegulatedProduct.objects.get(name="Fat, oil and grease collection, refining and storage")
+
+        def allocate(product, category_id, quantity, version=report_version):
+            return make_recipe(
+                "reporting.tests.utils.report_product_emission_allocation",
+                emission_category=EmissionCategory.objects.get(pk=category_id),
+                allocated_quantity=Decimal(quantity),
+                report_product__product=product,
+                report_version=version,
+                report_product__report_version=version,
+            )
+
+        # No allocations
+        assert get_allocated_to_unregulated_products(report_version.id) == []
+
+        # Allocations to a regulated product are ignored
+        allocate(RegulatedProduct.objects.filter(is_regulated=True).first(), 1, "1000.0001")
+        # Basic category allocations to unregulated products are counted
+        allocate(refineries_line_tracing, 1, "100.0001")
+        allocate(refineries_line_tracing, 2, "20.0002")
+        # Reporting-only category allocations are subtracted (fugitive is basic, so it nets out)
+        allocate(refineries_line_tracing, 12, "5.0005")
+        # FOG is an unregulated product, so it is counted too
+        allocate(fog, 1, "30")
+        allocate(fog, 7, "10")
+        # Allocations on another report version are ignored
+        allocate(refineries_line_tracing, 1, "999", version=make_recipe("reporting.tests.utils.report_version"))
+
+        # One row per unregulated product, ordered by product name
+        assert get_allocated_to_unregulated_products(report_version.id) == [
+            # (30 + 10) - 10
+            UnregulatedProductAllocation(
+                product_name="Fat, oil and grease collection, refining and storage",
+                allocated_emissions=Decimal("30.0000"),
+            ),
+            # (100.0001 + 20.0002) - (20.0002 + 5.0005)
+            UnregulatedProductAllocation(
+                product_name="Refineries line tracing",
+                allocated_emissions=Decimal("94.9996"),
+            ),
+        ]
