@@ -9,6 +9,8 @@ jobs:
   retry-on-failure:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      actions: write
     steps:
       - name: rerun ${{ inputs.run_id }}
         env:
@@ -16,5 +18,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ inputs.run_id }}
         run: |
-          gh run watch $RUN_ID > /dev/null 2>&1
-          gh run rerun $RUN_ID --failed
+          gh run watch "$RUN_ID" > /dev/null 2>&1
+          gh run rerun "$RUN_ID" --failed

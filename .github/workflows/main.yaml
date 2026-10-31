@@ -29,6 +29,9 @@ concurrency:
 env:
   PGUSER: postgres
 
+permissions:
+  contents: read
+
 jobs:
   evaluate-ci-conditions:
     # We use this main.yaml for push to main & dev, PRs, PR approvals, on manual command, and the merge queue. The amount of CI run changes depending on the triggering event and whether
@@ -51,6 +54,9 @@ jobs:
     #   - If the trigger is a merge queue, we run E2E tests with alternate names to bypass requirements.
     if: github.event_name != 'pull_request_review' || (github.event.review.state == 'approved' && !contains(github.event.pull_request.labels.*.name, 'run-all-ci'))
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       run_all_ci: ${{ steps.evaluate-conditions.outputs.RUN_ALL_CI }}
       is_merge_queue: ${{ steps.evaluate-conditions.outputs.IS_MERGE_QUEUE }}
@@ -129,8 +135,9 @@ jobs:
       - name: check nx affected target e2e:ci projects and save output
         id: check-nx-affected
         run: |
-          NX_AFFECTED_E2E=$(yarn nx show projects --affected --with-target e2e:ci --base=origin/develop)
-          echo "NX_AFFECTED_E2E="$NX_AFFECTED_E2E"" >> "$GITHUB_OUTPUT"
+          # Join the one-project-per-line output into a single space-separated line for $GITHUB_OUTPUT
+          NX_AFFECTED_E2E=$(yarn nx show projects --affected --with-target e2e:ci --base=origin/develop | paste -sd ' ' -)
+          echo "NX_AFFECTED_E2E=$NX_AFFECTED_E2E" >> "$GITHUB_OUTPUT"
         working-directory: ./bciers
         shell: bash
   check-backend-changes:
@@ -142,35 +149,62 @@ jobs:
   build-administration:
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-administration.yaml
+    permissions:
+      contents: read
+      actions: read
+      packages: write
   build-backend:
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-backend.yaml
+    permissions:
+      contents: read
+      packages: write
   build-compliance:
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-compliance.yaml
+    permissions:
+      contents: read
+      actions: read
+      packages: write
   build-dashboard:
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-dashboard.yaml
+    permissions:
+      contents: read
+      actions: read
+      packages: write
   build-dashboard-e2e:
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-dashboard-e2e.yaml
+    permissions:
+      contents: read
+      actions: read
+      packages: write
   build-registration:
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-registration.yaml
+    permissions:
+      contents: read
+      actions: read
+      packages: write
   build-reporting:
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/build-reporting.yaml
+    permissions:
+      contents: read
+      actions: read
+      packages: write
   test-code:
     needs: [evaluate-ci-conditions, check-nx-affected, check-backend-changes, check-frontend-changes]
     uses: ./.github/workflows/test-code.yaml
     with:
-      backend_has_changes: ${{ ((needs.check-backend-changes.outputs.has_changes == 'true') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && 'true' || 'false' }}
-      frontend_has_changes: ${{ ((needs.check-frontend-changes.outputs.has_changes == 'true') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && 'true' || 'false' }}
+      backend_has_changes: ${{ ((needs.check-backend-changes.outputs.has_changes == 'true') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) }}
+      frontend_has_changes: ${{ ((needs.check-frontend-changes.outputs.has_changes == 'true') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) }}
   test-backend:
     needs: [evaluate-ci-conditions, check-backend-changes]
     uses: ./.github/workflows/test-backend.yaml
     with:
-      backend_has_changes: ${{ ((needs.check-backend-changes.outputs.has_changes == 'true') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) && 'true' || 'false' }}
+      backend_has_changes: ${{ ((needs.check-backend-changes.outputs.has_changes == 'true') || (needs.evaluate-ci-conditions.outputs.run_all_ci == 'true')) }}
     secrets: inherit
   test-administration-e2e:
     needs:
@@ -348,12 +382,20 @@ jobs:
   trivy:
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/trivy.yaml
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
     with:
       # Trivy does not currently work with merge groups. See https://github.com/github/codeql-action/issues/1537
       is_merge_queue: ${{ needs.evaluate-ci-conditions.outputs.is_merge_queue == 'true' }}
   codeql:
     needs: [evaluate-ci-conditions]
     uses: ./.github/workflows/codeql.yaml
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
     with:
       # CodeQL does not currently work with merge groups. See https://github.com/github/codeql-action/issues/1537
       is_merge_queue: ${{ needs.evaluate-ci-conditions.outputs.is_merge_queue == 'true' }}

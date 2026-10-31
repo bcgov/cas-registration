@@ -8,13 +8,13 @@ on:
       backend_has_changes:
         description: "Whether any files in bc_obps directory have changed"
         required: false
-        type: string
-        default: "true"
+        type: boolean
+        default: true
       frontend_has_changes:
         description: "Whether any files in bciers directory have changed"
         required: false
-        type: string
-        default: "true"
+        type: boolean
+        default: true
 
 env:
   PGUSER: postgres
@@ -27,7 +27,7 @@ jobs:
   nx-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: inputs.frontend_has_changes == 'true'
+    if: inputs.frontend_has_changes
     defaults:
       run:
         working-directory: ./bciers
@@ -86,7 +86,7 @@ jobs:
   check-migrations:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: inputs.backend_has_changes == 'true'
+    if: inputs.backend_has_changes
     steps:
       - uses: actions/checkout@v7
         with:
@@ -102,7 +102,7 @@ jobs:
   check-immutable-migrations:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: inputs.backend_has_changes == 'true'
+    if: inputs.backend_has_changes
     steps:
       - uses: actions/checkout@v7
         with:
@@ -120,7 +120,7 @@ jobs:
   check-env-data:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: inputs.backend_has_changes == 'true'
+    if: inputs.backend_has_changes
     steps:
       - uses: actions/checkout@v7
         with:

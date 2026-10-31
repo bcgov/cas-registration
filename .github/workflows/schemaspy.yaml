@@ -12,7 +12,7 @@ concurrency:
 jobs:
   generate-schema-spy:
     name: Generate SchemaSpy Documentation
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgis/postgis:17-3.4
@@ -36,12 +36,14 @@ jobs:
         shell: bash
         run: |
           # find out the version from bc_obps .tool-versions file, which is used across the project and generate random secret for django
-          export PYTHON_VERSION=$(cat bc_obps/.tool-versions | grep python | cut -d' ' -f2)
-          export POETRY_VERSION=$(cat bc_obps/.tool-versions | grep poetry | cut -d' ' -f2)
-          export DJANGO_SECRET=$(openssl rand -base64 20 | tr -dc 'A-Za-z0-9!$#')
-          echo "PYTHON_VERSION=$PYTHON_VERSION" >> $GITHUB_OUTPUT
-          echo "POETRY_VERSION=$POETRY_VERSION" >> $GITHUB_OUTPUT
-          echo "DJANGO_SECRET=$DJANGO_SECRET" >> $GITHUB_OUTPUT
+          PYTHON_VERSION=$(grep python bc_obps/.tool-versions | cut -d' ' -f2)
+          POETRY_VERSION=$(grep poetry bc_obps/.tool-versions | cut -d' ' -f2)
+          DJANGO_SECRET=$(openssl rand -base64 20 | tr -dc 'A-Za-z0-9!$#')
+          {
+            echo "PYTHON_VERSION=$PYTHON_VERSION"
+            echo "POETRY_VERSION=$POETRY_VERSION"
+            echo "DJANGO_SECRET=$DJANGO_SECRET"
+          } >> "$GITHUB_OUTPUT"
       - name: Set up python
         id: setup-python
         uses: actions/setup-python@v7
