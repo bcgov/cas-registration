@@ -44,8 +44,6 @@ const InterestSummaryReviewComponent = ({
     setIsGeneratingInterestInvoice(false);
   };
 
-  console.log(data);
-
   return (
     <FormBase
       schema={interestSummaryReviewSchema}
