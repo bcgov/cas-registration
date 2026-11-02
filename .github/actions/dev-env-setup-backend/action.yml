@@ -11,7 +11,7 @@ runs:
         path: |
           ~/.asdf
           ./bc_obps/.tool-versions
-        key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('bc_obps/.tool-versions') }}-2
+        key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('bc_obps/.tool-versions') }}
     - name: Extract versions from tool-versions file
       id: versions
       shell: bash
