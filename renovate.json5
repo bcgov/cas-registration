@@ -43,6 +43,7 @@
   lockFileMaintenance: {
     enabled: true,
     schedule: ["every weekend"],
+    automerge: true,
   },
 
   // Waits N days before opening a PR for a newly released version.
@@ -70,6 +71,12 @@
       matchUpdateTypes: ["major"],
       groupName: null,
       addLabels: ["major-update"],
+    },
+    {
+      description: "Patch updates: automatically add to merge queue once checks pass.",
+      matchUpdateTypes: ["patch"],
+      addLabels: ["patch-update"],
+      automerge: true,
     },
   ],
 }
