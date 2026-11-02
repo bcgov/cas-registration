@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock, patch
+
 from django.test import TestCase
 from django.utils import timezone
 
@@ -54,7 +56,12 @@ class TestReportFacilitiesService(TestCase):
         # Assert that only facility1 remains after saving again
         self.assertEqual(FacilityReport.objects.filter(report_version=self.report_version).count(), 1)
 
-    def test_saved_selected_facilities_have_activities(self):
+    @patch(
+        "reporting.service.report_facilities_service.ReportProductService.update_empty_records_for_unregulated_products"
+    )
+    def test_saved_selected_facilities_have_activities_and_missing_unregulated_products(
+        self, mock_update_empty_records: MagicMock
+    ):
         # Arrange: add activities to the report operation
         self.report_version.report_operation.activities.set(
             baker.make_recipe(
@@ -82,6 +89,8 @@ class TestReportFacilitiesService(TestCase):
                 set(facility.activities.values_list("id", flat=True)),
                 set(expected_activities.values_list("id", flat=True)),
             )
+
+        mock_update_empty_records.assert_called_once_with(self.report_version.id, [f.id for f in saved_facilities])
 
     def test_save_selected_facilities_uses_snapshot_for_old_operator(self):
         """Test that snapshot data is used when the operator has changed."""
