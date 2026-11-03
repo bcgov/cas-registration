@@ -178,6 +178,26 @@ describe("The Breadcrumb component", () => {
       }
     });
   });
+  it("should only forward title and new-tab params to parent breadcrumb links", () => {
+    setupMocks(
+      "/compliance-administration/compliance-summaries/1/review-compliance-summary?sort_field=type&sort_order=asc&page=2&operation_name=x&from_contacts=true&title=Foo&operations_title=Bar&isNewTab=true&from_registration=true",
+    );
+    render(
+      <Bread
+        separator=">"
+        capitalizeLinks={true}
+        defaultLinks={[{ label: "Dashboard", href: "/" }]}
+      />,
+    );
+
+    const parentLink = screen.getByRole("link", {
+      name: "Compliance Summaries",
+    });
+    expect(parentLink).toHaveAttribute(
+      "href",
+      "/compliance-administration/compliance-summaries?title=Foo&operations_title=Bar&isNewTab=true&from_registration=true",
+    );
+  });
   it("should apply bold styling to the last breadcrumb item", () => {
     setupMocks("http://localhost:3000/administration/contacts");
     render(
