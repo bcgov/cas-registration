@@ -17,7 +17,7 @@ interface SimpleAccordionProps {
 }
 
 const ExpandIcon = () => (
-  <span className="text-2xl text-bc-bg-blue  group-hover:bg-bc-light-blue group-hover:rounded-full py-1 px-2">
+  <span className="inline-flex items-center justify-center w-10 h-10 rounded-full text-2xl leading-none text-bc-bg-blue group-hover:bg-bc-light-blue">
     ▼
   </span>
 );
@@ -40,7 +40,7 @@ const SimpleAccordion: React.FC<SimpleAccordionProps> = ({
         expandIcon={<ExpandIcon />}
         className="bg-transparent min-h-0 ps-0 pr-1 py-0 group cursor-pointer"
       >
-        <div className="font-medium text-md text-bc-bg-blue">{title}</div>
+        <div className="text-lg text-bc-bg-blue">{title}</div>
       </AccordionSummary>
       <AccordionDetails className="p-0 bg-transparent">
         {children}
