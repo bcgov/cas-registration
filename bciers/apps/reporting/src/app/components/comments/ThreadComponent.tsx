@@ -1,9 +1,10 @@
-import { Button, Grid, Typography } from "@mui/material";
-import { useTransition } from "react";
+import { Button, Grid, TextField, Typography } from "@mui/material";
+import { useTransition, useState } from "react";
 import { Thread } from "./types";
 import CommentComponent from "./CommentComponent";
 import ThreadFrame from "./ThreadFrame";
 import { actionHandler } from "@bciers/actions";
+import { postComment } from "../../utils/comments/postComment";
 import {
   handleApiResponse,
   useValidationErrors,
@@ -25,6 +26,7 @@ const ThreadComponent: React.FC<Props> = ({
 }) => {
   const [_, startTransition] = useTransition();
   const { setErrors, renderedErrors } = useValidationErrors();
+  const [replyMessage, setReplyMessage] = useState("");
 
   const handleResolveThread = (resolved: boolean) => {
     startTransition(async () => {
@@ -54,6 +56,19 @@ const ThreadComponent: React.FC<Props> = ({
       }
     });
   };
+  const handleCommentPost = (
+    reportVersionId: number,
+    threadId: number,
+    message: string,
+  ) => {
+    startTransition(async () => {
+      const resp = await postComment(reportVersionId, threadId, message);
+      if (handleApiResponse(resp, setErrors)) {
+        onThreadUpdated(resp as Thread);
+        setReplyMessage("");
+      }
+    });
+  };
 
   return (
     <ThreadFrame
@@ -79,9 +94,27 @@ const ThreadComponent: React.FC<Props> = ({
       ))}
       <Grid className="mt-2">
         {canUpdate && !thread.resolved && (
-          <Button variant="outlined" color="primary" fullWidth>
-            Reply
-          </Button>
+          <>
+            <TextField
+              fullWidth
+              label="Comment"
+              multiline
+              rows={3}
+              value={replyMessage}
+              onChange={(e) => setReplyMessage(e.target.value)}
+            />
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() =>
+                handleCommentPost(thread.version_id, thread.id, replyMessage)
+              }
+              fullWidth
+              disabled={!replyMessage}
+            >
+              Reply
+            </Button>
+          </>
         )}
       </Grid>
     </ThreadFrame>
