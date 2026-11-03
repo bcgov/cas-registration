@@ -26,7 +26,7 @@ runs:
     - name: Create PostgreSQL volume
       shell: bash
       run: docker volume create pgdata
-    - name: Start PostgreSQL and create database
+    - name: Start PostgreSQL
       working-directory: ./bc_obps
       shell: bash
       run: |
@@ -41,7 +41,10 @@ runs:
         until docker exec action-postgres pg_isready -U postgres; do
           sleep 1
         done
-
+    - name: Create database
+      working-directory: ./bc_obps
+      shell: bash
+      run: |
         make create_db
     - name: Load cached venv
       id: cached-poetry-dependencies
