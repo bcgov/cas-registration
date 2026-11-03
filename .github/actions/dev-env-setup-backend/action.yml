@@ -3,15 +3,6 @@ description: "Sets up backend development environment with Python, Poetry, and P
 runs:
   using: composite
   steps:
-    - name: asdf setup
-      uses: asdf-vm/actions/setup@v4
-    - uses: actions/cache@v6
-      id: asdf-cache-backend
-      with:
-        path: |
-          ~/.asdf
-          ./bc_obps/.tool-versions
-        key: ${{ runner.os }}-asdf-cache-backend-${{ hashFiles('bc_obps/.tool-versions') }}
     - name: Extract versions from tool-versions file
       id: versions
       shell: bash
@@ -32,23 +23,28 @@ runs:
       with:
         version: ${{ steps.versions.outputs.poetry-version }}
         virtualenvs-in-project: true
-    - name: Set up PostgreSQL
+    - name: Create PostgreSQL volume
       shell: bash
-      run: |
-        sudo apt-get -o Acquire::ForceIPv4=true update
-        sudo apt-get install -y \
-          linux-headers-$(uname -r) \
-          build-essential bison flex libssl-dev libreadline-dev zlib1g-dev \
-          libcurl4-openssl-dev uuid-dev icu-devtools libicu-dev
-        asdf plugin add postgres https://github.com/smashedtoatoms/asdf-postgres.git || true
-        asdf plugin update postgres
-        MAKELEVEL=0 POSTGRES_EXTRA_CONFIGURE_OPTIONS='--with-libxml' asdf install postgres ${{ steps.versions.outputs.postgres-version }}
-        asdf reshim
-    - name: Start PostgreSQL and create database
+      run: docker volume create pgdata
+    - name: Start PostgreSQL
       working-directory: ./bc_obps
       shell: bash
       run: |
-        make start_pg
+        docker run -d \
+          --name action-postgres \
+          -p 127.0.0.1:5432:5432 \
+          -v pgdata:/var/lib/postgresql/data \
+          -e POSTGRES_HOST_AUTH_METHOD=trust \
+          postgres:${{ steps.versions.outputs.postgres-version }}
+
+        echo "Waiting for PostgreSQL to start..."
+        until docker exec action-postgres pg_isready -U postgres; do
+          sleep 1
+        done
+    - name: Create database
+      working-directory: ./bc_obps
+      shell: bash
+      run: |
         make create_db
     - name: Load cached venv
       id: cached-poetry-dependencies
