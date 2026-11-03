@@ -267,7 +267,7 @@ class SubAccountPayload(BaseModel):
     type_of_organization: Literal[
         "140000000000001", "140000000000002", "140000000000003"
     ]  # type_of_account_holder from master account (Corporation)
-    registered_name: str  # Operation name + BORO ID
+    registered_name: str  # Operation name + compliance year
     boro_id: str = Field(pattern=r"^\d{2}-\d{4}$")
     # Optional fields (Default based on the S&P API documentation)
     account_type_id: Optional[PositiveInt] = 14  # Compliance
