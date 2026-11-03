@@ -24,6 +24,7 @@ runs:
         version: ${{ steps.versions.outputs.poetry-version }}
         virtualenvs-in-project: true
     - name: PostgreSQL data directory
+      shell: bash
       run: |
         mkdir -p $(pwd)/db-data
         sudo chown -R 999:999 $(pwd)/db-data # 999 is internal postgres user
