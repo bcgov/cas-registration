@@ -30,6 +30,8 @@ runs:
     #----------------------------------------------
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: |
+        poetry config virtualenvs.in-project true
+        poetry install --no-interaction --no-root
       working-directory: ./bc_obps
       shell: bash
