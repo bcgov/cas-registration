@@ -10,14 +10,14 @@ class TestCommentsV2Endpoints(CommonTestSetup):
     def setup_method(self):
         super().setup_method()
         self.report_version = make_recipe("reporting.tests.utils.report_version")
-        self.thread = make_recipe("reporting.tests.utils.comment_thread", report_version_id=self.report_version.id)
+        self.thread = make_recipe(
+            "reporting.tests.utils.comment_thread", report_version_id=self.report_version.id, facility_id=None
+        )
         self.comment = make_recipe(
             "reporting.tests.utils.comment", comment_thread_id=self.thread.id, report_version_id=self.report_version.id
         )
         self.report_version_id = self.report_version.id
-        self.endpoint_under_test = (
-            f"/api/reporting/v2/report-version/{self.report_version_id}/comments/{self.comment.id}"
-        )
+        self.endpoint_under_test = f"/api/reporting/v2/report-version/{self.report_version_id}/threads/{self.thread.id}/comments/{self.comment.id}"
         # Manually set the created_by field so we know who owns the comment
         Comment.objects.filter(id=self.comment.id).update(created_by=self.user)
         self.comment.refresh_from_db()
@@ -26,21 +26,45 @@ class TestCommentsV2Endpoints(CommonTestSetup):
     def test_delete_last_comment_removes_thread(self, role):
         response = TestUtils.mock_delete_with_auth_role(self, role, self.endpoint_under_test)
 
-        assert response.status_code == 200
-        assert response.json() == 200
+        assert response.status_code == 204
+        assert response.content == b""
         assert not Comment.objects.filter(id=self.comment.id).exists()
         assert not CommentThread.objects.filter(id=self.thread.id).exists()
 
     @pytest.mark.parametrize("role", ["cas_director", "cas_analyst"])
     def test_delete_preserves_thread_and_remaining_comments(self, role):
+        author = self.user
         another_comment = make_recipe(
-            "reporting.tests.utils.comment", comment_thread_id=self.thread.id, report_version_id=self.report_version.id
+            "reporting.tests.utils.comment",
+            comment_thread_id=self.thread.id,
+            report_version_id=self.report_version.id,
         )
+        Comment.objects.filter(id=another_comment.id).update(created_by=author)
+        another_comment.refresh_from_db()
 
         response = TestUtils.mock_delete_with_auth_role(self, role, self.endpoint_under_test)
 
         assert response.status_code == 200
-        assert response.json() == 200
+        data = response.json()
+        assert len(data["comments"]) == 1
+        timestamp = data["comments"][0]["timestamp"]
+        assert data == {
+            "id": self.thread.id,
+            "version_id": self.report_version.id,
+            "facility_id": None,
+            "facility_name": None,
+            "resolved": self.thread.resolved,
+            "comments": [
+                {
+                    "id": another_comment.id,
+                    "version_id": self.report_version.id,
+                    "author": author.get_full_name(),
+                    "timestamp": timestamp,
+                    "comment": another_comment.comment,
+                    "user_can_edit": True,
+                }
+            ],
+        }
         assert not Comment.objects.filter(id=self.comment.id).exists()
         assert CommentThread.objects.filter(id=self.thread.id).exists()
         assert list(Comment.objects.filter(comment_thread_id=self.thread.id).values_list("id", flat=True)) == [
@@ -68,8 +92,23 @@ class TestCommentsV2Endpoints(CommonTestSetup):
 
     @pytest.mark.parametrize("role", ["cas_director", "cas_analyst"])
     def test_delete_nonexistent_comment_returns_not_found(self, role):
-        response = TestUtils.mock_delete_with_auth_role(self, role, "/api/reporting/v2/report-version/1/comments/0")
+        endpoint = f"/api/reporting/v2/report-version/{self.report_version.id}/threads/{self.thread.id}/comments/0"
+        response = TestUtils.mock_delete_with_auth_role(self, role, endpoint)
 
         assert_error_response(response, 404, "Not Found")
         assert Comment.objects.filter(id=self.comment.id).exists()
         assert CommentThread.objects.filter(id=self.thread.id).exists()
+
+    @pytest.mark.parametrize("role", ["cas_director", "cas_analyst"])
+    def test_delete_comment_in_another_thread_returns_not_found(self, role):
+        another_thread = make_recipe("reporting.tests.utils.comment_thread", report_version_id=self.report_version.id)
+        endpoint = (
+            f"/api/reporting/v2/report-version/{self.report_version.id}"
+            f"/threads/{another_thread.id}/comments/{self.comment.id}"
+        )
+        response = TestUtils.mock_delete_with_auth_role(self, role, endpoint)
+
+        assert_error_response(response, 404, "Not Found")
+        assert Comment.objects.filter(id=self.comment.id).exists()
+        assert CommentThread.objects.filter(id=self.thread.id).exists()
+        assert CommentThread.objects.filter(id=another_thread.id).exists()
