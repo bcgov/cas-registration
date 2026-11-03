@@ -8,7 +8,6 @@ describe("The thread frame component", () => {
         <span>Child content</span>
       </ThreadFrame>,
     );
-
     expect(screen.getByText("Internal Comment")).toBeVisible();
     expect(screen.getByText(/Report Version ID:.*42/)).toBeVisible();
     expect(screen.getByText("Child content")).toBeVisible();
@@ -31,9 +30,7 @@ describe("The thread frame component", () => {
           onResolveClicked={onResolveClicked}
         />,
       );
-
       fireEvent.click(screen.getByRole("button", { name: label }));
-
       expect(onResolveClicked).toHaveBeenCalledWith(expected);
     },
   );
@@ -43,7 +40,6 @@ describe("The thread frame component", () => {
       <ThreadFrame version_id={42} resolved={false} />,
     );
     expect(container.querySelector(".resolved")).toBeNull();
-
     rerender(<ThreadFrame version_id={42} resolved={true} />);
     expect(container.querySelector(".resolved")).not.toBeNull();
   });
