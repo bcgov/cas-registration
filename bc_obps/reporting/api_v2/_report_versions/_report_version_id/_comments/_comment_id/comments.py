@@ -2,6 +2,7 @@ from typing import Literal, Tuple
 from reporting.api_v2._report_versions._report_version_id.comment_thread_schema import CommentThreadSchema
 from reporting.models.comment_thread import CommentThread
 from uuid import UUID
+from reporting.api_v2._report_versions._report_version_id.comment_thread_schema import CommentThreadIn
 from reporting.service.comment_service import CommentService
 from common.api.utils.current_user_utils import get_current_user_guid
 from common.permissions import authorize
@@ -32,3 +33,24 @@ def delete_comment(
     if thread is None:
         return 204, None
     return 200, thread
+
+
+@router.post(
+    "report-version/{version_id}/threads/{comment_thread_id}/comments",
+    response={201: CommentThreadSchema, custom_codes_4xx: Message},
+    tags=[*EMISSIONS_REPORT_TAGS, *REPORT_COMMENTS_TAGS],
+    description="Creates a comment for the specified report version and thread.",
+    auth=authorize("cas_director_analyst"),
+)
+@transaction.atomic
+def create_comment(
+    request: HttpRequest, version_id: str, comment_thread_id: str, payload: CommentThreadIn
+) -> Tuple[Literal[201], CommentThread]:
+    user_guid: UUID = get_current_user_guid(request)
+    thread = CommentService.create_comment(
+        comment_thread_id=int(comment_thread_id),
+        report_version_id=int(version_id),
+        content=payload.comment,
+        user_guid=user_guid,
+    )
+    return 201, thread
