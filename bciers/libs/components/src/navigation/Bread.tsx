@@ -12,6 +12,15 @@ type TBreadCrumbProps = {
   zone?: string;
 };
 
+// Params forwarded to parent breadcrumb links. Anything else (grid sort/page/filters,
+// one-page flow flags) belongs to the current page only — forwarding it can break the
+// parent page (e.g. sort_field=type sent to the compliance summaries list API).
+//  - `title` / `*_title`: names for ID segments, which the parent page's crumbs need
+//  - `isNewTab` / `from_registration`: tab-wide flags so NewTabBanner keeps showing
+const FORWARDED_PARAMS = ["title", "isNewTab", "from_registration"];
+const isForwardedParam = (key: string): boolean =>
+  FORWARDED_PARAMS.includes(key) || key.endsWith("_title");
+
 // 🛠️ Custom function to validate UUID using regex
 const isValidUUID = (segment: string): boolean => {
   const uuidRegex =
@@ -46,6 +55,11 @@ export default function Bread({
   const pathNames = paths.split("/").filter((path) => path);
   const searchParams = useSearchParams();
   const crumbTitles = Object.fromEntries(searchParams.entries());
+
+  const parentSearchParams = new URLSearchParams(
+    [...searchParams.entries()].filter(([key]) => isForwardedParam(key)),
+  );
+  const queryString = serializeSearchParams(parentSearchParams);
 
   // Not showing breadcrumbs on the onboarding page
   const showBreadcrumb = paths !== "/onboarding";
@@ -185,7 +199,6 @@ export default function Bread({
                 const path = `/${slicedPathNames
                   .slice(0, crumb.index + 1)
                   .join("/")}`;
-                const queryString = serializeSearchParams(searchParams);
                 const href = zone
                   ? `/${zone}${path}${queryString}`
                   : `${path}${queryString}`;
