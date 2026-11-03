@@ -26,8 +26,8 @@ runs:
     - name: PostgreSQL data directory
       shell: bash
       run: |
-        mkdir -p $(pwd)/db-data
-        sudo chown -R 999:999 $(pwd)/db-data # 999 is internal postgres user
+        mkdir -p ~/db-data
+        sudo chown -R 999:999 ~/db-data # 999 is internal postgres user
     - name: Start PostgreSQL and create database
       working-directory: ./bc_obps
       shell: bash
@@ -35,7 +35,7 @@ runs:
         docker run -d \
           --name action-postgres \
           -p 5432:5432 \
-          -v $(pwd)/db-data:/var/lib/postgresql/data \
+          -v ~/db-data:/var/lib/postgresql/data \
           -e POSTGRES_HOST_AUTH_METHOD=trust \
           postgres:${{ steps.versions.outputs.postgres-version }}
 
