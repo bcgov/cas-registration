@@ -33,6 +33,12 @@ runs:
           -v $(pwd)/db-data:/var/lib/postgresql/data \
           -e POSTGRES_HOST_AUTH_METHOD=trust \
           postgres:${{ steps.versions.outputs.postgres-version }}
+
+        echo "Waiting for PostgreSQL to start..."
+        until docker exec action-postgres pg_isready -U postgres; do
+          sleep 1
+        done
+
         make create_db
     - name: Load cached venv
       id: cached-poetry-dependencies
