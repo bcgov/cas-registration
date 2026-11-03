@@ -18,3 +18,12 @@ class CommentService:
             thread.delete()
             return None
         return thread
+
+    @staticmethod
+    def create_comment(comment_thread_id: int, report_version_id: int, content: str, user_guid: UUID) -> CommentThread:
+        Comment.objects.create(
+            comment_thread_id=comment_thread_id,
+            report_version_id=report_version_id,
+            comment=content,
+        )
+        return CommentThreadService.threads_with_annotated_comments(user_guid=user_guid).get(id=comment_thread_id)
