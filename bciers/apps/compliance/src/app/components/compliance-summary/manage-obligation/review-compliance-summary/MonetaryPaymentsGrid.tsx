@@ -18,7 +18,19 @@ export const MonetaryPaymentsGrid = ({ value }: { value: PaymentData }) => {
       {showAlert && (
         <AlertNote>You have not made any monetary payment yet.</AlertNote>
       )}
-      <DataGrid columns={columns} initialData={payments} />
+      <DataGrid
+        columns={columns}
+        initialData={payments}
+        sx={{
+          "& .MuiDataGrid-virtualScroller": {
+            height: "fit-content",
+            minHeight: "10vh",
+          },
+          "& .MuiDataGrid-overlayWrapper": {
+            height: "0vh",
+          },
+        }}
+      />
     </SimpleAccordion>
   );
 };
