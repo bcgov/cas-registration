@@ -2,6 +2,8 @@ name: "Set up backend dev environment"
 description: "Sets up backend development environment with Python, Poetry, and PostgreSQL"
 runs:
   using: composite
+  volumes:
+    pgdata: # PostgreSQL data volume, managed by docker
   steps:
     - name: Extract versions from tool-versions file
       id: versions
@@ -23,11 +25,6 @@ runs:
       with:
         version: ${{ steps.versions.outputs.poetry-version }}
         virtualenvs-in-project: true
-    - name: PostgreSQL data directory
-      shell: bash
-      run: |
-        mkdir -p ~/db-data
-        sudo chown -R 999:999 ~/db-data # 999 is internal postgres user
     - name: Start PostgreSQL and create database
       working-directory: ./bc_obps
       shell: bash
@@ -35,7 +32,7 @@ runs:
         docker run -d \
           --name action-postgres \
           -p 5432:5432 \
-          -v ~/db-data:/var/lib/postgresql/data \
+          -v pgdata:/var/lib/postgresql/data \
           -e POSTGRES_HOST_AUTH_METHOD=trust \
           postgres:${{ steps.versions.outputs.postgres-version }}
 
