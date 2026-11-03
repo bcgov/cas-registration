@@ -16,7 +16,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 @router.delete(
     "report-version/{version_id}/threads/{thread_id}/comments/{comment_id}",
-    response={200: CommentThreadSchema, custom_codes_4xx: Message},
+    response={200: CommentThreadSchema, 204: None, custom_codes_4xx: Message},
     tags=[*EMISSIONS_REPORT_TAGS, *REPORT_COMMENTS_TAGS],
     description="Deletes a comment authored by the current user and removes its thread if empty.",
     auth=authorize("cas_director_analyst"),
@@ -24,9 +24,11 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 @transaction.atomic
 def delete_comment(
     request: HttpRequest, version_id: str, thread_id: str, comment_id: str
-) -> Tuple[Literal[200], CommentThread | None]:
+) -> Tuple[Literal[200], CommentThread] | Tuple[Literal[204], None]:
     user_guid: UUID = get_current_user_guid(request)
     thread = CommentService.delete_comment(
         version_id=int(version_id), thread_id=int(thread_id), comment_id=int(comment_id), user_guid=user_guid
     )
+    if thread is None:
+        return 204, None
     return 200, thread

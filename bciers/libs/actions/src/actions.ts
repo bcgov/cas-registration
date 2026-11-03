@@ -196,7 +196,9 @@ export async function actionHandler(
           throw error;
         }
 
-        const data = await response.json();
+        // Handle empty responses (eg: 204 No Content) that would fail JSON parsing
+        const text = await response.text();
+        const data = text ? JSON.parse(text) : null;
 
         if (method !== "GET" && pathToRevalidate) {
           revalidatePath(pathToRevalidate);

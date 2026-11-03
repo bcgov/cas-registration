@@ -233,7 +233,10 @@ describe("The Comments Sidebar", () => {
     }) as Thread;
 
   it("removes a comment from its thread after deleting it", async () => {
-    actionHandler.mockResolvedValueOnce({ success: true });
+    // The delete endpoint returns the updated thread when it still has comments
+    actionHandler.mockResolvedValueOnce(
+      makeDeletableThread(1, [{ id: 12, comment: "Second comment" }]),
+    );
     render(
       <CommentsSidebar
         version_id={42}
@@ -260,7 +263,8 @@ describe("The Comments Sidebar", () => {
   });
 
   it("removes the whole thread after deleting its last comment", async () => {
-    actionHandler.mockResolvedValueOnce({ success: true });
+    // The delete endpoint returns a 204/null response when the thread was deleted too
+    actionHandler.mockResolvedValueOnce(null);
     render(
       <CommentsSidebar
         version_id={42}
