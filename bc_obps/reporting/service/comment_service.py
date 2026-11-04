@@ -20,7 +20,7 @@ class CommentService:
         return thread
 
     @staticmethod
-    def create_comment(comment_thread_id: int, report_version_id: int, content: str, user_guid: UUID) -> CommentThread:
+    def create_comment(report_version_id: int, comment_thread_id: int, user_guid: UUID, content: str) -> CommentThread:
         Comment.objects.create(
             comment_thread_id=comment_thread_id,
             report_version_id=report_version_id,

@@ -1,3 +1,4 @@
+from django.db import connection
 from django.test import TestCase
 from model_bakery.baker import make_recipe
 from reporting.models.comment import Comment
@@ -7,24 +8,31 @@ from reporting.service.comment_service import CommentService
 
 class TestCommentService(TestCase):
     def setUp(self):
+        self.user = make_recipe('registration.tests.utils.cas_director')
+        with connection.cursor() as cursor:  # set guid for polpulating the audit fields
+            cursor.execute("select set_config('my.guid', %s, true)", [str(self.user.user_guid)])
         self.thread = make_recipe('reporting.tests.utils.comment_thread')
         self.comment = make_recipe('reporting.tests.utils.comment', comment_thread=self.thread)
-        self.comment.refresh_from_db()
-        self.user_guid = self.comment.created_by_id
 
     def test_delete_comment(self):
         self.assertTrue(Comment.objects.filter(id=self.comment.id).exists())
-        CommentService.delete_comment(self.thread.report_version_id, self.thread.id, self.comment.id, self.user_guid)
+        CommentService.delete_comment(
+            self.thread.report_version_id, self.thread.id, self.comment.id, self.user.user_guid
+        )
         self.assertFalse(Comment.objects.filter(id=self.comment.id).exists())
 
     def test_delete_comment_removes_thread_if_empty(self):
         self.assertTrue(CommentThread.objects.filter(id=self.thread.id).exists())
-        CommentService.delete_comment(self.thread.report_version_id, self.thread.id, self.comment.id, self.user_guid)
+        CommentService.delete_comment(
+            self.thread.report_version_id, self.thread.id, self.comment.id, self.user.user_guid
+        )
         self.assertFalse(CommentThread.objects.filter(id=self.thread.id).exists())
 
     def test_delete_comment_does_not_remove_thread_if_not_empty(self):
         another_comment = make_recipe('reporting.tests.utils.comment', comment_thread=self.thread)
-        CommentService.delete_comment(self.thread.report_version_id, self.thread.id, self.comment.id, self.user_guid)
+        CommentService.delete_comment(
+            self.thread.report_version_id, self.thread.id, self.comment.id, self.user.user_guid
+        )
         self.assertTrue(CommentThread.objects.filter(id=self.thread.id).exists())
         self.assertTrue(Comment.objects.filter(id=another_comment.id).exists())
 
@@ -33,3 +41,26 @@ class TestCommentService(TestCase):
             CommentService.delete_comment(
                 self.thread.report_version_id, self.thread.id, self.comment.id, '00000000-0000-0000-0000-000000000000'
             )
+
+    def test_create_comment_creates_comment_on_thread(self):
+        self.assertEqual(Comment.objects.filter(comment_thread_id=self.thread.id).count(), 1)
+        CommentService.create_comment(
+            report_version_id=self.thread.report_version_id,
+            comment_thread_id=self.thread.id,
+            user_guid=self.user.user_guid,
+            content='New comment',
+        )
+        self.assertEqual(Comment.objects.filter(comment_thread_id=self.thread.id).count(), 2)
+        Comment.objects.get(comment_thread_id=self.thread.id, comment='New comment')
+
+    def test_create_comment_returns_thread_with_annotated_comments(self):
+        thread = CommentService.create_comment(
+            report_version_id=self.thread.report_version_id,
+            comment_thread_id=self.thread.id,
+            user_guid=self.user.user_guid,
+            content='New comment',
+        )
+        self.assertEqual(thread.id, self.thread.id)
+        new_comment = next(c for c in thread.comments.all() if c.comment == 'New comment')
+        self.assertEqual(new_comment.created_by_id, self.user.user_guid)
+        self.assertTrue(new_comment.user_can_edit)
