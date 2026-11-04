@@ -3,16 +3,7 @@ description: "Sets up frontend development environment with Node.js and yarn"
 runs:
   using: composite
   steps:
-    - name: Extract Node.js version from tool-versions file
-      id: versions
-      shell: bash
-      run: |
-        NODE_VERSION=$(grep "^nodejs" ./.tool-versions | cut -d' ' -f2)
-        echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
-    - name: Set up Node.js
-      uses: actions/setup-node@v7
-      with:
-        node-version: ${{ steps.versions.outputs.node-version }}
+    - uses: jdx/mise-action@v5
     - name: yarn modern
       shell: bash
       run: |

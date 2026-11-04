@@ -3,60 +3,32 @@ description: "Sets up backend development environment with Python, Poetry, and P
 runs:
   using: composite
   steps:
-    - name: Extract versions from tool-versions file
-      id: versions
+    - uses: jdx/mise-action@v5
+      with:
+        working_directory: ./bc_obps
+    - name: Setup PGDATA
       shell: bash
       run: |
-        PYTHON_VERSION=$(grep "^python" ./bc_obps/.tool-versions | cut -d' ' -f2)
-        POETRY_VERSION=$(grep "^poetry" ./bc_obps/.tool-versions | cut -d' ' -f2)
-        POSTGRES_VERSION=$(grep "^postgres" ./bc_obps/.tool-versions | cut -d' ' -f2)
-        echo "python-version=$PYTHON_VERSION" >> $GITHUB_OUTPUT
-        echo "poetry-version=$POETRY_VERSION" >> $GITHUB_OUTPUT
-        echo "postgres-version=$POSTGRES_VERSION" >> $GITHUB_OUTPUT
-    - name: Set up Python
-      id: setup-python
-      uses: actions/setup-python@v7
-      with:
-        python-version: ${{ steps.versions.outputs.python-version }}
-    - name: Set up Poetry
-      uses: snok/install-poetry@v1
-      with:
-        version: ${{ steps.versions.outputs.poetry-version }}
-        virtualenvs-in-project: true
-    - name: Create PostgreSQL volume
-      shell: bash
-      run: docker volume create pgdata
-    - name: Start PostgreSQL
-      working-directory: ./bc_obps
-      shell: bash
-      run: |
-        docker run -d \
-          --name action-postgres \
-          -p 127.0.0.1:5432:5432 \
-          -v pgdata:/var/lib/postgresql/data \
-          -e POSTGRES_HOST_AUTH_METHOD=trust \
-          postgres:${{ steps.versions.outputs.postgres-version }}
-
-        echo "Waiting for PostgreSQL to start..."
-        until docker exec action-postgres pg_isready -U postgres; do
-          sleep 1
-        done
+        mkdir -p ${{ runner.temp }}/pgdata
+        echo "PGDATA=${{ runner.temp }}/pgdata" >> $GITHUB_ENV
     - name: Create database
       working-directory: ./bc_obps
       shell: bash
       run: |
+        initdb -U postgres -A trust
+        make start_pg
         make create_db
     - name: Load cached venv
       id: cached-poetry-dependencies
       uses: actions/cache@v6
       with:
         path: bc_obps/.venv
-        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('bc_obps/poetry.lock') }}
+        key: venv-${{ runner.os }}-${{ hashFiles('bc_obps/.tool-versions') }}-${{ hashFiles('bc_obps/poetry.lock') }}
     #----------------------------------------------
     # install dependencies if cache does not exist
     #----------------------------------------------
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --no-root
+      run: POETRY_VIRTUALENVS_IN_PROJECT=true poetry install --no-interaction --no-root
       working-directory: ./bc_obps
       shell: bash
