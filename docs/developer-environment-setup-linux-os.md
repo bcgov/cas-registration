@@ -25,7 +25,11 @@ sudo apt-get install -y libbz2-dev libsqlite3-dev tk-dev liblzma-dev
 sudo apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libcairo2
 ```
 
-### Install asdf
+### Install asdf or `mise`
+
+Install [mise-en-place](https://mise.jdx.dev/getting-started.html)
+
+_or_
 
 Install [asdf](https://asdf-vm.com/) (0.16+) and add the following to your `~/.bashrc`:
 
@@ -237,16 +241,23 @@ This guide will help you set up the frontend development environment for the CAS
 
 ## Installation Guide
 
-### Using asdf (Recommended Method)
+### Using asdf or `mise` (Recommended Method)
 
-1. **Install asdf** (if not already installed — see [Prerequisites](#prerequisites) above for setup)
+1. **Install asdf or `mise`** (if not already installed — see [Prerequisites](#prerequisites) above for setup)
 
 2. **Install Node.js plugin and version**
 
+   If using asdf, add the plugin first
+
    ```bash
    asdf plugin add nodejs
-   asdf install nodejs 24.16.0
-   asdf reshim nodejs
+   ```
+
+   Then either will pick up the .tools-version file:
+
+   ```bash
+   asdf install
+   mise install
    ```
 
 ### Alternative Method (Without asdf)
@@ -389,7 +400,7 @@ The shared libraries are automatically available to all applications in the mono
 
 ### Prerequisites
 
-- Node.js 24.16.0 (managed by asdf)
+- Node.js 24.16.0
 - Yarn (via Node's Corepack)
 - Nx CLI (installed via project dependencies)
 

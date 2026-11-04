@@ -2,7 +2,11 @@
 
 ## Prerequisites
 
-### 1. Install asdf
+### 1. Install asdf or `mise`
+
+Install [mise](https://mise.jdx.dev/getting-started.html)
+
+_or_
 
 Install [asdf](https://asdf-vm.com/) via Homebrew (recommended):
 
