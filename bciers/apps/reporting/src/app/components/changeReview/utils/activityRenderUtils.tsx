@@ -52,6 +52,7 @@ export const renderNumberField = (
   key: string,
   deletedStyles: React.CSSProperties,
   value: number,
+  label: string = key,
 ): React.ReactNode => (
   <NumberField.Root
     name={key}
@@ -63,6 +64,7 @@ export const renderNumberField = (
       <NumberField.Input
         style={{ ...numberStyles, ...deletedStyles }}
         name={key}
+        aria-label={label}
       />
     </NumberField.Group>
   </NumberField.Root>
@@ -89,7 +91,14 @@ export const renderField = (
   );
 
   if (typeof value === "number") {
-    return wrapper(renderNumberField(key, deletedStyles, value));
+    return wrapper(
+      renderNumberField(
+        key,
+        deletedStyles,
+        value,
+        getFieldLabel(key, fieldDisplayTitles),
+      ),
+    );
   }
 
   return wrapper(<span style={deletedStyles}>{String(value)}</span>);
@@ -286,22 +295,12 @@ export const renderObject = (
               {renderObject(value, key, isDeleted, fieldDisplayTitles)}
             </span>
           ) : typeof value === "number" ? (
-            <NumberField.Root
-              name={key}
-              disabled
-              value={transformToNumberOrUndefined(value)}
-              format={{ maximumFractionDigits: 4 }}
-            >
-              <NumberField.Group>
-                <NumberField.Input
-                  style={{
-                    ...numberStyles,
-                    ...deletedStyles,
-                  }}
-                  name={key}
-                />
-              </NumberField.Group>
-            </NumberField.Root>
+            renderNumberField(
+              key,
+              deletedStyles,
+              value,
+              getFieldLabel(key, fieldDisplayTitles),
+            )
           ) : (
             <span style={deletedStyles}>{String(value)}</span>
           )}

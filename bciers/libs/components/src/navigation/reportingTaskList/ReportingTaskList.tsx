@@ -10,8 +10,11 @@ interface Props {
 
 const ReportingTaskList: React.FC<Props> = ({ elements }) => {
   return (
-    <nav className="w-75 mr-4 h-fit border-solid border-0 border-r-2 border-bc-light-grey-300">
-      <List component="div" disablePadding>
+    <nav
+      aria-label="Report tasks"
+      className="w-75 mr-4 h-fit border-solid border-0 border-r-2 border-bc-light-grey-300"
+    >
+      <List disablePadding>
         {elements.map((elt) => {
           const TaskListItem = taskListItemFactory(elt);
           return (
