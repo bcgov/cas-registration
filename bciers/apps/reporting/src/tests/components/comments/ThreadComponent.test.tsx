@@ -10,8 +10,9 @@ describe("The comment thread component", () => {
   it("displays the facility and the list of comments", () => {
     render(
       <ThreadComponent
-        canReply={true}
+        canUpdate={true}
         onThreadUpdated={vi.fn()}
+        onThreadDeleted={vi.fn()}
         thread={{
           id: 1,
           version_id: 42,
@@ -52,6 +53,7 @@ describe("The comment thread component", () => {
       <ThreadComponent
         canUpdate={true}
         onThreadUpdated={vi.fn()}
+        onThreadDeleted={vi.fn()}
         thread={{
           id: 1,
           version_id: 42,
@@ -69,11 +71,12 @@ describe("The comment thread component", () => {
     expect(screen.getByRole("button", { name: "Reply" })).toBeVisible();
     expect(screen.queryByText("New comment")).not.toBeInTheDocument();
   });
-  it("does not show the reply button when canReply is false", () => {
+  it("does not show the reply button when canUpdate is false", () => {
     render(
       <ThreadComponent
         canUpdate={false}
         onThreadUpdated={vi.fn()}
+        onThreadDeleted={vi.fn()}
         thread={{
           id: 1,
           version_id: 42,
@@ -93,6 +96,7 @@ describe("The comment thread component", () => {
       <ThreadComponent
         canUpdate={true}
         onThreadUpdated={vi.fn()}
+        onThreadDeleted={vi.fn()}
         thread={{ id: 1, version_id: 42, resolved: true, comments: [] }}
       />,
     );
@@ -116,6 +120,7 @@ describe("The comment thread component", () => {
         <ThreadComponent
           canUpdate={true}
           onThreadUpdated={onThreadUpdated}
+          onThreadDeleted={vi.fn()}
           thread={thread}
         />,
       );
@@ -144,6 +149,7 @@ describe("The comment thread component", () => {
       <ThreadComponent
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
+        onThreadDeleted={vi.fn()}
         thread={{ id: 1, version_id: 42, resolved: false, comments: [] }}
       />,
     );
@@ -152,5 +158,118 @@ describe("The comment thread component", () => {
 
     expect(await screen.findByText("Could not resolve")).toBeVisible();
     expect(onThreadUpdated).not.toHaveBeenCalled();
+  });
+
+  it("notifies the parent of the updated thread when deleting a comment returns 200", async () => {
+    const thread = {
+      id: 1,
+      version_id: 42,
+      resolved: false,
+      comments: [
+        {
+          id: 7,
+          version_id: 42,
+          author: "An Author",
+          comment: "Delete me",
+          user_can_edit: true,
+        },
+        {
+          id: 8,
+          version_id: 42,
+          author: "An Author",
+          comment: "But keep me",
+          user_can_edit: true,
+        },
+      ],
+    };
+    const updatedThread = {
+      ...thread,
+      comments: [
+        {
+          id: 8,
+          version_id: 42,
+          author: "An Author",
+          comment: "But keep me",
+          user_can_edit: true,
+        },
+      ],
+    };
+    actionHandler.mockResolvedValueOnce(updatedThread);
+    const onThreadUpdated = vi.fn();
+    const onThreadDeleted = vi.fn();
+    render(
+      <ThreadComponent
+        canUpdate={true}
+        onThreadUpdated={onThreadUpdated}
+        onThreadDeleted={onThreadDeleted}
+        thread={deletableThread}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete comment" }));
+
+    await waitFor(() =>
+      expect(onThreadUpdated).toHaveBeenCalledWith(updatedThread),
+    );
+    expect(onThreadDeleted).not.toHaveBeenCalled();
+    expect(actionHandler).toHaveBeenCalledWith(
+      "reporting/v2/report-version/42/threads/1/comments/7",
+      "DELETE",
+    );
+  });
+
+  const deletableThread = {
+    id: 1,
+    version_id: 42,
+    resolved: false,
+    comments: [
+      {
+        id: 7,
+        version_id: 42,
+        author: "An Author",
+        comment: "Delete me",
+        user_can_edit: true,
+      },
+    ],
+  };
+
+  it("notifies the parent of the deleted thread when deleting a comment returns 204", async () => {
+    // A 204 response has no body, so actionHandler resolves it to null
+    actionHandler.mockResolvedValueOnce(null);
+    const onThreadUpdated = vi.fn();
+    const onThreadDeleted = vi.fn();
+    render(
+      <ThreadComponent
+        canUpdate={true}
+        onThreadUpdated={onThreadUpdated}
+        onThreadDeleted={onThreadDeleted}
+        thread={deletableThread}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete comment" }));
+
+    await waitFor(() => expect(onThreadDeleted).toHaveBeenCalledWith(1));
+    expect(onThreadUpdated).not.toHaveBeenCalled();
+  });
+
+  it("shows an error and does not notify the parent when deleting a comment fails", async () => {
+    actionHandler.mockResolvedValueOnce({ error: "Could not delete" });
+    const onThreadUpdated = vi.fn();
+    const onThreadDeleted = vi.fn();
+    render(
+      <ThreadComponent
+        canUpdate={true}
+        onThreadUpdated={onThreadUpdated}
+        onThreadDeleted={onThreadDeleted}
+        thread={deletableThread}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete comment" }));
+
+    expect(await screen.findByText("Could not delete")).toBeVisible();
+    expect(onThreadUpdated).not.toHaveBeenCalled();
+    expect(onThreadDeleted).not.toHaveBeenCalled();
   });
 });

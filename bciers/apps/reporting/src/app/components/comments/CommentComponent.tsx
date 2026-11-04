@@ -1,12 +1,14 @@
-import { Paper, Typography } from "@mui/material";
+import { IconButton, Paper, Typography } from "@mui/material";
+import { DeleteOutlined } from "@mui/icons-material";
 import { Comment } from "./types";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
 
 interface Props {
   comment: Comment;
+  handleDelete: (reportVersionId: number, commentId: number) => void;
 }
 
-const CommentComponent: React.FC<Props> = ({ comment }) => {
+const CommentComponent: React.FC<Props> = ({ comment, handleDelete }) => {
   return (
     <Paper className="p-4 mt-2">
       <div className="flex justify-between">
@@ -28,6 +30,18 @@ const CommentComponent: React.FC<Props> = ({ comment }) => {
               "MMM D, YYYY h:mm A",
             )}
         </Typography>
+        {comment.user_can_edit && (
+          <>
+            <IconButton
+              title="Delete comment"
+              aria-label="Delete comment"
+              size="small"
+              onClick={() => handleDelete(comment.version_id, comment.id)}
+            >
+              <DeleteOutlined fontSize="small" />
+            </IconButton>
+          </>
+        )}
       </div>
       <Typography
         variant="body2"

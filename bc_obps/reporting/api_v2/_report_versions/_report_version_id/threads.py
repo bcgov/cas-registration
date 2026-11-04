@@ -30,9 +30,10 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     auth=authorize("authorized_irc_user"),
 )
 def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[200], dict]:
+    user = get_current_user(request)
     report_id = ReportVersion.objects.get(id=version_id).report_id
 
-    threads = CommentThreadService.get_threads(report_id=report_id)
+    threads = CommentThreadService.get_threads(report_id=report_id, user_guid=user.user_guid)
 
     facilities_dict = ReportFacilitiesService.get_all_facilities_for_review(int(version_id))
 
@@ -40,7 +41,6 @@ def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[
         {"facility_id": facility["facility_id"], "facility_name": facility["facility__name"]}
         for facility in [*facilities_dict["current_facilities"], *facilities_dict["past_facilities"]]
     ]
-    user = get_current_user(request)
     can_create_comment_thread = user.is_cas_analyst() or user.is_cas_director()
 
     response = (
@@ -62,8 +62,10 @@ def get_comment_threads(request: HttpRequest, version_id: str) -> Tuple[Literal[
 def create_thread(
     request: HttpRequest, version_id: str, payload: CommentThreadIn
 ) -> Tuple[Literal[201], CommentThread]:
+    user = get_current_user(request)
     thread = CommentThreadService.create_thread(
         version_id=int(version_id),
+        user_guid=user.user_guid,
         comment=payload.comment,
         facility_id=payload.facility_id,
     )
@@ -82,9 +84,11 @@ def create_thread(
 def resolve_thread(
     request: HttpRequest, version_id: str, thread_id: str, payload: ResolveThreadIn
 ) -> Tuple[Literal[200], CommentThread]:
+    user = get_current_user(request)
     thread = CommentThreadService.resolve_thread(
         version_id=int(version_id),
         thread_id=int(thread_id),
+        user_guid=user.user_guid,
         resolved=payload.resolved,
     )
 

@@ -33,6 +33,12 @@ const CommentsSidebar: React.FC<Props> = ({
     );
   };
 
+  const threadDeleted = (threadId: number) => {
+    setCommentThreads((prevThreads) =>
+      prevThreads.filter((thread) => thread.id !== threadId),
+    );
+  };
+
   const openThreads = commentThreads.filter((thread) => !thread.resolved);
   const resolvedThreads = commentThreads.filter((thread) => thread.resolved);
 
@@ -69,6 +75,7 @@ const CommentsSidebar: React.FC<Props> = ({
           thread={thread}
           canUpdate={canMakeComment}
           onThreadUpdated={threadUpdated}
+          onThreadDeleted={threadDeleted}
         />
       ))}
       {resolvedThreads.length > 0 && (
@@ -80,8 +87,9 @@ const CommentsSidebar: React.FC<Props> = ({
         <ThreadComponent
           key={`thread-${thread.id}`}
           thread={thread}
-          canUpdate={canMakeComment}
+          canUpdate={false} // Don't show update/edit options for resolved threads
           onThreadUpdated={threadUpdated}
+          onThreadDeleted={threadDeleted}
         />
       ))}
     </Paper>

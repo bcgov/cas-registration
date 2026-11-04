@@ -4,10 +4,11 @@ export type Comment = {
   author?: string;
   timestamp?: string;
   comment: string;
+  user_can_edit?: boolean;
 };
 
 export type Thread = {
-  id?: number;
+  id: number;
   version_id: number;
   facility_name?: string;
   facility_id?: string;

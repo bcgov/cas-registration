@@ -130,6 +130,18 @@ describe("actionHandler function", () => {
     expect(result).toEqual({ test_response: "test" });
   });
 
+  it("should return null when the response has an empty body", async () => {
+    // Like for a 204 No Content response
+    fetch.mockResponses(
+      [JSON.stringify(responseToken), { status: 200 }],
+      [null as unknown as string, { status: 204 }],
+    );
+
+    const result = await actionHandler("/endpoint", "DELETE");
+
+    expect(result).toBeNull();
+  });
+
   it("should throw if the fetch throws an error for GET", async () => {
     const error = new Error("Fetch failed");
     setupFetchMocksForErrorScenario(error);

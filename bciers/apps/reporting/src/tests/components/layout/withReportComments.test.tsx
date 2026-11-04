@@ -2,10 +2,10 @@ import { render, screen } from "@testing-library/react";
 import { getToken } from "@bciers/actions";
 import withReportComments from "@reporting/src/app/components/layout/withReportComments";
 import * as ReportCommentsModule from "@reporting/src/app/components/comments/ReportComments";
-import { getCommentThreads } from "@reporting/src/app/utils/getCommentThreads";
+import { getCommentThreads } from "@reporting/src/app/utils/comments/getCommentThreads";
 import { InternalFrontEndRoles } from "@bciers/utils/src/enums";
 
-vi.mock("@reporting/src/app/utils/getCommentThreads", () => ({
+vi.mock("@reporting/src/app/utils/comments/getCommentThreads", () => ({
   getCommentThreads: vi.fn(),
 }));
 vi.mock("@reporting/src/app/components/comments/ReportComments", () => ({
