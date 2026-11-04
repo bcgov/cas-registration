@@ -36,7 +36,8 @@ describe("InterestSummaryReviewComponent", () => {
 
     // Minimal key-value checks following repo style: label and value asserted separately
     expect(screen.getByText("Status:")).toBeVisible();
-    expect(screen.getByText("Due date:")).toBeVisible();
+    expect(screen.getByText("Due Date:")).toBeVisible();
+    expect(screen.getByText("Invoice Number:")).toBeVisible();
 
     expect(screen.getByText("GGEAPAR Interest Rate (Annual):")).toBeVisible();
     expect(screen.getByText("Prime + 3.00%"));

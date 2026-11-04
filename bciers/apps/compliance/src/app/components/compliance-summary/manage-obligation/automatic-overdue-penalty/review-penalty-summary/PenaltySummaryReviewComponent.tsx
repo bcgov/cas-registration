@@ -61,6 +61,7 @@ const PenaltySummaryReviewComponent = ({
         schema={createPenaltySummaryReviewSchema(reportingYear)}
         uiSchema={penaltySummaryReviewUiSchema}
         formData={data}
+        formContext={data}
         className="w-full"
       >
         {renderedErrors}
