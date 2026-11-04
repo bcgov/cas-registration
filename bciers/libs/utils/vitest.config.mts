@@ -19,6 +19,12 @@ export default defineConfig({
       reportsDirectory: "../../coverage/libs/utils",
       provider: "v8",
     },
-    setupFiles: ["../../libs/testConfig/src/global.tsx"],
+    // Reuse the environment and cached packages across test files; resetBetweenFiles gives each file fresh
+    // app modules and mocks (see that file)
+    isolate: false,
+    setupFiles: [
+      "../../libs/testConfig/src/resetBetweenFiles.ts",
+      "../../libs/testConfig/src/global.tsx",
+    ],
   },
 });
