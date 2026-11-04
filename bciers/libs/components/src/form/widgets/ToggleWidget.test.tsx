@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import ToggleWidget from "./ToggleWidget";
+import { skipA11yCheck } from "@bciers/testConfig/helpers/axe";
 
 const toggleFieldLabel = "Toggle test field";
 
@@ -159,6 +160,8 @@ describe("RJSF ToggleWidget", () => {
   });
 
   it("prioritizes direct props over ui:options labels", async () => {
+    // Rendered without the RJSF field template that provides the label
+    skipA11yCheck(["label"]);
     render(
       <ToggleWidget
         id="test"

@@ -111,6 +111,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
           sx={styles}
           id={`${id}-input`}
           name={`${name}-input`}
+          slotProps={{ htmlInput: { "aria-label": "BCGHG ID" } }}
           onChange={(e) => {
             setManualBcghgId(e.target.value);
           }}
