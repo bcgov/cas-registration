@@ -44,11 +44,13 @@ class TestCommentThreadService:
         )
         other_user = make_recipe('registration.tests.utils.cas_analyst')
 
-        CommentThreadService.set_comments_user_can_edit([thread], self.user.user_guid)
-        assert all(comment.user_can_edit is True for comment in thread.comments.all())
+        thread_for_author = CommentThreadService.threads_with_annotated_comments(self.user.user_guid).get(id=thread.id)
+        assert all(comment.user_can_edit is True for comment in thread_for_author.comments.all())
 
-        CommentThreadService.set_comments_user_can_edit([thread], other_user.user_guid)
-        assert all(comment.user_can_edit is False for comment in thread.comments.all())
+        thread_for_other_user = CommentThreadService.threads_with_annotated_comments(other_user.user_guid).get(
+            id=thread.id
+        )
+        assert all(comment.user_can_edit is False for comment in thread_for_other_user.comments.all())
 
     def test_get_threads(self):
         other_report_version = make_recipe(
