@@ -194,7 +194,7 @@ class TestBCCarbonRegistryAccountService:
         assert call_args["master_account_id"] == "123"
         assert call_args["compliance_year"] == 2024
         assert call_args["boro_id"] == "BORO123"
-        assert call_args["registered_name"] == "Test Operation Name 2024"
+        assert call_args["registered_name"] == "Test Operation Name BORO123 - 2024"
         assert call_args["type_of_organization"] == "140000000000002"
 
     def test_get_or_create_compliance_account_existing(self, service, mock_api_client):

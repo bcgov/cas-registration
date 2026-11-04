@@ -93,7 +93,7 @@ class BCCarbonRegistryAccountService:
             "master_account_id": str(holding_account_id),
             "compliance_year": compliance_year,
             "boro_id": boro_id,
-            "registered_name": f"{operation_name} {compliance_year}",
+            "registered_name": f"{operation_name} {boro_id} - {compliance_year}",
             "type_of_organization": self._get_type_of_organization(type_of_account_holder),
             "organization_classification_id": organization_classification_id,
         }
