@@ -67,7 +67,6 @@ class TestAutomaticOverduePenaltyEndpoint(CommonTestSetup):
         assert response_data["penalty_type"] == "Automatic Overdue"
         assert response_data["penalty_charge_rate"] == "0.38"
         assert response_data["total_penalty"] == "38656.43"
-        assert response_data["faa_interest"] == "0.00"
         assert response_data["total_amount"] == "38656.43"
         assert response_data["due_date"] == penalty_invoice.due_date.isoformat()
         assert response_data["invoice_number"] == penalty_invoice.invoice_number

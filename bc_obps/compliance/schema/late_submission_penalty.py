@@ -13,7 +13,6 @@ class LateSubmissionPenaltyOut(Schema):
     has_penalty: bool
     penalty_type: str
     penalty_amount: Decimal
-    faa_interest: Decimal
     total_amount: Decimal
     invoice_number: Optional[str]
     due_date: Optional[str]

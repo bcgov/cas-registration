@@ -19,7 +19,6 @@ export const createInternalPenaltySummaryReviewSchema: RJSFSchema = {
     penalty_type: readOnlyStringField("Penalty Type:"),
     penalty_charge_rate: readOnlyStringField("Penalty Rate (Daily):"),
     total_penalty: readOnlyStringField("Penalty Amount:"),
-    faa_interest: readOnlyStringField("FAA Interest (Annual):"),
     total_amount: readOnlyStringField("Total Amount:"),
   },
 };
@@ -45,6 +44,5 @@ export const internalPenaltySummaryReviewUiSchema: UiSchema = {
     },
   },
   total_penalty: currencyUiConfig,
-  faa_interest: currencyUiConfig,
   total_amount: currencyUiConfig,
 };

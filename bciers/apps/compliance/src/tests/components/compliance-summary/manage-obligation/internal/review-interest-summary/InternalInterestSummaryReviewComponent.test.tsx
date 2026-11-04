@@ -23,7 +23,6 @@ const baseData = {
   penalty_status: "Not Paid",
   penalty_type: "Late Submission",
   penalty_amount: "100.00",
-  faa_interest: "10.00",
   total_amount: "110.00",
   data_is_fresh: true,
 } as any;

@@ -249,7 +249,6 @@ class PenaltyCalculationService:
             "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             "penalty_charge_rate": (daily_penalty_rate * 100).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
             "total_penalty": penalty.penalty_amount,
-            "faa_interest": faa_interest,
             "total_amount": total_amount,
             "invoice_number": invoice.invoice_number if invoice else None,
             "due_date": str(invoice.due_date) if invoice else None,
@@ -271,7 +270,6 @@ class PenaltyCalculationService:
                 - penalty_type: Type of penalty (LATE_SUBMISSION)
                 - penalty_charge_rate: Annual interest rate percentage
                 - penalty_amount: Total penalty amount
-                - faa_interest: FAA interest amount (currently 0.00)
                 - total_amount: Total amount including FAA interest
                 - invoice_number: Elicensing invoice number for the penalty (if invoice exists)
                 - due_date: the due date associated with the invoice (if an invoice exists)
@@ -295,7 +293,6 @@ class PenaltyCalculationService:
                 "penalty_status": CompliancePenalty.Status.NOT_PAID,
                 "penalty_type": CompliancePenalty.PenaltyType.LATE_SUBMISSION,
                 "penalty_amount": Decimal('0.00'),
-                "faa_interest": Decimal('0.00'),
                 "total_amount": Decimal('0.00'),
             }
 
@@ -318,7 +315,6 @@ class PenaltyCalculationService:
             "penalty_status": late_submission_penalty.status,
             "penalty_type": CompliancePenalty.PenaltyType.LATE_SUBMISSION,
             "penalty_amount": penalty_amount,
-            "faa_interest": faa_interest,
             "total_amount": total_amount,
             "invoice_number": invoice_number,
             "due_date": due_date,

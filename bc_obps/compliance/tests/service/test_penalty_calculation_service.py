@@ -357,7 +357,6 @@ class TestPenaltyCalculationService:
             "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             "penalty_charge_rate": self.compliance_penalty_rate.rate * 100,
             "total_penalty": Decimal("1000000.00"),
-            "faa_interest": Decimal("0.00"),
             "total_amount": Decimal("1000000.00"),
             "due_date": "2024-11-30",
             "invoice_number": compliance_penalty.elicensing_invoice.invoice_number,
@@ -408,7 +407,6 @@ class TestPenaltyCalculationService:
         assert result["penalty_status"] == late_penalty.status
         assert result["penalty_type"] == CompliancePenalty.PenaltyType.LATE_SUBMISSION
         assert result["penalty_amount"] == Decimal("15000.00")
-        assert result["faa_interest"] == Decimal("0.00")
         assert result["total_amount"] == Decimal("15000.00")
 
     @patch(
@@ -430,7 +428,6 @@ class TestPenaltyCalculationService:
         assert result["penalty_status"] == CompliancePenalty.Status.NOT_PAID
         assert result["penalty_type"] == CompliancePenalty.PenaltyType.LATE_SUBMISSION
         assert result["penalty_amount"] == Decimal("0.00")
-        assert result["faa_interest"] == Decimal("0.00")
         assert result["total_amount"] == Decimal("0.00")
 
     @patch(
