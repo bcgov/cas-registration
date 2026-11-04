@@ -14,6 +14,15 @@ Mise requires local compilation of python to discover homebrew libraries:
 mise settings set python.compile true
 ```
 
+or:
+
+```toml
+# ~/.config/mise/config.toml
+
+[settings.python]
+compile = true
+```
+
 ##### Postgres
 
 You might need to setup postgres if it doesn't come with defaults:
