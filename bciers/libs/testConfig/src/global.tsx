@@ -49,8 +49,10 @@ expect.extend(toHaveNoViolations);
 
 // Check what every test rendered for a11y violations (opt out with skipA11yCheck). RTL's auto-cleanup would
 // empty the DOM before this hook runs, so it's disabled (must happen before @testing-library/react is first
-// imported) and done here
+// imported) and done here. Scan time grows with DOM size (e.g. large data grids) and is much slower on CI
+// runners, so this hook gets more than the default 10s hook timeout
 process.env.RTL_SKIP_AUTO_CLEANUP = "true";
+const A11Y_CHECK_TIMEOUT_MS = 30_000;
 afterEach(async () => {
   try {
     await checkA11yAfterTest();
@@ -58,7 +60,7 @@ afterEach(async () => {
     const { cleanup } = await import("@testing-library/react");
     cleanup();
   }
-});
+}, A11Y_CHECK_TIMEOUT_MS);
 
 vi.mock("react", async () => {
   const actualReact = await vi.importActual<typeof import("react")>("react");
