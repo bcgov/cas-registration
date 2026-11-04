@@ -16,8 +16,8 @@ export const interestSummaryReviewSchema: RJSFSchema = {
     interest_header: readOnlyObjectField("GGEAPAR Interest"),
     interest_alert: readOnlyStringField(),
     penalty_status: readOnlyStringField("Status:"),
-    due_date: readOnlyStringField("Due date:"),
-    invoice_number: readOnlyStringField("Invoice number:"),
+    due_date: readOnlyStringField("Due Date:"),
+    invoice_number: readOnlyStringField("Invoice Number:"),
     penalty_charge_rate: {
       type: "string",
       title: "GGEAPAR Interest Rate (Annual):",

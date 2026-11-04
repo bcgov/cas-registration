@@ -24,7 +24,7 @@ const elicensingInvoiceGroupColumns = (
     createColumnGroup("operation_name", "Operation Name", SearchCell),
     createColumnGroup("invoice_type", "Invoice Type", SearchCell),
     createColumnGroup("invoice_number", "Invoice Number", SearchCell),
-
+    createColumnGroup("due_date", "Due Date", EmptyGroupCell),
     createColumnGroup("invoice_total", "Invoice Total", EmptyGroupCell),
     createColumnGroup("total_adjustments", "Total Adjustments", EmptyGroupCell),
     createColumnGroup("total_payments", "Total Payments", EmptyGroupCell),

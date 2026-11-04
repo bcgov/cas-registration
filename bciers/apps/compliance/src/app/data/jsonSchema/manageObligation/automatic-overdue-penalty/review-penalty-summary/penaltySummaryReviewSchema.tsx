@@ -19,7 +19,7 @@ export const createPenaltySummaryReviewSchema = (
     penalty_alert: readOnlyStringField(),
     penalty_status: readOnlyStringField("Status:"),
     invoice_number: readOnlyStringField("Invoice Number:"),
-    due_date: readOnlyStringField("Due date:"),
+    due_date: readOnlyStringField("Due Date:"),
     penalty_charge_rate: readOnlyStringField("Penalty Rate (Daily):"),
     total_penalty: readOnlyStringField("Penalty Amount:"),
     total_amount: readOnlyStringField("Total Amount:"),
@@ -40,9 +40,7 @@ export const penaltySummaryReviewUiSchema: UiSchema = {
   },
   penalty_status: commonReadOnlyOptions,
   invoice_number: commonReadOnlyOptions,
-  due_date: {
-    ...commonReadOnlyOptions,
-  },
+  due_date: commonReadOnlyOptions,
   penalty_charge_rate: {
     ...commonReadOnlyOptions,
     "ui:options": {

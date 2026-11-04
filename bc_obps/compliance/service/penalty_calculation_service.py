@@ -299,16 +299,10 @@ class PenaltyCalculationService:
         penalty_amount = late_submission_penalty.penalty_amount
         faa_interest = refresh_result.invoice.invoice_interest_balance if refresh_result.invoice else Decimal('0.00')
         total_amount = penalty_amount + faa_interest if faa_interest else late_submission_penalty.penalty_amount
-        invoice_number = (
-            late_submission_penalty.elicensing_invoice.invoice_number
-            if late_submission_penalty.elicensing_invoice
-            else None
-        )
-        due_date = (
-            str(late_submission_penalty.elicensing_invoice.due_date)
-            if late_submission_penalty.elicensing_invoice
-            else None
-        )
+        invoice_number, due_date = None, None
+        if late_submission_penalty.elicensing_invoice:
+            invoice_number = late_submission_penalty.elicensing_invoice.invoice_number
+            due_date = late_submission_penalty.elicensing_invoice.due_date
 
         return {
             "has_penalty": True,

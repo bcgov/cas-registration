@@ -14,8 +14,8 @@ class LateSubmissionPenaltyOut(Schema):
     penalty_type: str
     penalty_amount: Decimal
     total_amount: Decimal
-    invoice_number: Optional[str]
-    due_date: Optional[str]
+    invoice_number: Optional[str] = None
+    due_date: Optional[str] = None
 
     @staticmethod
     def resolve_penalty_status(obj: Any) -> str:
