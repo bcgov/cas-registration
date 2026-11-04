@@ -2,10 +2,10 @@ from typing import Literal
 from common.permissions import authorize
 
 from django.http import HttpRequest
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from service.report_version_service import ReportVersionService
+from reporting.service.report_version_service import ReportVersionService
 from ..models import (
     ReportVersion,
     FacilityReport,

@@ -19,8 +19,8 @@ from reporting.schema.dashboard import (
     ReportsPeriod,
 )
 from reporting.service.reporting_dashboard_service import ReportingDashboardService
-from service.error_service.custom_codes_4xx import custom_codes_4xx
-from service.reporting_year_service import ReportingYearService
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from reporting.service.reporting_year_service import ReportingYearService
 
 
 from .router import router

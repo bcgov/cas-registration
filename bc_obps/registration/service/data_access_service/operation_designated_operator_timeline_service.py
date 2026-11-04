@@ -6,7 +6,7 @@ from registration.models.facility_designated_operation_timeline import FacilityD
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 from registration.models import User
 from django.db.models import QuerySet, Subquery, OuterRef, UUIDField, CharField
-from service.user_operator_service import UserOperatorService
+from common.service.user_operator_service import UserOperatorService
 from django.contrib.postgres.aggregates import ArrayAgg
 
 

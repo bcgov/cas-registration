@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand
 from registration.models import Document
 import time
 from reporting.models.report_attachment import ReportAttachment
-from service.error_service.handle_exception import ExceptionHandler
+from common.service.error_service.handle_exception import ExceptionHandler
 
 logger = logging.getLogger(__name__)
 

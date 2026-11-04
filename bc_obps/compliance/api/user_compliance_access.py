@@ -1,7 +1,7 @@
 from .router import router
 from django.http import HttpRequest
 from common.permissions import authorize
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.constants import COMPLIANCE
 

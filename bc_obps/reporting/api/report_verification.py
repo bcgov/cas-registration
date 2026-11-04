@@ -3,7 +3,7 @@ from reporting.models.report_verification import ReportVerification
 from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from reporting.schema.report_verification import ReportVerificationIn, ReportVerificationOut
 from reporting.service.report_verification_service import ReportVerificationService

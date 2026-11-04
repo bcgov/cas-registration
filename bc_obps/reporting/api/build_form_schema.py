@@ -1,5 +1,5 @@
-from service.error_service.custom_codes_4xx import custom_codes_4xx
-from service.form_builder_service import FormBuilderService
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from reporting.service.form_builder_service import FormBuilderService
 from common.permissions import authorize
 from .router import router
 from django.http import HttpRequest

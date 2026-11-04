@@ -1,6 +1,6 @@
 from ninja import ModelSchema
 from reporting.models.reporting_year import ReportingYear
-from service.reporting_year_service import ReportingYearService
+from reporting.service.reporting_year_service import ReportingYearService
 
 
 class ReportingYearOut(ModelSchema):

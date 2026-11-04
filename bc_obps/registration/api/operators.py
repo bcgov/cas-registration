@@ -1,11 +1,11 @@
 from typing import List, Literal, Optional
 from registration.schema import OperatorFilterSchema, OperatorListOut, Message
 from registration.models.operator import Operator
-from service.operator_service import OperatorService
+from registration.service.operator_service import OperatorService
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.api.router import router
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
 from django.db.models import QuerySet
 from ninja.pagination import paginate

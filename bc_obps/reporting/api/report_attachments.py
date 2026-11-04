@@ -16,7 +16,7 @@ from reporting.schema.report_attachment import (
     InternalReportAttachmentOut,
 )
 from reporting.service.report_attachment_service import ReportAttachmentService
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from reporting.api.permissions import (
     approved_industry_user_report_version_composite_auth,

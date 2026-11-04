@@ -3,10 +3,10 @@ from typing import Literal, Tuple
 from django.http import HttpRequest
 from registration.constants import USER_TAGS
 from registration.models import User
-from service.data_access_service.user_service import UserDataAccessService
+from common.service.data_access_service.user_service import UserDataAccessService
 from registration.schema import Message
 from registration.api.router import router
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import JsonResponse
 
 

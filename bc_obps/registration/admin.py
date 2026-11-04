@@ -11,13 +11,13 @@ from registration.models import User
 from registration.models import Operation
 from registration.models.address import Address
 from registration.models.facility import Facility
-from service.data_access_service.address_service import AddressDataAccessService
-from service.data_access_service.facility_service import FacilityDataAccessService
-from service.data_access_service.facility_designated_operation_timeline_service import (
+from registration.service.data_access_service.address_service import AddressDataAccessService
+from registration.service.data_access_service.facility_service import FacilityDataAccessService
+from registration.service.data_access_service.facility_designated_operation_timeline_service import (
     FacilityDesignatedOperationTimelineDataAccessService,
 )
-from service.data_access_service.operation_service import OperationDataAccessService
-from service.data_access_service.operation_designated_operator_timeline_service import (
+from registration.service.data_access_service.operation_service import OperationDataAccessService
+from registration.service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
 

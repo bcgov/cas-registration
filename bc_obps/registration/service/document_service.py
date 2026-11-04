@@ -1,9 +1,9 @@
 from typing import Tuple
 from uuid import UUID
 from django.core.files import File
-from service.data_access_service.document_service import DocumentDataAccessService
+from registration.service.data_access_service.document_service import DocumentDataAccessService
 from registration.models import Document, Operation
-from service.data_access_service.operation_service import OperationDataAccessService
+from registration.service.data_access_service.operation_service import OperationDataAccessService
 
 
 class DocumentService:
@@ -11,14 +11,14 @@ class DocumentService:
     def get_operation_document_by_type_if_authorized(
         cls, user_guid: UUID, operation_id: UUID, document_type: str
     ) -> Document | None:
-        from service.operation_service import OperationService
+        from registration.service.operation_service import OperationService
 
         OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
         return DocumentDataAccessService.get_operation_document_by_type(operation_id, document_type)
 
     @classmethod
     def get_document_url_if_authorized(cls, user_guid: UUID, document_id: int) -> str:
-        from service.operation_service import OperationService
+        from registration.service.operation_service import OperationService
 
         document = Document.objects.get(id=document_id)
 

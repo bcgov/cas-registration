@@ -3,7 +3,7 @@ from uuid import UUID
 from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from ..models import ReportNonAttributableEmissions
 from ..schema.report_non_attributable_emissions import (

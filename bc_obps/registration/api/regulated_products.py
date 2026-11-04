@@ -1,6 +1,6 @@
 from django.http import HttpRequest
 from registration.constants import REGULATED_PRODUCT_TAGS
-from service.data_access_service.regulated_product_service import RegulatedProductDataAccessService
+from registration.service.data_access_service.regulated_product_service import RegulatedProductDataAccessService
 from common.permissions import authorize
 from registration.api.router import router
 from typing import List, Literal, Tuple

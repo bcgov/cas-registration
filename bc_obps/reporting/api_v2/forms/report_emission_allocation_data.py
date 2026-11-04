@@ -13,9 +13,9 @@ from reporting.schema.generic import Message
 from reporting.schema.report_emission_allocation import ReportEmissionAllocationSchemaOut
 from reporting.service.emission_category_service import EmissionCategoryService
 from reporting.service.report_emission_allocation_service import ReportEmissionAllocationService
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
-from service.facility_report_service import FacilityReportService
+from reporting.service.facility_report_service import FacilityReportService
 
 from ..router import router
 

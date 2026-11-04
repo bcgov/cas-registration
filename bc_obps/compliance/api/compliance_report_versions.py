@@ -8,7 +8,7 @@ from compliance.schema.compliance_report_version import (
     ComplianceReportVersionListOut,
     ComplianceReportVersionFilterSchema,
 )
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja.pagination import paginate
 from registration.utils import CustomPagination
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService

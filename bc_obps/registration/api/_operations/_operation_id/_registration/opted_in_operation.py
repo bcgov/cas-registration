@@ -3,12 +3,12 @@ from uuid import UUID
 from django.http import HttpRequest
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.schema import OptedInOperationDetailIn, OptedInOperationDetailOut, OptedOutOperationDetailIn, Message
-from service.data_types.operation_service import OptedInOperationDetailData
-from service.operation_service import OperationService
+from registration.service.data_types.operation_service import OptedInOperationDetailData
+from registration.service.operation_service import OperationService
 from registration.constants import OPERATION_TAGS
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.api.router import router
 
 

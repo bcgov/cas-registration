@@ -3,11 +3,11 @@ from uuid import UUID
 from common.exceptions import UserError
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from registration.emails import send_operator_access_request_email
-from service.email.email_service import EmailService
+from common.service.email.email_service import EmailService
 from registration.models import UserOperator
-from service.data_access_service.operator_service import OperatorDataAccessService
-from service.data_access_service.user_operator_service import UserOperatorDataAccessService
-from service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.operator_service import OperatorDataAccessService
+from common.service.data_access_service.user_operator_service import UserOperatorDataAccessService
+from common.service.data_access_service.user_service import UserDataAccessService
 
 
 email_service = EmailService()

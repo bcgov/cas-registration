@@ -1,6 +1,6 @@
 from django.conf import settings
 from registration.schema import UserIn
-from service.data_access_service.user_service import UserDataAccessService
+from common.service.data_access_service.user_service import UserDataAccessService
 from registration.models import AppRole
 from registration.enums.enums import IdPs
 from uuid import UUID

@@ -3,11 +3,11 @@ from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATOR_TAGS
 from registration.models import Operator
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema import OperatorSearchOut, Message
 from django.db.models import QuerySet
 from registration.api.router import router
-from service.operator_service import OperatorService
+from registration.service.operator_service import OperatorService
 
 
 ##### GET #####

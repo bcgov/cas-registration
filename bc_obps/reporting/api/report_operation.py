@@ -4,8 +4,8 @@ from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.models.report_operation import ReportOperation
 from reporting.schema.generic import Message
-from service.error_service.custom_codes_4xx import custom_codes_4xx
-from service.report_service import ReportService
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from reporting.service.report_service import ReportService
 
 from .router import router
 from reporting.api.permissions import (

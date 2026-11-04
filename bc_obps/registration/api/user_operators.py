@@ -5,7 +5,7 @@ from common.api.utils import get_current_user_guid
 from django.http import HttpRequest
 from registration.models import UserOperator
 from registration.api.router import router
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from typing import Literal, Tuple, Optional, List
 from registration.constants import USER_OPERATOR_TAGS
 from registration.schema import (
@@ -15,7 +15,7 @@ from registration.schema import (
     UserOperatorListOut,
     UserOperatorFilterSchema,
 )
-from service.user_operator_service import UserOperatorService
+from common.service.user_operator_service import UserOperatorService
 from ninja.pagination import paginate, PageNumberPagination
 
 

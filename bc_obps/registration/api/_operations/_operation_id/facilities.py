@@ -1,7 +1,9 @@
 from uuid import UUID
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.utils import CustomPagination
-from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
+from registration.service.facility_designated_operation_timeline_service import (
+    FacilityDesignatedOperationTimelineService,
+)
 from registration.schema import (
     FacilityDesignatedOperationTimelineFilterSchema,
     FacilityDesignatedOperationTimelineOut,
@@ -15,7 +17,7 @@ from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.constants import FACILITY_TAGS
 from ninja.pagination import paginate
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
 
 

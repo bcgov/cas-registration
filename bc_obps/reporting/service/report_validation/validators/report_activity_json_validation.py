@@ -11,7 +11,7 @@ from reporting.service.report_validation.report_validation_error import (
     ReportValidationErrorKey,
     Severity,
 )
-from service.form_builder_service import FormBuilderService
+from reporting.service.form_builder_service import FormBuilderService
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 
 logger = logging.getLogger(__name__)

@@ -3,17 +3,19 @@ from django.db.models import QuerySet
 from uuid import UUID
 from common.exceptions import UserError
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
-from service.data_access_service.facility_designated_operation_timeline_service import (
+from registration.service.data_access_service.facility_designated_operation_timeline_service import (
     FacilityDesignatedOperationTimelineDataAccessService,
 )
-from service.data_access_service.user_service import UserDataAccessService
-from service.data_access_service.facility_service import FacilityDataAccessService
+from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.facility_service import FacilityDataAccessService
 from registration.models import Facility
 from registration.schema import FacilityIn
-from service.data_access_service.well_authorization_number_service import WellAuthorizationNumberDataAccessService
-from service.data_access_service.operation_service import OperationDataAccessService
+from registration.service.data_access_service.well_authorization_number_service import (
+    WellAuthorizationNumberDataAccessService,
+)
+from registration.service.data_access_service.operation_service import OperationDataAccessService
 from registration.constants import UNAUTHORIZED_MESSAGE
-from service.data_access_service.address_service import AddressDataAccessService
+from registration.service.data_access_service.address_service import AddressDataAccessService
 from registration.models.operation import Operation
 from registration.models import User
 from registration.models import WellAuthorizationNumber
@@ -166,7 +168,7 @@ class FacilityService:
     @transaction.atomic()
     def create_facility_with_designated_operation(cls, user_guid: UUID, payload: FacilityIn) -> Facility:
         """Create a facility with designated operation details."""
-        from service.operation_service import OperationService
+        from registration.service.operation_service import OperationService
 
         operation = OperationService.get_if_authorized(user_guid, payload.operation_id, ['id', 'operator_id'])
 

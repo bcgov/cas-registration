@@ -2,9 +2,7 @@ import json
 from django.core.cache import caches
 
 from registration.models import Activity
-from service.utils.get_report_valid_date_from_version_id import (
-    get_report_valid_date_from_version_id,
-)
+from reporting.service.utils import get_report_valid_date_from_version_id
 from reporting.models import (
     Configuration,
     ConfigurationElement,
@@ -16,7 +14,7 @@ from reporting.models import (
 from typing import Dict, List, Optional, Any, Sequence
 from django.db.models import QuerySet
 from django.db.models import Prefetch
-from service.data_access_service.fuel_service import FuelTypeDataAccessService
+from reporting.service.data_access_service.fuel_service import FuelTypeDataAccessService
 
 
 def get_custom_methodology_schema_by_id(schema_id: int) -> Dict[str, Any]:

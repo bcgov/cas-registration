@@ -5,13 +5,13 @@ from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from registration.models.operator import Operator
 from registration.models.user_operator import UserOperator
-from service.email.email_service import GHG_REGULATOR_EMAIL, EmailService
-from service.email.utils import Recipient
+from common.service.email.email_service import GHG_REGULATOR_EMAIL, EmailService
+from common.service.email.utils import Recipient
 import logging
 from django.conf import settings
 from compliance.service.penalty.queries import sum_outstanding_penalty_balance
 
-from service.data_access_service.email_template_service import EmailNotificationTemplateService
+from common.service.data_access_service.email_template_service import EmailNotificationTemplateService
 
 logger = logging.getLogger(__name__)
 

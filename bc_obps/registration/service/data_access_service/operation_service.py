@@ -3,7 +3,7 @@ from uuid import UUID
 from registration.models import Operation, User, RegulatedProduct, Activity
 from ninja.types import DictStrAny
 from django.db.models import QuerySet
-from service.user_operator_service import UserOperatorService
+from common.service.user_operator_service import UserOperatorService
 
 
 class OperationDataAccessService:

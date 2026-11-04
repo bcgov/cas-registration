@@ -5,8 +5,8 @@ from django.http import HttpRequest
 from common.permissions import authorize
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from service.facility_report_service import FacilityReportService
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from reporting.service.facility_report_service import FacilityReportService
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from reporting.schema.facility_report import (
     FacilityReportIn,

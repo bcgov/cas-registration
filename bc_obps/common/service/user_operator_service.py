@@ -4,13 +4,13 @@ from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from registration.schema import OperatorIn, UserOperatorFilterSchema, UserOperatorStatusUpdate
 from registration.utils import update_model_instance
-from service.data_access_service.user_operator_service import UserOperatorDataAccessService
-from service.data_access_service.user_service import UserDataAccessService
-from service.data_access_service.operator_service import OperatorDataAccessService
+from common.service.data_access_service.user_operator_service import UserOperatorDataAccessService
+from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.operator_service import OperatorDataAccessService
 from registration.models import Operator, User, UserOperator, Contact, BusinessRole
 from django.db import transaction
 from registration.constants import UNAUTHORIZED_MESSAGE
-from service.operator_service import OperatorService
+from registration.service.operator_service import OperatorService
 from django.db.models import QuerySet
 from django.db.models.functions import Lower
 from ninja import Query

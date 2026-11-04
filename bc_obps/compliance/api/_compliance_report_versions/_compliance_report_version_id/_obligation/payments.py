@@ -1,7 +1,7 @@
 from typing import Literal, Tuple
 from django.http import HttpRequest
 from compliance.constants import COMPLIANCE
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from registration.schema.generic import Message
 from compliance.api.router import router
