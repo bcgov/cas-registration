@@ -20,7 +20,7 @@ help: ## Show this help.
 install_backend_tools: ## install languages runtimes and tools specified in .tool-versions of the backend
 install_backend_tools:
 	@echo "Installing backend tools"
-	@POSTGRES_EXTRA_CONFIGURE_OPTIONS='--with-libxml' mise install
+	@MAKELEVEL=0 POSTGRES_EXTRA_CONFIGURE_OPTIONS='--with-libxml' mise install
 	@echo "Done installing backend tools"
 
 .PHONY: install_poetry

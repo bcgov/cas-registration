@@ -23,23 +23,6 @@ or:
 compile = true
 ```
 
-##### Postgres
-
-You might need to setup postgres if it doesn't come with defaults:
-
-```toml
-# ~/.config/mise/config.toml (or mise config file)
-
-[env]
-PGDATA = "{{config_root}}/.config/mise/.postgres_data"
-```
-
-then:
-
-```bash
-initdb -U postgres
-```
-
 ### 2. Install system dependencies
 
 The postgres and python builds require several libraries that are not installed by default on macOS. Install them before running `make install_dev_tools`:
@@ -95,6 +78,22 @@ Ensure you have completed the [App Environment Variables](#app-environment-varia
 1. Run `make install_poetry_deps` to install all python dependencies.
 
 1. Run `make start_pg` to start the postgres server if it is not already running.
+
+   You might need to setup postgres if it doesn't install with defaults:
+
+   ```toml
+   # ~/.config/mise/config.toml (or mise config file)
+
+   [env]
+   PGDATA = "{{config_root}}/.config/mise/.postgres_data"
+   ```
+
+   then:
+
+   ```bash
+   initdb -U postgres
+   ```
+
 1. Create a PostgreSQL role for your local user matching `DB_USER` in your `.env`:
    ```bash
    psql -h localhost -U postgres -c "CREATE USER <your_shell_user> WITH SUPERUSER; CREATE DATABASE <your_shell_user>;"
