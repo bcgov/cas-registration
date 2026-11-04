@@ -3,7 +3,7 @@ from reporting.models import Configuration, ConfigurationElement
 from typing import List, Dict, Any
 from registration.models import Activity
 from uuid import UUID
-from service.utils.get_report_valid_date_from_version_id import get_report_valid_date_from_version_id
+from reporting.service.utils import get_report_valid_date_from_version_id
 
 
 class ActivityService:

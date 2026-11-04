@@ -1,7 +1,7 @@
 from common.permissions import authorize
 from reporting.service.emission_category_service import EmissionCategoryService
 from reporting.models import FacilityReport
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from django.http import HttpRequest
 from typing import Tuple, List

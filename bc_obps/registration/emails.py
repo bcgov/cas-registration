@@ -1,12 +1,12 @@
 from typing import List, Optional
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes, EmailTemplateNames
 from registration.models.operation import Operation
-from service.email.email_service import EmailService
+from common.service.email.email_service import EmailService
 import logging
 
 from registration.models import User
-from service.data_access_service.email_template_service import EmailNotificationTemplateService
-from service.email.utils import Recipient
+from common.service.data_access_service.email_template_service import EmailNotificationTemplateService
+from common.service.email.utils import Recipient
 
 logger = logging.getLogger(__name__)
 

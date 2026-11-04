@@ -2,7 +2,7 @@ from typing import Literal
 from uuid import UUID
 
 from reporting.constants import EMISSIONS_REPORT_TAGS
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
 from reporting.schema.generic import Message
 from .router import router

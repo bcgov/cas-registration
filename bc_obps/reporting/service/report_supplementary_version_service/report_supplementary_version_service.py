@@ -2,8 +2,8 @@ from django.db import transaction
 
 from reporting.models import ReportVersion
 from reporting.service.report_supplementary_version_service.report_supplementary_cloning import clone_all
-from service.report_version_service import ReportVersionService
-from service.reporting_year_service import ReportingYearService
+from reporting.service.report_version_service import ReportVersionService
+from reporting.service.reporting_year_service import ReportingYearService
 
 
 class ReportSupplementaryVersionService:

@@ -7,14 +7,14 @@ from registration.schema import (
     TransferEventCreateIn,
     TransferEventOut,
 )
-from service.transfer_event_service import TransferEventService
+from registration.service.transfer_event_service import TransferEventService
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.utils import CustomPagination
 from registration.constants import TRANSFER_EVENT_TAGS
 from ninja.pagination import paginate
 from registration.api.router import router
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
 from django.db.models import QuerySet
 from common.api.utils import get_current_user_guid

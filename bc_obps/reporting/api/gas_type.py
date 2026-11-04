@@ -1,5 +1,5 @@
 from common.permissions import authorize
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from django.http import HttpRequest
 from typing import List

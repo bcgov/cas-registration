@@ -11,14 +11,14 @@ from registration.schema import (
     ContactIn,
     OperationRepresentativeIn,
 )
-from service.data_access_service.contact_service import ContactDataAccessService
-from service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.contact_service import ContactDataAccessService
+from common.service.data_access_service.user_service import UserDataAccessService
 from ninja import Query
 from ninja.types import DictStrAny
 from django.db import transaction
 from typing import cast, Union, Dict
 from registration.models.business_role import BusinessRole
-from service.data_access_service.address_service import AddressDataAccessService
+from registration.service.data_access_service.address_service import AddressDataAccessService
 
 
 class ContactService:
@@ -58,7 +58,7 @@ class ContactService:
         operation_id: UUID,
         user_guid: UUID,
     ) -> QuerySet[Contact]:
-        from service.operation_service import OperationService  # to avoid circular imports
+        from registration.service.operation_service import OperationService  # to avoid circular imports
 
         operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
         return operation.contacts.order_by('-created_at')

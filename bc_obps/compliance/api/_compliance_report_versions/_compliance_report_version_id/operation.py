@@ -5,7 +5,7 @@ from compliance.api.router import router
 from compliance.constants import COMPLIANCE
 from compliance.schema.compliance_report_version import OperationByComplianceSummaryOut
 from reporting.models.report_operation import ReportOperation
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.api.permissions import approved_authorized_roles_compliance_report_version_composite_auth
 

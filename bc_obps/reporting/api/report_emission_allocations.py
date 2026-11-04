@@ -5,7 +5,7 @@ from reporting.schema.report_emission_allocation import (
     ReportEmissionAllocationSchemaOut,
     ReportEmissionAllocationsSchemaIn,
 )
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
 from reporting.schema.generic import Message
 from .router import router

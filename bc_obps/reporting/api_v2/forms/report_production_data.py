@@ -8,7 +8,7 @@ from reporting.models.report_product import ReportProduct
 from reporting.schema.generic import Message
 from reporting.schema.report_product import ProductionDataOut
 from reporting.service.report_product_service import ReportProductService
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
 
 from ..router import router

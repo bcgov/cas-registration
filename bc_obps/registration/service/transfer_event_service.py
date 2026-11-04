@@ -15,19 +15,23 @@ from registration.schema import (
     TransferEventFilterSchema,
     TransferEventUpdateIn,
 )
-from service.data_access_service.facility_designated_operation_timeline_service import (
+from registration.service.data_access_service.facility_designated_operation_timeline_service import (
     FacilityDesignatedOperationTimelineDataAccessService,
 )
-from service.data_access_service.operation_designated_operator_timeline_service import (
+from registration.service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
-from service.data_access_service.transfer_event_service import TransferEventDataAccessService
-from service.data_access_service.user_service import UserDataAccessService
-from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
-from service.facility_service import FacilityService
+from registration.service.data_access_service.transfer_event_service import TransferEventDataAccessService
+from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.facility_designated_operation_timeline_service import (
+    FacilityDesignatedOperationTimelineService,
+)
+from registration.service.facility_service import FacilityService
 from service.facility_snapshot_service import FacilitySnapshotService
-from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
-from service.operation_service import OperationService
+from registration.service.operation_designated_operator_timeline_service import (
+    OperationDesignatedOperatorTimelineService,
+)
+from registration.service.operation_service import OperationService
 
 logger = logging.getLogger(__name__)
 

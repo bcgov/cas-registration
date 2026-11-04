@@ -6,7 +6,7 @@ from reporting.models.report_verification import ReportVerification
 from reporting.models import ReportVersion
 from registration.models import Operation
 from reporting.schema.report_verification import ReportVerificationIn
-from service.report_service import ReportService
+from reporting.service.report_service import ReportService
 
 
 class ReportVerificationService:

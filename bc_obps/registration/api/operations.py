@@ -9,13 +9,13 @@ from registration.schema import (
     OperationTimelineListOut,
 )
 from registration.schema.operation import OperationUpdateOut
-from service.data_types.operation_service import OperationData, MultipleOperatorData
-from service.operation_service import OperationService
+from registration.service.data_types.operation_service import OperationData, MultipleOperatorData
+from registration.service.operation_service import OperationService
 from common.permissions import authorize
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import File, Query, UploadedFile
 from django.db.models import QuerySet
 from ninja.pagination import paginate

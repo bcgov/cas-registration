@@ -1,7 +1,7 @@
 from common.lib.dataclasses import asdict
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.utils import update_model_instance
-from service.data_types.operation_service import OptedInOperationDetailData
+from registration.service.data_types.operation_service import OptedInOperationDetailData
 
 
 class OptedInOperationDataAccessService:

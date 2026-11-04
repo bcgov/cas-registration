@@ -11,9 +11,9 @@ from registration.models.facility import Facility
 from registration.models.regulated_product import RegulatedProduct
 from registration.signals.signals import operation_registration_purpose_changed
 from registration.utils import is_document_scan_complete
-from service.contact_service import ContactService
-from service.data_access_service.document_service import DocumentDataAccessService
-from service.data_access_service.operation_designated_operator_timeline_service import (
+from registration.service.contact_service import ContactService
+from registration.service.data_access_service.document_service import DocumentDataAccessService
+from registration.service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
@@ -25,26 +25,28 @@ from registration.models.address import Address
 from registration.models.contact import Contact
 from registration.models.multiple_operator import MultipleOperator
 from registration.models.document import Document
-from service.data_access_service.address_service import AddressDataAccessService
-from service.data_access_service.multiple_operator_service import MultipleOperatorService
+from registration.service.data_access_service.address_service import AddressDataAccessService
+from registration.service.data_access_service.multiple_operator_service import MultipleOperatorService
 from registration.models.user_operator import UserOperator
 from registration.models import Operation, User
 from ninja import Query
 from django.db import transaction
-from service.data_access_service.operation_service import OperationDataAccessService
-from service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.operation_service import OperationDataAccessService
+from common.service.data_access_service.user_service import UserDataAccessService
 from uuid import UUID
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
-from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
-from service.data_types.operation_service import (
+from registration.service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
+from registration.service.data_types.operation_service import (
     MultipleOperatorData,
     OperationData,
     OptedInOperationDetailData,
     UpdateOperationData,
 )
-from service.document_service import DocumentService
-from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
-from service.facility_service import FacilityService
+from registration.service.document_service import DocumentService
+from registration.service.facility_designated_operation_timeline_service import (
+    FacilityDesignatedOperationTimelineService,
+)
+from registration.service.facility_service import FacilityService
 from registration.schema import (
     OperationRepresentativeIn,
     FacilityIn,
@@ -53,7 +55,7 @@ from registration.schema import (
 from django.db.models import Q
 from django.utils import timezone
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
-from service.reporting_year_service import ReportingYearService
+from reporting.service.reporting_year_service import ReportingYearService
 from django.conf import settings
 from reporting.models.report import Report
 

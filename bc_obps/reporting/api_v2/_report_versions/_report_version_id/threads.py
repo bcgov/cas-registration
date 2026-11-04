@@ -19,7 +19,7 @@ from reporting.models.comment_thread import CommentThread
 from reporting.models.report_version import ReportVersion
 from reporting.schema.generic import Message
 from reporting.service.report_facilities_service import ReportFacilitiesService
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(

@@ -1,7 +1,6 @@
 import uuid
 from django.db import transaction
 from reporting.models.report_version import ReportVersion
-from service.utils.get_report_valid_date_from_version_id import get_report_valid_date_from_version_id
 from registration.models.activity import Activity
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import (
@@ -18,7 +17,12 @@ from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
 from reporting.models.source_type import SourceType
-from reporting.service.utils import exclude_keys, retrieve_ids, round_using_appropriate_strategy
+from reporting.service.utils import (
+    exclude_keys,
+    retrieve_ids,
+    round_using_appropriate_strategy,
+    get_report_valid_date_from_version_id,
+)
 from reporting.service.emission_category_mapping_service import (
     EmissionCategoryMappingService,
 )

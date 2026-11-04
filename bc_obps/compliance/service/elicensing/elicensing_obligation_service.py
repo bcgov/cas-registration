@@ -226,7 +226,7 @@ class ElicensingObligationService:
         4. Processes all obligations for that period that don't have invoices yet
         5. Excludes superseded obligations
         """
-        from service.reporting_year_service import ReportingYearService
+        from reporting.service.reporting_year_service import ReportingYearService
 
         current_reporting_year = ReportingYearService.get_current_reporting_year()
 
@@ -304,7 +304,7 @@ class ElicensingObligationService:
         3. Sends a reminder email for all obligations for that period that have an outstanding balance > 0
         """
 
-        from service.reporting_year_service import ReportingYearService
+        from reporting.service.reporting_year_service import ReportingYearService
         from compliance.tasks import retryable_send_reminder_of_obligation_due_email
 
         current_reporting_year = ReportingYearService.get_current_reporting_year()
@@ -334,7 +334,7 @@ class ElicensingObligationService:
         2) Find the compliance period
         3) Take the “reminders” queryset and further restrict to obligation due date <= period deadline
         """
-        from service.reporting_year_service import ReportingYearService
+        from reporting.service.reporting_year_service import ReportingYearService
         from compliance.tasks import retryable_send_notice_of_penalty_accrual_email
 
         current_reporting_year = ReportingYearService.get_current_reporting_year()

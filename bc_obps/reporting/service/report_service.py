@@ -12,13 +12,15 @@ from reporting.models.report import Report
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.service.report_product_service import ReportProductService
-from service.data_access_service.report_service import ReportDataAccessService
-from service.data_access_service.reporting_year import ReportingYearDataAccessService
-from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
-from service.report_version_service import ReportVersionService
-from service.facility_report_service import FacilityReportService, SaveFacilityReportData
+from reporting.service.data_access_service.report_service import ReportDataAccessService
+from reporting.service.data_access_service.reporting_year import ReportingYearDataAccessService
+from registration.service.operation_designated_operator_timeline_service import (
+    OperationDesignatedOperatorTimelineService,
+)
+from reporting.service.report_version_service import ReportVersionService
+from reporting.service.facility_report_service import FacilityReportService, SaveFacilityReportData
 from typing import Any, List, Optional
-from service.data_access_service.user_service import UserDataAccessService
+from common.service.data_access_service.user_service import UserDataAccessService
 from dataclasses import dataclass
 
 

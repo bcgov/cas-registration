@@ -6,15 +6,17 @@ from registration.models.contact import Contact
 from reporting.models.report import Report
 from reporting.models.report_operation import ReportOperation
 from reporting.service.report_product_service import ReportProductService
-from service.data_access_service.facility_service import FacilityDataAccessService
+from registration.service.data_access_service.facility_service import FacilityDataAccessService
 from reporting.models import ReportOperationRepresentative
 from django.db.models import Min, F
 from dataclasses import dataclass
 from django.db.models import Prefetch
 from reporting.models import ReportVersion, FacilityReport, ReportActivity, ReportNonAttributableEmissions
 from typing import Union, List, Any
-from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
-from service.operation_service import OperationService
+from registration.service.operation_designated_operator_timeline_service import (
+    OperationDesignatedOperatorTimelineService,
+)
+from registration.service.operation_service import OperationService
 
 
 @dataclass
