@@ -25,16 +25,26 @@ sudo apt-get install -y libbz2-dev libsqlite3-dev tk-dev liblzma-dev
 sudo apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libcairo2
 ```
 
-### Install asdf
+### Install `mise`
 
-Install [asdf](https://asdf-vm.com/) (0.16+) and add the following to your `~/.bashrc`:
+Install [mise-en-place](https://mise.jdx.dev/getting-started.html)
 
-```bash
-export ASDF_DATA_DIR="$HOME/.asdf"
-export PATH="${ASDF_DATA_DIR}/shims:${PATH}"
+##### Postgres
+
+You might need to setup postgres if it doesn't come with defaults:
+
+```toml
+# ~/.config/mise/config.toml (or mise config file)
+
+[env]
+PGDATA = "{{config_root}}/.config/mise/.postgres_data"
 ```
 
-Then reload: `source ~/.bashrc`.
+then:
+
+```bash
+initdb -U postgres
+```
 
 ---
 
@@ -63,13 +73,13 @@ In `bciers` directory, create a `bciers/.env.local` file from the `bciers/.env.l
 
 1. From the terminal, cd into directory `cas-registration/bc_obps`.
 
-2. Run `make install_dev_tools`. This will install asdf plugins and poetry. To activate the virtual environment after setup, run `eval $(poetry env activate)`. To exit run `deactivate`.
+2. Run `make install_dev_tools`. This will install poetry. OPTIONAL: To activate the virtual environment after setup, run `eval $(poetry env activate)`. To exit run `deactivate`.
 
 3. Run `make install_poetry_deps` to install all Python dependencies.
 
 4. Run `make start_pg` to start the postgres server.
 
-5. Create a PostgreSQL role for your local user matching `DB_USER` in your `.env` (asdf-managed postgres only has the `postgres` superuser by default):
+5. If missing, create a PostgreSQL role for your local user matching `DB_USER` in your `.env` (postgres only has the `postgres` superuser by default):
 
 ```bash
 psql -h localhost -U postgres -c "CREATE USER <your_shell_user> WITH SUPERUSER; CREATE DATABASE <your_shell_user>;"
@@ -93,7 +103,7 @@ If you see an error about port 5432 being in use, you may need to stop the syste
 sudo systemctl stop postgresql
 ```
 
-Then restart the asdf-managed PostgreSQL:
+Then restart PostgreSQL:
 
 ```bash
 make start_pg
@@ -107,7 +117,7 @@ If you see "role your_username does not exist" when running database commands, m
 
 ### Virtual Environment
 
-This project uses Poetry managed by asdf.
+This project uses Poetry, managed by `mise`.
 You can activate the virtual environment in two ways:
 
 1. Using Poetry (recommended):
@@ -169,7 +179,7 @@ After system restart, you'll need to:
 2. Activate the virtual environment:
 
    ```bash
-   # Using Poetry (via asdf)
+   # Using Poetry
    eval $(poetry env activate)
 
    # Or alternatively, activate directly:
@@ -226,36 +236,36 @@ This guide will help you set up the frontend development environment for the CAS
    - Used for managing project dependencies
 
 3. **Version Manager**
-   - asdf (recommended)
+   - mise-en-place (recommended, [install docs](https://mise.jdx.dev/installing-mise.html)), asdf or manual install of tools in .tool-versions
    - Helps manage tool versions consistently across the team
 
 ### System Requirements
 
 - Linux/Unix-based system or WSL for Windows users
 - Git (for version control)
-- Docker and Docker Compose (for containerized development)
 
 ## Installation Guide
 
-### Using asdf (Recommended Method)
+### Using `mise` (Recommended Method)
 
-1. **Install asdf** (if not already installed — see [Prerequisites](#prerequisites) above for setup)
+1. **Install `mise`** (if not already installed — see [Prerequisites](#prerequisites) above for setup)
 
 2. **Install Node.js plugin and version**
 
+   Mise will pick up the .tools-version file:
+
    ```bash
-   asdf plugin add nodejs
-   asdf install nodejs 24.16.0
-   asdf reshim nodejs
+   mise install
    ```
 
-### Alternative Method (Without asdf)
+### Alternative Method
 
-1. **Install Node.js 24.16.0**
+1. **Install Node.js**
    - Using nvm:
+     Look at the supported development version of node in `.tool-versions`
      ```bash
-     nvm install 24.16.0
-     nvm use 24.16.0
+     nvm install <Node version>
+     nvm use <Node version>
      ```
    - Or download directly from [Node.js website](https://nodejs.org/)
 
@@ -389,7 +399,7 @@ The shared libraries are automatically available to all applications in the mono
 
 ### Prerequisites
 
-- Node.js 24.16.0 (managed by asdf)
+- Node.js 24.16.0
 - Yarn (via Node's Corepack)
 - Nx CLI (installed via project dependencies)
 

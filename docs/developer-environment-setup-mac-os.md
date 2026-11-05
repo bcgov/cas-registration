@@ -2,35 +2,41 @@
 
 ## Prerequisites
 
-### 1. Install asdf
+### 1. Install `mise`
 
-Install [asdf](https://asdf-vm.com/) via Homebrew (recommended):
+Install [mise](https://mise.jdx.dev/getting-started.html)
 
-```bash
-brew install asdf
-```
+##### Python
 
-asdf 0.16+ is a binary distribution — there is no `asdf.sh` to source. Add the following to your `~/.zprofile` to initialize it:
+Mise requires local compilation of python to discover homebrew libraries:
 
 ```bash
-export ASDF_DATA_DIR="$HOME/.asdf"
-export PATH="${ASDF_DATA_DIR}/shims:${PATH}"
+mise settings set python.compile true
 ```
 
-Then reload your shell: `source ~/.zprofile`.
+or:
+
+```toml
+# ~/.config/mise/config.toml
+
+[settings.python]
+compile = true
+```
 
 ### 2. Install system dependencies
 
-The postgres and python builds (managed by asdf) require several libraries that are not installed by default on macOS. Install them before running `make install_dev_tools`:
+The postgres and python builds require several libraries that are not installed by default on macOS. Install them before running `make install_dev_tools`:
 
 ```bash
 brew install pkg-config icu4c libxml2 openssl@3 xz pango
 ```
 
-- `pkg-config`, `icu4c`, `libxml2`, `openssl@3`, `xz` — required to build PostgreSQL and Python via asdf
+- `pkg-config`, `icu4c`, `libxml2`, `openssl@3`, `xz` — required to build PostgreSQL and Python
 - `pango` — required by WeasyPrint (PDF generation), which is a Python dependency of the backend
 
-Because `icu4c`, `libxml2`, and `openssl@3` are keg-only (not linked into `/opt/homebrew` by default), add the following to `~/.zprofile` so the build tools can find them:
+#### Troubleshooting
+
+Because `icu4c`, `libxml2`, and `openssl@3` are keg-only (not linked into `/opt/homebrew` by default), add the following to `~/.zprofile` so if build tools can't find them:
 
 ```bash
 export PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c@78/lib/pkgconfig:/opt/homebrew/opt/libxml2/lib/pkgconfig:/opt/homebrew/opt/openssl@3/lib/pkgconfig:$PKG_CONFIG_PATH"
@@ -68,21 +74,38 @@ In `bciers/apps/registration/e2e` directory, create a `bciers/apps//e2e/.env.loc
 Ensure you have completed the [App Environment Variables](#app-environment-variables) section before continuing.
 
 1. From the terminal, cd into directory `cas-registration/bc_obps`.
-2. Run `make install_dev_tools`. This will install asdf plugins and poetry. To activate the virtual environment after setup, run `eval $(poetry env activate)`. To exit run `deactivate`.
-3. Run `make install_poetry_deps` to install all python dependencies.
-4. Run `make start_pg` to start the postgres server if it is not already running.
-5. Create a PostgreSQL role for your local user matching `DB_USER` in your `.env` (asdf-managed postgres only has the `postgres` superuser by default):
+1. Run `make install_dev_tools`. This will install build plugins and poetry. To activate the virtual environment after setup, run `eval $(poetry env activate)`. To exit run `deactivate`.
+1. Run `make install_poetry_deps` to install all python dependencies.
+
+1. Run `make start_pg` to start the postgres server if it is not already running.
+
+   You might need to setup postgres if it doesn't install with defaults:
+
+   ```toml
+   # ~/.config/mise/config.toml (or mise config file)
+
+   [env]
+   PGDATA = "{{config_root}}/.config/mise/.postgres_data"
+   ```
+
+   then:
+
+   ```bash
+   initdb -U postgres
+   ```
+
+1. Create a PostgreSQL role for your local user matching `DB_USER` in your `.env`:
    ```bash
    psql -h localhost -U postgres -c "CREATE USER <your_shell_user> WITH SUPERUSER; CREATE DATABASE <your_shell_user>;"
    ```
    Ensure `DB_USER` in your `.env` is **lowercase** — PostgreSQL role names are case-sensitive in connection strings.
-6. Run `make create_db` to create the database.
-7. Run `make migrate` to run all database migrations.
-8. Run `make run`, which will start running the development server locally (default port is :8000; terminal output will indicate what localhost address to use to access the backend server).
+1. Run `make create_db` to create the database.
+1. Run `make migrate` to run all database migrations.
+1. Run `make run`, which will start running the development server locally (default port is :8000; terminal output will indicate what localhost address to use to access the backend server).
    - to test it out, navigate to the `/api/docs` endpoint in your browser, you should see the API documentation.
 
-9. Optional: to test the Django server's connection to your database, run `python3 manage.py check --database default`.
-10. Optional: to load mock data via fixtures, run `make loadfixtures`.
+1. Optional: to test the Django server's connection to your database, run `python3 manage.py check --database default`.
+1. Optional: to load mock data via fixtures, run `make loadfixtures`.
 
 ## Backend Environment Use
 
@@ -97,15 +120,15 @@ After doing the initial setup, to get the backend re-running:
 
 ### Troubleshooting
 
-- If you get `role "your_user" does not exist` when running `make create_db` or `make migrate`, the postgres role for your local user hasn't been created yet. With asdf-managed postgres (unlike a system install), only the `postgres` superuser exists by default. Connect as `postgres` to create your role:
+- If you get `role "your_user" does not exist` when running `make create_db` or `make migrate`, the postgres role for your local user hasn't been created yet. With managed postgres (unlike a system install), only the `postgres` superuser exists by default. Connect as `postgres` to create your role:
 
 ```bash
 psql -h localhost -U postgres -c "CREATE USER <your_shell_user> WITH SUPERUSER; CREATE DATABASE <your_shell_user>;"
 ```
 
-This must be run from the `bc_obps` directory so asdf resolves the correct `psql` binary.
+This must be run from the `bc_obps` directory so mise resolves the correct `psql` binary.
 
-- if `make pythontest_parallel` fails with `psycopg.errors.OutOfMemory: out of shared memory`, the default `max_locks_per_transaction` (64) is too low for the number of tables and indexes the test suite creates in parallel. Increase it in `~/.asdf/installs/postgres/16.2/data/postgresql.conf`:
+- if `make pythontest_parallel` fails with `psycopg.errors.OutOfMemory: out of shared memory`, the default `max_locks_per_transaction` (64) is too low for the number of tables and indexes the test suite creates in parallel. Increase it in `$PGDATA/postgresql.conf`:
 
 ```
 max_locks_per_transaction = 256
@@ -115,7 +138,7 @@ Then restart postgres: `make stop_pg && make start_pg`.
 
 - if running poetry commands throws errors about the `_hashlib` library, [try these troubleshooting commands](https://github.com/python-poetry/poetry/issues/7695#issuecomment-1572825140)
 
-- if you encounter an issue installing `psycopg2` relating to `Error: pg_config --libdir failed: No version is set for command pg_config`, try setting your Postgres version for asdf globally rather than locally. (E.g., `asdf global postgres 14.0`)
+- if you encounter an issue installing `psycopg2` relating to `Error: pg_config --libdir failed: No version is set for command pg_config`, try setting your Postgres version for mise globally rather than locally. (E.g., `mise use --global postgres@14.0`)
 
 - if your admin panel looks ugly, run `python3 manage.py collectstatic` to collect static files and then try again.
 
@@ -125,12 +148,10 @@ Then restart postgres: `make stop_pg && make start_pg`.
 
 ### First time setup
 
-First, install the asdf Node.js plugin and the version specified in `.tool-versions` (from the repo root):
+First, install the Node.js plugin and the version specified in `.tool-versions` (from the repo root):
 
 ```bash
-asdf plugin add nodejs
-asdf install nodejs 24.16.0
-asdf reshim nodejs
+mise install
 ```
 
 Then in the `bciers` directory:
@@ -201,9 +222,9 @@ We also extend this prefix convention to the naming of **branches**, eg: `docs/#
 
 ## Yarn Modern Troubleshooting
 
-Some developers have had issues when setting up a new environment with yarn modern, corepack & asdf. Here are some steps that have worked to get the environment working in that case:
+Some developers have had issues when setting up a new environment with yarn modern, corepack. Here are some steps that have worked to get the environment working in that case:
 
-1. remove yarn from your global asdf setup (in ~/.tools-version for example)
-2. run asdf reshim
+1. remove yarn from your global setup (in ~/.tools-version for example)
+2. run mise reshim
 3. go to cas-registration/bciers and run corepack enable
 4. yarn --version should return 4.x and not 1.yy.zz
