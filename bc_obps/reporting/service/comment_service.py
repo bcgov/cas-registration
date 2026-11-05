@@ -6,7 +6,7 @@ from reporting.service.comment_thread_service import CommentThreadService
 
 class CommentService:
     @staticmethod
-    def delete_comment(version_id: int, thread_id: int, comment_id: int, user_guid: UUID) -> CommentThread | None:
+    def delete_comment(thread_id: int, comment_id: int, user_guid: UUID) -> CommentThread | None:
         # Deletes a comment and removes the thread if it becomes empty.
         # Raises PermissionError if the supplied user did not create the comment.
         comment = Comment.objects.get(id=comment_id, comment_thread_id=thread_id)
@@ -20,10 +20,10 @@ class CommentService:
         return thread
 
     @staticmethod
-    def create_comment(report_version_id: int, comment_thread_id: int, user_guid: UUID, content: str) -> CommentThread:
-        Comment.objects.create(
+    def create_comment(report_version_id: int, comment_thread_id: int, content: str) -> Comment:
+        comment = Comment.objects.create(
             comment_thread_id=comment_thread_id,
             report_version_id=report_version_id,
             comment=content,
         )
-        return CommentThreadService.threads_with_annotated_comments(user_guid=user_guid).get(id=comment_thread_id)
+        return comment
