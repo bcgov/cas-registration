@@ -82,6 +82,11 @@ export const ComplianceUnitsGrid = ({
       <DataGrid
         columns={columns}
         initialData={appliedComplianceUnits}
+        noDataMessage={
+          canApplyUnits
+            ? "No units applied yet, apply compliance units below"
+            : "No compliance units applied yet"
+        }
         sx={{
           "& .MuiDataGrid-virtualScroller": {
             height: "fit-content",

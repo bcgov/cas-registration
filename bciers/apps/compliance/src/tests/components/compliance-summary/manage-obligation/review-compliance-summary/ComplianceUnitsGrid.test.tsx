@@ -184,6 +184,33 @@ describe("ComplianceUnitsGrid", () => {
     expect(applyButton).not.toBeInTheDocument();
   });
 
+  it.each([
+    [true, "No units applied yet, apply compliance units below"],
+    [false, "No compliance units applied yet"],
+  ])(
+    "renders a descriptive empty-grid message when can_apply_compliance_units is %s",
+    (canApply, expectedMessage) => {
+      render(
+        <ComplianceUnitsGrid
+          registry={{
+            formContext: { reportingYear: 2025, maxCreditUsagePercentage: 0.5 },
+          }}
+          value={{
+            compliance_report_version_id: complianceReportVersionId,
+            applied_compliance_units: {
+              row_count: 0,
+              rows: [],
+              can_apply_compliance_units: canApply,
+            },
+          }}
+        />,
+      );
+
+      expect(screen.getByText(expectedMessage)).toBeInTheDocument();
+      expect(screen.queryByText(/No records found/i)).not.toBeInTheDocument();
+    },
+  );
+
   it("renders the helper text explaining inherited compliance units in the compliance grid", () => {
     render(
       <ComplianceUnitsGrid
