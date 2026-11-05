@@ -302,7 +302,7 @@ class PenaltyCalculationService:
         invoice_number, due_date = None, None
         if late_submission_penalty.elicensing_invoice:
             invoice_number = late_submission_penalty.elicensing_invoice.invoice_number
-            due_date = late_submission_penalty.elicensing_invoice.due_date
+            due_date = late_submission_penalty.elicensing_invoice.due_date.isoformat()
 
         return {
             "has_penalty": True,
