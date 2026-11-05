@@ -15,7 +15,7 @@ from registration.schema import (
     UserOperatorListOut,
     UserOperatorFilterSchema,
 )
-from common.service.user_operator_service import UserOperatorService
+from registration.service.user_operator_service import UserOperatorService
 from ninja.pagination import paginate, PageNumberPagination
 
 

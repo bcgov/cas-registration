@@ -8,7 +8,7 @@ from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from model_bakery import baker
-from service.document_service import DocumentService
+from registration.service.document_service import DocumentService
 from common.tests.utils.test_files import create_test_file
 from common.exceptions import UserError
 

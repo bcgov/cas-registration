@@ -20,7 +20,7 @@ from registration.service.operation_designated_operator_timeline_service import 
 from reporting.service.report_version_service import ReportVersionService
 from reporting.service.facility_report_service import FacilityReportService, SaveFacilityReportData
 from typing import Any, List, Optional
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from dataclasses import dataclass
 
 

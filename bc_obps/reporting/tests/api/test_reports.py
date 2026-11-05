@@ -97,7 +97,7 @@ class TestReportsEndpoint(CommonTestSetup):
         assert response.status_code == 201
         assert response.json() == ReportVersion.objects.first().id
 
-    @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
+    @patch("reporting.service.report_service.ReportService.get_registration_purpose_by_version_id")
     def test_get_registration_purpose_by_version_id_returns_expected_data(
         self, mock_get_registration_purpose: MagicMock
     ):
@@ -139,7 +139,7 @@ class TestReportsEndpoint(CommonTestSetup):
         assert_report_version_ownership_is_validated("change_report_version_type", "post")
         assert_report_version_ownership_is_validated("get_report_version")
 
-    @patch("service.report_version_service.ReportVersionService.delete_report_version")
+    @patch("reporting.service.report_version_service.ReportVersionService.delete_report_version")
     def test_returns_data_as_provided_by_delete_report_version(self, mock_delete_report_version: MagicMock):
         # Arrange: Set up the expected value from the service
         expected_success = True
@@ -180,8 +180,8 @@ class TestReportsEndpoint(CommonTestSetup):
 
             mock_validate_operation_ownership.assert_called_once()
 
-    @patch("service.report_version_service.ReportVersionService.create_report_version")
-    @patch("service.report_service.ReportService.get_report_by_id")
+    @patch("reporting.service.report_version_service.ReportVersionService.create_report_version")
+    @patch("reporting.service.report_service.ReportService.get_report_by_id")
     def test_returns_data_as_provided_by_create_report_version(
         self,
         mock_get_report_by_id: MagicMock,
@@ -218,7 +218,7 @@ class TestReportsEndpoint(CommonTestSetup):
         mock_get_report_by_id.assert_called_once_with(report.id)
         mock_create_report_version.assert_called_once_with(report)
 
-    @patch("service.report_service.ReportService.create_report_for_reporting_year")
+    @patch("reporting.service.report_service.ReportService.create_report_for_reporting_year")
     def test_create_report_for_reporting_year(
         self,
         mock_create_report_for_reporting_year: MagicMock,

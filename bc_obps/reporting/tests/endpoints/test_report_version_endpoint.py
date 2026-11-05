@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock
 from model_bakery import baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from service.report_version_service import ReportVersionData
+from reporting.service.report_version_service import ReportVersionData
 from dataclasses import asdict
 
 
@@ -32,7 +32,7 @@ class TestReportVersionEndpoint(CommonTestSetup):
             report_operation.report_version.report_operation.operator_legal_name
         )
 
-    @patch("service.report_version_service.ReportVersionService.change_report_version_type")
+    @patch("reporting.service.report_version_service.ReportVersionService.change_report_version_type")
     def test_change_report_version_type(self, mock_change_version_service_method: MagicMock):
         mock_change_version_service_method.return_value = baker.make_recipe(
             "reporting.tests.utils.report_version",
@@ -60,7 +60,7 @@ class TestReportVersionEndpoint(CommonTestSetup):
         assert response.json() == 1234
 
     # POST report_version change
-    @patch("service.report_version_service.ReportVersionService.save_report_version")
+    @patch("reporting.service.report_version_service.ReportVersionService.save_report_version")
     def test_authorized_users_can_save_report_version_change(self, mock_save_report_version_change: MagicMock):
 
         payload = ReportVersionData(

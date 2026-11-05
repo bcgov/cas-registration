@@ -4,7 +4,7 @@ from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.constants import USER_TAGS
 from registration.models import AppRole
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from registration.schema import UserAppRoleOut, Message
 from registration.api.router import router
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx

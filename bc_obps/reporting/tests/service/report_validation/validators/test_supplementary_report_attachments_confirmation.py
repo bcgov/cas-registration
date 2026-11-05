@@ -16,7 +16,7 @@ from reporting.service.report_validation.validators.supplementary_report_attachm
 
 @pytest.mark.django_db
 class TestSupplementaryReportAttachmentConfirmationValidator:
-    @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
+    @patch("reporting.service.report_version_service.ReportVersionService.is_initial_report_version")
     @patch("reporting.models.report_attachment_confirmation.ReportAttachmentConfirmation.objects.get")
     def test_initial_version_skips_validation(self, mock_get, mock_initial):
         # Initial version should bypass all checks
@@ -28,7 +28,7 @@ class TestSupplementaryReportAttachmentConfirmationValidator:
         mock_initial.assert_called_once_with(version.id)
         assert result == {}
 
-    @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
+    @patch("reporting.service.report_version_service.ReportVersionService.is_initial_report_version")
     @patch("reporting.models.report_attachment_confirmation.ReportAttachmentConfirmation.objects.get")
     def test_missing_confirmation_entry(self, mock_get, mock_initial):
         # Non-initial version with no confirmation record
@@ -68,7 +68,7 @@ class TestSupplementaryReportAttachmentConfirmationValidator:
             ),
         ],
     )
-    @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
+    @patch("reporting.service.report_version_service.ReportVersionService.is_initial_report_version")
     @patch("reporting.models.report_attachment_confirmation.ReportAttachmentConfirmation.objects.get")
     def test_partial_confirmations(
         self,
@@ -99,7 +99,7 @@ class TestSupplementaryReportAttachmentConfirmationValidator:
             context=ErrorContext(report_version_id=version.id),
         )
 
-    @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
+    @patch("reporting.service.report_version_service.ReportVersionService.is_initial_report_version")
     @patch("reporting.models.report_attachment_confirmation.ReportAttachmentConfirmation.objects.get")
     def test_all_confirmations_present(self, mock_get, mock_initial):
         # Both flags true should produce no errors

@@ -107,7 +107,7 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         assert FacilityReport.objects.get(pk=facility_report.id).facility_name == "CHANGED"
         assert FacilityReport.objects.get(pk=facility_report.id).activities.count() == 3
 
-    @patch("service.facility_report_service.FacilityReportService.save_facility_report_list")
+    @patch("reporting.service.facility_report_service.FacilityReportService.save_facility_report_list")
     def test_patch_calls_the_save_service_with_correct_data(self, mock_save: MagicMock):
         self.report_version = baker.make_recipe('reporting.tests.utils.report_version')
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
@@ -145,7 +145,7 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         assert_report_version_ownership_is_validated("save_facility_report_list", method="patch")
 
     @patch("reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed")
-    @patch("service.facility_report_service.FacilityReportService.update_facility_report")
+    @patch("reporting.service.facility_report_service.FacilityReportService.update_facility_report")
     def test_update_facility_report_api(self, mock_update: MagicMock, mock_is_sync_allowed: MagicMock):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)

@@ -4,7 +4,7 @@ from uuid import UUID
 from django.db.models import QuerySet, Q
 from common.models import DashboardData
 from common.schema import DashboardDataSchemaOut
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 
 logger = logging.getLogger(__name__)
 

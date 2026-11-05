@@ -6,9 +6,9 @@ from common.models import EmailNotification
 from registration.models.app_role import AppRole
 from registration.models.user import User
 from registration.models.user_operator import UserOperator
-from service.email.email_service import EmailService
+from common.service.email.email_service import EmailService
 import pytest
-from service.data_access_service.email_template_service import EmailNotificationTemplateService
+from common.service.data_access_service.email_template_service import EmailNotificationTemplateService
 from model_bakery import baker
 from compliance.emails import (
     _send_email_or_raise,

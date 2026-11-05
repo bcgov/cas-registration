@@ -3,7 +3,7 @@ from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import USER_OPERATOR_TAGS
 from registration.schema import CurrentUserOperatorOut, Message
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
 from registration.models import UserOperator

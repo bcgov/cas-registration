@@ -12,8 +12,8 @@ from reporting.models.report_operation import ReportOperation
 from registration.service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
-from common.service.user_operator_service import UserOperatorService
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.user_operator_service import UserOperatorService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from compliance.tasks import retryable_send_notice_of_no_obligation_no_earned_credits_email
 

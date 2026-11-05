@@ -32,7 +32,7 @@ from registration.models import Operation, User
 from ninja import Query
 from django.db import transaction
 from registration.service.data_access_service.operation_service import OperationDataAccessService
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from uuid import UUID
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService

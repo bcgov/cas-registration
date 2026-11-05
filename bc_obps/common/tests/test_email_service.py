@@ -2,8 +2,8 @@ import pytest
 from datetime import timedelta
 from uuid import UUID
 from django.utils import timezone
-from service.email.email_service import EmailService
-from service.email.email_service import GHG_REGULATOR_EMAIL
+from common.service.email.email_service import EmailService
+from common.service.email.email_service import GHG_REGULATOR_EMAIL
 from common.models import EmailNotificationTemplate
 
 pytestmark = pytest.mark.django_db

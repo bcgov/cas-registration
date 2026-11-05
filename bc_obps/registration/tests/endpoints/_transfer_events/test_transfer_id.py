@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 class TestTransferIdEndpoint(CommonTestSetup):
-    @patch("service.transfer_event_service.TransferEventService.get_if_authorized")
+    @patch("registration.service.transfer_event_service.TransferEventService.get_if_authorized")
     def test_authorized_users_can_get_transfer_event(self, mock_get_if_authorized: MagicMock):
         transfer_event = baker.make_recipe(
             'registration.tests.utils.transfer_event', operation=baker.make_recipe('registration.tests.utils.operation')
@@ -58,7 +58,7 @@ class TestTransferIdEndpoint(CommonTestSetup):
             assert response_json['facilities'] == []
             assert response_json['status'] == TransferEvent.Statuses.TO_BE_TRANSFERRED
 
-    @patch("service.transfer_event_service.TransferEventService.delete_transfer_event")
+    @patch("registration.service.transfer_event_service.TransferEventService.delete_transfer_event")
     def test_cas_analyst_can_delete_transfer_event(self, mock_delete_transfer_event: MagicMock):
         random_transfer_event_id = uuid4()
         mock_delete_transfer_event.return_value = None
@@ -72,7 +72,7 @@ class TestTransferIdEndpoint(CommonTestSetup):
         response_json = response.json()
         assert response_json == {"success": True}
 
-    @patch("service.transfer_event_service.TransferEventService.update_transfer_event")
+    @patch("registration.service.transfer_event_service.TransferEventService.update_transfer_event")
     @pytest.mark.parametrize("entity", ["Operation", "Facility"])
     def test_cas_analyst_can_update_transfer_event(self, mock_update_transfer_event: MagicMock, entity):
         transfer_event = baker.make_recipe(
