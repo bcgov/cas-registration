@@ -10,7 +10,7 @@ class TestOperatorRequestAdminAccessEndpoint(CommonTestSetup):
         operator = operator_baker()
         # We need to mock the send_operator_access_request_email function withing the application_access_service module
         mocked_send_access_request_email = mocker.patch(
-            "service.application_access_service.send_operator_access_request_email"
+            "registration.service.application_access_service.send_operator_access_request_email"
         )
         response = TestUtils.mock_post_with_auth_role(
             self,

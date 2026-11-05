@@ -2,12 +2,12 @@ from uuid import UUID
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from django.db.models import QuerySet, Value, Q, F
 from compliance.models import ComplianceReportVersion, ElicensingPayment, ComplianceEarnedCredit
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from registration.service.data_access_service.operation_service import OperationDataAccessService
 from registration.models import Operation
 from typing import Optional
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
-from common.service.user_operator_service import UserOperatorService
+from registration.service.user_operator_service import UserOperatorService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from compliance.enums import ComplianceInvoiceTypes
 from ninja import Query

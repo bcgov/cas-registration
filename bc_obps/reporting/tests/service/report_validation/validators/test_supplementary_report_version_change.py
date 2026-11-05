@@ -15,7 +15,7 @@ from reporting.service.report_validation.validators.supplementary_report_version
 
 @pytest.mark.django_db
 class TestSupplementaryReportVersionChangeValidator:
-    @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
+    @patch("reporting.service.report_version_service.ReportVersionService.is_initial_report_version")
     def test_initial_version_skips_validation(self, mock_is_initial):
         # initial versions should bypass the reason_for_change check entirely
         mock_is_initial.return_value = True
@@ -26,7 +26,7 @@ class TestSupplementaryReportVersionChangeValidator:
         mock_is_initial.assert_called_once_with(version.id)
         assert result == {}
 
-    @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
+    @patch("reporting.service.report_version_service.ReportVersionService.is_initial_report_version")
     def test_blank_reason_for_change_raises_error(self, mock_is_initial):
         # non‑initial version with empty string → error
         mock_is_initial.return_value = False
@@ -47,7 +47,7 @@ class TestSupplementaryReportVersionChangeValidator:
         assert err.key == ReportValidationErrorKey.MISSING_SUPPLEMENTARY_REPORT_VERSION_CHANGE
         assert err.context == ErrorContext(report_version_id=version.id)
 
-    @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
+    @patch("reporting.service.report_version_service.ReportVersionService.is_initial_report_version")
     def test_none_reason_for_change_raises_error(self, mock_is_initial):
         # non‑initial version with None → error
         mock_is_initial.return_value = False
@@ -68,7 +68,7 @@ class TestSupplementaryReportVersionChangeValidator:
         assert err.key == ReportValidationErrorKey.MISSING_SUPPLEMENTARY_REPORT_VERSION_CHANGE
         assert err.context == ErrorContext(report_version_id=version.id)
 
-    @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
+    @patch("reporting.service.report_version_service.ReportVersionService.is_initial_report_version")
     def test_present_reason_for_change_passes(self, mock_is_initial):
         # non‑initial version with a real reason_for_change → no errors
         mock_is_initial.return_value = False

@@ -6,7 +6,7 @@ from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.service.data_access_service.facility_designated_operation_timeline_service import (
     FacilityDesignatedOperationTimelineDataAccessService,
 )
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from registration.service.data_access_service.facility_service import FacilityDataAccessService
 from registration.models import Facility
 from registration.schema import FacilityIn

@@ -18,7 +18,7 @@ class OperatorDataAccessService:
 
     @classmethod
     def get_operators_business_guid(cls, operator_id: UUID) -> UUID:
-        from common.service.data_access_service.user_operator_service import UserOperatorDataAccessService
+        from registration.service.data_access_service.user_operator_service import UserOperatorDataAccessService
 
         approved_admin_users = UserOperatorDataAccessService.get_admin_users(
             operator_id, UserOperator.Statuses.APPROVED

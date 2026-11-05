@@ -24,7 +24,7 @@ class TestReportFinalReviewApi(CommonTestSetup):
             operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
         )
 
-    @patch("service.report_version_service.ReportVersionService.fetch_full_report_version")
+    @patch("reporting.service.report_version_service.ReportVersionService.fetch_full_report_version")
     @patch("reporting.schema.report_final_review.ComplianceService.get_calculated_compliance_data")
     @patch("reporting.schema.report_final_review.ReportVersionService.is_initial_report_version")
     def test_get_report_final_review_data_returns_required_data(

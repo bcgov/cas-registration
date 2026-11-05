@@ -10,7 +10,7 @@ from common.api.utils import get_current_user_guid
 from registration.models import AppRole
 from common.permissions import authorize
 from registration.schema import Message
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from common.service.data_access_service.dashboard_service import DashboardDataService
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 

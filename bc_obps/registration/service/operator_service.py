@@ -6,7 +6,7 @@ from registration.schema import PartnerOperatorIn, OperatorIn, OperatorFilterSch
 from registration.service.data_access_service.partner_operator_service import PartnerOperatorService
 from registration.service.data_access_service.address_service import AddressDataAccessService
 from registration.service.data_access_service.parent_operator_service import ParentOperatorService
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from registration.models import Operator
 from registration.service.data_access_service.operator_service import OperatorDataAccessService
 from uuid import UUID

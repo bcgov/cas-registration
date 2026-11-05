@@ -22,12 +22,12 @@ from registration.service.data_access_service.operation_designated_operator_time
     OperationDesignatedOperatorTimelineDataAccessService,
 )
 from registration.service.data_access_service.transfer_event_service import TransferEventDataAccessService
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from registration.service.facility_designated_operation_timeline_service import (
     FacilityDesignatedOperationTimelineService,
 )
 from registration.service.facility_service import FacilityService
-from service.facility_snapshot_service import FacilitySnapshotService
+from registration.service.facility_snapshot_service import FacilitySnapshotService
 from registration.service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineService,
 )

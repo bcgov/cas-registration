@@ -3,8 +3,8 @@ from typing import Dict, Optional, Any
 from registration.models import BusinessRole, Contact
 from django.db.models import QuerySet
 from registration.models.user import User
-from common.service.user_operator_service import UserOperatorService
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.user_operator_service import UserOperatorService
+from registration.service.data_access_service.user_service import UserDataAccessService
 
 
 class ContactDataAccessService:

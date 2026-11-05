@@ -9,7 +9,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from django.utils import timezone
 from compliance.constants import CLEAN_BC_LOGO_COMPLIANCE_INVOICE
 from ninja import Query
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from common.service.pdf.pdf_generator_service import PDFGeneratorService
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from compliance.models import ComplianceChargeRate
@@ -38,7 +38,7 @@ from compliance.dataclass import (
 )
 import json
 from django.http import StreamingHttpResponse
-from common.service.user_operator_service import UserOperatorService
+from registration.service.user_operator_service import UserOperatorService
 from compliance.schema.elicensing_invoice import ElicensingInvoiceFilterSchema
 
 

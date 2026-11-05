@@ -12,7 +12,7 @@ from registration.schema import (
     OperationRepresentativeIn,
 )
 from registration.service.data_access_service.contact_service import ContactDataAccessService
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from ninja import Query
 from ninja.types import DictStrAny
 from django.db import transaction

@@ -17,7 +17,7 @@ from compliance.models import (
     ComplianceReportVersion,
 )
 from reporting.models import ReportOperation
-from service.reporting_year_service import ReportingYearService
+from reporting.service.reporting_year_service import ReportingYearService
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 
 pytestmark = pytest.mark.django_db

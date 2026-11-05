@@ -8,7 +8,7 @@ from registration.schema import UserOperatorStatusUpdate, UserOperatorStatusUpda
 from registration.models import UserOperator
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.api.router import router
-from common.service.user_operator_service import UserOperatorService
+from registration.service.user_operator_service import UserOperatorService
 
 
 @router.patch(

@@ -9,7 +9,7 @@ from registration.models.operation_designated_operator_timeline import Operation
 from registration.tests.utils.bakers import operation_baker, operator_baker
 from reporting.service.reporting_dashboard_service import ReportingDashboardService
 from reporting.tests.utils.bakers import report_version_baker, reporting_year_baker
-from service.report_service import ReportService
+from reporting.service.report_service import ReportService
 from reporting.models.report_version import ReportVersion
 from reporting.models.reporting_year import ReportingYear
 from typing import Optional
@@ -24,9 +24,9 @@ from model_bakery import baker
 @pytest.mark.django_db
 class TestReportingDashboardService:
     @patch(
-        "service.data_access_service.operation_designated_operator_timeline_service.OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user"
+        "registration.service.data_access_service.operation_designated_operator_timeline_service.OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user"
     )
-    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    @patch("registration.service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_get_operations_for_reporting_dashboard(
         self,
         mock_get_by_guid: MagicMock | AsyncMock,
@@ -125,7 +125,7 @@ class TestReportingDashboardService:
         assert op2_result["report_version_id"] is None
         assert op2_result["report_status"] is None
 
-    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    @patch("registration.service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_get_past_reports_for_reporting_dashboard(
         self,
         mock_get_by_guid: MagicMock | AsyncMock,
@@ -234,7 +234,7 @@ class TestReportingDashboardService:
             assert result["report_version_id"] == expected.id
             assert result["report_status"] == expected.status
 
-    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    @patch("registration.service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_get_all_reports_for_internal_reporting_dashboard(
         self,
         mock_get_by_guid: MagicMock | AsyncMock,
@@ -283,9 +283,9 @@ class TestReportingDashboardService:
             assert res["reporting_year_id"] == rv.report.reporting_year_id
 
     @patch(
-        "service.data_access_service.operation_designated_operator_timeline_service.OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user"
+        "registration.service.data_access_service.operation_designated_operator_timeline_service.OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user"
     )
-    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    @patch("registration.service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_operations_sorting_and_filtering(
         self,
         mock_get_by_guid: MagicMock | AsyncMock,
@@ -404,7 +404,7 @@ class TestReportingDashboardService:
             (operations[2].id, 'Submitted', r2_version1_id),
         ]
 
-    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    @patch("registration.service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_reports_sorting_and_filtering(
         self,
         mock_get_by_guid: MagicMock | AsyncMock,

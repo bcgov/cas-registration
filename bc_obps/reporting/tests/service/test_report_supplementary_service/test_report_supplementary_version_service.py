@@ -158,7 +158,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             "Cloned ReportOperation should preserve the registration purpose from the source version.",
         )
 
-    @patch('service.reporting_year_service.ReportingYearService.get_current_reporting_year')
+    @patch('reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year')
     def test_create_or_clone_purpose_changed_past_year_creates_supplementary(self, mock_get_year):
         """Test that when registration purpose has changed since the past report was submitted,
         a supplementary (cloned) version is created for the past year."""
@@ -179,8 +179,8 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             Operation.Purposes.OBPS_REGULATED_OPERATION,
         )
 
-    @patch('service.report_version_service.ReportVersionService.create_report_version')
-    @patch('service.reporting_year_service.ReportingYearService.get_current_reporting_year')
+    @patch('reporting.service.report_version_service.ReportVersionService.create_report_version')
+    @patch('reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year')
     def test_create_or_clone_purpose_changed_current_year_creates_blank(
         self, mock_get_year, mock_create_report_version
     ):

@@ -3,7 +3,7 @@ from common.exceptions import UserError
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.user import User
 from registration.schema.user import UserUpdateRoleIn
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 
 
 class UserService:

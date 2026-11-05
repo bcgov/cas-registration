@@ -4,11 +4,11 @@ from django.db.models import QuerySet
 from uuid import UUID
 from registration.models.facility import Facility
 from registration.schema import FacilityDesignatedOperationTimelineFilterSchema
-from common.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from ninja import Query
 from registration.models import User
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
-from common.service.user_operator_service import UserOperatorService
+from registration.service.user_operator_service import UserOperatorService
 from django.db import transaction
 
 

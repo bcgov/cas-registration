@@ -9,8 +9,8 @@ from registration.api.router import router
 from registration.models import UserOperator
 from uuid import UUID
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from common.service.data_access_service.user_operator_service import UserOperatorDataAccessService
-from common.service.user_operator_service import UserOperatorService
+from registration.service.data_access_service.user_operator_service import UserOperatorDataAccessService
+from registration.service.user_operator_service import UserOperatorService
 
 
 # GET

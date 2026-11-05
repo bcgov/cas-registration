@@ -1,12 +1,12 @@
 import uuid
 from common.models import EmailNotification
-from service.email.email_service import EmailService
+from common.service.email.email_service import EmailService
 from registration.emails import send_registration_and_boro_id_email, send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes, EmailTemplateNames
 import pytest
 from registration.models import Operation, User
 from registration.tests.utils.bakers import operation_baker, user_baker
-from service.data_access_service.email_template_service import EmailNotificationTemplateService
+from common.service.data_access_service.email_template_service import EmailNotificationTemplateService
 
 pytestmark = pytest.mark.django_db
 email_service = EmailService()

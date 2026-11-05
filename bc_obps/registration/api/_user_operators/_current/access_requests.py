@@ -3,7 +3,7 @@ from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.constants import USER_OPERATOR_TAGS
 from registration.models import UserOperator
-from common.service.data_access_service.user_operator_service import UserOperatorDataAccessService
+from registration.service.data_access_service.user_operator_service import UserOperatorDataAccessService
 from django.db.models import QuerySet
 from registration.schema import ExternalDashboardUsersTileData, Message
 from typing import List, Literal, Tuple

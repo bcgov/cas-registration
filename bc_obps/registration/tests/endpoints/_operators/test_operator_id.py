@@ -5,7 +5,7 @@ from model_bakery import baker
 
 
 class TestOperatorIdEndpoint(CommonTestSetup):
-    @patch("service.data_access_service.operator_service.OperatorDataAccessService.get_operator_by_id")
+    @patch("registration.service.data_access_service.operator_service.OperatorDataAccessService.get_operator_by_id")
     def test_returns_data_as_provided_by_the_service(
         self,
         mock_get_operator: MagicMock | AsyncMock,
