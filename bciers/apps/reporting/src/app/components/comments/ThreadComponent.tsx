@@ -13,6 +13,7 @@ import { deleteComment } from "../../utils/comments/deleteComment";
 
 interface Props {
   thread: Thread;
+  version_id: number;
   canUpdate: boolean;
   onThreadUpdated: (thread: Thread) => void;
   onThreadDeleted: (threadId: number) => void;
@@ -20,6 +21,7 @@ interface Props {
 
 const ThreadComponent: React.FC<Props> = ({
   thread,
+  version_id,
   canUpdate,
   onThreadUpdated,
   onThreadDeleted,
@@ -27,6 +29,7 @@ const ThreadComponent: React.FC<Props> = ({
   const [_, startTransition] = useTransition();
   const { setErrors, renderedErrors } = useValidationErrors();
   const [replyMessage, setReplyMessage] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleResolveThread = (resolved: boolean) => {
     startTransition(async () => {
@@ -61,12 +64,14 @@ const ThreadComponent: React.FC<Props> = ({
     threadId: number,
     message: string,
   ) => {
+    setIsUpdating(true);
     startTransition(async () => {
       const resp = await postComment(reportVersionId, threadId, message);
       if (handleApiResponse(resp, setErrors)) {
         onThreadUpdated(resp as Thread);
         setReplyMessage("");
       }
+      setIsUpdating(false);
     });
   };
 
@@ -90,6 +95,7 @@ const ThreadComponent: React.FC<Props> = ({
           key={comment.id ?? "comment-pending-submission"}
           comment={comment}
           handleDelete={handleCommentDelete}
+          canUpdate={canUpdate}
         />
       ))}
       <Grid className="mt-2">
@@ -107,10 +113,10 @@ const ThreadComponent: React.FC<Props> = ({
               variant="outlined"
               color="primary"
               onClick={() =>
-                handleCommentPost(thread.version_id, thread.id, replyMessage)
+                handleCommentPost(version_id, thread.id, replyMessage)
               }
               fullWidth
-              disabled={!replyMessage}
+              disabled={!replyMessage || isUpdating}
             >
               Reply
             </Button>
