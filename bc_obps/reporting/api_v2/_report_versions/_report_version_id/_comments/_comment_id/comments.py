@@ -53,3 +53,24 @@ def create_comment(
     )
     thread = CommentThreadService.threads_with_annotated_comments(user_guid=user_guid).get(id=int(thread_id))
     return 201, thread
+
+
+@router.patch(
+    "report-version/{version_id}/threads/{thread_id}/comments/{comment_id}",
+    response={200: CommentThreadSchema, custom_codes_4xx: Message},
+    tags=[*EMISSIONS_REPORT_TAGS, *REPORT_COMMENTS_TAGS],
+    description="Updates a comment authored by the current user.",
+    auth=authorize("cas_director_analyst"),
+)
+@transaction.atomic
+def update_comment(
+    request: HttpRequest, version_id: str, thread_id: str, comment_id: str, payload: CommentThreadIn
+) -> Tuple[Literal[200], CommentThread]:
+    user_guid: UUID = get_current_user_guid(request)
+    comment = CommentService.check_comment_owner(comment_id=int(comment_id), user_guid=user_guid)
+    CommentService.update_comment(
+        comment=comment,
+        content=payload.comment,
+    )
+    thread = CommentThreadService.threads_with_annotated_comments(user_guid=user_guid).get(id=int(thread_id))
+    return 200, thread
