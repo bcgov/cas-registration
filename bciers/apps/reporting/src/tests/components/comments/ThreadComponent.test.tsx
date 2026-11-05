@@ -171,6 +171,17 @@ describe("The comment thread component", () => {
 
     resolvePost!(updatedThread);
 
+    // While awaiting the response, the reply button is disabled
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Reply" })).toBeDisabled(),
+    );
+    expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue(
+      "A new reply",
+    );
+    expect(onThreadUpdated).not.toHaveBeenCalled();
+
+    resolvePost!(updatedThread);
+
     await waitFor(() =>
       expect(onThreadUpdated).toHaveBeenCalledWith(updatedThread),
     );
