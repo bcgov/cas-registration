@@ -10,6 +10,7 @@ from registration.models.document import Document
 from registration.models.document_type import DocumentType
 from registration.models.event.transfer_event import TransferEvent
 from registration.models.facility import Facility
+from registration.models import FacilitySnapshot
 from registration.models.multiple_operator import MultipleOperator
 from registration.models.app_role import AppRole
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
@@ -173,6 +174,14 @@ facility_designated_operation_timeline = Recipe(
         facility
     ),  # note: you have to manually assign the correct operation_id to this facility in each test if desired
     end_date=timezone.now(),
+)
+
+facility_snapshot = Recipe(
+    FacilitySnapshot,
+    operation=foreign_key(operation),
+    facility=foreign_key(facility),
+    name="Snapshot",
+    type=Facility.Types.LARGE_FACILITY,
 )
 
 operation_designated_operator_timeline = Recipe(
