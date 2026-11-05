@@ -78,11 +78,10 @@ Ensure you have completed the [App Environment Variables](#app-environment-varia
 2. Run `mise trust` (one time) so mise loads `bc_obps/mise.toml`, which sets `PGDATA` to `bc_obps/.pgdata` (gitignored).
 3. Run `make install_dev_tools`. This installs Python, Poetry and PostgreSQL via mise, creates the local postgres cluster in `bc_obps/.pgdata` if it doesn't exist yet, and starts the postgres server.
 4. Run `make install_poetry_deps` to install all python dependencies. To activate the virtual environment, run `eval $(poetry env activate)`. To exit run `deactivate`.
-5. Create a PostgreSQL role for your local user matching `DB_USER` in your `.env`:
+5. Set a password for your database user. `make install_dev_tools` makes your shell user (`whoami`) the postgres superuser: over the local socket only your OS user can connect, with no password, but Django connects over TCP, which requires one. Set `DB_USER` in your `.env` to your shell user (**lowercase** — role names are case-sensitive) and use your `DB_PASSWORD` value here:
    ```bash
-   psql -h localhost -U postgres -c "CREATE USER <your_db_user> WITH SUPERUSER;"
+   psql -d postgres -c "\password"
    ```
-   Ensure `DB_USER` in your `.env` is **lowercase** — PostgreSQL role names are case-sensitive in connection strings.
 6. Run `make start_pg` to start the postgres server if it is not already running, then `make create_db` to create the database.
 7. Run `make migrate` to run all database migrations.
 8. Run `make run`, which will start running the development server locally (default port is :8000; terminal output will indicate what localhost address to use to access the backend server).
@@ -104,13 +103,15 @@ After doing the initial setup, to get the backend re-running:
 
 ### Troubleshooting
 
-- If you get `role "your_user" does not exist` when running `make create_db` or `make migrate`, the postgres role for your local user hasn't been created yet. With mise-managed postgres (unlike a system install), only the `postgres` superuser exists by default. Connect as `postgres` to create your role:
+- If you get `password authentication failed for user "<your_db_user>"` when running `make migrate` or `make run`, the role's password doesn't match `DB_PASSWORD` in your `.env`. Set it again with `psql -d postgres -c "\password"` (run from the `bc_obps` directory so mise resolves the correct `psql` binary).
+
+- If you get `role "<your_db_user>" does not exist`, `DB_USER` in your `.env` isn't your shell user (only your shell user exists in a new cluster). Either set `DB_USER` to `whoami`, or create the role:
 
   ```bash
-  psql -h localhost -U postgres -c "CREATE USER <your_db_user> WITH SUPERUSER;"
+  psql -d postgres -c "CREATE USER <your_db_user> WITH SUPERUSER PASSWORD '<your DB_PASSWORD>';"
   ```
 
-  This must be run from the `bc_obps` directory so mise resolves the correct `psql` binary.
+- If your cluster was created before local auth was locked down (its `bc_obps/.pgdata/pg_hba.conf` uses `trust`), recreate it: `make stop_pg && rm -rf .pgdata && make install_dev_tools`, then follow the setup steps from step 5. This deletes your local data.
 
 - if `make pythontest_parallel` fails with `psycopg.errors.OutOfMemory: out of shared memory`, the default `max_locks_per_transaction` (64) is too low for the number of tables and indexes the test suite creates in parallel. Increase it in `bc_obps/.pgdata/postgresql.conf` (`$PGDATA/postgresql.conf`):
 

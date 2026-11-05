@@ -1,5 +1,5 @@
 SHELL := /usr/bin/env bash
-PSQL=psql -h localhost
+PSQL=psql
 DB_NAME=registration
 MANAGE_PY = manage.py
 SCHEMA_NAME=erc
@@ -41,10 +41,12 @@ install_dev_tools: stop_pg install_backend_tools init_pg start_pg
 init_pg: ## initialize the local postgres cluster in $PGDATA if it does not exist yet
 init_pg:
 	@# pg_ctl status exits with 4 when there is no accessible data directory
+	@# Your shell user is the superuser: the local socket uses peer auth (only your OS user,
+	@# no password) and TCP (used by Django) requires a password
 	@$(MISE_EXEC) pg_ctl status >/dev/null 2>&1; \
 	if [ $$? -eq 4 ]; then \
 		echo "Initializing postgres cluster"; \
-		$(MISE_EXEC) initdb -U postgres -A trust; \
+		$(MISE_EXEC) initdb -U "$$(whoami)" --auth-local=peer --auth-host=scram-sha-256; \
 	fi
 
 .PHONY: install_poetry_deps

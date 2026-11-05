@@ -76,13 +76,11 @@ In `bciers` directory, create a `bciers/.env.local` file from the `bciers/.env.l
 
 4. Run `make install_poetry_deps` to install all Python dependencies. OPTIONAL: To activate the virtual environment, run `eval $(poetry env activate)`. To exit run `deactivate`.
 
-5. Create a PostgreSQL role for your local user matching `DB_USER` in your `.env` (postgres only has the `postgres` superuser by default):
+5. Set a password for your database user. `make install_dev_tools` makes your shell user (`whoami`) the postgres superuser: over the local socket only your OS user can connect, with no password, but Django connects over TCP, which requires one. Set `DB_USER` in your `.env` to your shell user (**lowercase** — role names are case-sensitive) and use your `DB_PASSWORD` value here:
 
    ```bash
-   psql -h localhost -U postgres -c "CREATE USER <your_db_user> WITH SUPERUSER;"
+   psql -d postgres -c "\password"
    ```
-
-   Ensure `DB_USER` in your `.env` is **lowercase** — PostgreSQL role names are case-sensitive in connection strings.
 
 6. Run `make start_pg` to start the postgres server if it is not already running, then `make create_db` to create the database.
 
@@ -108,7 +106,9 @@ make start_pg
 
 ### PostgreSQL User Errors
 
-If you see "role your_username does not exist" when running database commands, make sure you've completed step 5 of the Backend Installation Steps to create your PostgreSQL user.
+- `password authentication failed for user "<your_db_user>"`: the role's password doesn't match `DB_PASSWORD` in your `.env`. Set it again with `psql -d postgres -c "\password"` (from `bc_obps`).
+- `role "<your_db_user>" does not exist`: `DB_USER` in your `.env` isn't your shell user (only your shell user exists in a new cluster). Either set `DB_USER` to `whoami`, or create the role with `psql -d postgres -c "CREATE USER <your_db_user> WITH SUPERUSER PASSWORD '<your DB_PASSWORD>';"`.
+- Cluster created before local auth was locked down (`bc_obps/.pgdata/pg_hba.conf` uses `trust`): recreate it with `make stop_pg && rm -rf .pgdata && make install_dev_tools`, then continue from step 5. This deletes your local data.
 
 ### PGDATA unset
 
