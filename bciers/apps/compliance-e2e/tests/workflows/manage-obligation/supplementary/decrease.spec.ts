@@ -242,6 +242,14 @@ async function runScenario(opts: {
     urlPattern: REVIEW_OBLIGATION_URL_PATTERN,
   });
 
+  await expect(
+    page.getByRole("button", { name: /Compliance Units Applied/i }),
+  ).toBeVisible();
+  await takeStabilizedScreenshot(happoScreenshot, page, {
+    component: "Supplementary Report Decrease Obligation",
+    variant: `${scenario.title.split("→")[0].trim()} - review compliance obligation report`,
+  });
+
   // Assert invoice content (post-adjustment)
   const postAdjInvoice = await generateComplianceInvoice({
     page,
