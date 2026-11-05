@@ -61,5 +61,5 @@ class TestLateSubmissionPenaltyEndpoint(CommonTestSetup):
         assert response_data["penalty_type"] == "Late Submission"
         assert response_data["penalty_amount"] == "15000.00"
         assert response_data["total_amount"] == "15000.00"
-        assert response_data["due_date"] == penalty_invoice.due_date.isoformat()
+        assert response_data["due_date"] == "2025-11-30"
         assert response_data["invoice_number"] == penalty_invoice.invoice_number
