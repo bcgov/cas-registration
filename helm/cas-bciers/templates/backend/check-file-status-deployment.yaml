@@ -35,14 +35,29 @@ spec:
               set -euo pipefail;
               .venv/bin/python manage.py check_document_file_status -r 0 -d 30
           volumeMounts:
+          {{- if .Values.casLoggingSidecar071.enabled }}
             {{- include "vector-collector.applicationVolumeMounts" . | nindent 12 }}
+          {{- end }}
             - mountPath: "/attachment-credentials"
               name: gcs-attachment-credentials
               readOnly: true
+      {{- if .Values.casLoggingSidecar060.enabled }}
+        {{- include "cas-logging-sidecar.containers" (dict
+            "containerToSidecar" "check-document-file-status"
+            "logName" (index .Values "cas-logging-sidecar-060" "logName")
+            "host" (index .Values "cas-logging-sidecar-060" "host")
+            "appName" "check-document-file-status") | nindent 8 }}
+      {{- end }}
+      {{- if .Values.casLoggingSidecar071.enabled }}
       initContainers:
-        {{- include "vector-collector.container" (dict "values" {{ index .Values "cas-logging-sidecar" }} "appName" "check-document-file-status") | nindent 8 }}
+        {{- include "vector-collector.container" (dict "values" {{ index .Values "cas-logging-sidecar-071" }} "appName" "check-document-file-status") | nindent 8 }}
+      {{- end }}
       volumes:
+      {{- if .Values.casLoggingSidecar071.enabled }}
         {{- include "vector-collector.loggingVolumes" . | nindent 8 }}
+      {{- else if .Values.casLoggingSidecar060.enabled }}
+        {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
+      {{- end }}
         - name: gcs-attachment-credentials
           secret:
             secretName: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
