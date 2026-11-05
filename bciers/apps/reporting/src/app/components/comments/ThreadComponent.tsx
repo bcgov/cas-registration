@@ -13,7 +13,7 @@ import { deleteComment } from "../../utils/comments/deleteComment";
 
 interface Props {
   thread: Thread;
-  version_id: number;
+  version_id: number; //this report version ID comes from the page and is independant of the thread's report version ID
   canUpdate: boolean;
   onThreadUpdated: (thread: Thread) => void;
   onThreadDeleted: (threadId: number) => void;
