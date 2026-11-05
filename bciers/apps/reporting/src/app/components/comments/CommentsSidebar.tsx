@@ -74,6 +74,7 @@ const CommentsSidebar: React.FC<Props> = ({
         <ThreadComponent
           key={`thread-${thread.id}`}
           thread={thread}
+          version_id={version_id}
           canUpdate={canMakeComment}
           onThreadUpdated={threadUpdated}
           onThreadDeleted={threadDeleted}
@@ -88,6 +89,7 @@ const CommentsSidebar: React.FC<Props> = ({
         <ThreadComponent
           key={`thread-${thread.id}`}
           thread={thread}
+          version_id={version_id}
           canUpdate={false} // Don't show update/edit options for resolved threads
           onThreadUpdated={threadUpdated}
           onThreadDeleted={threadDeleted}

@@ -13,6 +13,7 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={vi.fn()}
         onThreadDeleted={vi.fn()}
+        version_id={42}
         thread={{
           id: 1,
           version_id: 42,
@@ -54,6 +55,7 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={vi.fn()}
         onThreadDeleted={vi.fn()}
+        version_id={42}
         thread={{
           id: 1,
           version_id: 42,
@@ -88,13 +90,20 @@ describe("The comment thread component", () => {
         },
       ],
     };
-    actionHandler.mockResolvedValueOnce(updatedThread);
+    // Defer resolving the response so the in-flight state can be asserted
+    let resolvePost: (value: unknown) => void;
+    actionHandler.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolvePost = resolve;
+      }),
+    );
     const onThreadUpdated = vi.fn();
     render(
       <ThreadComponent
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         onThreadDeleted={vi.fn()}
+        version_id={42}
         thread={thread}
       />,
     );
@@ -103,6 +112,17 @@ describe("The comment thread component", () => {
       target: { value: "A new reply" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+
+    // While awaiting the response, the reply button is disabled
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Reply" })).toBeDisabled(),
+    );
+    expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue(
+      "A new reply",
+    );
+    expect(onThreadUpdated).not.toHaveBeenCalled();
+
+    resolvePost!(updatedThread);
 
     await waitFor(() =>
       expect(onThreadUpdated).toHaveBeenCalledWith(updatedThread),
@@ -124,6 +144,7 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         onThreadDeleted={vi.fn()}
+        version_id={42}
         thread={{ id: 1, version_id: 42, resolved: false, comments: [] }}
       />,
     );
@@ -145,6 +166,7 @@ describe("The comment thread component", () => {
         canUpdate={false}
         onThreadUpdated={vi.fn()}
         onThreadDeleted={vi.fn()}
+        version_id={42}
         thread={{
           id: 1,
           version_id: 42,
@@ -163,6 +185,7 @@ describe("The comment thread component", () => {
     render(
       <ThreadComponent
         canUpdate={true}
+        version_id={42}
         onThreadUpdated={vi.fn()}
         onThreadDeleted={vi.fn()}
         thread={{ id: 1, version_id: 42, resolved: true, comments: [] }}
@@ -189,6 +212,7 @@ describe("The comment thread component", () => {
           canUpdate={true}
           onThreadUpdated={onThreadUpdated}
           onThreadDeleted={vi.fn()}
+          version_id={42}
           thread={thread}
         />,
       );
@@ -218,6 +242,7 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         onThreadDeleted={vi.fn()}
+        version_id={42}
         thread={{ id: 1, version_id: 42, resolved: false, comments: [] }}
       />,
     );
@@ -270,11 +295,14 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         onThreadDeleted={onThreadDeleted}
-        thread={deletableThread}
+        thread={thread}
+        version_id={42}
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Delete comment" }));
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "Delete comment" })[0],
+    );
 
     await waitFor(() =>
       expect(onThreadUpdated).toHaveBeenCalledWith(updatedThread),
@@ -311,6 +339,7 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         onThreadDeleted={onThreadDeleted}
+        version_id={42}
         thread={deletableThread}
       />,
     );
@@ -330,6 +359,7 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         onThreadDeleted={onThreadDeleted}
+        version_id={42}
         thread={deletableThread}
       />,
     );
