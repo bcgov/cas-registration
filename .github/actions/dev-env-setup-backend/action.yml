@@ -6,16 +6,11 @@ runs:
     - uses: jdx/mise-action@v5
       with:
         working_directory: ./bc_obps
-    - name: Setup PGDATA
-      shell: bash
-      run: |
-        mkdir -p ${{ runner.temp }}/pgdata
-        echo "PGDATA=${{ runner.temp }}/pgdata" >> $GITHUB_ENV
     - name: Create database
       working-directory: ./bc_obps
       shell: bash
       run: |
-        initdb -U postgres -A trust
+        make init_pg
         make start_pg
         make create_db
     - name: Load cached venv
