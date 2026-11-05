@@ -4,39 +4,40 @@
 
 ### 1. Install `mise`
 
-Install [mise](https://mise.jdx.dev/getting-started.html)
-
-##### Python
-
-Mise requires local compilation of python to discover homebrew libraries:
+[mise](https://mise.jdx.dev/getting-started.html) installs the tool versions pinned in `.tool-versions` (repo root: Node.js, Python, gcloud; `bc_obps`: Python, Poetry, PostgreSQL).
 
 ```bash
-mise settings set python.compile true
+brew install mise
 ```
 
-or:
+We use mise in [shims mode](https://mise.jdx.dev/dev-tools/shims.html), so terminals, `make`, IDEs and git hooks all resolve the same tools. Add this to `~/.zprofile`:
 
-```toml
-# ~/.config/mise/config.toml
-
-[settings.python]
-compile = true
+```bash
+eval "$(mise activate zsh --shims)"
 ```
+
+Then open a new terminal and run `mise doctor`. It should report `shims_on_path: yes` and no problems.
+
+> With shims, mise env vars (like `PGDATA` from `bc_obps/mise.toml`) are applied to the tool commands themselves (`pg_ctl`, `psql`, …), not exported to your shell, so `echo $PGDATA` prints nothing. Use `mise env` to see them.
 
 ### 2. Install system dependencies
-
-The postgres and python builds require several libraries that are not installed by default on macOS. Install them before running `make install_dev_tools`:
 
 ```bash
 brew install pkg-config icu4c libxml2 openssl@3 xz pango
 ```
 
-- `pkg-config`, `icu4c`, `libxml2`, `openssl@3`, `xz` — required to build PostgreSQL and Python
 - `pango` — required by WeasyPrint (PDF generation), which is a Python dependency of the backend
+- `pkg-config`, `icu4c`, `libxml2`, `openssl@3`, `xz` — required to compile Python (see below)
 
-#### Troubleshooting
+#### Compile Python locally
 
-Because `icu4c`, `libxml2`, and `openssl@3` are keg-only (not linked into `/opt/homebrew` by default), add the following to `~/.zprofile` so if build tools can't find them:
+By default mise installs a precompiled Python, which can't find Homebrew's libraries, so WeasyPrint fails with `cannot load library 'libgobject-2.0-0'`. Tell mise to compile Python locally instead (do this **before** `make install_dev_tools`):
+
+```bash
+mise settings set python.compile true
+```
+
+Because `icu4c`, `libxml2`, and `openssl@3` are keg-only (not linked into `/opt/homebrew` by default), add the following to `~/.zprofile` so the build tools can find them:
 
 ```bash
 export PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c@78/lib/pkgconfig:/opt/homebrew/opt/libxml2/lib/pkgconfig:/opt/homebrew/opt/openssl@3/lib/pkgconfig:$PKG_CONFIG_PATH"
@@ -74,38 +75,21 @@ In `bciers/apps/registration/e2e` directory, create a `bciers/apps//e2e/.env.loc
 Ensure you have completed the [App Environment Variables](#app-environment-variables) section before continuing.
 
 1. From the terminal, cd into directory `cas-registration/bc_obps`.
-1. Run `make install_dev_tools`. This will install build plugins and poetry. To activate the virtual environment after setup, run `eval $(poetry env activate)`. To exit run `deactivate`.
-1. Run `make install_poetry_deps` to install all python dependencies.
-
-1. Run `make start_pg` to start the postgres server if it is not already running.
-
-   You might need to setup postgres if it doesn't install with defaults:
-
-   ```toml
-   # ~/.config/mise/config.toml (or mise config file)
-
-   [env]
-   PGDATA = "{{config_root}}/.config/mise/.postgres_data"
-   ```
-
-   then:
-
+2. Run `mise trust` (one time) so mise loads `bc_obps/mise.toml`, which sets `PGDATA` to `bc_obps/.pgdata` (gitignored).
+3. Run `make install_dev_tools`. This installs Python, Poetry and PostgreSQL via mise, creates the local postgres cluster in `bc_obps/.pgdata` if it doesn't exist yet, and starts the postgres server.
+4. Run `make install_poetry_deps` to install all python dependencies. To activate the virtual environment, run `eval $(poetry env activate)`. To exit run `deactivate`.
+5. Create a PostgreSQL role for your local user matching `DB_USER` in your `.env`:
    ```bash
-   initdb -U postgres
-   ```
-
-1. Create a PostgreSQL role for your local user matching `DB_USER` in your `.env`:
-   ```bash
-   psql -h localhost -U postgres -c "CREATE USER <your_shell_user> WITH SUPERUSER; CREATE DATABASE <your_shell_user>;"
+   psql -h localhost -U postgres -c "CREATE USER <your_db_user> WITH SUPERUSER;"
    ```
    Ensure `DB_USER` in your `.env` is **lowercase** — PostgreSQL role names are case-sensitive in connection strings.
-1. Run `make create_db` to create the database.
-1. Run `make migrate` to run all database migrations.
-1. Run `make run`, which will start running the development server locally (default port is :8000; terminal output will indicate what localhost address to use to access the backend server).
+6. Run `make start_pg` to start the postgres server if it is not already running, then `make create_db` to create the database.
+7. Run `make migrate` to run all database migrations.
+8. Run `make run`, which will start running the development server locally (default port is :8000; terminal output will indicate what localhost address to use to access the backend server).
    - to test it out, navigate to the `/api/docs` endpoint in your browser, you should see the API documentation.
 
-1. Optional: to test the Django server's connection to your database, run `python3 manage.py check --database default`.
-1. Optional: to load mock data via fixtures, run `make loadfixtures`.
+9. Optional: to test the Django server's connection to your database, run `python3 manage.py check --database default`.
+10. Optional: to load mock data via fixtures, run `make loadfixtures`.
 
 ## Backend Environment Use
 
@@ -120,25 +104,29 @@ After doing the initial setup, to get the backend re-running:
 
 ### Troubleshooting
 
-- If you get `role "your_user" does not exist` when running `make create_db` or `make migrate`, the postgres role for your local user hasn't been created yet. With managed postgres (unlike a system install), only the `postgres` superuser exists by default. Connect as `postgres` to create your role:
+- If you get `role "your_user" does not exist` when running `make create_db` or `make migrate`, the postgres role for your local user hasn't been created yet. With mise-managed postgres (unlike a system install), only the `postgres` superuser exists by default. Connect as `postgres` to create your role:
 
-```bash
-psql -h localhost -U postgres -c "CREATE USER <your_shell_user> WITH SUPERUSER; CREATE DATABASE <your_shell_user>;"
-```
+  ```bash
+  psql -h localhost -U postgres -c "CREATE USER <your_db_user> WITH SUPERUSER;"
+  ```
 
-This must be run from the `bc_obps` directory so mise resolves the correct `psql` binary.
+  This must be run from the `bc_obps` directory so mise resolves the correct `psql` binary.
 
-- if `make pythontest_parallel` fails with `psycopg.errors.OutOfMemory: out of shared memory`, the default `max_locks_per_transaction` (64) is too low for the number of tables and indexes the test suite creates in parallel. Increase it in `$PGDATA/postgresql.conf`:
+- if `make pythontest_parallel` fails with `psycopg.errors.OutOfMemory: out of shared memory`, the default `max_locks_per_transaction` (64) is too low for the number of tables and indexes the test suite creates in parallel. Increase it in `bc_obps/.pgdata/postgresql.conf` (`$PGDATA/postgresql.conf`):
 
-```
-max_locks_per_transaction = 256
-```
+  ```ini
+  max_locks_per_transaction = 256
+  ```
 
-Then restart postgres: `make stop_pg && make start_pg`.
+  Then restart postgres: `make stop_pg && make start_pg`.
 
 - if running poetry commands throws errors about the `_hashlib` library, [try these troubleshooting commands](https://github.com/python-poetry/poetry/issues/7695#issuecomment-1572825140)
 
-- if you encounter an issue installing `psycopg2` relating to `Error: pg_config --libdir failed: No version is set for command pg_config`, try setting your Postgres version for mise globally rather than locally. (E.g., `mise use --global postgres@14.0`)
+- if you encounter an issue installing `psycopg2` relating to `Error: pg_config --libdir failed: No version is set for command pg_config`, run the install from the `bc_obps` directory so mise picks up the postgres version from `bc_obps/.tool-versions`, or set it globally (e.g., `mise use --global postgres@16`)
+
+- if postgres commands fail with `no database directory specified and environment variable PGDATA unset`, run `mise trust` in `bc_obps` and make sure you're running the command from inside `bc_obps` (`mise env | grep PGDATA` should print the path)
+
+- if PDF generation fails with `OSError: cannot load library 'libgobject-2.0-0'`, your Python is the precompiled build. Run `mise settings set python.compile true`, then `mise install python --force`, then recreate the virtualenv (`rm -rf .venv && make install_poetry_deps`)
 
 - if your admin panel looks ugly, run `python3 manage.py collectstatic` to collect static files and then try again.
 
@@ -148,7 +136,7 @@ Then restart postgres: `make stop_pg && make start_pg`.
 
 ### First time setup
 
-First, install the Node.js plugin and the version specified in `.tool-versions` (from the repo root):
+First, install the Node.js version specified in `.tool-versions` (from the repo root):
 
 ```bash
 mise install
@@ -156,7 +144,7 @@ mise install
 
 Then in the `bciers` directory:
 
-1. To enable [Corepack](https://nodejs.org/docs/latest-v20.x/api/corepack.html), in order to use Yarn Modern: `corepack enable`.
+1. To enable [Corepack](https://nodejs.org/docs/latest-v20.x/api/corepack.html), in order to use Yarn Modern: `corepack enable && mise reshim` (the reshim creates the `yarn` shim).
 2. Verify yarn resolves correctly: `yarn --version` (should show 4.x, not 1.x).
 3. To install all Monorepo dependencies: `yarn install`.
 4. **Optional**: Run `npm add --global nx@18.2.1` to install `nx` globally. This global instance will use the project version if it differs.
@@ -193,9 +181,10 @@ Then in the `bciers` directory:
 
 [prek](https://prek.j178.dev/) runs a variety of formatting and lint checks configured in [`prek.toml`](../prek.toml) which are required for a pull request to pass CI.
 
-From the repo root, install prek via `pip install -r requirements.txt`, then register the git hooks:
+prek is pinned in the root `.tool-versions`, so `mise install` from the repo root installs it. Then register the git hooks:
 
 ```bash
+mise install                          # installs prek (and the other root tools)
 prek install                          # registers the git hook
 prek install --hook-type commit-msg   # also enables commit message linting
 ```
@@ -224,7 +213,7 @@ We also extend this prefix convention to the naming of **branches**, eg: `docs/#
 
 Some developers have had issues when setting up a new environment with yarn modern, corepack. Here are some steps that have worked to get the environment working in that case:
 
-1. remove yarn from your global setup (in ~/.tools-version for example)
-2. run mise reshim
-3. go to cas-registration/bciers and run corepack enable
+1. remove yarn from your global mise config (`mise unuse --global yarn`, or delete it from `~/.config/mise/config.toml`)
+2. go to cas-registration/bciers and run `corepack enable`
+3. run `mise reshim` so the `yarn` shim points at corepack's yarn
 4. yarn --version should return 4.x and not 1.yy.zz
