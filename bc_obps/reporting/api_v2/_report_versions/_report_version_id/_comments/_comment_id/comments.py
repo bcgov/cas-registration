@@ -12,6 +12,7 @@ from django.http import HttpRequest
 from reporting.api_v2.router import router
 from reporting.constants import EMISSIONS_REPORT_TAGS, REPORT_COMMENTS_TAGS
 from reporting.schema.generic import Message
+from reporting.service.comment_thread_service import CommentThreadService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
@@ -27,9 +28,7 @@ def delete_comment(
     request: HttpRequest, version_id: str, thread_id: str, comment_id: str
 ) -> Tuple[Literal[200], CommentThread] | Tuple[Literal[204], None]:
     user_guid: UUID = get_current_user_guid(request)
-    thread = CommentService.delete_comment(
-        version_id=int(version_id), thread_id=int(thread_id), comment_id=int(comment_id), user_guid=user_guid
-    )
+    thread = CommentService.delete_comment(thread_id=int(thread_id), comment_id=int(comment_id), user_guid=user_guid)
     if thread is None:
         return 204, None
     return 200, thread
@@ -47,10 +46,10 @@ def create_comment(
     request: HttpRequest, version_id: str, thread_id: str, payload: CommentThreadIn
 ) -> Tuple[Literal[201], CommentThread]:
     user_guid: UUID = get_current_user_guid(request)
-    thread = CommentService.create_comment(
+    CommentService.create_comment(
         comment_thread_id=int(thread_id),
         report_version_id=int(version_id),
         content=payload.comment,
-        user_guid=user_guid,
     )
+    thread = CommentThreadService.threads_with_annotated_comments(user_guid=user_guid).get(id=int(thread_id))
     return 201, thread
