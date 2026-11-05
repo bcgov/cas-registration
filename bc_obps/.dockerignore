@@ -16,8 +16,9 @@ python_cache
 staticfiles/
 media/
 
-# asdf-related exclusions
-.asdf/
+# Local dev tooling (mise config and local postgres cluster)
+mise.toml
+.pgdata*/
 
 # Git and version control
 .git

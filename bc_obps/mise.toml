@@ -1,0 +1,4 @@
+# This file only holds mise-specific environment for local development
+[env]
+# Local PostgreSQL cluster used by `make init_pg` / `make start_pg`
+PGDATA = "{{config_root}}/.pgdata"
