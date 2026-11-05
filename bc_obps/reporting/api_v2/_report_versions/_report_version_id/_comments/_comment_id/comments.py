@@ -44,11 +44,11 @@ def delete_comment(
 )
 @transaction.atomic
 def create_comment(
-    request: HttpRequest, version_id: str, comment_thread_id: str, payload: CommentThreadIn
+    request: HttpRequest, version_id: str, thread_id: str, payload: CommentThreadIn
 ) -> Tuple[Literal[201], CommentThread]:
     user_guid: UUID = get_current_user_guid(request)
     thread = CommentService.create_comment(
-        comment_thread_id=int(comment_thread_id),
+        comment_thread_id=int(thread_id),
         report_version_id=int(version_id),
         content=payload.comment,
         user_guid=user_guid,
