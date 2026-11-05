@@ -17,6 +17,8 @@ from registration.tests.constants import (
     TIMESTAMP_COMMON_FIELDS,
     USER_FIXTURE,
 )
+from model_bakery.baker import make_recipe
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 
 
 class FacilityModelTest(BaseTestCase):
@@ -148,3 +150,142 @@ class FacilityTriggerTests(BaseTestCase):
 
         assert self.facility_with_non_registered_op.bcghg_id == facility_bcghgid
         assert self.facility_with_non_registered_op.name == "Updated Facility Name"
+
+
+class FacilityRlsTest(BaseTestCase):
+
+    def test_facility_rls_industry_user(self):
+        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        other_operator = make_recipe('registration.tests.utils.operator')
+        approved_operation = make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator, status='Registered'
+        )
+        approved_unregistered_operation = make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator, status='Draft'
+        )
+        other_operation = make_recipe('registration.tests.utils.operation', operator=other_operator)
+        approved_facility = make_recipe('registration.tests.utils.facility', operation=approved_operation)
+        approved_unregistered_facility = make_recipe(
+            'registration.tests.utils.facility', operation=approved_unregistered_operation
+        )
+        other_facility = make_recipe('registration.tests.utils.facility', operation=other_operation)
+
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            operation=approved_operation,
+            start_date='2009-01-01',
+            end_date='2012-12-31',
+        )
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            operation=approved_unregistered_operation,
+            start_date='2009-01-01',
+            end_date='2012-12-31',
+        )
+
+        def select_function(cursor):
+            Facility.objects.get(id=approved_facility.id)
+            Facility.objects.get(id=other_facility.id)
+
+        def insert_function(cursor):
+            Facility.objects.create(
+                name='inserted facility', type=Facility.Types.SINGLE_FACILITY, operation=approved_operation
+            )
+
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
+                    INSERT INTO "erc"."facility" (
+                        name,
+                        type,
+                        operation_id
+                    ) VALUES (
+                        %s,
+                        %s,
+                        %s
+                    )
+                """,
+                ('bad insert', 'Single Facility', other_operation.id),
+            )
+
+        def update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."facility"
+                    SET name = 'updated'
+                    WHERE id = %s
+                """,
+                (str(approved_facility.id),),
+            )
+            return cursor.rowcount
+
+        def forbidden_update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."facility"
+                    SET name = 'should not update'
+                    WHERE id = %s
+                """,
+                (str(other_facility.id),),
+            )
+            return cursor.rowcount
+
+        def delete_function(cursor):
+            cursor.execute(
+                """
+                    DELETE from "erc"."facility"
+                    WHERE id = %s
+                """,
+                (approved_unregistered_facility.id,),
+            )
+            return cursor.rowcount
+
+        def forbidden_delete_function(cursor):
+            cursor.execute(
+                """
+                    DELETE from "erc"."facility"
+                    WHERE id = %s
+                """,
+                (approved_facility.id,),
+            )
+            return cursor.rowcount
+
+        assert_policies_for_industry_user(
+            Facility,
+            approved_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+            delete_function=delete_function,
+            forbidden_select_function=None,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
+        )
+
+    def test_facility_rls_cas_users(self):
+        test_quantity = 2
+        op = make_recipe(
+            "registration.tests.utils.facility",
+        )
+        make_recipe(
+            "registration.tests.utils.facility",
+        )
+
+        def select_function(cursor):
+            assert Operation.objects.count() == test_quantity
+
+        def update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."facility"
+                    SET name = 'updated'
+                    WHERE id = %s
+                """,
+                (str(op.id),),
+            )
+            return cursor.rowcount
+
+        assert_policies_for_cas_roles(Operation, select_function=select_function, update_function=update_function)
