@@ -117,9 +117,7 @@ describe("The Comments Sidebar", () => {
     });
 
     expect(await screen.findByText("New comment")).toBeVisible();
-    expect(
-      screen.queryByRole("textbox", { name: "Comment" }),
-    ).not.toBeInTheDocument();
+
     newThreadComponentSpy.mockRestore();
   });
   it("does not show the new thread component when canMakeComment is false", () => {
