@@ -36,7 +36,7 @@ def delete_comment(
 
 
 @router.post(
-    "report-version/{version_id}/threads/{comment_thread_id}/comments",
+    "report-version/{version_id}/threads/{thread_id}/comments",
     response={201: CommentThreadSchema, custom_codes_4xx: Message},
     tags=[*EMISSIONS_REPORT_TAGS, *REPORT_COMMENTS_TAGS],
     description="Creates a comment for the specified report version and thread.",
