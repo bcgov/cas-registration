@@ -11,7 +11,7 @@ from django.http import HttpRequest
 from reporting.api_v2.router import router
 from reporting.constants import EMISSIONS_REPORT_TAGS, REPORT_COMMENTS_TAGS
 from reporting.schema.generic import Message
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.delete(
