@@ -712,6 +712,11 @@ ENDPOINTS = {
             "kwargs": {"version_id": MOCK_INT, "thread_id": MOCK_INT},
         },
         {
+            "method": "post",
+            "endpoint_name": "create_comment",
+            "kwargs": {"version_id": MOCK_INT, "thread_id": MOCK_INT},
+        },
+        {
             "method": "delete",
             "endpoint_name": "delete_comment",
             "kwargs": {"version_id": MOCK_INT, "thread_id": MOCK_INT, "comment_id": MOCK_INT},

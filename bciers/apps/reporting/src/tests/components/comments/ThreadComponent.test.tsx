@@ -13,6 +13,7 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={vi.fn()}
         onThreadDeleted={vi.fn()}
+        version_id={42}
         thread={{
           id: 1,
           version_id: 42,
@@ -48,12 +49,13 @@ describe("The comment thread component", () => {
     expect(screen.getByText("Jun 22, 1999 4:00 PM")).toBeVisible();
   });
 
-  it("has a non-functional reply button", () => {
+  it("disables the reply button until a comment is typed", () => {
     render(
       <ThreadComponent
         canUpdate={true}
         onThreadUpdated={vi.fn()}
         onThreadDeleted={vi.fn()}
+        version_id={42}
         thread={{
           id: 1,
           version_id: 42,
@@ -65,11 +67,98 @@ describe("The comment thread component", () => {
 
     const replyButton = screen.getByRole("button", { name: "Reply" });
     expect(replyButton).toBeVisible();
+    expect(replyButton).toBeDisabled();
 
-    fireEvent.click(replyButton);
+    fireEvent.change(screen.getByRole("textbox", { name: "Comment" }), {
+      target: { value: "A new reply" },
+    });
 
-    expect(screen.getByRole("button", { name: "Reply" })).toBeVisible();
-    expect(screen.queryByText("New comment")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reply" })).toBeEnabled();
+  });
+
+  it("posts the reply, notifies the parent, and clears the field", async () => {
+    const thread = { id: 1, version_id: 42, resolved: false, comments: [] };
+    const updatedThread = {
+      ...thread,
+      comments: [
+        {
+          id: 9,
+          version_id: 42,
+          author: "An Author",
+          comment: "A new reply",
+          user_can_edit: true,
+        },
+      ],
+    };
+    // Defer resolving the response so the in-flight state can be asserted
+    let resolvePost: (value: unknown) => void;
+    actionHandler.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolvePost = resolve;
+      }),
+    );
+    const onThreadUpdated = vi.fn();
+    render(
+      <ThreadComponent
+        canUpdate={true}
+        onThreadUpdated={onThreadUpdated}
+        onThreadDeleted={vi.fn()}
+        version_id={42}
+        thread={thread}
+      />,
+    );
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Comment" }), {
+      target: { value: "A new reply" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+
+    // While awaiting the response, the reply button is disabled
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Reply" })).toBeDisabled(),
+    );
+    expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue(
+      "A new reply",
+    );
+    expect(onThreadUpdated).not.toHaveBeenCalled();
+
+    resolvePost!(updatedThread);
+
+    await waitFor(() =>
+      expect(onThreadUpdated).toHaveBeenCalledWith(updatedThread),
+    );
+    expect(actionHandler).toHaveBeenCalledWith(
+      "reporting/v2/report-version/42/threads/1/comments",
+      "POST",
+      "reports/42/",
+      { body: JSON.stringify({ comment: "A new reply" }) },
+    );
+    expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue("");
+  });
+
+  it("shows an error and keeps the message when posting a reply fails", async () => {
+    actionHandler.mockResolvedValueOnce({ error: "Could not post" });
+    const onThreadUpdated = vi.fn();
+    render(
+      <ThreadComponent
+        canUpdate={true}
+        onThreadUpdated={onThreadUpdated}
+        onThreadDeleted={vi.fn()}
+        version_id={42}
+        thread={{ id: 1, version_id: 42, resolved: false, comments: [] }}
+      />,
+    );
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Comment" }), {
+      target: { value: "A new reply" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+
+    expect(await screen.findByText("Could not post")).toBeVisible();
+    expect(onThreadUpdated).not.toHaveBeenCalled();
+    expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue(
+      "A new reply",
+    );
   });
   it("does not show the reply button when canUpdate is false", () => {
     render(
@@ -77,6 +166,7 @@ describe("The comment thread component", () => {
         canUpdate={false}
         onThreadUpdated={vi.fn()}
         onThreadDeleted={vi.fn()}
+        version_id={42}
         thread={{
           id: 1,
           version_id: 42,
@@ -95,6 +185,7 @@ describe("The comment thread component", () => {
     render(
       <ThreadComponent
         canUpdate={true}
+        version_id={42}
         onThreadUpdated={vi.fn()}
         onThreadDeleted={vi.fn()}
         thread={{ id: 1, version_id: 42, resolved: true, comments: [] }}
@@ -121,6 +212,7 @@ describe("The comment thread component", () => {
           canUpdate={true}
           onThreadUpdated={onThreadUpdated}
           onThreadDeleted={vi.fn()}
+          version_id={42}
           thread={thread}
         />,
       );
@@ -150,6 +242,7 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         onThreadDeleted={vi.fn()}
+        version_id={42}
         thread={{ id: 1, version_id: 42, resolved: false, comments: [] }}
       />,
     );
@@ -202,11 +295,14 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         onThreadDeleted={onThreadDeleted}
-        thread={deletableThread}
+        thread={thread}
+        version_id={42}
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Delete comment" }));
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "Delete comment" })[0],
+    );
 
     await waitFor(() =>
       expect(onThreadUpdated).toHaveBeenCalledWith(updatedThread),
@@ -243,6 +339,7 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         onThreadDeleted={onThreadDeleted}
+        version_id={42}
         thread={deletableThread}
       />,
     );
@@ -262,6 +359,7 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         onThreadDeleted={onThreadDeleted}
+        version_id={42}
         thread={deletableThread}
       />,
     );

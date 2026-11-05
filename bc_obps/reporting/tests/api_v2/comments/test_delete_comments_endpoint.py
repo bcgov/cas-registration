@@ -6,7 +6,7 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.models import Comment, CommentThread
 
 
-class TestCommentsV2Endpoints(CommonTestSetup):
+class TestDeleteCommentsV2Endpoints(CommonTestSetup):
     def setup_method(self):
         super().setup_method()
         self.report_version = make_recipe("reporting.tests.utils.report_version")

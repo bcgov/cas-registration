@@ -10,7 +10,13 @@ describe("The comment component", () => {
       timestamp: "2024-06-01T00:00:00Z",
       comment: "Yet you stand before me.",
     };
-    render(<CommentComponent comment={comment} handleDelete={vi.fn()} />);
+    render(
+      <CommentComponent
+        comment={comment}
+        handleDelete={vi.fn()}
+        canUpdate={true}
+      />,
+    );
 
     expect(screen.getByText("Yet you stand before me.")).toBeInTheDocument();
     expect(screen.getByText("The Pagemaster")).toBeInTheDocument();
@@ -22,6 +28,7 @@ describe("The comment component", () => {
         <CommentComponent
           comment={{ id: 1, version_id: 1, author: "A", comment: "Done" }}
           handleDelete={vi.fn()}
+          canUpdate={true}
         />
       </div>,
     );
@@ -34,8 +41,35 @@ describe("The comment component", () => {
   it("does not show a delete button when the user cannot edit the comment", () => {
     render(
       <CommentComponent
-        comment={{ id: 1, version_id: 1, author: "A", comment: "Keep me" }}
+        comment={{
+          id: 1,
+          version_id: 1,
+          author: "A",
+          comment: "Keep me",
+          user_can_edit: false,
+        }}
         handleDelete={vi.fn()}
+        canUpdate={true}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Delete comment" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not show a delete button when canUpdate is false", () => {
+    render(
+      <CommentComponent
+        comment={{
+          id: 1,
+          version_id: 1,
+          author: "A",
+          comment: "Keep me",
+          user_can_edit: true,
+        }}
+        handleDelete={vi.fn()}
+        canUpdate={false}
       />,
     );
 
@@ -56,6 +90,7 @@ describe("The comment component", () => {
           user_can_edit: true,
         }}
         handleDelete={handleDelete}
+        canUpdate={true}
       />,
     );
 
