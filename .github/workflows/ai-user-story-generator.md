@@ -12,6 +12,7 @@ if: >
 tools:
   github:
     min-integrity: unapproved
+    toolsets: [context, repos, issues]
 
 safe-outputs:
   threat-detection: true

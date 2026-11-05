@@ -35,6 +35,7 @@
     "data_import_facilities/**",
     "disaster_recovery/**",
     "k6_results/**",
+    ".github/workflows/*.lock.yml",
   ],
 
   // Renovate will open a PR to fully regenerate yarn.lock and poetry.lock
