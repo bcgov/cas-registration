@@ -1,5 +1,6 @@
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
+import EmissionsAttributableForComplianceFieldTemplate from "@reporting/src/app/components/complianceSummary/EmissionsAttributableForComplianceFieldTemplate";
 import {
   complianceSummarySchema2024,
   complianceSummaryUiSchema2024,
@@ -103,6 +104,7 @@ const complianceSummaryUiSchemaDefault: UiSchema = {
     },
   },
   emissions_attributable_for_compliance: {
+    "ui:FieldTemplate": EmissionsAttributableForComplianceFieldTemplate,
     "ui:options": {
       displayUnit: "tCO2e",
     },

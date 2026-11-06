@@ -1,12 +1,14 @@
+from dataclasses import dataclass
 from decimal import Decimal
 from typing import List
 
-from django.db.models import Sum
+from django.db.models import F, Q, Sum
+from reporting.constants import (
+    COMPLIANCE_REPORTING_ONLY_CATEGORY_IDS as REPORTING_ONLY_CATEGORY_IDS,
+    NPNC_CATEGORY_ID,
+)
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
-
-
-REPORTING_ONLY_CATEGORY_IDS = [10, 11, 12, 2, 7]
 
 
 def get_allocated_emissions_by_report_product_emission_category(
@@ -33,15 +35,15 @@ def get_reporting_only_allocated(report_version_id: int, product_id: int) -> Dec
 def get_emissions_from_only_funny_category_13(report_version_id: int) -> Decimal:
     """
     We need to total up the emissions associated with category 13 without double-counting
-    (i.e. the ones that are not already under 10,11,12 fuel_excluded)
+    (i.e. the ones that are not already under reporting-only categories: fuel_excluded, fugitive, non-useful venting)
     and subtract them from the total attributable for compliance,
     since they're not based on a single product and therefore are not allocated anywhere.
     """
     records = ReportEmission.objects_with_decimal_emissions.filter(
         report_version_id=report_version_id,
-        emission_categories__id=13,
+        emission_categories__id=NPNC_CATEGORY_ID,
     ).exclude(
-        emission_categories__id__in=[10, 11, 12],
+        emission_categories__id__in=REPORTING_ONLY_CATEGORY_IDS,
     )
     return records.aggregate(emission_total=Sum("emission"))["emission_total"] or Decimal("0")
 
@@ -57,3 +59,39 @@ def get_fog_emissions(report_version_id: int) -> Decimal:
         "allocated_sum"
     ] or Decimal("0")
     return fog_allocated_amount
+
+
+@dataclass
+class UnregulatedProductAllocation:
+    product_name: str
+    allocated_emissions: Decimal
+
+
+def get_allocated_to_unregulated_products(report_version_id: int) -> List[UnregulatedProductAllocation]:
+    """
+    Returns the list of emissions allocated to each unregulated product in a report version,
+    used in emissions attributable for compliance equation.
+
+    Each product's amount = allocated in basic categories - allocated in reporting-only categories.
+    Reporting-only categories (fuel-excluded, fugitive, non-useful venting) are left out because the
+    panel already subtracts them on their own lines; including them here would subtract them twice.
+    """
+    rows = (
+        ReportProductEmissionAllocation.objects.filter(
+            report_version_id=report_version_id,
+            report_product__product__is_regulated=False,
+        )
+        .values(product_name=F("report_product__product__name"))
+        .annotate(
+            basic=Sum("allocated_quantity", filter=Q(emission_category__category_type="basic")),
+            reporting_only=Sum("allocated_quantity", filter=Q(emission_category_id__in=REPORTING_ONLY_CATEGORY_IDS)),
+        )
+        .order_by("product_name")
+    )
+    return [
+        UnregulatedProductAllocation(
+            product_name=row["product_name"],
+            allocated_emissions=(row["basic"] or Decimal("0")) - (row["reporting_only"] or Decimal("0")),
+        )
+        for row in rows
+    ]
