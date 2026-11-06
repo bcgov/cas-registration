@@ -1,5 +1,5 @@
 SHELL := /usr/bin/env bash
-PSQL=psql -h localhost
+PSQL=psql
 DB_NAME=registration
 MANAGE_PY = manage.py
 SCHEMA_NAME=erc
@@ -12,6 +12,10 @@ POETRY_RUN=
 else
 POETRY_RUN=poetry run
 endif
+
+# Run postgres tooling through mise when available, so freshly installed tools and
+# mise.toml env (PGDATA) are picked up even before the shell re-activates mise
+MISE_EXEC := $(shell command -v mise >/dev/null 2>&1 && echo mise exec --)
 
 help: ## Show this help.
 	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
@@ -31,7 +35,19 @@ install_poetry:
 
 .PHONY: install_dev_tools
 install_dev_tools: ## install development tools
-install_dev_tools: stop_pg install_backend_tools install_poetry start_pg
+install_dev_tools: stop_pg install_backend_tools init_pg start_pg
+
+.PHONY: init_pg
+init_pg: ## initialize the local postgres cluster in $PGDATA if it does not exist yet
+init_pg:
+	@# pg_ctl status exits with 4 when there is no accessible data directory
+	@# Your shell user is the superuser: the local socket uses peer auth (only your OS user,
+	@# no password) and TCP (used by Django) requires a password
+	@$(MISE_EXEC) pg_ctl status >/dev/null 2>&1; \
+	if [ $$? -eq 4 ]; then \
+		echo "Initializing postgres cluster"; \
+		$(MISE_EXEC) initdb -U "$$(whoami)" --auth-local=peer --auth-host=scram-sha-256; \
+	fi
 
 .PHONY: install_poetry_deps
 install_poetry_deps: ## install poetry dependencies
@@ -46,12 +62,12 @@ install_poetry_deps:
 .PHONY: start_pg
 start_pg: ## start the database server if it is not running
 start_pg:
-	@pg_ctl status || pg_ctl start
+	@$(MISE_EXEC) pg_ctl status || $(MISE_EXEC) pg_ctl start
 
 .PHONY: stop_pg
 stop_pg: ## stop the database server. Always exits with 0
 stop_pg:
-	@pg_ctl stop; true
+	@$(MISE_EXEC) pg_ctl stop; true
 
 .PHONY: create_db
 create_db: ## Ensure that the $(DB_NAME) database exists

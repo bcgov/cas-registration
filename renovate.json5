@@ -30,7 +30,6 @@
 
   ignorePaths: [
     "helm/**",
-    "requirements.txt",
     "data_import/**",
     "data_import_facilities/**",
     "disaster_recovery/**",

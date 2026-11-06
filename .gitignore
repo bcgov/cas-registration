@@ -102,6 +102,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+# Local postgres cluster (PGDATA set in bc_obps/mise.toml)
+.pgdata*/
 .scratch
 staticfiles
 .DS_Store

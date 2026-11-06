@@ -27,24 +27,21 @@ sudo apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libcairo2
 
 ### Install `mise`
 
-Install [mise-en-place](https://mise.jdx.dev/getting-started.html)
-
-##### Postgres
-
-You might need to setup postgres if it doesn't come with defaults:
-
-```toml
-# ~/.config/mise/config.toml (or mise config file)
-
-[env]
-PGDATA = "{{config_root}}/.config/mise/.postgres_data"
-```
-
-then:
+[mise](https://mise.jdx.dev/installing-mise.html) installs the tool versions pinned in `.tool-versions` (repo root: Node.js, Python, gcloud; `bc_obps`: Python, Poetry, PostgreSQL).
 
 ```bash
-initdb -U postgres
+curl https://mise.run | sh
 ```
+
+We use mise in [shims mode](https://mise.jdx.dev/dev-tools/shims.html), so terminals, `make`, IDEs and git hooks all resolve the same tools. Add this to `~/.profile` (zsh: `~/.zprofile` with `zsh` instead of `bash`):
+
+```bash
+eval "$(~/.local/bin/mise activate bash --shims)"
+```
+
+Then log out and back in (or open a new login shell) and run `mise doctor`. It should report `shims_on_path: yes` and no problems.
+
+> With shims, mise env vars (like `PGDATA` from `bc_obps/mise.toml`) are applied to the tool commands themselves (`pg_ctl`, `psql`, …), not exported to your shell, so `echo $PGDATA` prints nothing. Use `mise env` to see them.
 
 ---
 
@@ -73,21 +70,19 @@ In `bciers` directory, create a `bciers/.env.local` file from the `bciers/.env.l
 
 1. From the terminal, cd into directory `cas-registration/bc_obps`.
 
-2. Run `make install_dev_tools`. This will install poetry. OPTIONAL: To activate the virtual environment after setup, run `eval $(poetry env activate)`. To exit run `deactivate`.
+2. Run `mise trust` (one time) so mise loads `bc_obps/mise.toml`, which sets `PGDATA` to `bc_obps/.pgdata` (gitignored).
 
-3. Run `make install_poetry_deps` to install all Python dependencies.
+3. Run `make install_dev_tools`. This installs Python, Poetry and PostgreSQL via mise, creates the local postgres cluster in `bc_obps/.pgdata` if it doesn't exist yet, and starts the postgres server.
 
-4. Run `make start_pg` to start the postgres server.
+4. Run `make install_poetry_deps` to install all Python dependencies. OPTIONAL: To activate the virtual environment, run `eval $(poetry env activate)`. To exit run `deactivate`.
 
-5. If missing, create a PostgreSQL role for your local user matching `DB_USER` in your `.env` (postgres only has the `postgres` superuser by default):
+5. Set a password for your database user. `make install_dev_tools` makes your shell user (`whoami`) the postgres superuser: over the local socket only your OS user can connect, with no password, but Django connects over TCP, which requires one. Set `DB_USER` in your `.env` to your shell user (**lowercase** — role names are case-sensitive) and use your `DB_PASSWORD` value here:
 
-```bash
-psql -h localhost -U postgres -c "CREATE USER <your_shell_user> WITH SUPERUSER; CREATE DATABASE <your_shell_user>;"
-```
+   ```bash
+   psql -d postgres -c "\password"
+   ```
 
-Ensure `DB_USER` in your `.env` is **lowercase** — PostgreSQL role names are case-sensitive in connection strings.
-
-6. Run `make create_db` to create the database.
+6. Run `make start_pg` to start the postgres server if it is not already running, then `make create_db` to create the database.
 
 7. Run `make migrate` to run all database migrations.
 
@@ -111,7 +106,13 @@ make start_pg
 
 ### PostgreSQL User Errors
 
-If you see "role your_username does not exist" when running database commands, make sure you've completed step 5 of the Backend Installation Steps to create your PostgreSQL user.
+- `password authentication failed for user "<your_db_user>"`: the role's password doesn't match `DB_PASSWORD` in your `.env`. Set it again with `psql -d postgres -c "\password"` (from `bc_obps`).
+- `role "<your_db_user>" does not exist`: `DB_USER` in your `.env` isn't your shell user (only your shell user exists in a new cluster). Either set `DB_USER` to `whoami`, or create the role with `psql -d postgres -c "CREATE USER <your_db_user> WITH SUPERUSER PASSWORD '<your DB_PASSWORD>';"`.
+- Cluster created before local auth was locked down (`bc_obps/.pgdata/pg_hba.conf` uses `trust`): recreate it with `make stop_pg && rm -rf .pgdata && make install_dev_tools`, then continue from step 5. This deletes your local data.
+
+### PGDATA unset
+
+If postgres commands fail with `no database directory specified and environment variable PGDATA unset`, run `mise trust` in `bc_obps` and run the command from inside `bc_obps` (`mise env | grep PGDATA` should print the path).
 
 ## Managing the Development Environment
 
@@ -122,21 +123,21 @@ You can activate the virtual environment in two ways:
 
 1. Using Poetry (recommended):
 
-```bash
-eval $(poetry env activate)
-```
+   ```bash
+   eval $(poetry env activate)
+   ```
 
-> **Note**: Poetry 2.0+ removed the `shell` command. `poetry env activate` now prints the activation script rather than spawning a shell — use `eval $(poetry env activate)` to activate it. Alternatively, prefix individual commands with `poetry run`:
->
-> ```bash
-> poetry run python manage.py [command]
-> ```
+   > **Note**: Poetry 2.0+ removed the `shell` command. `poetry env activate` now prints the activation script rather than spawning a shell — use `eval $(poetry env activate)` to activate it. Alternatively, prefix individual commands with `poetry run`:
+   >
+   > ```bash
+   > poetry run python manage.py [command]
+   > ```
 
 2. Direct activation (alternative):
 
-```bash
-source $(poetry env info --path)/bin/activate
-```
+   ```bash
+   source $(poetry env info --path)/bin/activate
+   ```
 
 ### PostgreSQL Management
 
@@ -228,7 +229,7 @@ This guide will help you set up the frontend development environment for the CAS
 ### Required Tools
 
 1. **Node.js**
-   - Version: 24.16.0 (as specified in `.tool-versions`)
+   - Version: as specified in `.tool-versions` at the repo root
    - Required for running the JavaScript/TypeScript codebase
 
 2. **Package Manager**
@@ -236,13 +237,14 @@ This guide will help you set up the frontend development environment for the CAS
    - Used for managing project dependencies
 
 3. **Version Manager**
-   - mise-en-place (recommended, [install docs](https://mise.jdx.dev/installing-mise.html)), asdf or manual install of tools in .tool-versions
+   - [mise](https://mise.jdx.dev/installing-mise.html) (recommended), or a manual install of the versions in `.tool-versions`
    - Helps manage tool versions consistently across the team
 
 ### System Requirements
 
 - Linux/Unix-based system or WSL for Windows users
 - Git (for version control)
+- Docker and Docker Compose (for containerized development)
 
 ## Installation Guide
 
@@ -250,9 +252,9 @@ This guide will help you set up the frontend development environment for the CAS
 
 1. **Install `mise`** (if not already installed — see [Prerequisites](#prerequisites) above for setup)
 
-2. **Install Node.js plugin and version**
+2. **Install Node.js**
 
-   Mise will pick up the .tools-version file:
+   From the repo root, mise picks up the version from `.tool-versions`:
 
    ```bash
    mise install
@@ -272,6 +274,7 @@ This guide will help you set up the frontend development environment for the CAS
 2. **Install Yarn**
    ```bash
    corepack enable
+   mise reshim   # creates the yarn shim
    ```
 
 ## Project Setup
@@ -399,7 +402,7 @@ The shared libraries are automatically available to all applications in the mono
 
 ### Prerequisites
 
-- Node.js 24.16.0
+- Node.js (version in `.tool-versions`)
 - Yarn (via Node's Corepack)
 - Nx CLI (installed via project dependencies)
 
@@ -470,7 +473,7 @@ yarn nx run coam:test   # Run tests
      ```bash
      node --version
      ```
-   - Should output: v24.16.0
+   - Should match the `nodejs` version in `.tool-versions` (check with `mise ls node`)
 
 2. **Yarn issues**
    - Clear yarn cache:
@@ -492,7 +495,7 @@ yarn nx run coam:test   # Run tests
 
 ## Additional Resources
 
-- [Node.js Documentation](https://nodejs.org/docs/v24.16.0/api/)
+- [Node.js Documentation](https://nodejs.org/docs/latest-v24.x/api/)
 - [Yarn Documentation](https://yarnpkg.com/getting-started)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Nx Documentation](https://nx.dev/getting-started/intro)
@@ -506,7 +509,7 @@ yarn nx run coam:test   # Run tests
 From the repo root, install prek and register the git hooks:
 
 ```bash
-pip install -r requirements.txt
+mise install                          # installs prek (pinned in .tool-versions)
 prek install                          # registers the pre-commit hook
 prek install --hook-type commit-msg   # also enables commit message linting
 ```
