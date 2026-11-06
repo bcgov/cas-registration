@@ -17,6 +17,9 @@ K8S_IMAGE = "alpine/k8s:1.29.15"
 BCIERS_NAMESPACE = os.getenv("BCIERS_NAMESPACE")
 
 default_args = {**default_dag_args, "start_date": START_DATE}
+# Define which environments this Dag loads in to
+CURRENT_ENV = os.environ.get("ENVIRONMENT")
+ALLOWED_ENVIRONMENTS = ["dev", "test"]
 
 RESET_DAG_DOC = """
 DAG to reset the data in the BCIERS database to a freshly deployed state.
@@ -108,5 +111,6 @@ def wait_for_backend_rollout():
     wait_for_backend_rollout_task >> add_django_admin_task()
 
 
-reset_data()  # NOSONAR
-wait_for_backend_rollout()  # NOSONAR
+if CURRENT_ENV in ALLOWED_ENVIRONMENTS:
+    reset_data()  # NOSONAR
+    wait_for_backend_rollout()  # NOSONAR
