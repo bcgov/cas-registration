@@ -24,6 +24,7 @@
       }
     },
     "hooks": {
+      "before:init": "git fetch --prune --prune-tags origin",
       "before:bump": "./.bin/release-bump-chart-version.sh ${version} && ./.bin/release-create-empty-migrations.sh ${version}",
       "before:git:beforeRelease": "./.bin/hook-format.sh CHANGELOG.md"
     }
