@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import {
@@ -66,6 +67,15 @@ test.describe("Test report version to compliance report version manage obligatio
 
     const manageObligationTaskList = new ManageObligationTaskListPOM(page);
     await analyzeAccessibility(page, "Manage obligation task list");
+
+    await expect(
+      page.getByRole("button", { name: /Compliance Units Applied/i }),
+    ).toBeVisible();
+    await takeStabilizedScreenshot(happoScreenshot, page, {
+      component: "Compliance obligation not met",
+      variant: "review compliance obligation report",
+    });
+
     await manageObligationTaskList.clickDownloadPaymentInstructions();
 
     const paymentInstructions = new PaymentInstructionsPOM(page);
