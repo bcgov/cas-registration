@@ -28,9 +28,10 @@ spec:
               value: "/attachment-credentials/attachment-credentials.json"
           resources: {{ toYaml .Values.checkDocumentFileStatus.resources | nindent 12 }}
           command:
-            - /usr/bin/env
-            - bash
-            - -c
+          {{- if .Values.casLoggingSidecar060.enabled }}
+            # Kube-log-runner just as entrypoint, not to output logfiles
+            - "${HOME}/.local/bin/kube-log-runner"
+          {{- end }}
             - |
               set -euo pipefail;
               .venv/bin/python manage.py check_document_file_status -r 0 -d 30
