@@ -308,6 +308,10 @@ const fillPartnerParentFields = async () => {
 };
 
 describe("OperatorForm component", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   beforeEach(async () => {
     vi.clearAllMocks();
     getBusinessStructures.mockResolvedValue([
@@ -822,11 +826,12 @@ describe("OperatorForm component", () => {
     );
 
     // simulate same base path
-    window.history.pushState({}, "", "/administration/my-operator");
-    Object.defineProperty(document, "referrer", {
-      configurable: true,
-      get: () => "https://app.gov.bc.ca/administration",
-    });
+    vi.spyOn(window, "location", "get").mockReturnValue({
+      pathname: "/administration/my-operator",
+    } as unknown as Location);
+    vi.spyOn(document, "referrer", "get").mockReturnValue(
+      "https://app.gov.bc.ca/administration",
+    );
 
     await userEvent.click(screen.getByRole("button", { name: /back/i }));
     expect(mockRouterBack).toHaveBeenCalledTimes(1);
@@ -842,17 +847,13 @@ describe("OperatorForm component", () => {
       />,
     );
 
-    Object.defineProperty(document, "referrer", {
-      configurable: true,
-      get: () => "https://app.gov.bc.ca/dashboard",
-    });
-    Object.defineProperty(window, "location", {
-      value: {
-        assign: vi.fn(),
-        pathname: "/administration/my-operator",
-      },
-      writable: true,
-    });
+    vi.spyOn(document, "referrer", "get").mockReturnValue(
+      "https://app.gov.bc.ca/dashboard",
+    );
+    vi.spyOn(window, "location", "get").mockReturnValue({
+      assign: vi.fn(),
+      pathname: "/administration/my-operator",
+    } as unknown as Location);
 
     await userEvent.click(screen.getByRole("button", { name: /back/i }));
     expect(mockRouterBack).toHaveBeenCalledTimes(1);

@@ -5,7 +5,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { describe, expect, vi } from "vitest";
+import { describe, expect, onTestFinished, vi } from "vitest";
 import {
   actionHandler,
   useRouter,
@@ -139,17 +139,13 @@ describe("the FacilityLfoForm component", () => {
   });
 
   it("should direct the user to the next page of the form when they click submit", async () => {
-    // eslint-disable-next-line no-global-assign
-    window = Object.create(window);
     const origin = "http://localhost:3000";
     const path = `/registration/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d`;
-    Object.defineProperty(window, "location", {
-      value: {
-        href: `${origin}${path}/2`,
-        origin,
-      },
-      writable: true,
-    });
+    // Restored when the test finishes, since test files share the jsdom window (isolate: false)
+    const locationSpy = vi
+      .spyOn(window, "location", "get")
+      .mockReturnValue({ href: `${origin}${path}/2`, origin } as unknown as Location);
+    onTestFinished(() => locationSpy.mockRestore());
     render(
       <FacilityLfoForm
         {...defaultProps}
@@ -178,17 +174,13 @@ describe("the FacilityLfoForm component", () => {
     "should update the grid when a user adds a new facility",
     { timeout: 100000 },
     async () => {
-      // eslint-disable-next-line no-global-assign
-      window = Object.create(window);
       const origin = "http://localhost:3000";
       const path = `/registration/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d`;
-      Object.defineProperty(window, "location", {
-        value: {
-          href: `${origin}${path}/2`,
-          origin,
-        },
-        writable: true,
-      });
+      // Restored when the test finishes, since test files share the jsdom window (isolate: false)
+      const locationSpy = vi
+        .spyOn(window, "location", "get")
+        .mockReturnValue({ href: `${origin}${path}/2`, origin } as unknown as Location);
+      onTestFinished(() => locationSpy.mockRestore());
       render(<FacilityLfoForm {...defaultProps} />);
       const addButton = screen.getByRole("button", {
         name: /add new facility/i,

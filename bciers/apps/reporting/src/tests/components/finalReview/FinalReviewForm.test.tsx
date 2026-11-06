@@ -133,7 +133,12 @@ describe("The FinalReviewForm component", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    window.print = vi.fn();
+    vi.spyOn(window, "print").mockImplementation(() => {});
+  });
+
+  // Test files share the jsdom window (isolate: false), so put the real window.print back
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("renders the Loading component while data is being fetched", async () => {

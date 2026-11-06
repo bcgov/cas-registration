@@ -49,7 +49,12 @@ const mockSummaryData = {
 };
 
 beforeEach(() => {
-  window.alert = vi.fn(); // or vi.fn() if using Vitest
+  vi.spyOn(window, "alert").mockImplementation(() => {});
+});
+
+// Test files share the jsdom window (isolate: false), so put the real window.alert back
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe("OperationEmissionSummary", () => {

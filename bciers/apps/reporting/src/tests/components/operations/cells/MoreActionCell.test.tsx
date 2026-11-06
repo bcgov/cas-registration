@@ -5,7 +5,7 @@ import { ReportOperationStatus } from "@bciers/utils/src/enums";
 import { createReport } from "@reporting/src/app/utils/createReport";
 import { createReportVersion } from "@reporting/src/app/utils/createReportVersion";
 import { getReportingYear } from "@bciers/actions/api";
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
 // Mock API actions
 vi.mock("@reporting/src/app/utils/createReport", () => ({
@@ -62,11 +62,14 @@ describe("MoreActionCell / ActionCell", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Redefine window.location cleanly for JSDOM
-    Object.defineProperty(window, "location", {
-      writable: true,
-      value: { href: "", assign: vi.fn() },
-    });
+    vi.spyOn(window, "location", "get").mockReturnValue({
+      href: "",
+      assign: vi.fn(),
+    } as unknown as Location);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe("Restricted / Closed Reporting Flow", () => {

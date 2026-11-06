@@ -46,7 +46,12 @@ const minimalData = {
 describe("The ReportForm component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    window.print = vi.fn();
+    vi.spyOn(window, "print").mockImplementation(() => {});
+  });
+
+  // Test files share the jsdom window (isolate: false), so put the real window.print back
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("renders report sections and Back button", () => {
