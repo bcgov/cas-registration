@@ -42,32 +42,32 @@ class ComplianceDataSchemaOut(Schema):
         return build_product_schemas(obj, ReportProductComplianceSchema)
 
 
-class EafcEmissionRowSchema(Schema):
+class EmissionsAttributableForComplianceEmissionRowSchema(Schema):
     activity: str
     source_type: str
     fuel_name: Optional[str] = None
     emissions: float
 
 
-class EafcUnregulatedProductRowSchema(Schema):
+class EmissionsAttributableForComplianceUnregulatedProductRowSchema(Schema):
     product_name: str
     allocated_emissions: float
 
 
-class EafcTotalsSchema(Schema):
+class EmissionsAttributableForComplianceTotalsSchema(Schema):
     attributable_for_reporting: float
     excluded_by_fuels: float
     non_useful_venting: float
     fugitive: float
     remaining_npnc: float
     allocated_to_unregulated_products: float
-    annual_eafc: float
-    attributable_for_reporting_rows: List[EafcEmissionRowSchema]
-    excluded_by_fuels_rows: List[EafcEmissionRowSchema]
-    non_useful_venting_rows: List[EafcEmissionRowSchema]
-    fugitive_rows: List[EafcEmissionRowSchema]
-    remaining_npnc_rows: List[EafcEmissionRowSchema]
-    unregulated_product_rows: List[EafcUnregulatedProductRowSchema]
+    annual_emissions_attributable_for_compliance: float
+    attributable_for_reporting_rows: List[EmissionsAttributableForComplianceEmissionRowSchema]
+    excluded_by_fuels_rows: List[EmissionsAttributableForComplianceEmissionRowSchema]
+    non_useful_venting_rows: List[EmissionsAttributableForComplianceEmissionRowSchema]
+    fugitive_rows: List[EmissionsAttributableForComplianceEmissionRowSchema]
+    remaining_npnc_rows: List[EmissionsAttributableForComplianceEmissionRowSchema]
+    unregulated_product_rows: List[EmissionsAttributableForComplianceUnregulatedProductRowSchema]
 
 
 class ReportProductComplianceSummarySchema(ReportProductComplianceSchema):
@@ -83,7 +83,7 @@ class ComplianceSummaryDataSchemaOut(ComplianceDataSchemaOut):
     products: List[ReportProductComplianceSummarySchema]  # type: ignore[assignment]
     production_period: Literal["annual", "apr_dec", "jan_mar"]
     is_new_entrant: bool
-    eafc_totals: EafcTotalsSchema
+    emissions_attributable_for_compliance_totals: EmissionsAttributableForComplianceTotalsSchema
 
     @staticmethod
     def resolve_products(obj: ComplianceData) -> List[ReportProductComplianceSummarySchema]:  # type: ignore[override]

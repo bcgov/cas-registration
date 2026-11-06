@@ -3,14 +3,14 @@ import React, { useId, useState } from "react";
 import { CalculateOutlined, ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
   ComplianceSummaryFormProduct,
-  EafcEmissionRow,
-  EafcTotals,
-  EafcUnregulatedProductRow,
+  EmissionsAttributableForComplianceEmissionRow,
+  EmissionsAttributableForComplianceTotals,
+  EmissionsAttributableForComplianceUnregulatedProductRow,
   ProductionPeriod,
 } from "@reporting/src/app/components/complianceSummary/types";
 
 interface Props {
-  eafcTotals: EafcTotals;
+  emissionsAttributableForComplianceTotals: EmissionsAttributableForComplianceTotals;
   productionPeriod: ProductionPeriod;
   isNewEntrant: boolean;
   products: ComplianceSummaryFormProduct[];
@@ -22,7 +22,7 @@ type Section = {
   title: string;
   formulaLabel: string;
   value: string;
-  rows: EafcEmissionRow[];
+  rows: EmissionsAttributableForComplianceEmissionRow[];
 };
 
 const UNIT = "tCO2e";
@@ -53,37 +53,42 @@ const PERIOD_PRODUCTION_FIELD: Record<
 
 const UNREGULATED_PRODUCTS_TITLE = "Allocated to unregulated products";
 
-const getSections = (eafcTotals: EafcTotals): Section[] => [
+const getSections = (
+  emissionsAttributableForComplianceTotals: EmissionsAttributableForComplianceTotals,
+): Section[] => [
   {
     title: "Emissions attributable for reporting",
     formulaLabel: "emissions attributable for reporting",
-    value: eafcTotals.attributable_for_reporting,
-    rows: eafcTotals.attributable_for_reporting_rows ?? [],
+    value: emissionsAttributableForComplianceTotals.attributable_for_reporting,
+    rows:
+      emissionsAttributableForComplianceTotals.attributable_for_reporting_rows ??
+      [],
   },
   {
     title: "Excluded emissions by fuels",
     formulaLabel: "excluded emissions by fuels",
-    value: eafcTotals.excluded_by_fuels,
-    rows: eafcTotals.excluded_by_fuels_rows ?? [],
+    value: emissionsAttributableForComplianceTotals.excluded_by_fuels,
+    rows: emissionsAttributableForComplianceTotals.excluded_by_fuels_rows ?? [],
   },
   {
     title: "Non-useful venting",
     formulaLabel: "non-useful venting emissions",
-    value: eafcTotals.non_useful_venting,
-    rows: eafcTotals.non_useful_venting_rows ?? [],
+    value: emissionsAttributableForComplianceTotals.non_useful_venting,
+    rows:
+      emissionsAttributableForComplianceTotals.non_useful_venting_rows ?? [],
   },
   {
     title: "Fugitive emissions",
     formulaLabel: "fugitive emissions",
-    value: eafcTotals.fugitive,
-    rows: eafcTotals.fugitive_rows ?? [],
+    value: emissionsAttributableForComplianceTotals.fugitive,
+    rows: emissionsAttributableForComplianceTotals.fugitive_rows ?? [],
   },
   {
     title: "Remaining NPNC",
     formulaLabel:
       "remaining NPNC (NPNC emissions - emissions excluded by fuel, non-useful venting, fugitive)",
-    value: eafcTotals.remaining_npnc,
-    rows: eafcTotals.remaining_npnc_rows ?? [],
+    value: emissionsAttributableForComplianceTotals.remaining_npnc,
+    rows: emissionsAttributableForComplianceTotals.remaining_npnc_rows ?? [],
   },
 ];
 
@@ -162,7 +167,7 @@ const EmissionsSection: React.FC<{ section: Section }> = ({ section }) => (
 
 // Remaining NPNC is allocated to unregulated products but subtracted on its own line, so it is taken out here
 const UnregulatedProductsSection: React.FC<{
-  rows: EafcUnregulatedProductRow[];
+  rows: EmissionsAttributableForComplianceUnregulatedProductRow[];
   remainingNpnc: string;
   value: string;
 }> = ({ rows, remainingNpnc, value }) => {
@@ -195,7 +200,7 @@ const UnregulatedProductsSection: React.FC<{
             </tr>
           ))}
           {showsNpncAdjustment && (
-            <tr data-testid="eafc-npnc-adjustment">
+            <tr data-testid="emissions-attributable-for-compliance-npnc-adjustment">
               <td className={bodyCellClass}>Less remaining NPNC</td>
               <td className={`${bodyCellClass} pr-0 text-right`}>
                 -{formatEmissions(remainingNpnc)}
@@ -211,8 +216,10 @@ const UnregulatedProductsSection: React.FC<{
   );
 };
 
-const EafcCalculationBreakdown: React.FC<Props> = ({
-  eafcTotals,
+const EmissionsAttributableForComplianceCalculationBreakdown: React.FC<
+  Props
+> = ({
+  emissionsAttributableForComplianceTotals,
   productionPeriod,
   isNewEntrant,
   products,
@@ -223,27 +230,31 @@ const EafcCalculationBreakdown: React.FC<Props> = ({
   const panelId = useId();
 
   const isPartialYear = productionPeriod !== "annual";
-  const showsAnnualEafc = isPartialYear;
+  const showsAnnualEmissionsAttributableForCompliance = isPartialYear;
   const showStep2 = isPartialYear && !isNewEntrant;
 
-  const resultValue = showsAnnualEafc
-    ? eafcTotals.annual_eafc
+  const resultValue = showsAnnualEmissionsAttributableForCompliance
+    ? emissionsAttributableForComplianceTotals.annual_emissions_attributable_for_compliance
     : emissionsAttributableForCompliance;
 
-  const step1Title = showsAnnualEafc
+  const step1Title = showsAnnualEmissionsAttributableForCompliance
     ? "Annual emissions attributable for compliance"
     : "Emissions attributable for compliance";
 
-  const sections = getSections(eafcTotals);
+  const sections = getSections(emissionsAttributableForComplianceTotals);
   const showUnregulatedProducts =
-    Number(eafcTotals.allocated_to_unregulated_products) > 0;
+    Number(
+      emissionsAttributableForComplianceTotals.allocated_to_unregulated_products,
+    ) > 0;
 
   const formulaTerms = sections.map((s) => s.formulaLabel);
   const substitutionTerms = sections.map((s) => formatEmissions(s.value));
   if (showUnregulatedProducts) {
     formulaTerms.push("emissions allocated to unregulated products");
     substitutionTerms.push(
-      formatEmissions(eafcTotals.allocated_to_unregulated_products),
+      formatEmissions(
+        emissionsAttributableForComplianceTotals.allocated_to_unregulated_products,
+      ),
     );
   }
 
@@ -281,13 +292,13 @@ const EafcCalculationBreakdown: React.FC<Props> = ({
           <ExpandLess
             fontSize="small"
             aria-hidden="true"
-            data-testid="eafc-toggle-collapse-icon"
+            data-testid="emissions-attributable-for-compliance-toggle-collapse-icon"
           />
         ) : (
           <ExpandMore
             fontSize="small"
             aria-hidden="true"
-            data-testid="eafc-toggle-expand-icon"
+            data-testid="emissions-attributable-for-compliance-toggle-expand-icon"
           />
         )}
       </button>
@@ -296,10 +307,13 @@ const EafcCalculationBreakdown: React.FC<Props> = ({
         id={panelId}
         hidden={!isExpanded}
         className="mt-2 p-6 border border-solid border-bc-bg-blue rounded bg-bc-white"
-        data-testid="eafc-calculation-breakdown"
+        data-testid="emissions-attributable-for-compliance-calculation-breakdown"
       >
         {isNewEntrant ? (
-          <p className="my-0" data-testid="eafc-new-entrant-note">
+          <p
+            className="my-0"
+            data-testid="emissions-attributable-for-compliance-new-entrant-note"
+          >
             <b>Note:</b> New entrant operations have no compliance obligation,
             so emissions attributable for compliance = 0.
           </p>
@@ -307,13 +321,22 @@ const EafcCalculationBreakdown: React.FC<Props> = ({
           <>
             <div className="p-4 rounded bg-bc-bg-grey">
               <h3 className="text-lg font-bold my-0">{step1Title}</h3>
-              <p className="my-0" data-testid="eafc-formula">
+              <p
+                className="my-0"
+                data-testid="emissions-attributable-for-compliance-formula"
+              >
                 = {formulaTerms.join(" - ")}
               </p>
-              <p className="my-0" data-testid="eafc-substitution">
+              <p
+                className="my-0"
+                data-testid="emissions-attributable-for-compliance-substitution"
+              >
                 = {substitutionTerms.join(" - ")}
               </p>
-              <p className="my-0 font-bold" data-testid="eafc-step1-result">
+              <p
+                className="my-0 font-bold"
+                data-testid="emissions-attributable-for-compliance-step1-result"
+              >
                 = {formatEmissions(resultValue)} {UNIT}
               </p>
             </div>
@@ -323,9 +346,16 @@ const EafcCalculationBreakdown: React.FC<Props> = ({
             ))}
             {showUnregulatedProducts && (
               <UnregulatedProductsSection
-                rows={eafcTotals.unregulated_product_rows ?? []}
-                remainingNpnc={eafcTotals.remaining_npnc}
-                value={eafcTotals.allocated_to_unregulated_products}
+                rows={
+                  emissionsAttributableForComplianceTotals.unregulated_product_rows ??
+                  []
+                }
+                remainingNpnc={
+                  emissionsAttributableForComplianceTotals.remaining_npnc
+                }
+                value={
+                  emissionsAttributableForComplianceTotals.allocated_to_unregulated_products
+                }
               />
             )}
 
@@ -341,10 +371,16 @@ const EafcCalculationBreakdown: React.FC<Props> = ({
                     production for {PERIOD_LABELS[productionPeriod]} ÷ annual
                     production), per regulated product
                   </p>
-                  <p className="my-0" data-testid="eafc-step2-substitution">
+                  <p
+                    className="my-0"
+                    data-testid="emissions-attributable-for-compliance-step2-substitution"
+                  >
                     = {prorationSubstitution}
                   </p>
-                  <p className="my-0 font-bold" data-testid="eafc-step2-result">
+                  <p
+                    className="my-0 font-bold"
+                    data-testid="emissions-attributable-for-compliance-step2-result"
+                  >
                     = {formatEmissions(emissionsAttributableForCompliance)}{" "}
                     {UNIT}
                   </p>
@@ -409,7 +445,7 @@ const EafcCalculationBreakdown: React.FC<Props> = ({
                       <td colSpan={4} />
                       <td
                         className="py-1 text-sm font-bold text-right whitespace-nowrap"
-                        data-testid="eafc-step2-total"
+                        data-testid="emissions-attributable-for-compliance-step2-total"
                       >
                         total{" "}
                         {formatEmissions(emissionsAttributableForCompliance)}
@@ -426,4 +462,4 @@ const EafcCalculationBreakdown: React.FC<Props> = ({
   );
 };
 
-export default EafcCalculationBreakdown;
+export default EmissionsAttributableForComplianceCalculationBreakdown;

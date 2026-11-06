@@ -112,10 +112,10 @@ class TestComplianceSummaryServiceClass(TestCase):
             prorated = (allocated_2025 * (apr_dec / annual)).quantize(Decimal("0.0001"), rounding="ROUND_HALF_UP")
             self.assertEqual(allocated_2024, prorated)
 
-    def test_apr_dec_eafc_breakdown(self):
+    def test_apr_dec_emissions_attributable_for_compliance_breakdown(self):
         build_data = ComplianceTestInfrastructure.build()
         result = ComplianceService.get_calculated_compliance_data(
-            build_data.report_version_1.id, include_eafc_totals=True
+            build_data.report_version_1.id, include_emissions_attributable_for_compliance_totals=True
         )
 
         assert result.production_period == ProductionPeriod.APR_DEC
@@ -123,8 +123,14 @@ class TestComplianceSummaryServiceClass(TestCase):
 
         # The per-product annual values add up to the annual EAFC shown in step 1 (within rounding)
         annual_total = sum((p.allocated_for_compliance_annual for p in result.products), Decimal("0"))
-        assert result.eafc_totals is not None
-        assert abs(annual_total - result.eafc_totals.annual_eafc) <= Decimal("0.0001") * 6
+        assert result.emissions_attributable_for_compliance_totals is not None
+        assert (
+            abs(
+                annual_total
+                - result.emissions_attributable_for_compliance_totals.annual_emissions_attributable_for_compliance
+            )
+            <= Decimal("0.0001") * 6
+        )
 
         # Each product's prorated value is its annual value scaled by its Apr-Dec share of production
         for product in result.products:
@@ -232,18 +238,18 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.excess_emissions == Decimal('49232.7564')
         assert result.credited_emissions == 0
 
-    def test_eafc_totals_only_calculated_when_requested(self):
+    def test_emissions_attributable_for_compliance_totals_only_calculated_when_requested(self):
         build_data = ComplianceTestInfrastructure.build()
 
         result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
 
-        assert result.eafc_totals is None
+        assert result.emissions_attributable_for_compliance_totals is None
 
     def test_new_entrant(self):
         build_data = ComplianceTestInfrastructure.new_entrant()
         ## TESTS ##
         result = ComplianceService.get_calculated_compliance_data(
-            build_data.report_version_1.id, include_eafc_totals=True
+            build_data.report_version_1.id, include_emissions_attributable_for_compliance_totals=True
         )
 
         assert result.emissions_limit == 0
@@ -252,8 +258,8 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.is_new_entrant is True
         assert result.emissions_attributable_for_compliance == 0
         # Step 1 of the breakdown still shows the real (non-zero) annual EAFC
-        assert result.eafc_totals is not None
-        assert result.eafc_totals.annual_eafc > 0
+        assert result.emissions_attributable_for_compliance_totals is not None
+        assert result.emissions_attributable_for_compliance_totals.annual_emissions_attributable_for_compliance > 0
 
     def test_saves_compliance_data(self):
         build_data = ComplianceTestInfrastructure.build()
@@ -309,13 +315,19 @@ class TestComplianceSummaryServiceClass(TestCase):
         # Sheet 6
         build_data = ComplianceTestInfrastructure.build_pulp_and_paper_2025()
         result = ComplianceService.get_calculated_compliance_data(
-            build_data.report_version_1.id, include_eafc_totals=True
+            build_data.report_version_1.id, include_emissions_attributable_for_compliance_totals=True
         )
 
         result_dict = dataclasses.asdict(result)
         # For an annual report, annual EAFC equals emissions attributable for compliance (within rounding)
-        eafc_totals = result_dict.pop('eafc_totals')
-        assert abs(eafc_totals['annual_eafc'] - result.emissions_attributable_for_compliance) <= Decimal('0.0001') * 6
+        emissions_attributable_for_compliance_totals = result_dict.pop('emissions_attributable_for_compliance_totals')
+        assert (
+            abs(
+                emissions_attributable_for_compliance_totals['annual_emissions_attributable_for_compliance']
+                - result.emissions_attributable_for_compliance
+            )
+            <= Decimal('0.0001') * 6
+        )
 
         assert result_dict == {
             'credited_emissions': Decimal('0.0000'),

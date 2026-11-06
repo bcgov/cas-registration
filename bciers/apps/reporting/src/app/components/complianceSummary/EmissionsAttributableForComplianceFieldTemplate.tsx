@@ -1,14 +1,16 @@
 "use client";
 import { FieldTemplateProps } from "@rjsf/utils";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
-import EafcCalculationBreakdown from "@reporting/src/app/components/complianceSummary/EafcCalculationBreakdown";
+import EmissionsAttributableForComplianceCalculationBreakdown from "@reporting/src/app/components/complianceSummary/EmissionsAttributableForComplianceCalculationBreakdown";
 
 /**
  * Renders Emissions attributable for compliance field and "How was this calculated?"
  */
-function EafcFieldTemplate(props: FieldTemplateProps) {
+function EmissionsAttributableForComplianceFieldTemplate(
+  props: FieldTemplateProps,
+) {
   const {
-    eafc_totals,
+    emissions_attributable_for_compliance_totals,
     production_period,
     is_new_entrant,
     products,
@@ -19,9 +21,11 @@ function EafcFieldTemplate(props: FieldTemplateProps) {
   return (
     <>
       <InlineFieldTemplate {...props} />
-      {eafc_totals && (
-        <EafcCalculationBreakdown
-          eafcTotals={eafc_totals}
+      {emissions_attributable_for_compliance_totals && (
+        <EmissionsAttributableForComplianceCalculationBreakdown
+          emissionsAttributableForComplianceTotals={
+            emissions_attributable_for_compliance_totals
+          }
           productionPeriod={production_period ?? "annual"}
           isNewEntrant={Boolean(is_new_entrant)}
           products={products ?? []}
@@ -35,4 +39,4 @@ function EafcFieldTemplate(props: FieldTemplateProps) {
   );
 }
 
-export default EafcFieldTemplate;
+export default EmissionsAttributableForComplianceFieldTemplate;
