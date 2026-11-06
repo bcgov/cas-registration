@@ -1,9 +1,9 @@
 import { act, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, afterEach } from "vitest";
 import DownloadPdfButton from "./DownloadPdfButton";
 
 describe("DownloadPdfButton", () => {
-  beforeEach(() => {
+  afterEach(() => {
     vi.restoreAllMocks();
   });
 
@@ -32,11 +32,8 @@ describe("DownloadPdfButton", () => {
   });
 
   it("calls window.print when the button is clicked", () => {
-    const printMock = vi.fn();
-    Object.defineProperty(window, "print", {
-      value: printMock,
-      configurable: true,
-    });
+    // Spy instead of redefining window.print, so restoreAllMocks puts it back for later test files
+    const printMock = vi.spyOn(window, "print").mockImplementation(() => {});
 
     render(<DownloadPdfButton />);
     const button = screen.getByRole("button");

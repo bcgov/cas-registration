@@ -121,16 +121,14 @@ describe("RJSF MultiSelectWidgetWithTooltip", () => {
 
     const combobox = screen.getByRole("combobox");
     await userEvent.click(combobox);
+    await userEvent.click(await screen.findByText("Option 3"));
 
-    const option1 = screen.getByText("Option 1");
-    const option3 = screen.getByText("Option 3");
-    await userEvent.click(option3);
-
+    // Query the option again once the list reopens: an element found before it re-rendered can be detached on
+    // slow runners, so the click would select nothing
     await userEvent.click(combobox);
+    await userEvent.click(await screen.findByText("Option 1"));
 
-    await userEvent.click(option1);
-
-    expect(screen.getByText("Option 1")).toBeVisible();
+    expect(await screen.findByText("Option 1")).toBeVisible();
     expect(screen.getByText("Option 3")).toBeVisible();
   });
 
