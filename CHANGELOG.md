@@ -1,5 +1,24 @@
 # Changelog
 
+## [5.25.1](https://github.com/bcgov/cas-registration/compare/v5.24.0...v5.25.1) (2026-11-06)
+
+### Bug Fixes
+
+- 5223 emissions allocation page displays unregulated products even if the user didn't save the production page ([#5231](https://github.com/bcgov/cas-registration/issues/5231)) ([7dc849f](https://github.com/bcgov/cas-registration/commit/7dc849f54d3be2d319bf9ba0e35260006f9d8707))
+- creating a report version after deleting a draft doesn't cause errors with transfers ([#5376](https://github.com/bcgov/cas-registration/issues/5376)) ([d22b8e9](https://github.com/bcgov/cas-registration/commit/d22b8e9d178da4e32afba04340da501fbcbb36a5))
+- **deps:** update nextjs to 16.4.0 ([#5343](https://github.com/bcgov/cas-registration/issues/5343)) ([88d3e57](https://github.com/bcgov/cas-registration/commit/88d3e577c11faf21354c530eb5f272661e3f44ac))
+- **deps:** update nextjs to 16.4.1 ([#5383](https://github.com/bcgov/cas-registration/issues/5383)) ([5b22b88](https://github.com/bcgov/cas-registration/commit/5b22b884091c6ab991a991d2ad333e596badcc05))
+- **deps:** update nextjs to 16.4.2 ([#5396](https://github.com/bcgov/cas-registration/issues/5396)) ([c17af8e](https://github.com/bcgov/cas-registration/commit/c17af8ea102089d36108d36207936a0064676a42))
+- **deps:** update node dependencies to 10.76.2, 6.24.0, 8.5.30 ([#5370](https://github.com/bcgov/cas-registration/issues/5370)) ([477d5b0](https://github.com/bcgov/cas-registration/commit/477d5b08849750088971072305f81e9a90c6ba8c))
+- **deps:** update node dependencies to 6.22.0, 8.5.29 ([#5350](https://github.com/bcgov/cas-registration/issues/5350)) ([004fd66](https://github.com/bcgov/cas-registration/commit/004fd6660f4624698366d5c3557fcb73dd438627))
+- **deps:** update node dependencies to 6.25.3, 8.5.31 ([#5424](https://github.com/bcgov/cas-registration/issues/5424)) ([6568251](https://github.com/bcgov/cas-registration/commit/6568251fc34f72c5939ca0f0221350546a22050a))
+
+### Reverts
+
+- Revert "chore: release v5.25.1" ([fd53197](https://github.com/bcgov/cas-registration/commit/fd53197d44b9a3d6fa23b1571c5bb9abdfec3038))
+- Revert "chore: release v5.25.1" ([b919bb2](https://github.com/bcgov/cas-registration/commit/b919bb23f824e1eea06576e8219267d469b17ae2))
+- Revert "chore: release v5.25.1" ([6b3d193](https://github.com/bcgov/cas-registration/commit/6b3d193310822fabc5290a50db11b0fa99f7d144))
+
 # [5.25.0](https://github.com/bcgov/cas-registration/compare/v5.24.1...v5.25.0) (2026-11-02)
 
 ### Bug Fixes
