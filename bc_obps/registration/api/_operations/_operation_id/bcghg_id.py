@@ -3,11 +3,11 @@ from uuid import UUID
 from django.http import HttpRequest
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.schema import Message, BcghgIdIn, BcghgIdOut
-from service.operation_service import OperationService
+from registration.service.operation_service import OperationService
 from registration.constants import OPERATION_TAGS
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.api.router import router
 
 

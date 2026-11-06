@@ -6,7 +6,7 @@ from registration.api import router as registration_router
 from reporting.api import router as reporting_router
 from reporting.api_v2 import router as reporting_router_v2
 from compliance.api import router as compliance_router
-from service.error_service.handle_exception import handle_exception
+from common.service.error_service.handle_exception import handle_exception
 from registration.utils import generate_useful_error
 
 # Docs: https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/

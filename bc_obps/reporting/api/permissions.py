@@ -7,7 +7,9 @@ from django.http import HttpRequest
 from registration.models.user_operator import UserOperator
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
-from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
+from registration.service.operation_designated_operator_timeline_service import (
+    OperationDesignatedOperatorTimelineService,
+)
 
 logger = logging.getLogger(__name__)
 

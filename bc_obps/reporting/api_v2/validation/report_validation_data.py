@@ -7,7 +7,7 @@ from reporting.schema.generic import Message
 from reporting.service.report_validation.report_validation_service import (
     ReportValidationService,
 )
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 from reporting.schema.report_validation_data import ValidationErrorsSchemaOut
 

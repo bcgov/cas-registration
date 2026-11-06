@@ -1,13 +1,13 @@
 from django.http import HttpRequest
 
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from ..models import ReportVersion
 from ..schema.report_final_review import ReviewChangesVersionSchema
 from .router import router
 from .permissions import approved_industry_user_report_version_composite_auth
-from service.report_version_service import ReportVersionService
+from reporting.service.report_version_service import ReportVersionService
 from reporting.service.review_changes_service.report_review_changes_service import ReportReviewChangesService
 
 

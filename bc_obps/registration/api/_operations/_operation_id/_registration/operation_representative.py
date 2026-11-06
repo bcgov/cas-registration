@@ -8,12 +8,12 @@ from registration.schema import (
     OperationRepresentativeRemove,
     Message,
 )
-from service.operation_service import OperationService
+from registration.service.operation_service import OperationService
 from registration.constants import OPERATION_TAGS
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
 from common.permissions import authorize
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.post(

@@ -1,7 +1,7 @@
 from compliance.api.router import router
 from typing import Literal, Tuple
 from django.http import HttpRequest
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.constants import COMPLIANCE
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService

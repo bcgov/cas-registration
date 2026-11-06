@@ -20,7 +20,7 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
         "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_operations_for_reporting_dashboard"
     )
     @patch("common.api.utils.get_current_user_guid")
-    @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
+    @patch("reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year")
     def test_returns_data_as_provided_by_the_service(
         self,
         mock_get_current_year: MagicMock | AsyncMock,
@@ -67,7 +67,7 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
         "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_reports_for_reporting_dashboard"
     )
     @patch("common.api.utils.get_current_user_guid")
-    @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
+    @patch("reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year")
     def test_returns_report_data_as_provided_by_the_service(
         self,
         mock_get_current_year: MagicMock | AsyncMock,
@@ -118,7 +118,7 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
         "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_operations_for_reporting_dashboard"
     )
     @patch("common.api.utils.get_current_user_guid")
-    @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
+    @patch("reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year")
     def test_returns_operations_data_as_provided_by_the_service(
         self,
         mock_get_current_year: MagicMock | AsyncMock,

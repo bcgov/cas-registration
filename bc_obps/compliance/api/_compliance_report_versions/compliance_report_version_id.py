@@ -3,7 +3,7 @@ from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from compliance.models import ComplianceReportVersion
 from compliance.schema.compliance_report_version import ComplianceReportVersionOut
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from registration.schema.generic import Message
 from ..router import router

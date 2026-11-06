@@ -1,7 +1,7 @@
 from django.http import HttpRequest
 from django.db.models import QuerySet
 from registration.constants import BUSINESS_STRUCTURE_TAGS
-from service.data_access_service.business_structure_service import BusinessStructureDataAccessService
+from registration.service.data_access_service.business_structure_service import BusinessStructureDataAccessService
 from common.permissions import authorize
 from registration.api.router import router
 from typing import List, Literal, Tuple

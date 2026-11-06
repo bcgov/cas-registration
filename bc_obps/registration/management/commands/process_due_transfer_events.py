@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from service.transfer_event_service import TransferEventService
+from registration.service.transfer_event_service import TransferEventService
 
 
 class Command(BaseCommand):

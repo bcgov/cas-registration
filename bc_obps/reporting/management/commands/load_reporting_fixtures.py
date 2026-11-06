@@ -5,8 +5,8 @@ from django.core.management import call_command
 from reporting.management.commands.utils import submit_report_from_fixture
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
-from service.report_service import ReportService
-from service.report_version_service import ReportVersionService
+from reporting.service.report_service import ReportService
+from reporting.service.report_version_service import ReportVersionService
 
 SUFFIX = " - name from admin"
 

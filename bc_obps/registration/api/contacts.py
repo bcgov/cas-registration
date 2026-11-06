@@ -7,10 +7,10 @@ from registration.constants import CONTACT_TAGS
 from ninja.pagination import paginate
 from common.api.utils import get_current_user_guid
 from registration.models.contact import Contact
-from service.contact_service import ContactService
-from service.data_access_service.user_operator_service import UserDataAccessService
+from registration.service.contact_service import ContactService
+from registration.service.data_access_service.user_operator_service import UserDataAccessService
 from registration.api.router import router
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
 from django.db.models import QuerySet
 

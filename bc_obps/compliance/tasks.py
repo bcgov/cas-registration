@@ -17,7 +17,7 @@ from compliance.emails import (
 )
 from task_scheduler.service.retry_task.factories import create_retryable
 from task_scheduler.service.scheduled_task.dataclass import ScheduledTaskConfig
-from service.email.email_service import EmailService
+from common.service.email.email_service import EmailService
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 import logging
 

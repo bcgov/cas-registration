@@ -4,8 +4,8 @@ from django.db.models import F
 from django.dispatch import receiver
 from registration.signals.signals import operation_registration_purpose_changed
 from reporting.models import ReportVersion
-from service.report_version_service import ReportVersionService
-from service.reporting_year_service import ReportingYearService
+from reporting.service.report_version_service import ReportVersionService
+from reporting.service.reporting_year_service import ReportingYearService
 
 logger = logging.getLogger(__name__)
 

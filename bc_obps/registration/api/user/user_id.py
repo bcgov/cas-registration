@@ -8,8 +8,8 @@ from registration.models.user import User
 from registration.schema.user import ChangeUserRoleOut, UserUpdateRoleIn
 from registration.schema import Message
 from registration.api.router import router
-from service.error_service.custom_codes_4xx import custom_codes_4xx
-from service.user_service import UserService
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from registration.service.user_service import UserService
 
 
 @router.patch(

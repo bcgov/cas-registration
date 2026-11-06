@@ -6,8 +6,8 @@ from django.http import HttpRequest
 from registration.api.router import router
 from registration.constants import DOCUMENT_TAGS
 from registration.schema import Message
-from service.document_service import DocumentService
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from registration.service.document_service import DocumentService
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(

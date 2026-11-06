@@ -3,7 +3,7 @@ from common.api.utils.current_user_utils import get_current_user
 from django.http import HttpRequest
 from compliance.constants import COMPLIANCE
 from compliance.models import ComplianceEarnedCredit
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
 from registration.schema.generic import Message
 from compliance.api.router import router

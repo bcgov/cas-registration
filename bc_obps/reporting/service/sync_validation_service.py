@@ -1,7 +1,7 @@
 from uuid import UUID
 from typing import Optional, Tuple
 from reporting.models import ReportVersion
-from service.reporting_year_service import ReportingYearService
+from reporting.service.reporting_year_service import ReportingYearService
 from registration.models import Facility, Operation
 
 

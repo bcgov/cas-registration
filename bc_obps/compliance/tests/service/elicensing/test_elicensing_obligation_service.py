@@ -31,7 +31,7 @@ ELICENSING_API_SERVICE = "compliance.service.elicensing.elicensing_api_client.EL
 ELICENSING_CREATE_FEES_PATH = f"{ELICENSING_API_SERVICE}.create_fees"
 ELICENSING_CREATE_INVOICE_PATH = f"{ELICENSING_API_SERVICE}.create_invoice"
 
-GET_CURRENT_YEAR_PATH = "service.reporting_year_service.ReportingYearService.get_current_reporting_year"
+GET_CURRENT_YEAR_PATH = "reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year"
 
 REFRESH_DATA_SERVICE = f"{ELICENSING_OBLIGATION_SERVICE_PATH}.ElicensingDataRefreshService"
 REFRESH_DATA_PATH = f"{REFRESH_DATA_SERVICE}.refresh_data_wrapper_by_compliance_report_version_id"

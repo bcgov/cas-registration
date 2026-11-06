@@ -1,7 +1,7 @@
 from django.http import HttpRequest
 from django.db.models import QuerySet
 from registration.constants import NAICS_CODE_TAGS
-from service.data_access_service.naics_code_service import NaicsCodeDataAccessService
+from registration.service.data_access_service.naics_code_service import NaicsCodeDataAccessService
 from common.permissions import authorize
 from registration.api.router import router
 from typing import List, Literal, Tuple

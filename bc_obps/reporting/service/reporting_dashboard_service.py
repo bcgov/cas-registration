@@ -7,17 +7,17 @@ from registration.models.operation import Operation
 from reporting.models import ReportOperation
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
-from service.data_access_service.operation_designated_operator_timeline_service import (
+from registration.service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
-from service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from typing import Optional
 from reporting.schema.dashboard import (
     ReportingDashboardOperationFilterSchema,
     ReportingDashboardReportFilterSchema,
     ReportsPeriod,
 )
-from service.user_operator_service import UserOperatorService
+from registration.service.user_operator_service import UserOperatorService
 
 
 class ReportingDashboardService:

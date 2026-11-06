@@ -1,4 +1,4 @@
-from service.report_version_service import ReportVersionService
+from reporting.service.report_version_service import ReportVersionService
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,

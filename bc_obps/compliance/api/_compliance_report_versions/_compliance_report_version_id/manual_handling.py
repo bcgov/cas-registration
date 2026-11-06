@@ -4,7 +4,7 @@ from common.api.utils.current_user_utils import get_current_user
 from compliance.api.router import router
 from compliance.constants import COMPLIANCE
 from registration.schema.generic import Message
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from common.permissions import authorize
 from compliance.api.permissions import (
     approved_industry_user_cas_director_cas_analyst_compliance_report_version_composite_auth,

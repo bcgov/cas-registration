@@ -35,7 +35,7 @@ from reporting.service.report_emission_allocation_service import (
     ReportEmissionAllocationService,
     ReportEmissionAllocationData,
 )
-from service.report_version_service import ReportVersionService
+from reporting.service.report_version_service import ReportVersionService
 
 
 class EmissionCategorySchema(ModelSchema):

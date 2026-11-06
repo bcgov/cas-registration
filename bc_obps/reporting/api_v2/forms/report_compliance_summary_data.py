@@ -10,7 +10,7 @@ from reporting.schema.compliance_data import (
     ReportProductComplianceSchema,
 )
 from reporting.schema.generic import Message
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.api_v2.forms.form_response_builder import FormResponseBuilder
 from reporting.service.compliance_service.compliance_service import ComplianceService
 from ..router import router

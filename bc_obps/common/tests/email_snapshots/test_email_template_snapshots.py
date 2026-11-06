@@ -1,7 +1,7 @@
 import pytest
 from common.models import EmailNotificationTemplate
 from common.tests.email_snapshots.template_test_contexts import TEMPLATE_CONTEXTS
-from service.data_access_service.email_template_service import EmailNotificationTemplateService
+from common.service.data_access_service.email_template_service import EmailNotificationTemplateService
 
 
 def _render_ches_template(body: str, context: dict) -> str:

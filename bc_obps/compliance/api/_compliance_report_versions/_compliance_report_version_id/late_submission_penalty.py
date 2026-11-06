@@ -3,7 +3,7 @@ from django.http import HttpRequest
 from compliance.api.router import router
 from compliance.constants import COMPLIANCE
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.schema.late_submission_penalty import LateSubmissionPenaltyOut
 from compliance.api.permissions import approved_authorized_roles_compliance_report_version_composite_auth

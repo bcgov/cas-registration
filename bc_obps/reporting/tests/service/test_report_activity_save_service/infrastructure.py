@@ -9,7 +9,7 @@ from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_unit import ReportUnit
 from model_bakery.baker import make_recipe, make
 from reporting.models.report_version import ReportVersion
-from service.utils.get_report_valid_date_from_version_id import get_report_valid_date_from_version_id
+from reporting.service.utils import get_report_valid_date_from_version_id
 
 # String constants for deduplication
 REPORTING_FACILITY_REPORT_RECIPE_NAME = 'reporting.tests.utils.facility_report'

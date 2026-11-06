@@ -2,8 +2,8 @@ from typing import List, Literal, Tuple
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.schema import OperationReportableOut, Message
-from service.error_service.custom_codes_4xx import custom_codes_4xx
-from service.operation_service import OperationService
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from registration.service.operation_service import OperationService
 from registration.api.router import router
 from common.permissions import authorize
 from registration.constants import OPERATION_TAGS

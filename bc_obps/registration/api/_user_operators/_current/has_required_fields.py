@@ -2,12 +2,12 @@ from django.http import HttpRequest
 from typing import Dict, Literal, Tuple
 from registration.api.router import router
 from registration.constants import USER_OPERATOR_TAGS
-from service.operator_service import OperatorService
+from registration.service.operator_service import OperatorService
 from common.api.utils import get_current_user_guid
-from service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from common.permissions import authorize
 from django.core.exceptions import ObjectDoesNotExist
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema import Message
 
 

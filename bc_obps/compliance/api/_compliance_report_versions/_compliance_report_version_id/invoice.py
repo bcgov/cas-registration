@@ -1,7 +1,7 @@
 from django.http import HttpRequest, StreamingHttpResponse
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.service.elicensing_invoice_service import ElicensingInvoiceService
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.api.router import router
 from compliance.constants import COMPLIANCE

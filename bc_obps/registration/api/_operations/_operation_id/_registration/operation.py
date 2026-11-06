@@ -4,11 +4,11 @@ from django.http import HttpRequest
 from ninja import File, UploadedFile
 from registration.schema import OperationInformationIn, OperationRegistrationOut, Message
 from registration.schema.operation import OperationUpdateOut
-from service.operation_service import OperationData, OperationService, MultipleOperatorData
+from registration.service.operation_service import OperationData, OperationService, MultipleOperatorData
 from registration.constants import OPERATION_TAGS
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.models import Operation
 from registration.api.router import router
 
