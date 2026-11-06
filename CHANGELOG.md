@@ -1,5 +1,11 @@
 # Changelog
 
+- chore: release-it pulls tags before generating changelog (11b11106d)
+- chore: fix duplicate entries in changelog (76410ef07)
+- Revert "chore: release v5.25.1" (b919bb23f)
+- chore: release v5.25.1 (101738d4a)
+- Revert "chore: release v5.25.1" (6b3d19331)
+
 # [5.25.0](https://github.com/bcgov/cas-registration/compare/v5.24.1...v5.25.0) (2026-11-02)
 
 ### Bug Fixes
