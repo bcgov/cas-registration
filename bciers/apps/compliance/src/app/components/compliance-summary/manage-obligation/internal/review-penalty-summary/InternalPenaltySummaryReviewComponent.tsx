@@ -24,16 +24,12 @@ export function InternalPenaltySummaryReviewComponent({
     : `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`;
   const continueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/penalty-calculator`;
 
-  const displayPenaltyStatus =
-    data.penalty_status === "Not Paid" ? "Due" : data.penalty_status;
-
-  const formData = { ...data, penalty_status: displayPenaltyStatus };
-
   return (
     <FormBase
       schema={createInternalPenaltySummaryReviewSchema}
       uiSchema={internalPenaltySummaryReviewUiSchema}
-      formData={formData}
+      formData={data}
+      formContext={data}
       className="w-full"
     >
       <ComplianceStepButtons backUrl={backUrl} continueUrl={continueUrl} />

@@ -1,6 +1,7 @@
 from decimal import Decimal
 from ninja import Schema
 from typing import Any
+from typing import Optional
 
 
 class LateSubmissionPenaltyOut(Schema):
@@ -12,8 +13,9 @@ class LateSubmissionPenaltyOut(Schema):
     has_penalty: bool
     penalty_type: str
     penalty_amount: Decimal
-    faa_interest: Decimal
     total_amount: Decimal
+    invoice_number: Optional[str] = None
+    due_date: Optional[str] = None
 
     @staticmethod
     def resolve_penalty_status(obj: Any) -> str:

@@ -6,6 +6,7 @@ import {
   generateManageObligationTaskList,
   ActivePage,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
+import { formatDate } from "@/compliance/src/app/utils/formatting";
 
 interface Props {
   compliance_report_version_id: number;
@@ -17,6 +18,8 @@ export default async function InterestSummaryReviewPage({
   const interestData = await getLateSubmissionPenalty(
     complianceReportVersionId,
   );
+  if (interestData.due_date)
+    interestData.due_date = formatDate(interestData.due_date);
 
   const {
     penalty_status: penaltyStatus,
