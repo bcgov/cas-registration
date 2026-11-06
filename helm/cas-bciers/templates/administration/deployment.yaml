@@ -49,6 +49,10 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.administrationFrontend.resources | nindent 12 }}
+      {{- if .Values.casLoggingSidecar060.enabled }}
+          command: ["/usr/local/bin/kube-log-runner"]
+          args: ["node", "server.js"]
+      {{- end }}
       {{- if .Values.casLoggingSidecar071.enabled }}
           volumeMounts:
             {{- include "vector-collector.applicationVolumeMounts" . | nindent 12 }}
