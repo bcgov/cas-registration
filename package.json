@@ -1,6 +1,6 @@
 {
   "name": "cas-registration",
-  "version": "5.25.0",
+  "version": "5.25.1",
   "main": "index.js",
   "repository": "https://github.com/bcgov/cas-registration.git",
   "author": "ggircs@gov.bc.ca",
@@ -24,6 +24,7 @@
       }
     },
     "hooks": {
+      "before:init": "git fetch --prune --prune-tags origin",
       "before:bump": "./.bin/release-bump-chart-version.sh ${version} && ./.bin/release-create-empty-migrations.sh ${version}",
       "before:git:beforeRelease": "./.bin/hook-format.sh CHANGELOG.md"
     }
