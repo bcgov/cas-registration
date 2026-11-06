@@ -144,7 +144,9 @@ describe("the FacilityLfoForm component", () => {
     // Restored when the test finishes, since test files share the jsdom window (isolate: false)
     const locationSpy = vi
       .spyOn(window, "location", "get")
-      .mockReturnValue({ href: `${origin}${path}/2`, origin } as unknown as Location);
+      .mockReturnValue({
+        href: `${origin}${path}/2`,
+        origin } as unknown as Location);
     onTestFinished(() => locationSpy.mockRestore());
     render(
       <FacilityLfoForm
@@ -179,7 +181,9 @@ describe("the FacilityLfoForm component", () => {
       // Restored when the test finishes, since test files share the jsdom window (isolate: false)
       const locationSpy = vi
         .spyOn(window, "location", "get")
-        .mockReturnValue({ href: `${origin}${path}/2`, origin } as unknown as Location);
+        .mockReturnValue({
+          href: `${origin}${path}/2`,
+          origin } as unknown as Location);
       onTestFinished(() => locationSpy.mockRestore());
       render(<FacilityLfoForm {...defaultProps} />);
       const addButton = screen.getByRole("button", {
