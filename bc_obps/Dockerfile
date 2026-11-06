@@ -62,6 +62,13 @@ RUN POETRY_VERSION=$(grep '^poetry ' ${HOME}/.tool-versions | awk '{print $2}') 
     # Install dependencies without dev group, non-interactively
     ${HOME}/.local/bin/poetry install --without dev --no-root --no-interaction --no-ansi --compile
 
+# Add kube-log-runner for simultaneous output to console and logfile
+ENV KUBE_VERSION=v1.37.0 \
+    KUBE_ARCH=amd64
+
+ADD --chown=${USER_ID}:0 https://dl.k8s.io/${KUBE_VERSION}/bin/linux/${KUBE_ARCH}/kube-log-runner ${HOME}/.local/bin/kube-log-runner
+RUN chmod +x ${HOME}/.local/bin/kube-log-runner
+
 # Copy all remaining files, owned by numbered user
 COPY --chown=${USER_ID}:0 . ${HOME}/
 
@@ -105,6 +112,8 @@ HEALTHCHECK --interval=30s --timeout=3s \
 
 # Collect static files using the virtual environment's Python
 RUN ${HOME}/.venv/bin/python manage.py collectstatic --noinput
+
+ENTRYPOINT ["/app/.local/bin/kube-log-runner", "-also-stdout", "-log-file=/var/log/app/app.log"]
 
 # Run migrations and start gunicorn directly from the virtual environment
 CMD ["/bin/bash", "-c", "${HOME}/.venv/bin/python manage.py custom_migrate && ${HOME}/.venv/bin/gunicorn --access-logfile - bc_obps.wsgi:application --timeout 200 --workers 3 --bind '0.0.0.0:8000'"]
