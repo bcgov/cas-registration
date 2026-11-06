@@ -32,6 +32,9 @@ spec:
             # Kube-log-runner just as entrypoint, not to output logfiles
             - "${HOME}/.local/bin/kube-log-runner"
           {{- end }}
+            - /usr/bin/env
+            - bash
+            - -c
             - |
               set -euo pipefail;
               .venv/bin/python manage.py check_document_file_status -r 0 -d 30
