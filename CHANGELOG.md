@@ -1,5 +1,7 @@
 # Changelog
 
+- Revert "chore: release v5.25.1" (6b3d19331)
+
 # [5.25.0](https://github.com/bcgov/cas-registration/compare/v5.22.0...v5.25.0) (2026-11-02)
 
 ### Bug Fixes
