@@ -3,7 +3,10 @@ from decimal import Decimal
 from django.test import SimpleTestCase
 from reporting.schema.compliance_data import ComplianceDataSchemaOut, ComplianceSummaryDataSchemaOut
 from reporting.service.compliance_service.compliance_service import ComplianceData, ReportProductComplianceData
-from reporting.service.compliance_service.eafc_totals import EafcEmissionRow, EafcTotals
+from reporting.service.compliance_service.emissions_attributable_for_compliance_totals import (
+    EmissionsAttributableForComplianceEmissionRow,
+    EmissionsAttributableForComplianceTotals,
+)
 from reporting.service.compliance_service.parameters import ProductionPeriod
 from reporting.service.compliance_service.regulatory_values import RegulatoryValues
 
@@ -54,21 +57,21 @@ def build_compliance_data() -> ComplianceData:
         ],
         production_period=ProductionPeriod.ANNUAL,
         is_new_entrant=False,
-        eafc_totals=EafcTotals(
+        emissions_attributable_for_compliance_totals=EmissionsAttributableForComplianceTotals(
             attributable_for_reporting=Decimal("100"),
             excluded_by_fuels=Decimal("0"),
             non_useful_venting=Decimal("0"),
             fugitive=Decimal("0"),
             remaining_npnc=Decimal("0.01"),
             allocated_to_unregulated_products=Decimal("0"),
-            annual_eafc=Decimal("99.99"),
+            annual_emissions_attributable_for_compliance=Decimal("99.99"),
             attributable_for_reporting_rows=[
-                EafcEmissionRow(
+                EmissionsAttributableForComplianceEmissionRow(
                     activity="Oil and gas", source_type="Flaring stacks", fuel_name=None, emissions=Decimal("100")
                 )
             ],
             remaining_npnc_rows=[
-                EafcEmissionRow(
+                EmissionsAttributableForComplianceEmissionRow(
                     activity="GSC", source_type="GSC of fuel", fuel_name="Diesel", emissions=Decimal("0.01")
                 )
             ],
@@ -121,7 +124,7 @@ class TestComplianceDataSchema(SimpleTestCase):
 
         # Breakdown fields belong to the Compliance Summary schema only (Final Review uses this one)
         dumped = schema_under_test.model_dump()
-        assert "eafc_totals" not in dumped
+        assert "emissions_attributable_for_compliance_totals" not in dumped
         assert "production_period" not in dumped
         assert "is_new_entrant" not in dumped
         assert "allocated_for_compliance_annual" not in dumped["products"][0]
@@ -134,14 +137,14 @@ class TestComplianceDataSchema(SimpleTestCase):
 
         assert dumped["production_period"] == "annual"
         assert dumped["is_new_entrant"] is False
-        assert dumped["eafc_totals"] == {
+        assert dumped["emissions_attributable_for_compliance_totals"] == {
             "attributable_for_reporting": 100.0,
             "excluded_by_fuels": 0.0,
             "non_useful_venting": 0.0,
             "fugitive": 0.0,
             "remaining_npnc": 0.01,
             "allocated_to_unregulated_products": 0.0,
-            "annual_eafc": 99.99,
+            "annual_emissions_attributable_for_compliance": 99.99,
             "attributable_for_reporting_rows": [
                 {"activity": "Oil and gas", "source_type": "Flaring stacks", "fuel_name": None, "emissions": 100.0}
             ],

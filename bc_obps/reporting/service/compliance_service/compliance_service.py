@@ -3,7 +3,10 @@ from reporting.models.report_product import ReportProduct
 from reporting.models import ReportVersion
 from reporting.models.product_emission_intensity import ProductEmissionIntensity
 from reporting.models.emission_category import EmissionCategory
-from reporting.service.compliance_service.eafc_totals import EafcTotals, get_eafc_totals
+from reporting.service.compliance_service.emissions_attributable_for_compliance_totals import (
+    EmissionsAttributableForComplianceTotals,
+    get_emissions_attributable_for_compliance_totals,
+)
 from reporting.service.compliance_service.emission_allocation import (
     get_emissions_from_only_funny_category_13,
     get_fog_emissions,
@@ -85,7 +88,7 @@ class ComplianceData:
 
     production_period: ProductionPeriod
     is_new_entrant: bool
-    eafc_totals: EafcTotals | None = None
+    emissions_attributable_for_compliance_totals: EmissionsAttributableForComplianceTotals | None = None
 
     def as_record_defaults(self) -> dict[str, Decimal | int]:
         return {
@@ -203,7 +206,9 @@ class ComplianceService:
         return ProductionPeriod.ANNUAL
 
     @staticmethod
-    def get_calculated_compliance_data(report_version_id: int, include_eafc_totals: bool = False) -> ComplianceData:
+    def get_calculated_compliance_data(
+        report_version_id: int, include_emissions_attributable_for_compliance_totals: bool = False
+    ) -> ComplianceData:
         # Fetch the ReportVersion once (bring in reporting_year and operation) to avoid extra queries
         report_version_record = ReportVersion.objects.select_related("report__reporting_year", "report_operation").get(
             pk=report_version_id
@@ -369,9 +374,11 @@ class ComplianceService:
             products=compliance_product_list,
             production_period=production_period,
             is_new_entrant=is_new_entrant,
-            eafc_totals=(
-                get_eafc_totals(report_version_id, use_legacy_rounding=has_2024_reporting_year)
-                if include_eafc_totals
+            emissions_attributable_for_compliance_totals=(
+                get_emissions_attributable_for_compliance_totals(
+                    report_version_id, use_legacy_rounding=has_2024_reporting_year
+                )
+                if include_emissions_attributable_for_compliance_totals
                 else None
             ),
         )

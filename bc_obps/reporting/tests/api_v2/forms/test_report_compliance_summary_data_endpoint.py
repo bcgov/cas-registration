@@ -14,7 +14,9 @@ from reporting.service.compliance_service.compliance_service import (
     ReportProductComplianceData,
     RegulatoryValues,
 )
-from reporting.service.compliance_service.eafc_totals import EafcTotals
+from reporting.service.compliance_service.emissions_attributable_for_compliance_totals import (
+    EmissionsAttributableForComplianceTotals,
+)
 from reporting.service.compliance_service.parameters import ProductionPeriod
 
 
@@ -84,14 +86,14 @@ class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
             products=[mock_product],
             production_period=ProductionPeriod.ANNUAL,
             is_new_entrant=False,
-            eafc_totals=EafcTotals(
+            emissions_attributable_for_compliance_totals=EmissionsAttributableForComplianceTotals(
                 attributable_for_reporting=Decimal("100.0"),
                 excluded_by_fuels=Decimal("0"),
                 non_useful_venting=Decimal("0"),
                 fugitive=Decimal("0"),
                 remaining_npnc=Decimal("10.0"),
                 allocated_to_unregulated_products=Decimal("0"),
-                annual_eafc=Decimal("90.0"),
+                annual_emissions_attributable_for_compliance=Decimal("90.0"),
             ),
         )
 
@@ -138,8 +140,12 @@ class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
 
         assert payload["production_period"] == "annual"
         assert payload["is_new_entrant"] is False
-        assert payload["eafc_totals"]["annual_eafc"] == approx(90.0)
-        mock_get_calculated_compliance_data.assert_called_once_with(self.report_version.id, include_eafc_totals=True)
+        assert payload["emissions_attributable_for_compliance_totals"][
+            "annual_emissions_attributable_for_compliance"
+        ] == approx(90.0)
+        mock_get_calculated_compliance_data.assert_called_once_with(
+            self.report_version.id, include_emissions_attributable_for_compliance_totals=True
+        )
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_compliance_summary_form_data")

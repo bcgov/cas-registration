@@ -6,7 +6,7 @@ from reporting.api_v2.forms.form_schema import ReportingFormSchema
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.compliance_data import (
     ComplianceSummaryDataSchemaOut,
-    EafcTotalsSchema,
+    EmissionsAttributableForComplianceTotalsSchema,
     RegulatoryValuesSchema,
     ReportProductComplianceSummarySchema,
 )
@@ -28,7 +28,7 @@ class ComplianceDataSchemaSerialized(Schema):
     products: List[ReportProductComplianceSummarySchema]
     production_period: Literal["annual", "apr_dec", "jan_mar"]
     is_new_entrant: bool
-    eafc_totals: EafcTotalsSchema
+    emissions_attributable_for_compliance_totals: EmissionsAttributableForComplianceTotalsSchema
 
 
 @router.get(
@@ -47,7 +47,9 @@ def get_compliance_summary_form_data(
     version_id: int,
 ) -> Tuple[Literal[200], dict]:
     # Get compliance dataclass
-    compliance_data = ComplianceService.get_calculated_compliance_data(version_id, include_eafc_totals=True)
+    compliance_data = ComplianceService.get_calculated_compliance_data(
+        version_id, include_emissions_attributable_for_compliance_totals=True
+    )
 
     # Trigger compliance schema resolvers through model_validate
     # Return a dict for FormResponseBuilder payload through model_dump

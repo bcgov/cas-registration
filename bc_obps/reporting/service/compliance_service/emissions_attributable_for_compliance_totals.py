@@ -21,7 +21,7 @@ from reporting.service.utils import round_using_appropriate_strategy
 
 
 @dataclass
-class EafcEmissionRow:
+class EmissionsAttributableForComplianceEmissionRow:
     activity: str
     source_type: str
     fuel_name: str | None
@@ -29,20 +29,20 @@ class EafcEmissionRow:
 
 
 @dataclass
-class EafcTotals:
+class EmissionsAttributableForComplianceTotals:
     attributable_for_reporting: Decimal
     excluded_by_fuels: Decimal
     non_useful_venting: Decimal
     fugitive: Decimal
     remaining_npnc: Decimal
     allocated_to_unregulated_products: Decimal
-    annual_eafc: Decimal
+    annual_emissions_attributable_for_compliance: Decimal
     # Emissions behind each term, grouped by activity, source type and fuel
-    attributable_for_reporting_rows: List[EafcEmissionRow] = field(default_factory=list)
-    excluded_by_fuels_rows: List[EafcEmissionRow] = field(default_factory=list)
-    non_useful_venting_rows: List[EafcEmissionRow] = field(default_factory=list)
-    fugitive_rows: List[EafcEmissionRow] = field(default_factory=list)
-    remaining_npnc_rows: List[EafcEmissionRow] = field(default_factory=list)
+    attributable_for_reporting_rows: List[EmissionsAttributableForComplianceEmissionRow] = field(default_factory=list)
+    excluded_by_fuels_rows: List[EmissionsAttributableForComplianceEmissionRow] = field(default_factory=list)
+    non_useful_venting_rows: List[EmissionsAttributableForComplianceEmissionRow] = field(default_factory=list)
+    fugitive_rows: List[EmissionsAttributableForComplianceEmissionRow] = field(default_factory=list)
+    remaining_npnc_rows: List[EmissionsAttributableForComplianceEmissionRow] = field(default_factory=list)
     unregulated_product_rows: List[UnregulatedProductAllocation] = field(default_factory=list)
 
 
@@ -62,9 +62,9 @@ class _TermEmissions:
     def total(self) -> Decimal:
         return sum(self.by_row.values(), Decimal("0"))
 
-    def rows(self, round_term: Callable[[Decimal], Decimal]) -> List[EafcEmissionRow]:
+    def rows(self, round_term: Callable[[Decimal], Decimal]) -> List[EmissionsAttributableForComplianceEmissionRow]:
         return [
-            EafcEmissionRow(
+            EmissionsAttributableForComplianceEmissionRow(
                 activity=activity, source_type=source_type, fuel_name=fuel_name, emissions=round_term(value)
             )
             for (activity, source_type, fuel_name), value in sorted(
@@ -118,16 +118,18 @@ def get_term_emissions(report_version_id: int) -> Dict[str, _TermEmissions]:
     return terms
 
 
-def get_eafc_totals(report_version_id: int, use_legacy_rounding: bool) -> EafcTotals:
+def get_emissions_attributable_for_compliance_totals(
+    report_version_id: int, use_legacy_rounding: bool
+) -> EmissionsAttributableForComplianceTotals:
     """
     Returns each term for the emissions attributable for compliance equation:
 
-        annual_eafc = attributable for reporting - excluded by fuels - non-useful venting - fugitive
+        annual_emissions_attributable_for_compliance = attributable for reporting - excluded by fuels - non-useful venting - fugitive
                       - remaining NPNC (NPNC - excluded by fuels, non-useful venting, fugitive)
                       - allocated to unregulated products (less remaining NPNC, which is allocated to them)
 
-    Full-year reports: annual_eafc is the emissions attributable for compliance.
-    Partial-year reports (2024 Apr-Dec, 2025 opt-out Jan-Mar): annual_eafc is the full-year value before
+    Full-year reports: annual_emissions_attributable_for_compliance is the emissions attributable for compliance.
+    Partial-year reports (2024 Apr-Dec, 2025 opt-out Jan-Mar): annual_emissions_attributable_for_compliance is the full-year value before
     proration. Proration is per product, by that product's share of production in the period
     (see ComplianceParameters.resolve_compliance_parameters):
 
@@ -148,14 +150,14 @@ def get_eafc_totals(report_version_id: int, use_legacy_rounding: bool) -> EafcTo
     remaining_npnc = round_term(remaining_npnc_unrounded)
     allocated_to_unregulated_products = round_term(allocated_to_unregulated - remaining_npnc_unrounded)
 
-    return EafcTotals(
+    return EmissionsAttributableForComplianceTotals(
         attributable_for_reporting=attributable_for_reporting,
         excluded_by_fuels=excluded_by_fuels,
         non_useful_venting=non_useful_venting,
         fugitive=fugitive,
         remaining_npnc=remaining_npnc,
         allocated_to_unregulated_products=allocated_to_unregulated_products,
-        annual_eafc=(
+        annual_emissions_attributable_for_compliance=(
             attributable_for_reporting
             - excluded_by_fuels
             - non_useful_venting
