@@ -17,6 +17,7 @@ import {
   useValidationErrors,
 } from "@bciers/components/validationErrors";
 import { deleteComment } from "../../utils/comments/deleteComment";
+import { patchComment } from "../../utils/comments/patchComment";
 
 interface Props {
   thread: Thread;
@@ -71,6 +72,23 @@ const ThreadComponent: React.FC<Props> = ({
     setIsReplying(true);
   };
 
+  const handleCommentEdit = async (
+    reportVersionId: number,
+    commentId: number,
+    content: string,
+  ): Promise<boolean> => {
+    const resp = await patchComment(
+      reportVersionId,
+      thread.id,
+      commentId,
+      content,
+    );
+    if (handleApiResponse(resp, setErrors)) {
+      onThreadUpdated(resp as Thread);
+      return true;
+    }
+    return false;
+  };
   const handleCommentPost = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const message = new FormData(event.currentTarget)
@@ -114,6 +132,7 @@ const ThreadComponent: React.FC<Props> = ({
           key={comment.id ?? "comment-pending-submission"}
           comment={comment}
           handleDelete={handleCommentDelete}
+          handleEdit={handleCommentEdit}
           canUpdate={canUpdate}
         />
       ))}
