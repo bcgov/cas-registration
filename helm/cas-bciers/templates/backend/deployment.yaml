@@ -1,3 +1,4 @@
+{{- if index .Values "cas-logging-sidecar-060" "enabled" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,9 +22,7 @@ spec:
 {{- include "cas-bciers.selectorLabels" . | nindent 8 }}
         component: backend
     spec:
-    {{- if .Values.casLoggingSidecar060.enabled }}
       serviceAccountName: {{ .Release.Name }}-pod-logger
-    {{- end }}
       containers:
         - name: {{ .Release.Name }}-backend
           image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
@@ -80,36 +79,21 @@ spec:
             timeoutSeconds: 5
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
-        {{- if .Values.casLoggingSidecar060.enabled }}
           # Kube-log-runner just as entrypoint, not to output logfiles
           command: ["${HOME}/.local/bin/kube-log-runner"]
           args: ["${HOME}/.venv/bin/python manage.py custom_migrate && ${HOME}/.venv/bin/gunicorn --access-logfile - bc_obps.wsgi:application --timeout 200 --workers 3 --bind '0.0.0.0:8000'"]
-        {{- end }}
           volumeMounts:
-          {{- if .Values.casLoggingSidecar071.enabled }}
-            {{- include "vector-collector.applicationVolumeMounts" . | nindent 12 }}
-          {{- end }}
             - mountPath: "/attachment-credentials"
               name: gcs-attachment-credentials
               readOnly: true
-      {{- if .Values.casLoggingSidecar060.enabled }}
         {{- $containerName := printf "%s-backend" (include "cas-bciers.fullname" .) }}
         {{- include "cas-logging-sidecar.containers" (dict
             "containerToSidecar" $containerName
             "logName" (index .Values "cas-logging-sidecar-060" "logName")
             "host" (index .Values "cas-logging-sidecar-060" "host")
             "appName" "backend") | nindent 8 }}
-      {{- end }}
-      {{- if .Values.casLoggingSidecar071.enabled }}
-      initContainers:
-        {{- include "vector-collector.container" (dict "values" {{ index .Values "cas-logging-sidecar-071" }} "appName" "backend") | nindent 8 }}
-      {{- end }}
       volumes:
-      {{- if .Values.casLoggingSidecar071.enabled }}
-        {{- include "vector-collector.loggingVolumes" . | nindent 8 }}
-      {{- else if .Values.casLoggingSidecar060.enabled }}
         {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
-      {{- end }}
         - name: gcs-attachment-credentials
           secret:
             secretName: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
@@ -136,3 +120,4 @@ spec:
             ]
           }
         }
+{{- end }}

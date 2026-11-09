@@ -1,3 +1,4 @@
+{{- if index .Values "cas-logging-sidecar-060" "enabled" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,9 +24,7 @@ spec:
         component: reporting-frontend
         layer: frontend
     spec:
-    {{- if .Values.casLoggingSidecar060.enabled }}
       serviceAccountName: {{ .Release.Name }}-pod-logger
-    {{- end }}
       containers:
         - name: {{ template "cas-bciers.fullname" . }}-reporting-frontend
           envFrom:
@@ -49,34 +48,18 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.reportingFrontend.resources | nindent 12 }}
-      {{- if .Values.casLoggingSidecar060.enabled }}
           # Kube-log-runner just as entrypoint, not to output logfiles
           command: ["/usr/local/bin/kube-log-runner"]
           args: ["node", "server.js"]
-      {{- end }}
-      {{- if .Values.casLoggingSidecar071.enabled }}
-          volumeMounts:
-            {{- include "vector-collector.applicationVolumeMounts" . | nindent 12 }}
-      {{- end }}
-      {{- if .Values.casLoggingSidecar060.enabled }}
         {{- $containerName := printf "%s-reporting-frontend" (include "cas-bciers.fullname" .) }}
         {{- include "cas-logging-sidecar.containers" (dict
           "containerToSidecar" $containerName
           "logName" (index .Values "cas-logging-sidecar-060" "logName")
           "host" (index .Values "cas-logging-sidecar-060" "host")
           "appName" "reporting") | nindent 8 }}
-      {{- end }}
-      {{- if .Values.casLoggingSidecar071.enabled }}
-      initContainers:
-        {{- include "vector-collector.container" (dict "values" {{ index .Values "cas-logging-sidecar-071" }} "appName" "reporting") | nindent 8 }}
-      {{- end }}
       restartPolicy: Always
       volumes:
-      {{- if .Values.casLoggingSidecar071.enabled }}
-        {{- include "vector-collector.loggingVolumes" . | nindent 8 }}
-      {{- else if .Values.casLoggingSidecar060.enabled }}
         {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
-      {{- end }}
       affinity:
         {
           podAntiAffinity: {
@@ -96,3 +79,4 @@ spec:
             ]
           }
         }
+{{- end }}
