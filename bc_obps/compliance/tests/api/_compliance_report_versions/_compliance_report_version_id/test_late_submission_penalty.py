@@ -1,15 +1,14 @@
-from datetime import date
 from decimal import Decimal
-from django.utils import timezone
-from compliance.models.compliance_penalty import CompliancePenalty
+from unittest.mock import patch
+import pytest
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 
 
 class TestLateSubmissionPenaltyEndpoint(CommonTestSetup):
-    def test_get_late_submission_penalty_success(self):
-        # Arrange
+    def setup_method(self):
+        super().setup_method()
         operator = make_recipe('registration.tests.utils.operator')
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         compliance_report_version = make_recipe(
@@ -17,49 +16,61 @@ class TestLateSubmissionPenaltyEndpoint(CommonTestSetup):
             compliance_report__report__operation__operator=operator,
             compliance_report__report__operator=operator,
         )
-        elicensing_client_operator = make_recipe("compliance.tests.utils.elicensing_client_operator", operator=operator)
-        obligation = make_recipe(
-            "compliance.tests.utils.compliance_obligation",
-            compliance_report_version=compliance_report_version,
-        )
-        penalty_invoice = make_recipe(
-            "compliance.tests.utils.elicensing_invoice",
-            elicensing_client_operator=elicensing_client_operator,
-            invoice_number="LATE-PENALTY-001",
-            due_date=date(2025, 11, 30),
-            last_refreshed=timezone.now(),
-            invoice_interest_balance=Decimal("0.00"),
-        )
-        make_recipe(
-            "compliance.tests.utils.compliance_penalty",
-            compliance_obligation=obligation,
-            elicensing_invoice=penalty_invoice,
-            invoice_number=penalty_invoice.invoice_number,
-            penalty_amount=Decimal("15000.00"),
-            penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
-            status=CompliancePenalty.Status.NOT_PAID,
-        )
         TestUtils.generate_operation_operator_timeline(
             operator=operator, operations=[compliance_report_version.compliance_report.report.operation]
         )
-
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            custom_reverse_lazy(
-                "get_late_submission_penalty", kwargs={"compliance_report_version_id": compliance_report_version.id}
-            ),
+        self.compliance_report_version_id = compliance_report_version.id
+        self.endpoint_url = custom_reverse_lazy(
+            "get_late_submission_penalty", kwargs={"compliance_report_version_id": compliance_report_version.id}
         )
 
-        # Assert
-        assert response.status_code == 200, response.content
-        response_data = response.json()
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.get_late_submission_penalty_data")
+    @pytest.mark.parametrize("due_date, invoice_number", [("2025-11-30", "LATE-PENALTY-001"), (None, None)])
+    def test_get_late_submission_penalty_success(self, mock_get_penalty_data, due_date, invoice_number):
+        mock_get_penalty_data.return_value = {
+            "has_penalty": True,
+            "penalty_status": "NOT PAID",
+            "penalty_type": "Late Submission",
+            "penalty_amount": Decimal("15000.00"),
+            "total_amount": Decimal("15000.00"),
+            "due_date": due_date,
+            "invoice_number": invoice_number,
+        }
 
-        # Verify the response structure and data matches LateSubmissionPenaltyOut schema
-        assert response_data["has_penalty"] is True
-        assert response_data["penalty_status"] == "Not Paid"  # resolver makes this title case
-        assert response_data["penalty_type"] == "Late Submission"
-        assert response_data["penalty_amount"] == "15000.00"
-        assert response_data["total_amount"] == "15000.00"
-        assert response_data["due_date"] == "2025-11-30"
-        assert response_data["invoice_number"] == penalty_invoice.invoice_number
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_url)
+
+        assert response.status_code == 200, response.content
+        assert response.json() == {
+            "has_penalty": True,
+            "penalty_status": "Not Paid",
+            "penalty_type": "Late Submission",
+            "penalty_amount": "15000.00",
+            "total_amount": "15000.00",
+            "due_date": due_date,
+            "invoice_number": invoice_number,
+        }
+        mock_get_penalty_data.assert_called_once_with(self.compliance_report_version_id)
+
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.get_late_submission_penalty_data")
+    def test_get_late_submission_penalty_without_penalty(self, mock_get_penalty_data):
+        mock_get_penalty_data.return_value = {
+            "has_penalty": False,
+            "penalty_status": "NOT PAID",
+            "penalty_type": "Late Submission",
+            "penalty_amount": Decimal("0.00"),
+            "total_amount": Decimal("0.00"),
+        }
+
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_url)
+
+        assert response.status_code == 200, response.content
+        assert response.json() == {
+            "has_penalty": False,
+            "penalty_status": "Not Paid",
+            "penalty_type": "Late Submission",
+            "penalty_amount": "0.00",
+            "total_amount": "0.00",
+            "due_date": None,
+            "invoice_number": None,
+        }
+        mock_get_penalty_data.assert_called_once_with(self.compliance_report_version_id)

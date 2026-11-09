@@ -338,7 +338,8 @@ class TestPenaltyCalculationService:
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
     )
-    def test_get_automatic_overdue_penalty(self, mock_refresh_data):
+    @pytest.mark.parametrize("has_invoice", [True, False])
+    def test_get_automatic_overdue_penalty(self, mock_refresh_data, has_invoice):
         clean_invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
             due_date=date(2025, 11, 30),
@@ -346,10 +347,20 @@ class TestPenaltyCalculationService:
             invoice_interest_balance=Decimal("0.00"),
         )
         mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
+        penalty_invoice = (
+            baker.make_recipe(
+                "compliance.tests.utils.elicensing_invoice",
+                invoice_number="AUTO-PENALTY-001",
+                due_date=date(2025, 12, 31),
+            )
+            if has_invoice
+            else None
+        )
         compliance_penalty = baker.make_recipe(
             "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.obligation,
             penalty_amount=Decimal("1000000.00"),
+            elicensing_invoice=penalty_invoice,
         )
         result = PenaltyCalculationService.get_automatic_overdue_penalty_data(self.compliance_report_version.id)
         assert result == {
@@ -358,14 +369,15 @@ class TestPenaltyCalculationService:
             "penalty_charge_rate": self.compliance_penalty_rate.rate * 100,
             "total_penalty": Decimal("1000000.00"),
             "total_amount": Decimal("1000000.00"),
-            "due_date": "2024-11-30",
-            "invoice_number": compliance_penalty.elicensing_invoice.invoice_number,
+            "due_date": "2025-12-31" if has_invoice else None,
+            "invoice_number": "AUTO-PENALTY-001" if has_invoice else None,
         }
 
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
     )
-    def test_get_late_submission_penalty_with_penalty(self, mock_refresh_data):
+    @pytest.mark.parametrize("has_invoice", [True, False])
+    def test_get_late_submission_penalty_with_penalty(self, mock_refresh_data, has_invoice):
         """Test get_late_submission_penalty_data returns correct data when penalty exists"""
         clean_invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
@@ -391,6 +403,15 @@ class TestPenaltyCalculationService:
             interest_rate=Decimal("0.0695"),
         )
         # Create late submission penalty
+        penalty_invoice = (
+            baker.make_recipe(
+                "compliance.tests.utils.elicensing_invoice",
+                invoice_number="LATE-PENALTY-001",
+                due_date=date(2025, 12, 31),
+            )
+            if has_invoice
+            else None
+        )
         late_penalty = baker.make_recipe(
             "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.obligation,
@@ -399,6 +420,7 @@ class TestPenaltyCalculationService:
             accrual_frequency=CompliancePenalty.Frequency.DAILY,
             compounding_frequency=CompliancePenalty.Frequency.MONTHLY,
             status=CompliancePenalty.Status.NOT_PAID,
+            elicensing_invoice=penalty_invoice,
         )
 
         result = PenaltyCalculationService.get_late_submission_penalty_data(self.compliance_report_version.id)
@@ -408,6 +430,8 @@ class TestPenaltyCalculationService:
         assert result["penalty_type"] == CompliancePenalty.PenaltyType.LATE_SUBMISSION
         assert result["penalty_amount"] == Decimal("15000.00")
         assert result["total_amount"] == Decimal("15000.00")
+        assert result["due_date"] == ("2025-12-31" if has_invoice else None)
+        assert result["invoice_number"] == ("LATE-PENALTY-001" if has_invoice else None)
 
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
