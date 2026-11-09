@@ -30,7 +30,7 @@ spec:
           resources: {{ toYaml .Values.checkDocumentFileStatus.resources | nindent 12 }}
           command:
             # Kube-log-runner just as entrypoint, not to output logfiles
-            - "${HOME}/.local/bin/kube-log-runner"
+            - .local/bin/kube-log-runner
             - /usr/bin/env
             - bash
             - -c

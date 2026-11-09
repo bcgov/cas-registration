@@ -49,7 +49,6 @@ spec:
           resources:
             {{- toYaml .Values.registrationFrontend.resources | nindent 12 }}
           # Kube-log-runner just as entrypoint, not to output logfiles
-          command: ["/usr/local/bin/kube-log-runner"]
           args: ["node", "server.js"]
         {{- $containerName := printf "%s-registration-frontend" (include "cas-bciers.fullname" .) }}
         {{- include "cas-logging-sidecar.containers" (dict

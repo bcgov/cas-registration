@@ -59,7 +59,7 @@ WORKDIR /usr/src/app
 COPY --from=bundler --chown=node:node /usr/src/app ./
 COPY --from=bundler --chown=node:node /usr/local/bin/kube-log-runner /usr/local/bin/kube-log-runner
 
-ENTRYPOINT ["/usr/local/bin/kube-log-runner", "-also-stdout", "-log-file=/var/log/app/app.log"]
+ENTRYPOINT ["/usr/local/bin/kube-log-runner"]
 
 USER node
 EXPOSE 3000
@@ -68,4 +68,4 @@ EXPOSE 3000
 # Uncomment the following line in case you want to disable telemetry.
 ENV NEXT_TELEMETRY_DISABLED=1
 
-CMD ["node", "server.js"]
+CMD ["-also-stdout", "-log-file=/var/log/app/app.log", "node", "server.js"]
