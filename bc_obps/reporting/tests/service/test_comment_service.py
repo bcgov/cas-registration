@@ -44,3 +44,16 @@ class TestCommentService(TestCase):
         self.assertEqual(Comment.objects.filter(comment_thread_id=self.thread.id).count(), 2)
         # .get() acting as `assertExists` for the new comment
         Comment.objects.get(comment_thread_id=self.thread.id, comment='New comment')
+
+    def test_update_comment_updates_comment_content(self):
+        updated_content = 'Updated comment'
+        CommentService.update_comment(
+            comment=self.comment,
+            content=updated_content,
+        )
+        self.comment.refresh_from_db()
+        self.assertEqual(self.comment.comment, updated_content)
+
+    def test_check_comment_owner_raises_permission_error_for_wrong_user(self):
+        with self.assertRaises(PermissionError):
+            CommentService.check_comment_owner(self.comment.id, '00000000-0000-0000-0000-000000000000')
