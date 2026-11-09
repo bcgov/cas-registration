@@ -43,8 +43,6 @@ spec:
   instances:
     - name: pgha1
       replicas: 1
-      # this is how you create a PDB - don't make a separate one yourself!
-      minAvailable: 1
       # these resources are for the "database" container in the "obps-postgres-pgha1" set of pods
       resources:
         requests:
