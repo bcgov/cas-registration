@@ -365,4 +365,84 @@ describe("The comment thread component", () => {
     expect(onThreadUpdated).not.toHaveBeenCalled();
     expect(onThreadDeleted).not.toHaveBeenCalled();
   });
+
+  const editableThread = {
+    id: 1,
+    version_id: 42,
+    resolved: false,
+    comments: [
+      {
+        id: 7,
+        version_id: 42,
+        author: "An Author",
+        comment: "Edit me!",
+        user_can_edit: true,
+      },
+    ],
+  };
+
+  it("patches the edited comment and notifies the parent of the updated thread", async () => {
+    const updatedThread = {
+      ...editableThread,
+      comments: [
+        { ...editableThread.comments[0], comment: "I've been edited!" },
+      ],
+    };
+    actionHandler.mockResolvedValueOnce(updatedThread);
+    const onThreadUpdated = vi.fn();
+    render(
+      <ThreadComponent
+        canUpdate={true}
+        onThreadUpdated={onThreadUpdated}
+        onThreadDeleted={vi.fn()}
+        version_id={42}
+        thread={editableThread}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit comment" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Edit comment" }), {
+      target: { value: "I've been edited!" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(onThreadUpdated).toHaveBeenCalledWith(updatedThread),
+    );
+    expect(actionHandler).toHaveBeenCalledWith(
+      "reporting/v2/report-version/42/threads/1/comments/7",
+      "PATCH",
+      "reports/42/",
+      { body: JSON.stringify({ comment: "I've been edited!" }) },
+    );
+    expect(
+      screen.queryByRole("textbox", { name: "Edit comment" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows an error and stays in edit mode when editing a comment fails", async () => {
+    actionHandler.mockResolvedValueOnce({ error: "Could not edit" });
+    const onThreadUpdated = vi.fn();
+    render(
+      <ThreadComponent
+        canUpdate={true}
+        onThreadUpdated={onThreadUpdated}
+        onThreadDeleted={vi.fn()}
+        version_id={42}
+        thread={editableThread}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit comment" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Edit comment" }), {
+      target: { value: "Changed text" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(await screen.findByText("Could not edit")).toBeVisible();
+    expect(onThreadUpdated).not.toHaveBeenCalled();
+    expect(screen.getByRole("textbox", { name: "Edit comment" })).toHaveValue(
+      "Changed text",
+    );
+  });
 });
