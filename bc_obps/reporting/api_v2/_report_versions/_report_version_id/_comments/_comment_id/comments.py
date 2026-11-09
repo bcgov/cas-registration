@@ -28,7 +28,8 @@ def delete_comment(
     request: HttpRequest, version_id: int, thread_id: int, comment_id: int
 ) -> Tuple[Literal[200], CommentThread] | Tuple[Literal[204], None]:
     user_guid: UUID = get_current_user_guid(request)
-    thread = CommentService.delete_comment(thread_id=thread_id, comment_id=comment_id, user_guid=user_guid)
+    comment = CommentService.check_comment_owner(comment_id=comment_id, user_guid=user_guid)
+    thread = CommentService.delete_comment(thread_id=thread_id, comment=comment, user_guid=user_guid)
     if thread is None:
         return 204, None
     return 200, thread
@@ -64,13 +65,13 @@ def create_comment(
 )
 @transaction.atomic
 def update_comment(
-    request: HttpRequest, version_id: str, thread_id: str, comment_id: str, payload: CommentThreadIn
+    request: HttpRequest, version_id: int, thread_id: int, comment_id: int, payload: CommentThreadIn
 ) -> Tuple[Literal[200], CommentThread]:
     user_guid: UUID = get_current_user_guid(request)
-    comment = CommentService.check_comment_owner(comment_id=int(comment_id), user_guid=user_guid)
+    comment = CommentService.check_comment_owner(comment_id=comment_id, user_guid=user_guid)
     CommentService.update_comment(
         comment=comment,
         content=payload.comment,
     )
-    thread = CommentThreadService.threads_with_annotated_comments(user_guid=user_guid).get(id=int(thread_id))
+    thread = CommentThreadService.threads_with_annotated_comments(user_guid=user_guid).get(id=thread_id)
     return 200, thread
