@@ -28,7 +28,8 @@ def delete_comment(
     request: HttpRequest, version_id: str, thread_id: str, comment_id: str
 ) -> Tuple[Literal[200], CommentThread] | Tuple[Literal[204], None]:
     user_guid: UUID = get_current_user_guid(request)
-    thread = CommentService.delete_comment(thread_id=int(thread_id), comment_id=int(comment_id), user_guid=user_guid)
+    comment = CommentService.check_comment_owner(comment_id=int(comment_id), user_guid=user_guid)
+    thread = CommentService.delete_comment(thread_id=int(thread_id), comment=comment, user_guid=user_guid)
     if thread is None:
         return 204, None
     return 200, thread
