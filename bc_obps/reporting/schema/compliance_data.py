@@ -38,8 +38,8 @@ class ComplianceDataSchemaOut(Schema):
         return obj.industry_regulatory_values
 
     @staticmethod
-    def resolve_products(obj: ComplianceData) -> List[ReportProductComplianceSchema]:
-        return build_product_schemas(obj, ReportProductComplianceSchema)
+    def resolve_products(obj: ComplianceData) -> List[Dict[str, Any]]:
+        return build_product_schemas(obj)
 
 
 class EmissionsAttributableForComplianceEmissionRowSchema(Schema):
@@ -62,6 +62,9 @@ class EmissionsAttributableForComplianceTotalsSchema(Schema):
     remaining_npnc: float
     allocated_to_unregulated_products: float
     annual_emissions_attributable_for_compliance: float
+    unregulated_products_excluded_by_fuels: float
+    unregulated_products_non_useful_venting: float
+    unregulated_products_fugitive: float
     attributable_for_reporting_rows: List[EmissionsAttributableForComplianceEmissionRowSchema]
     excluded_by_fuels_rows: List[EmissionsAttributableForComplianceEmissionRowSchema]
     non_useful_venting_rows: List[EmissionsAttributableForComplianceEmissionRowSchema]
@@ -86,8 +89,8 @@ class ComplianceSummaryDataSchemaOut(ComplianceDataSchemaOut):
     emissions_attributable_for_compliance_totals: EmissionsAttributableForComplianceTotalsSchema
 
     @staticmethod
-    def resolve_products(obj: ComplianceData) -> List[ReportProductComplianceSummarySchema]:  # type: ignore[override]
-        return build_product_schemas(obj, ReportProductComplianceSummarySchema)
+    def resolve_products(obj: ComplianceData) -> List[Dict[str, Any]]:
+        return build_product_schemas(obj)
 
     @staticmethod
     def resolve_production_period(obj: ComplianceData) -> str:
@@ -96,7 +99,7 @@ class ComplianceSummaryDataSchemaOut(ComplianceDataSchemaOut):
 
 def build_product_schemas(obj: ComplianceData) -> List[Dict[str, Any]]:
     """
-    Transforms compliance data products into a list of dictionaries 
+    Transforms compliance data products into a list of dictionaries
     ready for Django Ninja to serialize into the appropriate schema.
     """
     return [

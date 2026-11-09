@@ -42,13 +42,15 @@ test.describe("Compliance Summary: how emissions attributable for compliance was
         name: "Emissions attributable for compliance",
       }),
     ).toBeVisible();
-    await expect(panel.getByTestId("eafc-formula")).toHaveText(EAFC_FORMULA);
-    await expect(panel.getByTestId("eafc-substitution")).toHaveText(
-      "= 250000.0000 - 0 - 0 - 0 - 0",
-    );
-    await expect(panel.getByTestId("eafc-step1-result")).toHaveText(
-      "= 250000.0000 tCO2e",
-    );
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-formula"),
+    ).toHaveText(EAFC_FORMULA);
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-substitution"),
+    ).toHaveText("= 250,000.0000 - 0 - 0 - 0 - 0");
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-step1-result"),
+    ).toHaveText("= 250,000.0000 tCO2e");
     for (const title of [
       "Emissions attributable for reporting",
       "Excluded emissions by fuels",
@@ -61,8 +63,14 @@ test.describe("Compliance Summary: how emissions attributable for compliance was
 
     // Annual reports have no proration step and no unregulated products here
     await expect(panel.getByText(/Prorate to/)).toHaveCount(0);
-    await expect(panel.getByTestId("eafc-step2-substitution")).toHaveCount(0);
-    await expect(panel.getByTestId("eafc-step2-result")).toHaveCount(0);
+    await expect(
+      panel.getByTestId(
+        "emissions-attributable-for-compliance-step2-substitution",
+      ),
+    ).toHaveCount(0);
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-step2-result"),
+    ).toHaveCount(0);
     await expect(
       panel.getByText(/Allocated to unregulated products/),
     ).toHaveCount(0);
@@ -93,43 +101,42 @@ test.describe("Compliance Summary: how emissions attributable for compliance was
         name: "Annual emissions attributable for compliance",
       }),
     ).toBeVisible();
-    await expect(panel.getByTestId("eafc-substitution")).toHaveText(
-      "= 11000.0000 - 0 - 0 - 0 - 0",
-    );
-    await expect(panel.getByTestId("eafc-step1-result")).toHaveText(
-      "= 11000.0000 tCO2e",
-    );
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-substitution"),
+    ).toHaveText("= 11,000.0000 - 0 - 0 - 0 - 0");
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-step1-result"),
+    ).toHaveText("= 11,000.0000 tCO2e");
 
-    // Each product's annual emissions × Apr-Dec production ÷ annual production
+    // Each product's (annual emissions / annual production) × Apr-Dec production
     await expect(
       panel.getByRole("heading", {
         name: "Prorate to April 1 - December 31, 2024",
       }),
     ).toBeVisible();
-    await expect(panel.getByTestId("eafc-step2-substitution")).toHaveText(
-      "= (10000.0000 × 15,000 ÷ 20,000) + (1000.0000 × 600 ÷ 1,000)",
+    await expect(
+      panel.getByTestId(
+        "emissions-attributable-for-compliance-step2-substitution",
+      ),
+    ).toHaveText(
+      "= (10,000.0000 / 20,000) × 15,000 + (1,000.0000 / 1,000) × 600",
     );
-    await expect(panel.getByTestId("eafc-step2-result")).toHaveText(
-      "= 8100.0000 tCO2e",
-    );
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-step2-result"),
+    ).toHaveText("= 8,100.0000 tCO2e");
     await expect(
       panel
         .getByRole("row", {
           name: /BC-specific refinery complexity throughput/,
         })
         .getByRole("cell"),
-    ).toHaveText(["10000.0000", "15,000 BCRCT", "20,000 BCRCT", "7500.0000"]);
+    ).toHaveText(["10,000.0000", "20,000", "15,000", "7,500.0000"]);
     await expect(
       panel.getByRole("row", { name: /Cement equivalent/ }).getByRole("cell"),
-    ).toHaveText([
-      "1000.0000",
-      "600 Tonne cement equivalent",
-      "1,000 Tonne cement equivalent",
-      "600.0000",
-    ]);
-    await expect(panel.getByTestId("eafc-step2-total")).toHaveText(
-      "total 8100.0000",
-    );
+    ).toHaveText(["1,000.0000", "1,000", "600", "600.0000"]);
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-step2-total"),
+    ).toHaveText("total 8,100.0000");
 
     await analyzeAccessibility(
       page,
@@ -155,7 +162,11 @@ test.describe("Compliance Summary: how emissions attributable for compliance was
     const panel = await report.openEafcCalculationBreakdown();
 
     // New entrants have no compliance obligation, so only the note is displayed
-    await expect(panel.getByTestId("eafc-new-entrant-note")).toHaveText(
+    await expect(
+      panel.getByTestId(
+        "emissions-attributable-for-compliance-new-entrant-note",
+      ),
+    ).toHaveText(
       "Note: New entrant operations have no compliance obligation, so emissions attributable for compliance = 0.",
     );
     await expect(
@@ -163,12 +174,24 @@ test.describe("Compliance Summary: how emissions attributable for compliance was
         name: /emissions attributable for compliance/i,
       }),
     ).toHaveCount(0);
-    await expect(panel.getByTestId("eafc-formula")).toHaveCount(0);
-    await expect(panel.getByTestId("eafc-substitution")).toHaveCount(0);
-    await expect(panel.getByTestId("eafc-step1-result")).toHaveCount(0);
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-formula"),
+    ).toHaveCount(0);
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-substitution"),
+    ).toHaveCount(0);
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-step1-result"),
+    ).toHaveCount(0);
     await expect(panel.getByText(/Prorate to/)).toHaveCount(0);
-    await expect(panel.getByTestId("eafc-step2-substitution")).toHaveCount(0);
-    await expect(panel.getByTestId("eafc-step2-result")).toHaveCount(0);
+    await expect(
+      panel.getByTestId(
+        "emissions-attributable-for-compliance-step2-substitution",
+      ),
+    ).toHaveCount(0);
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-step2-result"),
+    ).toHaveCount(0);
 
     await analyzeAccessibility(
       page,
@@ -199,29 +222,33 @@ test.describe("Compliance Summary: how emissions attributable for compliance was
     const bodyRows = (title: string) => section(title).locator("tbody tr");
 
     // Step 1: every term is non-zero
-    await expect(panel.getByTestId("eafc-formula")).toHaveText(
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-formula"),
+    ).toHaveText(
       `${EAFC_FORMULA} - emissions allocated to unregulated products`,
     );
-    await expect(panel.getByTestId("eafc-substitution")).toHaveText(
-      "= 27800.0000 - 3000.0000 - 1500.0000 - 800.0000 - 2500.0000 - 2000.0000",
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-substitution"),
+    ).toHaveText(
+      "= 27,800.0000 - 3,000.0000 - 1,500.0000 - 800.0000 - 2,500.0000 - 2,000.0000",
     );
-    await expect(panel.getByTestId("eafc-step1-result")).toHaveText(
-      "= 18000.0000 tCO2e",
-    );
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-step1-result"),
+    ).toHaveText("= 18,000.0000 tCO2e");
 
     // Rows are sorted by activity, source type and fuel; tables with more than one row show a total
     const reportingRows = bodyRows("Emissions attributable for reporting");
     await expect(reportingRows).toHaveCount(5);
     const expectedReportingRows = [
-      [GSC_ACTIVITY, GSC_SOURCE_TYPE, "Combustible Tall Oil", "3000.0000"],
-      [GSC_ACTIVITY, GSC_SOURCE_TYPE, "Diesel", "20000.0000"],
+      [GSC_ACTIVITY, GSC_SOURCE_TYPE, "Combustible Tall Oil", "3,000.0000"],
+      [GSC_ACTIVITY, GSC_SOURCE_TYPE, "Diesel", "20,000.0000"],
       [
         OIL_AND_GAS_ACTIVITY,
         "Associated gas flaring",
         "Natural Gas",
-        "2500.0000",
+        "2,500.0000",
       ],
-      [OIL_AND_GAS_ACTIVITY, "Dehydrator venting", "-", "1500.0000"],
+      [OIL_AND_GAS_ACTIVITY, "Dehydrator venting", "-", "1,500.0000"],
       [OIL_AND_GAS_ACTIVITY, "Other fugitive sources", "-", "800.0000"],
     ];
     for (const [index, cells] of expectedReportingRows.entries()) {
@@ -231,7 +258,7 @@ test.describe("Compliance Summary: how emissions attributable for compliance was
     }
     await expect(
       section("Emissions attributable for reporting").locator("tfoot"),
-    ).toHaveText("total 27800.0000");
+    ).toHaveText("total 27,800.0000");
 
     await expect(
       bodyRows("Excluded emissions by fuels").getByRole("cell"),
@@ -239,13 +266,13 @@ test.describe("Compliance Summary: how emissions attributable for compliance was
       GSC_ACTIVITY,
       GSC_SOURCE_TYPE,
       "Combustible Tall Oil",
-      "3000.0000",
+      "3,000.0000",
     ]);
     await expect(bodyRows("Non-useful venting").getByRole("cell")).toHaveText([
       OIL_AND_GAS_ACTIVITY,
       "Dehydrator venting",
       "-",
-      "1500.0000",
+      "1,500.0000",
     ]);
     await expect(bodyRows("Fugitive emissions").getByRole("cell")).toHaveText([
       OIL_AND_GAS_ACTIVITY,
@@ -258,42 +285,67 @@ test.describe("Compliance Summary: how emissions attributable for compliance was
       OIL_AND_GAS_ACTIVITY,
       "Associated gas flaring",
       "Natural Gas",
-      "2500.0000",
+      "2,500.0000",
     ]);
 
-    // Remaining NPNC is allocated to the unregulated product, so it is taken out of that line
+    // Terms already subtracted on their own lines are taken out of the unregulated product's allocation
     const unregulatedRows = bodyRows("Allocated to unregulated products");
-    await expect(unregulatedRows).toHaveCount(2);
+    await expect(unregulatedRows).toHaveCount(5);
     await expect(unregulatedRows.nth(0).getByRole("cell")).toHaveText([
       "Oil and gas non-processing, non-compression",
-      "4500.0000",
+      "5,500.0000",
     ]);
-    await expect(
-      panel.getByTestId("eafc-npnc-adjustment").getByRole("cell"),
-    ).toHaveText(["Less remaining NPNC", "-2500.0000"]);
+    for (const [testId, label, value] of [
+      [
+        "excluded-by-fuels",
+        "Less excluded emissions by fuels allocated to unregulated products",
+        "-500.0000",
+      ],
+      [
+        "non-useful-venting",
+        "Less non-useful venting allocated to unregulated products",
+        "-300.0000",
+      ],
+      [
+        "fugitive",
+        "Less fugitive emissions allocated to unregulated products",
+        "-200.0000",
+      ],
+      ["npnc", "Less remaining NPNC", "-2,500.0000"],
+    ]) {
+      await expect(
+        panel
+          .getByTestId(
+            `emissions-attributable-for-compliance-${testId}-adjustment`,
+          )
+          .getByRole("cell"),
+      ).toHaveText([label, value]);
+    }
     await expect(
       section("Allocated to unregulated products").locator("tfoot"),
-    ).toHaveText("total 2000.0000");
+    ).toHaveText("total 2,000.0000");
 
     // Step 2: only the regulated product is prorated
-    await expect(panel.getByTestId("eafc-step2-substitution")).toHaveText(
-      "= (18000.0000 × 7,500 ÷ 10,000)",
-    );
-    await expect(panel.getByTestId("eafc-step2-result")).toHaveText(
-      "= 13500.0000 tCO2e",
-    );
+    await expect(
+      panel.getByTestId(
+        "emissions-attributable-for-compliance-step2-substitution",
+      ),
+    ).toHaveText("= (18,000.0000 / 10,000) × 7,500");
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-step2-result"),
+    ).toHaveText("= 13,500.0000 tCO2e");
     await expect(
       panel.getByRole("row", { name: /Renewable diesel/ }).getByRole("cell"),
-    ).toHaveText(["18000.0000", "7,500 N/A", "10,000 N/A", "13500.0000"]);
+    ).toHaveText(["18,000.0000", "10,000", "7,500", "13,500.0000"]);
     // The unregulated product is only in its own section above, not in the proration table
     await expect(
       panel.getByRole("row", {
         name: /Oil and gas non-processing, non-compression/,
       }),
     ).toHaveCount(1);
-    await expect(panel.getByTestId("eafc-step2-total")).toHaveText(
-      "total 13500.0000",
-    );
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-step2-total"),
+    ).toHaveText("total 13,500.0000");
 
     await analyzeAccessibility(
       page,
@@ -324,12 +376,12 @@ test.describe("Compliance Summary: how emissions attributable for compliance was
         name: "Annual emissions attributable for compliance",
       }),
     ).toBeVisible();
-    await expect(panel.getByTestId("eafc-substitution")).toHaveText(
-      "= 12000.0000 - 0 - 0 - 0 - 0",
-    );
-    await expect(panel.getByTestId("eafc-step1-result")).toHaveText(
-      "= 12000.0000 tCO2e",
-    );
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-substitution"),
+    ).toHaveText("= 12,000.0000 - 0 - 0 - 0 - 0");
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-step1-result"),
+    ).toHaveText("= 12,000.0000 tCO2e");
 
     // Prorated by Jan-Mar production, not Apr-Dec
     await expect(
@@ -339,7 +391,7 @@ test.describe("Compliance Summary: how emissions attributable for compliance was
     ).toBeVisible();
     await expect(
       panel.getByText(
-        /production for January 1 - March 31 ÷ annual production/,
+        /annual production\) × production for January 1 - March 31/,
       ),
     ).toBeVisible();
     await expect(panel.getByText(/April 1 - December 31/)).toHaveCount(0);
@@ -350,21 +402,18 @@ test.describe("Compliance Summary: how emissions attributable for compliance was
     ).toBeVisible();
     await expect(
       panel.getByRole("row", { name: /Cement equivalent/ }).getByRole("cell"),
-    ).toHaveText([
-      "12000.0000",
-      "1,000 Tonne cement equivalent",
-      "4,000 Tonne cement equivalent",
-      "3000.0000",
-    ]);
-    await expect(panel.getByTestId("eafc-step2-substitution")).toHaveText(
-      "= (12000.0000 × 1,000 ÷ 4,000)",
-    );
-    await expect(panel.getByTestId("eafc-step2-result")).toHaveText(
-      "= 3000.0000 tCO2e",
-    );
-    await expect(panel.getByTestId("eafc-step2-total")).toHaveText(
-      "total 3000.0000",
-    );
+    ).toHaveText(["12,000.0000", "4,000", "1,000", "3,000.0000"]);
+    await expect(
+      panel.getByTestId(
+        "emissions-attributable-for-compliance-step2-substitution",
+      ),
+    ).toHaveText("= (12,000.0000 / 4,000) × 1,000");
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-step2-result"),
+    ).toHaveText("= 3,000.0000 tCO2e");
+    await expect(
+      panel.getByTestId("emissions-attributable-for-compliance-step2-total"),
+    ).toHaveText("total 3,000.0000");
 
     await analyzeAccessibility(
       page,

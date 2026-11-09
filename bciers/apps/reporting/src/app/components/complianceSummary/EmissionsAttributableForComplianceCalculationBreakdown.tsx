@@ -28,11 +28,13 @@ type Section = {
 const UNIT = "tCO2e";
 const EMPTY = "-";
 
-// Emissions are shown to 4 decimal places, without thousands separators (e.g. 3220.7895)
 export const formatEmissions = (value: string | number | undefined) => {
   const rounded = Number(Number(value ?? 0).toFixed(4));
   if (!Number.isFinite(rounded) || rounded === 0) return "0";
-  return rounded.toFixed(4);
+  return rounded.toLocaleString("en-CA", {
+    minimumFractionDigits: 4,
+    maximumFractionDigits: 4,
+  });
 };
 
 export const formatQuantity = (value: string | number | undefined) =>
@@ -165,56 +167,85 @@ const EmissionsSection: React.FC<{ section: Section }> = ({ section }) => (
   </section>
 );
 
-// Remaining NPNC is allocated to unregulated products but subtracted on its own line, so it is taken out here
+type Deduction = { label: string; value: string; testId: string };
+
+// Terms already subtracted on their own lines are taken out of the emissions allocated to unregulated products
+const getUnregulatedProductDeductions = (
+  totals: EmissionsAttributableForComplianceTotals,
+): Deduction[] =>
+  [
+    {
+      label:
+        "Less excluded emissions by fuels allocated to unregulated products",
+      value: totals.unregulated_products_excluded_by_fuels,
+      testId: "excluded-by-fuels",
+    },
+    {
+      label: "Less non-useful venting allocated to unregulated products",
+      value: totals.unregulated_products_non_useful_venting,
+      testId: "non-useful-venting",
+    },
+    {
+      label: "Less fugitive emissions allocated to unregulated products",
+      value: totals.unregulated_products_fugitive,
+      testId: "fugitive",
+    },
+    {
+      label: "Less remaining NPNC",
+      value: totals.remaining_npnc,
+      testId: "npnc",
+    },
+  ].filter((deduction) => Number(deduction.value) > 0);
+
 const UnregulatedProductsSection: React.FC<{
   rows: EmissionsAttributableForComplianceUnregulatedProductRow[];
-  remainingNpnc: string;
+  deductions: Deduction[];
   value: string;
-}> = ({ rows, remainingNpnc, value }) => {
-  const showsNpncAdjustment = Number(remainingNpnc) > 0;
-  return (
-    <section className="mt-4">
-      <h4 className="text-lg font-bold my-1">{UNREGULATED_PRODUCTS_TITLE}</h4>
-      <table className="w-full table-fixed border-collapse text-left">
-        <colgroup>
-          <col className="w-[83%]" />
-          <col className="w-[17%]" />
-        </colgroup>
-        <thead>
-          <tr>
-            <th scope="col" className={headerCellClass}>
-              Product
-            </th>
-            <th scope="col" className={`${headerCellClass} pr-0 text-right`}>
-              Emissions
-            </th>
+}> = ({ rows, deductions, value }) => (
+  <section className="mt-4">
+    <h4 className="text-lg font-bold my-1">{UNREGULATED_PRODUCTS_TITLE}</h4>
+    <table className="w-full table-fixed border-collapse text-left">
+      <colgroup>
+        <col className="w-[83%]" />
+        <col className="w-[17%]" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th scope="col" className={headerCellClass}>
+            Product
+          </th>
+          <th scope="col" className={`${headerCellClass} pr-0 text-right`}>
+            Emissions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr key={row.product_name}>
+            <td className={bodyCellClass}>{row.product_name}</td>
+            <td className={`${bodyCellClass} pr-0 text-right`}>
+              {formatEmissions(row.allocated_emissions)}
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.product_name}>
-              <td className={bodyCellClass}>{row.product_name}</td>
-              <td className={`${bodyCellClass} pr-0 text-right`}>
-                {formatEmissions(row.allocated_emissions)}
-              </td>
-            </tr>
-          ))}
-          {showsNpncAdjustment && (
-            <tr data-testid="emissions-attributable-for-compliance-npnc-adjustment">
-              <td className={bodyCellClass}>Less remaining NPNC</td>
-              <td className={`${bodyCellClass} pr-0 text-right`}>
-                -{formatEmissions(remainingNpnc)}
-              </td>
-            </tr>
-          )}
-        </tbody>
-        {rows.length + (showsNpncAdjustment ? 1 : 0) > 1 && (
-          <TotalRow colSpan={1} value={value} />
-        )}
-      </table>
-    </section>
-  );
-};
+        ))}
+        {deductions.map((deduction) => (
+          <tr
+            key={deduction.testId}
+            data-testid={`emissions-attributable-for-compliance-${deduction.testId}-adjustment`}
+          >
+            <td className={bodyCellClass}>{deduction.label}</td>
+            <td className={`${bodyCellClass} pr-0 text-right`}>
+              -{formatEmissions(deduction.value)}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+      {rows.length + deductions.length > 1 && (
+        <TotalRow colSpan={1} value={value} />
+      )}
+    </table>
+  </section>
+);
 
 const EmissionsAttributableForComplianceCalculationBreakdown: React.FC<
   Props
@@ -272,7 +303,7 @@ const EmissionsAttributableForComplianceCalculationBreakdown: React.FC<
             ],
           );
           const annualProduction = formatQuantity(product.annual_production);
-          return `(${annualEmissions} × ${periodProduction} ÷ ${annualProduction})`;
+          return `(${annualEmissions} / ${annualProduction}) × ${periodProduction}`;
         })
         .join(" + ") || "0"
     : "";
@@ -350,9 +381,9 @@ const EmissionsAttributableForComplianceCalculationBreakdown: React.FC<
                   emissionsAttributableForComplianceTotals.unregulated_product_rows ??
                   []
                 }
-                remainingNpnc={
-                  emissionsAttributableForComplianceTotals.remaining_npnc
-                }
+                deductions={getUnregulatedProductDeductions(
+                  emissionsAttributableForComplianceTotals,
+                )}
                 value={
                   emissionsAttributableForComplianceTotals.allocated_to_unregulated_products
                 }
@@ -367,9 +398,9 @@ const EmissionsAttributableForComplianceCalculationBreakdown: React.FC<
                     {reportingYear}
                   </h3>
                   <p className="my-0">
-                    = sum of (annual emissions attributable for compliance ×
-                    production for {PERIOD_LABELS[productionPeriod]} ÷ annual
-                    production), per regulated product
+                    = sum of (annual emissions attributable for compliance /
+                    annual production) × production for{" "}
+                    {PERIOD_LABELS[productionPeriod]}, per regulated product
                   </p>
                   <p
                     className="my-0"
@@ -395,10 +426,10 @@ const EmissionsAttributableForComplianceCalculationBreakdown: React.FC<
                         Annual emissions
                       </th>
                       <th scope="col" className={headerCellClass}>
-                        Production for {PERIOD_LABELS[productionPeriod]}
+                        Annual production
                       </th>
                       <th scope="col" className={headerCellClass}>
-                        Annual production
+                        Production for {PERIOD_LABELS[productionPeriod]}
                       </th>
                       <th
                         scope="col"
@@ -423,14 +454,12 @@ const EmissionsAttributableForComplianceCalculationBreakdown: React.FC<
                           )}
                         </td>
                         <td className={bodyCellClass}>
-                          {formatQuantity(
-                            product[PERIOD_PRODUCTION_FIELD[productionPeriod]],
-                          )}{" "}
-                          {product.unit}
+                          {formatQuantity(product.annual_production)}
                         </td>
                         <td className={bodyCellClass}>
-                          {formatQuantity(product.annual_production)}{" "}
-                          {product.unit}
+                          {formatQuantity(
+                            product[PERIOD_PRODUCTION_FIELD[productionPeriod]],
+                          )}
                         </td>
                         <td className={`${bodyCellClass} pr-0 text-right`}>
                           {formatEmissions(

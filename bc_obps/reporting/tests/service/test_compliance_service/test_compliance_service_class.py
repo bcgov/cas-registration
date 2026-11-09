@@ -238,6 +238,19 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.excess_emissions == Decimal('49232.7564')
         assert result.credited_emissions == 0
 
+    def test_npnc_fugitive_or_venting_allocated_to_unregulated_product_counts_as_reporting_only(self):
+        # NPNC emissions that are also fugitive (2) or non-useful venting (7), allocated to an unregulated
+        # non-FOG product, are skipped by the regulated product loop, so the NPNC helper must still count them.
+        for category_id in (2, 7):
+            with self.subTest(category_id=category_id):
+                build_data = ComplianceTestInfrastructure.unregulated_product_and_funny_category_13()
+                build_data.report_emission_5.emission_categories.set([category_id, 13])
+
+                result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+                assert result.reporting_only_emissions == Decimal('3055.60')
+                assert result.emissions_attributable_for_compliance == Decimal('70000.2564')
+
     def test_emissions_attributable_for_compliance_totals_only_calculated_when_requested(self):
         build_data = ComplianceTestInfrastructure.build()
 

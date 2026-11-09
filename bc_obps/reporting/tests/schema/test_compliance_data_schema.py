@@ -145,6 +145,9 @@ class TestComplianceDataSchema(SimpleTestCase):
             "remaining_npnc": 0.01,
             "allocated_to_unregulated_products": 0.0,
             "annual_emissions_attributable_for_compliance": 99.99,
+            "unregulated_products_excluded_by_fuels": 0.0,
+            "unregulated_products_non_useful_venting": 0.0,
+            "unregulated_products_fugitive": 0.0,
             "attributable_for_reporting_rows": [
                 {"activity": "Oil and gas", "source_type": "Flaring stacks", "fuel_name": None, "emissions": 100.0}
             ],

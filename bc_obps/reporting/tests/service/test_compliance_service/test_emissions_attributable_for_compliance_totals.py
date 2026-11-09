@@ -9,11 +9,14 @@ from reporting.service.compliance_service import ComplianceService
 from reporting.service.compliance_service.emissions_attributable_for_compliance_totals import (
     EmissionsAttributableForComplianceEmissionRow,
     EmissionsAttributableForComplianceTotals,
-    _TermEmissions,
+    _EmissionsGroup,
     get_emissions_attributable_for_compliance_totals,
-    get_term_emissions,
+    get_grouped_emissions,
 )
-from reporting.service.compliance_service.emission_allocation import UnregulatedProductAllocation
+from reporting.service.compliance_service.emission_allocation import (
+    UnregulatedProductAllocation,
+    UnregulatedProductsAllocation,
+)
 from reporting.tests.service.test_compliance_service.infrastructure import (
     REPORTING_REPORT_EMISSION_RECIPE_NAME,
     REPORTING_REPORT_PRODUCT_EMISSION_ALLOCATION_RECIPE_NAME,
@@ -25,12 +28,12 @@ MODULE = "reporting.service.compliance_service.emissions_attributable_for_compli
 
 class TestEmissionsAttributableForComplianceTotals(TestCase):
     @patch(f"{MODULE}.get_allocated_to_unregulated_products")
-    @patch(f"{MODULE}.get_term_emissions")
+    @patch(f"{MODULE}.get_grouped_emissions")
     def test_maps_and_rounds_each_term(self, mock_term_emissions: MagicMock, mock_unregulated: MagicMock):
         row_key = ("Activity", "Source type", None)
 
-        def term(*amounts: str) -> _TermEmissions:
-            emissions = _TermEmissions()
+        def term(*amounts: str) -> _EmissionsGroup:
+            emissions = _EmissionsGroup()
             for amount in amounts:
                 emissions.add(row_key, Decimal(amount))
             return emissions
@@ -42,10 +45,15 @@ class TestEmissionsAttributableForComplianceTotals(TestCase):
             "fugitive": term("5"),
             "remaining_npnc": term("6"),
         }
-        mock_unregulated.return_value = [
-            UnregulatedProductAllocation(product_name="A", allocated_emissions=Decimal("7")),
-            UnregulatedProductAllocation(product_name="B", allocated_emissions=Decimal("14")),
-        ]
+        mock_unregulated.return_value = UnregulatedProductsAllocation(
+            products=[
+                UnregulatedProductAllocation(product_name="A", allocated_emissions=Decimal("10")),
+                UnregulatedProductAllocation(product_name="B", allocated_emissions=Decimal("17")),
+            ],
+            excluded_by_fuels=Decimal("3"),
+            non_useful_venting=Decimal("2"),
+            fugitive=Decimal("1"),
+        )
 
         # 2025 rounding (half up): 1000.00005 -> 1000.0001
         assert get_emissions_attributable_for_compliance_totals(
@@ -56,9 +64,13 @@ class TestEmissionsAttributableForComplianceTotals(TestCase):
             non_useful_venting=Decimal("4"),
             fugitive=Decimal("5"),
             remaining_npnc=Decimal("6"),
-            # 7 + 14 allocated to unregulated products, less the 6 of remaining NPNC subtracted on its own line
+            # 10 + 17 allocated to unregulated products, less the 3 excluded by fuels, 2 non-useful venting,
+            # 1 fugitive and 6 remaining NPNC allocated to them and subtracted on their own lines
             allocated_to_unregulated_products=Decimal("15"),
             annual_emissions_attributable_for_compliance=Decimal("964.0001"),
+            unregulated_products_excluded_by_fuels=Decimal("3"),
+            unregulated_products_non_useful_venting=Decimal("2"),
+            unregulated_products_fugitive=Decimal("1"),
             attributable_for_reporting_rows=[
                 EmissionsAttributableForComplianceEmissionRow(
                     activity="Activity", source_type="Source type", fuel_name=None, emissions=Decimal("1000.0001")
@@ -85,8 +97,8 @@ class TestEmissionsAttributableForComplianceTotals(TestCase):
                 )
             ],
             unregulated_product_rows=[
-                UnregulatedProductAllocation(product_name="A", allocated_emissions=Decimal("7")),
-                UnregulatedProductAllocation(product_name="B", allocated_emissions=Decimal("14")),
+                UnregulatedProductAllocation(product_name="A", allocated_emissions=Decimal("10")),
+                UnregulatedProductAllocation(product_name="B", allocated_emissions=Decimal("17")),
             ],
         )
 
@@ -162,27 +174,54 @@ class TestEmissionsAttributableForComplianceTotals(TestCase):
         totals = get_emissions_attributable_for_compliance_totals(report_version.id, use_legacy_rounding=False)
         compliance_data = ComplianceService.get_calculated_compliance_data(report_version.id)
 
+        assert totals.attributable_for_reporting == Decimal("123826.6091")
         assert totals.excluded_by_fuels == Decimal("3000.05")
+        assert totals.non_useful_venting == Decimal("0")
         assert totals.fugitive == Decimal("270.0009")
         assert totals.remaining_npnc == Decimal("55.55")
-        # 555.5505 allocated to the unregulated product, less the 55.55 of NPNC subtracted on its own line
+        # 625.5512 allocated to the unregulated product, less the 70.0007 fugitive and 55.55 NPNC allocated to it,
+        # which are subtracted on their own lines
+        assert totals.unregulated_products_excluded_by_fuels == Decimal("0")
+        assert totals.unregulated_products_non_useful_venting == Decimal("0")
+        assert totals.unregulated_products_fugitive == Decimal("70.0007")
         assert totals.allocated_to_unregulated_products == Decimal("500.0005")
-        assert (
-            totals.annual_emissions_attributable_for_compliance == compliance_data.emissions_attributable_for_compliance
+        assert totals.annual_emissions_attributable_for_compliance == Decimal("120001.0077")
+        assert compliance_data.emissions_attributable_for_compliance == Decimal("120001.0077")
+
+        # Each emission has its own randomly named activity, source type and fuel, so it is its own row
+        # and the row order is random
+        def row(emission, emissions: str) -> EmissionsAttributableForComplianceEmissionRow:
+            return EmissionsAttributableForComplianceEmissionRow(
+                activity=emission.report_source_type.report_activity.activity.regulated_name,
+                source_type=emission.report_source_type.source_type.name,
+                fuel_name=emission.report_fuel.fuel_type.name,
+                emissions=Decimal(emissions),
+            )
+
+        self.assertCountEqual(
+            totals.attributable_for_reporting_rows,
+            [
+                row(build_data.report_emission_1, "10000.0001"),
+                row(build_data.report_emission_2, "10000.9988"),
+                row(build_data.report_emission_3, "100000.0088"),
+                row(build_data.report_emission_4, "3000.05"),
+                row(build_data.report_emission_5, "55.55"),
+                row(fugitive_emission, "200.0002"),
+                row(unregulated_emission, "500.0005"),
+                row(npnc_fugitive_emission, "70.0007"),
+            ],
         )
-
-        # Each term's rows add up to the term
-        def rows_total(rows: list[EmissionsAttributableForComplianceEmissionRow]) -> Decimal:
-            return sum((row.emissions for row in rows), Decimal("0"))
-
-        assert rows_total(totals.attributable_for_reporting_rows) == totals.attributable_for_reporting
-        assert rows_total(totals.excluded_by_fuels_rows) == totals.excluded_by_fuels
-        assert rows_total(totals.fugitive_rows) == totals.fugitive
-        assert rows_total(totals.remaining_npnc_rows) == totals.remaining_npnc
+        assert totals.excluded_by_fuels_rows == [row(build_data.report_emission_4, "3000.05")]
+        self.assertCountEqual(
+            totals.fugitive_rows,
+            [row(fugitive_emission, "200.0002"), row(npnc_fugitive_emission, "70.0007")],
+        )
+        # The NPNC emission that is also fugitive is left out
+        assert totals.remaining_npnc_rows == [row(build_data.report_emission_5, "55.55")]
         assert totals.non_useful_venting_rows == []
         assert totals.unregulated_product_rows == [
             UnregulatedProductAllocation(
-                product_name=build_data.report_product_4.product.name, allocated_emissions=Decimal("555.5505")
+                product_name=build_data.report_product_4.product.name, allocated_emissions=Decimal("625.5512")
             )
         ]
 
@@ -210,7 +249,7 @@ class TestEmissionsAttributableForComplianceTotals(TestCase):
         # In two basic categories: counted once per category, matching the category totals
         make_emission("8", [1, 2], report_fuel=None)
 
-        terms = get_term_emissions(report_version.id)
+        terms = get_grouped_emissions(report_version.id)
 
         activity = source_type.report_activity.activity.regulated_name
         source_type_name = source_type.source_type.name
@@ -248,7 +287,7 @@ class TestEmissionsAttributableForComplianceTotals(TestCase):
         make_npnc_emission("40", [2])
         make_npnc_emission("50", [7])
 
-        terms = get_term_emissions(report_version.id)
+        terms = get_grouped_emissions(report_version.id)
 
         assert terms["remaining_npnc"].total == Decimal("1")
         assert terms["excluded_by_fuels"].total == Decimal("60")

@@ -7,6 +7,7 @@ from reporting.models.emission_category import EmissionCategory
 from reporting.models.report_product import ReportProduct
 from reporting.service.compliance_service.emission_allocation import (
     UnregulatedProductAllocation,
+    UnregulatedProductsAllocation,
     get_allocated_emissions_by_report_product_emission_category,
     get_allocated_to_unregulated_products,
     get_emissions_from_only_funny_category_13,
@@ -185,7 +186,7 @@ class TestEmissionAllocation(TestCase):
             json_data={"equivalentEmission": 2000.0002},
         )
 
-        # Funny emission to not double-count (fugitive category 2)
+        # Funny emission still counted (fugitive category 2 isn't fuel-excluded)
         make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=report_version,
@@ -196,7 +197,7 @@ class TestEmissionAllocation(TestCase):
             json_data={"equivalentEmission": 500.0005},
         )
 
-        # Funny emission to not double-count (non-useful venting category 7)
+        # Funny emission still counted (non-useful venting category 7 isn't fuel-excluded)
         make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=report_version,
@@ -222,7 +223,8 @@ class TestEmissionAllocation(TestCase):
         )
 
         allocated_emissions_to_unregulated_products = get_emissions_from_only_funny_category_13(report_version.id)
-        assert allocated_emissions_to_unregulated_products == Decimal("3003.0003")
+        # 3000.0003 + 3 + 500.0005 + 700.0007
+        assert allocated_emissions_to_unregulated_products == Decimal("4203.0015")
 
     def test_get_fog(self):
         report_version = make_recipe("reporting.tests.utils.report_version")
@@ -280,31 +282,41 @@ class TestEmissionAllocation(TestCase):
             )
 
         # No allocations
-        assert get_allocated_to_unregulated_products(report_version.id) == []
+        assert get_allocated_to_unregulated_products(report_version.id) == UnregulatedProductsAllocation()
 
         # Allocations to a regulated product are ignored
         allocate(RegulatedProduct.objects.filter(is_regulated=True).first(), 1, "1000.0001")
-        # Basic category allocations to unregulated products are counted
+        # Basic category allocations to unregulated products are counted as entered
         allocate(refineries_line_tracing, 1, "100.0001")
         allocate(refineries_line_tracing, 2, "20.0002")
-        # Reporting-only category allocations are subtracted (fugitive is basic, so it nets out)
+        # Reporting-only category allocations are summed across unregulated products, by term
         allocate(refineries_line_tracing, 12, "5.0005")
         # FOG is an unregulated product, so it is counted too
         allocate(fog, 1, "30")
         allocate(fog, 7, "10")
+        allocate(fog, 2, "1.5")
         # Allocations on another report version are ignored
         allocate(refineries_line_tracing, 1, "999", version=make_recipe("reporting.tests.utils.report_version"))
 
+        unregulated = get_allocated_to_unregulated_products(report_version.id)
         # One row per unregulated product, ordered by product name
-        assert get_allocated_to_unregulated_products(report_version.id) == [
-            # (30 + 10) - 10
-            UnregulatedProductAllocation(
-                product_name="Fat, oil and grease collection, refining and storage",
-                allocated_emissions=Decimal("30.0000"),
-            ),
-            # (100.0001 + 20.0002) - (20.0002 + 5.0005)
-            UnregulatedProductAllocation(
-                product_name="Refineries line tracing",
-                allocated_emissions=Decimal("94.9996"),
-            ),
-        ]
+        assert unregulated == UnregulatedProductsAllocation(
+            products=[
+                # 30 + 10 + 1.5
+                UnregulatedProductAllocation(
+                    product_name="Fat, oil and grease collection, refining and storage",
+                    allocated_emissions=Decimal("41.5000"),
+                ),
+                # 100.0001 + 20.0002
+                UnregulatedProductAllocation(
+                    product_name="Refineries line tracing",
+                    allocated_emissions=Decimal("120.0003"),
+                ),
+            ],
+            excluded_by_fuels=Decimal("5.0005"),
+            non_useful_venting=Decimal("10.0000"),
+            # 20.0002 + 1.5
+            fugitive=Decimal("21.5002"),
+        )
+        # 161.5003 - 5.0005 - 10 - 21.5002
+        assert unregulated.total == Decimal("124.9996")

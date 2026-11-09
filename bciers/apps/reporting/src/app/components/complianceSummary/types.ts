@@ -34,6 +34,9 @@ export type EmissionsAttributableForComplianceTotals = {
   remaining_npnc: string;
   allocated_to_unregulated_products: string;
   annual_emissions_attributable_for_compliance: string;
+  unregulated_products_excluded_by_fuels: string;
+  unregulated_products_non_useful_venting: string;
+  unregulated_products_fugitive: string;
   attributable_for_reporting_rows: EmissionsAttributableForComplianceEmissionRow[];
   excluded_by_fuels_rows: EmissionsAttributableForComplianceEmissionRow[];
   non_useful_venting_rows: EmissionsAttributableForComplianceEmissionRow[];

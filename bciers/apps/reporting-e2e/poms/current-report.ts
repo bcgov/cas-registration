@@ -21,7 +21,7 @@ export class CurrentReportPOM {
       name: "How was this calculated?",
     });
     this.eafcBreakdownPanel = this.page.getByTestId(
-      "eafc-calculation-breakdown",
+      "emissions-attributable-for-compliance-calculation-breakdown",
     );
   }
 

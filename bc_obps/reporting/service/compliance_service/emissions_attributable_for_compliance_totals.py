@@ -1,7 +1,7 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import Callable, Dict, List, Tuple
+from typing import Callable, Dict, List, NamedTuple
 
 from django.db.models import Exists, F, OuterRef, Sum
 from reporting.constants import (
@@ -37,6 +37,10 @@ class EmissionsAttributableForComplianceTotals:
     remaining_npnc: Decimal
     allocated_to_unregulated_products: Decimal
     annual_emissions_attributable_for_compliance: Decimal
+    # Share of each reporting-only term allocated to unregulated products, taken out of their allocated emissions
+    unregulated_products_excluded_by_fuels: Decimal = Decimal("0")
+    unregulated_products_non_useful_venting: Decimal = Decimal("0")
+    unregulated_products_fugitive: Decimal = Decimal("0")
     # Emissions behind each term, grouped by activity, source type and fuel
     attributable_for_reporting_rows: List[EmissionsAttributableForComplianceEmissionRow] = field(default_factory=list)
     excluded_by_fuels_rows: List[EmissionsAttributableForComplianceEmissionRow] = field(default_factory=list)
@@ -46,11 +50,14 @@ class EmissionsAttributableForComplianceTotals:
     unregulated_product_rows: List[UnregulatedProductAllocation] = field(default_factory=list)
 
 
-RowKey = Tuple[str, str, str | None]
+class RowKey(NamedTuple):
+    activity: str
+    source_type: str
+    fuel: str | None
 
 
 @dataclass
-class _TermEmissions:
+class _EmissionsGroup:
     """Unrounded emissions for one term of the equation, summed by (activity, source type, fuel)."""
 
     by_row: Dict[RowKey, Decimal] = field(default_factory=lambda: defaultdict(Decimal))
@@ -73,7 +80,7 @@ class _TermEmissions:
         ]
 
 
-def get_term_emissions(report_version_id: int) -> Dict[str, _TermEmissions]:
+def get_grouped_emissions(report_version_id: int) -> Dict[str, _EmissionsGroup]:
     """
     Returns the emissions behind each term of the allocated emissions for compliance equation
     """
@@ -100,9 +107,13 @@ def get_term_emissions(report_version_id: int) -> Dict[str, _TermEmissions]:
         .annotate(emissions=Sum("emission"))
     )
 
-    terms: Dict[str, _TermEmissions] = defaultdict(_TermEmissions)
+    terms: Dict[str, _EmissionsGroup] = defaultdict(_EmissionsGroup)
     for row in rows:
-        key: RowKey = (row["activity_name"], row["source_type_name"], row["fuel_name"])
+        key = RowKey(
+            activity=row["activity_name"],
+            source_type=row["source_type_name"],
+            fuel=row["fuel_name"],
+        )
         emissions = row["emissions"] or Decimal("0")
         category_id = row["category_id"]
         if category_id in BASIC_CATEGORY_IDS:
@@ -126,7 +137,8 @@ def get_emissions_attributable_for_compliance_totals(
 
         annual_emissions_attributable_for_compliance = attributable for reporting - excluded by fuels - non-useful venting - fugitive
                       - remaining NPNC (NPNC - excluded by fuels, non-useful venting, fugitive)
-                      - allocated to unregulated products (less remaining NPNC, which is allocated to them)
+                      - allocated to unregulated products (less the excluded by fuels, non-useful venting, fugitive
+                        and remaining NPNC allocated to them, which are already subtracted on their own lines)
 
     Full-year reports: annual_emissions_attributable_for_compliance is the emissions attributable for compliance.
     Partial-year reports (2024 Apr-Dec, 2025 opt-out Jan-Mar): annual_emissions_attributable_for_compliance is the full-year value before
@@ -135,9 +147,8 @@ def get_emissions_attributable_for_compliance_totals(
 
         prorated = product's allocated emissions * (period production / annual production)
     """
-    terms = get_term_emissions(report_version_id)
-    unregulated_products = get_allocated_to_unregulated_products(report_version_id)
-    allocated_to_unregulated = sum((product.allocated_emissions for product in unregulated_products), Decimal("0"))
+    terms = get_grouped_emissions(report_version_id)
+    unregulated = get_allocated_to_unregulated_products(report_version_id)
     remaining_npnc_unrounded = terms["remaining_npnc"].total
 
     def round_term(value: Decimal | int) -> Decimal:
@@ -148,7 +159,7 @@ def get_emissions_attributable_for_compliance_totals(
     non_useful_venting = round_term(terms["non_useful_venting"].total)
     fugitive = round_term(terms["fugitive"].total)
     remaining_npnc = round_term(remaining_npnc_unrounded)
-    allocated_to_unregulated_products = round_term(allocated_to_unregulated - remaining_npnc_unrounded)
+    allocated_to_unregulated_products = round_term(unregulated.total - remaining_npnc_unrounded)
 
     return EmissionsAttributableForComplianceTotals(
         attributable_for_reporting=attributable_for_reporting,
@@ -165,6 +176,9 @@ def get_emissions_attributable_for_compliance_totals(
             - remaining_npnc
             - allocated_to_unregulated_products
         ),
+        unregulated_products_excluded_by_fuels=round_term(unregulated.excluded_by_fuels),
+        unregulated_products_non_useful_venting=round_term(unregulated.non_useful_venting),
+        unregulated_products_fugitive=round_term(unregulated.fugitive),
         attributable_for_reporting_rows=terms["attributable_for_reporting"].rows(round_term),
         excluded_by_fuels_rows=terms["excluded_by_fuels"].rows(round_term),
         non_useful_venting_rows=terms["non_useful_venting"].rows(round_term),
@@ -175,7 +189,7 @@ def get_emissions_attributable_for_compliance_totals(
                 product_name=product.product_name,
                 allocated_emissions=round_term(product.allocated_emissions),
             )
-            for product in unregulated_products
+            for product in unregulated.products
             if product.allocated_emissions
         ],
     )

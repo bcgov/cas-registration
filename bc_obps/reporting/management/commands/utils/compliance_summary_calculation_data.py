@@ -324,13 +324,20 @@ def _seed_report_7(rv: ReportVersion, fr) -> None:
         emission_category_id=STATIONARY_COMBUSTION_CATEGORY_ID,
         allocated_quantity=Decimal("18000.0000"),
     )
-    ReportProductEmissionAllocation.objects.create(
-        report_version=rv,
-        report_product=rp_unreg,
-        report_emission_allocation=rea,
-        emission_category_id=STATIONARY_COMBUSTION_CATEGORY_ID,
-        allocated_quantity=Decimal("4500.0000"),
-    )
+    # The unregulated product gets a share of every reporting-only term, so the panel shows each deduction
+    for category_id, quantity in [
+        (STATIONARY_COMBUSTION_CATEGORY_ID, "5000.0000"),
+        (FUEL_EXCLUDED_BIOMASS_CATEGORY_ID, "500.0000"),
+        (NON_USEFUL_VENTING_CATEGORY_ID, "300.0000"),
+        (FUGITIVE_CATEGORY_ID, "200.0000"),
+    ]:
+        ReportProductEmissionAllocation.objects.create(
+            report_version=rv,
+            report_product=rp_unreg,
+            report_emission_allocation=rea,
+            emission_category_id=category_id,
+            allocated_quantity=Decimal(quantity),
+        )
 
 
 def _seed_report_12(rv: ReportVersion, fr) -> None:
