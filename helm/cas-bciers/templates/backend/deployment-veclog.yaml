@@ -1,0 +1,117 @@
+{{- if index .Values "cas-logging-sidecar-071" "enabled" }}
+{{- /* This chart uses the 0.7.1 version of cas-logging-sidecar, with a Vector based sidecar */ -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cas-bciers.fullname" . }}-backend
+  labels:
+    component: backend
+{{- include "cas-bciers.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.backend.autoscaling.enabled }}
+  replicas: {{ .Values.backend.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+{{- include "cas-bciers.selectorLabels" . | nindent 6 }}
+      component: backend
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+{{- include "cas-bciers.selectorLabels" . | nindent 8 }}
+        component: backend
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-backend
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          env:
+            {{- include "cas-bciers.backendEnvVars" . | nindent 12 }}
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/attachment-credentials/attachment-credentials.json"
+            {{- if or (hasSuffix "-dev" .Release.Namespace) (hasSuffix "-test" .Release.Namespace) }}
+            - name: DJANGO_SUPERUSER_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: django-superuser
+            - name: DJANGO_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: django-superuser
+            {{- end }}
+            {{- if or (hasSuffix "-prod" .Release.Namespace) (hasSuffix "-test" .Release.Namespace) }}
+            - name: SENTRY_ENVIRONMENT
+              value: {{ include "cas-bciers.namespaceSuffix" . }}
+            - name: SENTRY_RELEASE
+              value: {{ .Values.defaultImageTag }}
+            - name: SENTRY_TRACE_SAMPLE_RATE
+              value: {{ .Values.sentry.traceSampleRate | quote }}
+            {{- end }}
+          ports:
+            - containerPort: {{ .Values.backend.service.port }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 8000
+            # we want the readiness threshold to fail fast,
+            # to prevent any request from going to a pod that is not ready
+            failureThreshold: 1
+            successThreshold: 1
+            periodSeconds: 30
+            timeoutSeconds: 5
+            initialDelaySeconds: 120
+          livenessProbe:
+            # the liveness probe is here to ensure that a pod does not get
+            # stuck in a shutdown state. It needs to allow enough time for
+            # the registered shutdown handler to run to completion.
+            httpGet:
+              path: /liveness
+              port: 8000
+            initialDelaySeconds: 150
+            periodSeconds: 30
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          volumeMounts:
+            {{- include "vector-collector.applicationVolumeMounts" . | nindent 12 }}
+            - mountPath: "/attachment-credentials"
+              name: gcs-attachment-credentials
+              readOnly: true
+      initContainers:
+        {{- include "vector-collector.container" (dict "values" (index .Values "cas-logging-sidecar-071") "appName" "backend") | nindent 8 }}
+      volumes:
+        {{- include "vector-collector.loggingVolumes" . | nindent 8 }}
+        - name: gcs-attachment-credentials
+          secret:
+            secretName: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
+            items:
+            - key: credentials.json
+              path: attachment-credentials.json
+      restartPolicy: Always
+      affinity:
+        {
+          podAntiAffinity: {
+            preferredDuringSchedulingIgnoredDuringExecution: [
+              {
+                podAffinityTerm: {
+                  labelSelector: {
+                    matchLabels: {
+                      app.kubernetes.io/instance: cas-bciers,
+                      component: backend
+                    }
+                  },
+                  topologyKey: kubernetes.io/hostname
+                },
+                weight: 1
+              }
+            ]
+          }
+        }
+{{- end }}

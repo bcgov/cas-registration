@@ -1,0 +1,77 @@
+{{- if index .Values "cas-logging-sidecar-071" "enabled" }}
+{{- /* This chart uses the 0.7.1 version of cas-logging-sidecar, with a Vector based sidecar */ -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cas-bciers.fullname" . }}-administration-frontend
+  labels:
+    component: administration-frontend
+    layer: frontend
+{{- include "cas-bciers.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.administrationFrontend.autoscaling.enabled }}
+  replicas: {{ .Values.administrationFrontend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "cas-bciers.selectorLabels" . | nindent 6 }}
+      component: administration-frontend
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+{{- include "cas-bciers.selectorLabels" . | nindent 8 }}
+        component: administration-frontend
+        layer: frontend
+    spec:
+      containers:
+        - name: {{ template "cas-bciers.fullname" . }}-administration-frontend
+          env:
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-gold-client-secret
+                  key: kcClientSecret
+            - name: NEXTAUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: cas-bciers-nextauth
+                  key: nextauth-secret
+          envFrom:
+            - configMapRef:
+                name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
+          image: "{{ .Values.administrationFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.administrationFrontend.image.tag }}"
+          imagePullPolicy: {{ .Values.administrationFrontend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.administrationFrontend.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.administrationFrontend.resources | nindent 12 }}
+          volumeMounts:
+            {{- include "vector-collector.applicationVolumeMounts" . | nindent 12 }}
+      initContainers:
+        {{- include "vector-collector.container" (dict "values" (index .Values "cas-logging-sidecar-071") "appName" "administration") | nindent 8 }}
+      restartPolicy: Always
+      volumes:
+        {{- include "vector-collector.loggingVolumes" . | nindent 8 }}
+      affinity:
+        {
+          podAntiAffinity: {
+            preferredDuringSchedulingIgnoredDuringExecution: [
+              {
+                podAffinityTerm: {
+                  labelSelector: {
+                    matchLabels: {
+                      app.kubernetes.io/instance: cas-bciers,
+                      component: administration-frontend
+                    }
+                  },
+                  topologyKey: kubernetes.io/hostname
+                },
+                weight: 1
+              }
+            ]
+          }
+        }
+{{- end }}
