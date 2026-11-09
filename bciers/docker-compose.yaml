@@ -68,7 +68,7 @@ services:
       retries: 30
       start_period: 180s
     entrypoint: ["/app/.local/bin/kube-log-runner"]
-    command: ["/bin/bash", "-c", "${HOME}/.venv/bin/python manage.py custom_migrate && ${HOME}/.venv/bin/gunicorn --access-logfile - bc_obps.wsgi:application --timeout 200 --workers 3 --bind '0.0.0.0:8000'"]
+    command: ["/bin/bash", "-c", "/app/.venv/bin/python manage.py custom_migrate && /app/.venv/bin/gunicorn --access-logfile - bc_obps.wsgi:application --timeout 200 --workers 3 --bind '0.0.0.0:8000'"]
 
   # Always started: it is the entry point every suite navigates through, not an app under test.
   dashboard:
