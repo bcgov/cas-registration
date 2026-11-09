@@ -48,7 +48,6 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.administrationFrontend.resources | nindent 12 }}
-          command: ["/usr/local/bin/kube-log-runner"]
           args: ["node", "server.js"]
         {{- $containerName := printf "%s-administration-frontend" (include "cas-bciers.fullname" .) }}
         {{- include "cas-logging-sidecar.containers" (dict

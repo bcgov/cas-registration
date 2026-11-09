@@ -113,7 +113,7 @@ HEALTHCHECK --interval=30s --timeout=3s \
 # Collect static files using the virtual environment's Python
 RUN ${HOME}/.venv/bin/python manage.py collectstatic --noinput
 
-ENTRYPOINT ["/app/.local/bin/kube-log-runner", "-also-stdout", "-log-file=/var/log/app/app.log"]
+ENTRYPOINT ["/app/.local/bin/kube-log-runner"]
 
 # Run migrations and start gunicorn directly from the virtual environment
-CMD ["/bin/bash", "-c", "${HOME}/.venv/bin/python manage.py custom_migrate && ${HOME}/.venv/bin/gunicorn --access-logfile - bc_obps.wsgi:application --timeout 200 --workers 3 --bind '0.0.0.0:8000'"]
+CMD ["-also-stdout", "-log-file=/var/log/app/app.log", "/bin/bash", "-c", "${HOME}/.venv/bin/python manage.py custom_migrate && ${HOME}/.venv/bin/gunicorn --access-logfile - bc_obps.wsgi:application --timeout 200 --workers 3 --bind '0.0.0.0:8000'"]
