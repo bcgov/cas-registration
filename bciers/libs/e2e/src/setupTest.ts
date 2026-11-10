@@ -22,7 +22,11 @@ const test = isHappoEnabled
       },
     });
 
-export function setupTest(role: string, hookType: "beforeEach" | "beforeAll") {
+export function setupTest(
+  role: string,
+  hookType: "beforeEach" | "beforeAll",
+  workflow?: string,
+) {
   const storageState = getStorageStateForRole(role);
 
   const testWithRole: typeof baseTest = test.extend({
@@ -43,7 +47,7 @@ export function setupTest(role: string, hookType: "beforeEach" | "beforeAll") {
   });
 
   const setupHook = async () => {
-    await setupTestEnvironment();
+    await setupTestEnvironment(workflow);
   };
 
   if (hookType === "beforeEach") {

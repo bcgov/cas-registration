@@ -78,6 +78,12 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f"Loading additional report fixture: {fixture}"))
                 call_command('loaddata', fixture)
 
+            if workflow == 'compliance_summary_calculation':
+                from reporting.management.commands.utils import seed_compliance_summary_calculation_data
+
+                seed_compliance_summary_calculation_data()
+                return
+
             # submit reports
             operation_ids_to_submit = [
                 UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO

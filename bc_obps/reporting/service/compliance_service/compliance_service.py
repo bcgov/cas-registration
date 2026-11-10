@@ -3,6 +3,10 @@ from reporting.models.report_product import ReportProduct
 from reporting.models import ReportVersion
 from reporting.models.product_emission_intensity import ProductEmissionIntensity
 from reporting.models.emission_category import EmissionCategory
+from reporting.service.compliance_service.emissions_attributable_for_compliance_totals import (
+    EmissionsAttributableForComplianceTotals,
+    get_emissions_attributable_for_compliance_totals,
+)
 from reporting.service.compliance_service.emission_allocation import (
     get_emissions_from_only_funny_category_13,
     get_fog_emissions,
@@ -20,7 +24,7 @@ from reporting.models import ReportComplianceSummary, ReportComplianceSummaryPro
 from registration.models import RegulatedProduct, Operation
 from decimal import Decimal
 from django.db.models import Sum
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from django.db import transaction
 from dataclasses import dataclass
 
@@ -48,6 +52,7 @@ class ReportProductComplianceData:
     allocated_compliance_emissions: Decimal
     reduction_factor_override: Decimal | None
     tightening_rate_override: Decimal | None
+    allocated_for_compliance_annual: Decimal
 
     def as_record_defaults(self) -> dict[str, Decimal | str | None]:
         return {
@@ -80,6 +85,10 @@ class ComplianceData:
     credited_emissions: Decimal
     industry_regulatory_values: RegulatoryValues
     products: List[ReportProductComplianceData]
+
+    production_period: ProductionPeriod
+    is_new_entrant: bool
+    emissions_attributable_for_compliance_totals: EmissionsAttributableForComplianceTotals | None = None
 
     def as_record_defaults(self) -> dict[str, Decimal | int]:
         return {
@@ -197,7 +206,35 @@ class ComplianceService:
         return ProductionPeriod.ANNUAL
 
     @staticmethod
-    def get_calculated_compliance_data(report_version_id: int) -> ComplianceData:
+    def _resolve_compliance_comparison(
+        is_new_entrant: bool,
+        production_period: ProductionPeriod,
+        total_allocated_for_compliance_default: Decimal,
+        total_allocated_for_compliance_prorated_year: Decimal,
+        emissions_limit_total: Decimal,
+    ) -> Tuple[Decimal, Decimal, Decimal, Decimal]:
+        """
+        Returns (allocated_for_compliance_used, emissions_limit, excess_emissions, credited_emissions).
+        New Entrant Operations have no compliance obligations, so all values are zeroed.
+        """
+        if is_new_entrant:
+            return Decimal(0), Decimal(0), Decimal(0), Decimal(0)
+
+        # Select which allocated total to use for compliance comparisons
+        if production_period == ProductionPeriod.ANNUAL:
+            allocated_used = total_allocated_for_compliance_default
+        else:
+            # production_period is "jan_mar" or "apr_dec"
+            allocated_used = total_allocated_for_compliance_prorated_year
+
+        if allocated_used > emissions_limit_total:
+            return allocated_used, emissions_limit_total, allocated_used - emissions_limit_total, Decimal(0)
+        return allocated_used, emissions_limit_total, Decimal(0), emissions_limit_total - allocated_used
+
+    @staticmethod
+    def get_calculated_compliance_data(
+        report_version_id: int, include_emissions_attributable_for_compliance_totals: bool = False
+    ) -> ComplianceData:
         # Fetch the ReportVersion once (bring in reporting_year and operation) to avoid extra queries
         report_version_record = ReportVersion.objects.select_related("report__reporting_year", "report_operation").get(
             pk=report_version_id
@@ -212,6 +249,14 @@ class ComplianceService:
 
         ##### Don't use schemas, use classes or dicts
         compliance_product_list: List[ReportProductComplianceData] = []
+        # Reporting-only emissions are summed from three sources, each counting different emissions:
+        #   1. Regulated product loop: fuel-excluded, fugitive and non-useful venting emissions
+        #      allocated to regulated products (get_reporting_only_allocated).
+        #   2. NPNC helper: NPNC emissions not also fuel-excluded, including NPNC fugitive and venting,
+        #      since NPNC is allocated to unregulated products that the loop skips
+        #      (get_emissions_from_only_funny_category_13).
+        #   3. FOG helper: emissions allocated to the FOG product, excluding reporting-only categories
+        #      (get_fog_emissions).
         total_allocated_reporting_only = Decimal(0)
         total_allocated_for_compliance_default = Decimal(0)
         total_allocated_for_compliance_prorated_year = Decimal(0)
@@ -301,6 +346,7 @@ class ComplianceService:
                     allocated_compliance_emissions=Decimal(allocated_compliance_emissions_value),
                     reduction_factor_override=product_regulatory_values_override.reduction_factor_override,
                     tightening_rate_override=product_regulatory_values_override.tightening_rate_override,
+                    allocated_for_compliance_annual=ComplianceParameters.round(allocated_for_compliance),
                 )
             )
 
@@ -317,25 +363,19 @@ class ComplianceService:
         attributable_for_reporting_total = ComplianceService.get_emissions_attributable_for_reporting(report_version_id)
         # Calculate used allocated total and excess/credited emissions.
         # For New Entrant Operations, zero out compliance comparisons (they have no compliance obligations).
-        if registration_purpose == "New Entrant Operation":
-            total_allocated_for_compliance_used = Decimal(0)
-            emissions_limit_total = Decimal(0)
-            excess_emissions = Decimal(0)
-            credited_emissions = Decimal(0)
-        else:
-            # Select which allocated total to use for compliance comparisons
-            if production_period == ProductionPeriod.ANNUAL:
-                total_allocated_for_compliance_used = total_allocated_for_compliance_default
-            else:
-                # production_period is "jan_mar" or "apr_dec"
-                total_allocated_for_compliance_used = total_allocated_for_compliance_prorated_year
-
-            if total_allocated_for_compliance_used > emissions_limit_total:
-                excess_emissions = total_allocated_for_compliance_used - emissions_limit_total
-                credited_emissions = Decimal(0)
-            else:
-                excess_emissions = Decimal(0)
-                credited_emissions = emissions_limit_total - total_allocated_for_compliance_used
+        is_new_entrant = registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
+        (
+            total_allocated_for_compliance_used,
+            emissions_limit_total,
+            excess_emissions,
+            credited_emissions,
+        ) = ComplianceService._resolve_compliance_comparison(
+            is_new_entrant,
+            production_period,
+            total_allocated_for_compliance_default,
+            total_allocated_for_compliance_prorated_year,
+            emissions_limit_total,
+        )
         # Craft return object with all data
         has_2024_reporting_year = report_version_record.report.reporting_year_id == 2024
         return_object = ComplianceData(
@@ -359,6 +399,15 @@ class ComplianceService:
             ),
             industry_regulatory_values=industry_regulatory_values,
             products=compliance_product_list,
+            production_period=production_period,
+            is_new_entrant=is_new_entrant,
+            emissions_attributable_for_compliance_totals=(
+                get_emissions_attributable_for_compliance_totals(
+                    report_version_id, use_legacy_rounding=has_2024_reporting_year
+                )
+                if include_emissions_attributable_for_compliance_totals
+                else None
+            ),
         )
 
         return return_object

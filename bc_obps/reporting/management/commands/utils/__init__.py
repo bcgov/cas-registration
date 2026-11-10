@@ -7,6 +7,7 @@ from .report_submission import submit_report_from_fixture, FIXED_SNAPSHOT_TIMEST
 from .report_verification import create_report_verification
 from .report_facility_report import mark_facility_reports_complete
 from .report_production_data import prepare_production_data_for_submission
+from .compliance_summary_calculation_data import seed_compliance_summary_calculation_data
 
 __all__ = [
     "prepare_activity_data_for_submission",
@@ -19,4 +20,5 @@ __all__ = [
     "create_report_verification",
     "submit_report_from_fixture",
     "FIXED_SNAPSHOT_TIMESTAMP",
+    "seed_compliance_summary_calculation_data",
 ]

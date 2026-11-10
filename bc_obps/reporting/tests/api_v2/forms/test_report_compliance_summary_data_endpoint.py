@@ -8,12 +8,16 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.tests.utils.report_access_validation import (
     assert_report_version_ownership_is_validated,
 )
-from reporting.schema.compliance_data import ComplianceDataSchemaOut
+from reporting.schema.compliance_data import ComplianceSummaryDataSchemaOut
 from reporting.service.compliance_service.compliance_service import (
     ComplianceData,
     ReportProductComplianceData,
     RegulatoryValues,
 )
+from reporting.service.compliance_service.emissions_attributable_for_compliance_totals import (
+    EmissionsAttributableForComplianceTotals,
+)
+from reporting.service.compliance_service.parameters import ProductionPeriod
 
 
 class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
@@ -63,6 +67,7 @@ class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
             allocated_compliance_emissions=Decimal("2.0"),
             reduction_factor_override=None,
             tightening_rate_override=None,
+            allocated_for_compliance_annual=Decimal("2.0"),
         )
 
         mock_compliance_data = ComplianceData(
@@ -79,10 +84,21 @@ class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
                 tightening_rate=Decimal("0.01"),
             ),
             products=[mock_product],
+            production_period=ProductionPeriod.ANNUAL,
+            is_new_entrant=False,
+            emissions_attributable_for_compliance_totals=EmissionsAttributableForComplianceTotals(
+                attributable_for_reporting=Decimal("100.0"),
+                excluded_by_fuels=Decimal("0"),
+                non_useful_venting=Decimal("0"),
+                fugitive=Decimal("0"),
+                remaining_npnc=Decimal("10.0"),
+                allocated_to_unregulated_products=Decimal("0"),
+                annual_emissions_attributable_for_compliance=Decimal("90.0"),
+            ),
         )
 
         mock_get_calculated_compliance_data.return_value = mock_compliance_data
-        expected_payload = ComplianceDataSchemaOut.model_validate(
+        expected_payload = ComplianceSummaryDataSchemaOut.model_validate(
             mock_compliance_data,
             from_attributes=True,
         ).model_dump(exclude_none=True)
@@ -120,6 +136,16 @@ class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
         assert product["unit"] == "tonnes of product"
         assert product["reduction_factor"] == approx(0.9)
         assert product["tightening_rate"] == approx(0.01)
+        assert product["allocated_for_compliance_annual"] == approx(2.0)
+
+        assert payload["production_period"] == "annual"
+        assert payload["is_new_entrant"] is False
+        assert payload["emissions_attributable_for_compliance_totals"][
+            "annual_emissions_attributable_for_compliance"
+        ] == approx(90.0)
+        mock_get_calculated_compliance_data.assert_called_once_with(
+            self.report_version.id, include_emissions_attributable_for_compliance_totals=True
+        )
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_compliance_summary_form_data")
