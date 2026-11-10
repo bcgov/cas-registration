@@ -73,11 +73,15 @@ def validate_reporting_fields(report_version: ReportVersion) -> dict[str, Report
     - either listed in its configuration ConfigurationElementReportingField models
     - or are a Unit field for an available reporting field (i.e. fieldSlug + "FieldUnits")
     """
-    methodology_records = annotated_report_methodology(report_version.id).annotate(
-        allowed_slugs=(
-            ConfigurationElement.objects.filter(id=OuterRef("matching_config_id"))
-            .annotate(slugs=ArrayAgg("reporting_fields__slug"))
-            .values("slugs")
+    methodology_records = (
+        annotated_report_methodology(report_version.id)
+        .filter(matching_config_id__isnull=False)  # type: ignore
+        .annotate(
+            allowed_slugs=(
+                ConfigurationElement.objects.filter(id=OuterRef("matching_config_id"))
+                .annotate(slugs=ArrayAgg("reporting_fields__slug"))
+                .values("slugs")
+            )
         )
     )
 
