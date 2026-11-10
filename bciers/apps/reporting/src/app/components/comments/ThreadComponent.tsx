@@ -1,6 +1,6 @@
 import { Button, Grid, TextField, Typography } from "@mui/material";
-import { useTransition, useState } from "react";
-import { Thread } from "./types";
+import { useTransition, useState, useRef } from "react";
+import { Thread, EMPTY_COMMENT_ERROR } from "./types";
 import CommentComponent from "./CommentComponent";
 import ThreadFrame from "./ThreadFrame";
 import { actionHandler } from "@bciers/actions";
@@ -27,8 +27,8 @@ const ThreadComponent: React.FC<Props> = ({
   onThreadDeleted,
 }) => {
   const [_, startTransition] = useTransition();
-  const { setErrors, renderedErrors } = useValidationErrors();
-  const [replyMessage, setReplyMessage] = useState("");
+  const { errors, setErrors, renderedErrors } = useValidationErrors();
+  const replyInputRef = useRef<HTMLTextAreaElement>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleResolveThread = (resolved: boolean) => {
@@ -47,6 +47,7 @@ const ThreadComponent: React.FC<Props> = ({
       }
     });
   };
+
   const handleCommentDelete = (reportVersionId: number, commentId: number) => {
     startTransition(async () => {
       const resp = await deleteComment(reportVersionId, thread.id, commentId);
@@ -59,21 +60,29 @@ const ThreadComponent: React.FC<Props> = ({
       }
     });
   };
-  const handleCommentPost = (
-    reportVersionId: number,
-    threadId: number,
-    message: string,
-  ) => {
+
+  const handleCommentPost = (reportVersionId: number, threadId: number) => {
+    const message = replyInputRef.current?.value.trim();
+    if (!message) {
+      // If the comment message is empty, set the empty comment error and return
+      setErrors([EMPTY_COMMENT_ERROR]);
+      return;
+    }
+
+    setErrors([]);
     setIsUpdating(true);
     startTransition(async () => {
       const resp = await postComment(reportVersionId, threadId, message);
       if (handleApiResponse(resp, setErrors)) {
         onThreadUpdated(resp as Thread);
-        setReplyMessage("");
+        if (replyInputRef.current) replyInputRef.current.value = "";
       }
       setIsUpdating(false);
     });
   };
+
+  const hasCommentError: boolean =
+    errors?.some(({ error }) => error.severity === "Error") ?? false;
 
   return (
     <ThreadFrame
@@ -81,7 +90,6 @@ const ThreadComponent: React.FC<Props> = ({
       resolved={thread.resolved}
       onResolveClicked={handleResolveThread}
     >
-      {renderedErrors}
       {thread.facility_name && (
         <Typography
           variant="body2"
@@ -98,6 +106,7 @@ const ThreadComponent: React.FC<Props> = ({
           canUpdate={canUpdate}
         />
       ))}
+      {renderedErrors}
       <Grid className="mt-2">
         {canUpdate && !thread.resolved && (
           <>
@@ -106,17 +115,15 @@ const ThreadComponent: React.FC<Props> = ({
               label="Comment"
               multiline
               rows={3}
-              value={replyMessage}
-              onChange={(e) => setReplyMessage(e.target.value)}
+              inputRef={replyInputRef}
+              error={hasCommentError}
             />
             <Button
               variant="outlined"
               color="primary"
-              onClick={() =>
-                handleCommentPost(version_id, thread.id, replyMessage)
-              }
+              onClick={() => handleCommentPost(version_id, thread.id)}
               fullWidth
-              disabled={!replyMessage || isUpdating}
+              disabled={isUpdating}
             >
               Reply
             </Button>
