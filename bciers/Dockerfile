@@ -57,7 +57,7 @@ WORKDIR /usr/src/app
 # Copy application and dumb-init from bundler
 # Writable .next directory: The .next directory is owned by the node user so the server can write prerender cache and optimized images at runtime
 COPY --from=bundler --chown=node:node /usr/src/app ./
-COPY --from=bundler --chown=node:node /usr/local/bin/kube-log-runner /usr/local/bin/kube-log-runner
+COPY --from=bundler --chown=root:root --chmod=755 /usr/local/bin/kube-log-runner /usr/local/bin/kube-log-runner
 
 ENTRYPOINT ["/usr/local/bin/kube-log-runner"]
 
