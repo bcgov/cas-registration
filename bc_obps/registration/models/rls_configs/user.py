@@ -29,22 +29,22 @@ class Rls:
             {RlsOperations.UPDATE.value: using_statement},
         ],
         RlsRoles.CAS_DIRECTOR: [
-            {RlsOperations.SELECT.value: using_statement},
+            {RlsOperations.SELECT.value: 'true'},
             {RlsOperations.INSERT.value: using_statement},
             {RlsOperations.UPDATE.value: using_statement},
         ],
         RlsRoles.CAS_ADMIN: [
-            {RlsOperations.SELECT.value: using_statement},
+            {RlsOperations.SELECT.value: 'true'},
             {RlsOperations.INSERT.value: using_statement},
             {RlsOperations.UPDATE.value: 'true'},
         ],
         RlsRoles.CAS_ANALYST: [
-            {RlsOperations.SELECT.value: using_statement},
+            {RlsOperations.SELECT.value: 'true'},
             {RlsOperations.INSERT.value: using_statement},
             {RlsOperations.UPDATE.value: using_statement},
         ],
         RlsRoles.CAS_VIEW_ONLY: [
-            {RlsOperations.SELECT.value: using_statement},
+            {RlsOperations.SELECT.value: 'true'},
             {RlsOperations.INSERT.value: using_statement},
             {RlsOperations.UPDATE.value: using_statement},
         ],
