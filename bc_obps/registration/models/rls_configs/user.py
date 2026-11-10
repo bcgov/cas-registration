@@ -24,7 +24,7 @@ class Rls:
 
     role_operation_policy_map = {
         RlsRoles.INDUSTRY_USER: [
-            {RlsOperations.SELECT.value: using_statement},
+            {RlsOperations.SELECT.value: 'true'},
             {RlsOperations.INSERT.value: using_statement},
             {RlsOperations.UPDATE.value: using_statement},
         ],
