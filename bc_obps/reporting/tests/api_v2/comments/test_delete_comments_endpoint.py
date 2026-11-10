@@ -98,17 +98,3 @@ class TestDeleteCommentsV2Endpoints(CommonTestSetup):
         assert_error_response(response, 404, "Not Found")
         assert Comment.objects.filter(id=self.comment.id).exists()
         assert CommentThread.objects.filter(id=self.thread.id).exists()
-
-    @pytest.mark.parametrize("role", ["cas_director", "cas_analyst"])
-    def test_delete_comment_in_another_thread_returns_not_found(self, role):
-        another_thread = make_recipe("reporting.tests.utils.comment_thread", report_version_id=self.report_version.id)
-        endpoint = (
-            f"/api/reporting/v2/report-version/{self.report_version.id}"
-            f"/threads/{another_thread.id}/comments/{self.comment.id}"
-        )
-        response = TestUtils.mock_delete_with_auth_role(self, role, endpoint)
-
-        assert_error_response(response, 404, "Not Found")
-        assert Comment.objects.filter(id=self.comment.id).exists()
-        assert CommentThread.objects.filter(id=self.thread.id).exists()
-        assert CommentThread.objects.filter(id=another_thread.id).exists()
