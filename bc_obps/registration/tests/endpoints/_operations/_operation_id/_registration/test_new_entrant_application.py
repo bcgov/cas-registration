@@ -25,11 +25,8 @@ class TestGetOperationNewEntrantApplicationEndpoint(CommonTestSetup):
             custom_reverse_lazy("get_operation_new_entrant_application", kwargs={'operation_id': operation.id}),
         )
 
-        assert response.status_code == 401
-        assert response.json()['message'] == "Unauthorized."
-        # when RLS is enabled, we get a not found error because RLS prevents the user from selecting an operation that does not belong to them
-        # assert response.status_code == 404
-        # assert response.json()['message'] == "Not Found"
+        assert response.status_code == 404
+        assert response.json()['message'] == "Not Found"
 
     def test_get_register_operation_new_entrant_application_endpoint_success(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
