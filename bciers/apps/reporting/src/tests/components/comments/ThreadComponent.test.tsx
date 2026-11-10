@@ -49,7 +49,7 @@ describe("The comment thread component", () => {
     expect(screen.getByText("Jun 22, 1999 4:00 PM")).toBeVisible();
   });
 
-  it("disables the reply button until a comment is typed", () => {
+  it("displays an error when trying to submit an empty reply", () => {
     render(
       <ThreadComponent
         canUpdate={true}
@@ -65,15 +65,10 @@ describe("The comment thread component", () => {
       />,
     );
 
-    const replyButton = screen.getByRole("button", { name: "Reply" });
-    expect(replyButton).toBeVisible();
-    expect(replyButton).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
 
-    fireEvent.change(screen.getByRole("textbox", { name: "Comment" }), {
-      target: { value: "A new reply" },
-    });
-
-    expect(screen.getByRole("button", { name: "Reply" })).toBeEnabled();
+    expect(screen.getByText(/Comment cannot be empty/)).toBeVisible();
+    expect(actionHandler).not.toHaveBeenCalled();
   });
 
   it("posts the reply, notifies the parent, and clears the field", async () => {
