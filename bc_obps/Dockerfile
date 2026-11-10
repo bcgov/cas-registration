@@ -67,7 +67,7 @@ ENV KUBE_VERSION=v1.37.0 \
     KUBE_ARCH=amd64
 
 ADD --chown=${USER_ID}:0 https://dl.k8s.io/${KUBE_VERSION}/bin/linux/${KUBE_ARCH}/kube-log-runner ${HOME}/.local/bin/kube-log-runner
-RUN chmod +x ${HOME}/.local/bin/kube-log-runner
+RUN chmod +x "${HOME}/.local/bin/kube-log-runner"
 
 # Copy all remaining files, owned by numbered user
 COPY --chown=${USER_ID}:0 . ${HOME}/
