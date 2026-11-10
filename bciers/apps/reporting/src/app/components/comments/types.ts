@@ -1,3 +1,5 @@
+import { ValidationError } from "next/dist/compiled/amphtml-validator";
+
 export type Comment = {
   id: number;
   version_id: number;
@@ -25,4 +27,12 @@ export type ThreadsResponse = {
   threads: Thread[];
   facilities: FacilityItem[];
   can_create_comment_thread: boolean;
+};
+
+export const EMPTY_COMMENT_ERROR: ValidationError = {
+  key: "comment",
+  error: {
+    message: "Comment cannot be empty",
+    severity: "Error",
+  },
 };
