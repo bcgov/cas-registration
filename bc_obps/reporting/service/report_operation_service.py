@@ -8,7 +8,7 @@ from reporting.models import ReportOperationRepresentative, ReportVersion
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.service.report_product_service import ReportProductService
-from reporting.service.activity_service import ActivityService
+from registration.service.activity_service import ActivityService
 from registration.service.data_access_service.regulated_product_service import RegulatedProductDataAccessService
 from reporting.service.facility_report_service import FacilityReportService
 

@@ -1,4 +1,4 @@
-from reporting.service.activity_service import ActivityService
+from registration.service.activity_service import ActivityService
 from common.permissions import authorize
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router

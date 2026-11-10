@@ -1,6 +1,6 @@
 import pytest
 from registration.models import Activity
-from reporting.service.activity_service import ActivityService
+from registration.service.activity_service import ActivityService
 
 pytestmark = pytest.mark.django_db
 

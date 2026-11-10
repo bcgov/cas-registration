@@ -11,7 +11,7 @@ from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.schema.facility_report import FacilityReportListInSchema, FacilityReportFilterSchema
 from django.db.models import QuerySet, F
 from reporting.service.sync_validation_service import SyncValidationService
-from reporting.service.activity_service import ActivityService
+from registration.service.activity_service import ActivityService
 
 
 @dataclass
