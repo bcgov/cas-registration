@@ -248,7 +248,7 @@ class FacilityRlsTest(BaseTestCase):
                     DELETE from "erc"."facility"
                     WHERE id = %s
                 """,
-                (approved_facility.id,),
+                (other_facility.id,),
             )
             return cursor.rowcount
 

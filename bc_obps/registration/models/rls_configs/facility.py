@@ -57,24 +57,12 @@ class Rls:
         )
     """
 
-    industry_user_delete_using_statement = """
-        exists (
-            select 1 from erc.operation o
-            join erc.user_operator uo
-                on uo.operator_id = o.operator_id
-                and o.id = facility.operation_id
-                and uo.user_id = current_setting('my.guid', true)::uuid
-                and uo.status='Approved'
-                and (o.type = 'Electricity Import Operation' or o.status != 'Registered')
-        )
-    """
-
     role_operation_policy_map = {
         RlsRoles.INDUSTRY_USER: [
             {RlsOperations.SELECT.value: 'true'},
             {RlsOperations.INSERT.value: industry_user_using_statement},
             {RlsOperations.UPDATE.value: industry_user_using_statement},
-            {RlsOperations.DELETE.value: industry_user_delete_using_statement},
+            {RlsOperations.DELETE.value: industry_user_using_statement},
         ],
         RlsRoles.CAS_DIRECTOR: [{RlsOperations.SELECT.value: "true", RlsOperations.UPDATE.value: "true"}],
         RlsRoles.CAS_ADMIN: [{RlsOperations.SELECT.value: "true"}],
