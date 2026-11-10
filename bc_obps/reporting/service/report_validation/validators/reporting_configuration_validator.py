@@ -1,6 +1,6 @@
 from common.exceptions import InternalSystemError
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import OuterRef, QuerySet
+from django.db.models import Q, OuterRef, QuerySet
 from reporting.models.configuration_element import ConfigurationElement
 from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_version import ReportVersion
@@ -33,29 +33,29 @@ def annotated_report_methodology(report_version_id: int) -> QuerySet[ReportMetho
 
 def validate_configuration_elements_present(report_version: ReportVersion) -> dict[str, ReportValidationError]:
 
-    missing_config = annotated_report_methodology(report_version.id).filter(
-        matching_config_id__isnull=True
-    )  # type: ignore
+    missing_config = (
+        annotated_report_methodology(report_version.id)
+        .select_related("methodology", "report_emission__report_source_type__report_activity__facility_report")
+        .filter(matching_config_id__isnull=True)  # type: ignore
+    )
 
-    if (
-        missing_config.select_related(
-            "methodology", "report_emission__report_source_type__report_activity__facility_report"
+    missing_config_ignoring_not_applicable = missing_config.filter(~Q(methodology__name='Not Applicable')).values_list(
+        'id', flat=True
+    )
+
+    if missing_config_ignoring_not_applicable:
+        raise InternalSystemError(
+            f"Missing configuration elements for report methodology IDs: {str.join(', ', [str(m) for m in missing_config_ignoring_not_applicable])}"
         )
-        .exclude(
-            methodology__name='Not Applicable',
+
+    if missing_config.filter(
+        ~Q(
             report_emission__report_source_type__report_activity__facility_report__facility_type__in=[
                 'Small Aggregate',
                 'Medium Facility',
-            ],
+            ]
         )
-        .exists()
-    ):
-        raise InternalSystemError(
-            f"Missing configuration elements for report methodology IDs: {str.join(', ', [str(m.id) for m in missing_config])}"
-        )
-
-    if missing_config.exists():
-
+    ).exists():
         return {
             "not_applicable_methodology_reported": ReportValidationError(
                 Severity.ERROR,
