@@ -1,4 +1,4 @@
-import { ValidationError } from "next/dist/compiled/amphtml-validator";
+import type { ValidationItem } from "@bciers/components/validationErrors";
 
 export type Comment = {
   id: number;
@@ -29,7 +29,7 @@ export type ThreadsResponse = {
   can_create_comment_thread: boolean;
 };
 
-export const EMPTY_COMMENT_ERROR: ValidationError = {
+export const EMPTY_COMMENT_ERROR: ValidationItem = {
   key: "comment",
   error: {
     message: "Comment cannot be empty",
