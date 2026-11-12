@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import ReportComments from "../comments/ReportComments";
 
 export default function withReportComments<
@@ -12,9 +12,11 @@ export default function withReportComments<
       </Grid>
 
       <Grid size={4}>
-        <Suspense fallback={<output>Loading comments...</output>}>
-          <ReportComments version_id={props.version_id} />
-        </Suspense>
+        <Box className="sticky top-0 max-h-screen overflow-y-auto">
+          <Suspense fallback={<output>Loading comments...</output>}>
+            <ReportComments version_id={props.version_id} />
+          </Suspense>
+        </Box>
       </Grid>
     </Grid>
   );
