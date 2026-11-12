@@ -22,6 +22,7 @@ from compliance.service.penalty_calculation_service import (
     ElicensingLineItem,
 )
 from compliance.dataclass import RefreshWrapperReturn
+from compliance.enums import ComplianceInvoiceTypes
 
 
 REFRESH_WRAPPER_PATH = (
@@ -338,7 +339,8 @@ class TestPenaltyCalculationService:
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
     )
-    def test_get_automatic_overdue_penalty(self, mock_refresh_data):
+    @pytest.mark.parametrize("has_invoice", [True, False])
+    def test_get_automatic_overdue_penalty(self, mock_refresh_data, has_invoice):
         clean_invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
             due_date=date(2025, 11, 30),
@@ -346,25 +348,71 @@ class TestPenaltyCalculationService:
             invoice_interest_balance=Decimal("0.00"),
         )
         mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
+        penalty_invoice = (
+            baker.make_recipe(
+                "compliance.tests.utils.elicensing_invoice",
+                invoice_number="AUTO-PENALTY-001",
+                due_date=date(2025, 12, 31),
+            )
+            if has_invoice
+            else None
+        )
         compliance_penalty = baker.make_recipe(
             "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.obligation,
             penalty_amount=Decimal("1000000.00"),
+            elicensing_invoice=penalty_invoice,
         )
         result = PenaltyCalculationService.get_automatic_overdue_penalty_data(self.compliance_report_version.id)
         assert result == {
-            "penalty_status": compliance_penalty.status,
+            "penalty_status": compliance_penalty.status.value,
             "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             "penalty_charge_rate": self.compliance_penalty_rate.rate * 100,
             "total_penalty": Decimal("1000000.00"),
-            "faa_interest": Decimal("0"),
             "total_amount": Decimal("1000000.00"),
+            "due_date": "2025-12-31" if has_invoice else None,
+            "invoice_number": "AUTO-PENALTY-001" if has_invoice else None,
         }
+
+    @patch(REFRESH_WRAPPER_PATH)
+    @pytest.mark.parametrize(
+        "faa_interest, expected_total",
+        [(Decimal("125.50"), Decimal("1125.50")), (None, Decimal("1000.00"))],
+        ids=["with_faa_interest", "without_refreshed_invoice"],
+    )
+    def test_get_automatic_overdue_penalty_refresh_data(self, mock_refresh_data, faa_interest, expected_total):
+        mock_refresh_data.return_value.invoice = (
+            baker.make_recipe(
+                "compliance.tests.utils.elicensing_invoice",
+                invoice_interest_balance=faa_interest,
+            )
+            if faa_interest is not None
+            else None
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty",
+            compliance_obligation=self.obligation,
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+            penalty_amount=Decimal("1000.00"),
+            elicensing_invoice=self.invoice,
+        )
+
+        result = PenaltyCalculationService.get_automatic_overdue_penalty_data(self.compliance_report_version.id)
+
+        assert result["total_penalty"] == Decimal("1000.00")
+        assert result["total_amount"] == expected_total
+        assert result["due_date"] == self.invoice.due_date.isoformat()
+        assert result["invoice_number"] == self.invoice.invoice_number
+        mock_refresh_data.assert_called_once_with(
+            compliance_report_version_id=self.compliance_report_version.id,
+            invoice_type=ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
+        )
 
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
     )
-    def test_get_late_submission_penalty_with_penalty(self, mock_refresh_data):
+    @pytest.mark.parametrize("has_invoice", [True, False])
+    def test_get_late_submission_penalty_with_penalty(self, mock_refresh_data, has_invoice):
         """Test get_late_submission_penalty_data returns correct data when penalty exists"""
         clean_invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
@@ -390,6 +438,15 @@ class TestPenaltyCalculationService:
             interest_rate=Decimal("0.0695"),
         )
         # Create late submission penalty
+        penalty_invoice = (
+            baker.make_recipe(
+                "compliance.tests.utils.elicensing_invoice",
+                invoice_number="LATE-PENALTY-001",
+                due_date=date(2025, 12, 31),
+            )
+            if has_invoice
+            else None
+        )
         late_penalty = baker.make_recipe(
             "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.obligation,
@@ -398,6 +455,7 @@ class TestPenaltyCalculationService:
             accrual_frequency=CompliancePenalty.Frequency.DAILY,
             compounding_frequency=CompliancePenalty.Frequency.MONTHLY,
             status=CompliancePenalty.Status.NOT_PAID,
+            elicensing_invoice=penalty_invoice,
         )
 
         result = PenaltyCalculationService.get_late_submission_penalty_data(self.compliance_report_version.id)
@@ -406,8 +464,44 @@ class TestPenaltyCalculationService:
         assert result["penalty_status"] == late_penalty.status
         assert result["penalty_type"] == CompliancePenalty.PenaltyType.LATE_SUBMISSION
         assert result["penalty_amount"] == Decimal("15000.00")
-        assert result["faa_interest"] == Decimal("0.00")
         assert result["total_amount"] == Decimal("15000.00")
+        assert result["due_date"] == ("2025-12-31" if has_invoice else None)
+        assert result["invoice_number"] == ("LATE-PENALTY-001" if has_invoice else None)
+
+    @patch(REFRESH_WRAPPER_PATH)
+    @pytest.mark.parametrize(
+        "faa_interest, expected_total",
+        [(Decimal("125.50"), Decimal("15125.50")), (None, Decimal("15000.00"))],
+        ids=["with_faa_interest", "without_refreshed_invoice"],
+    )
+    def test_get_late_submission_penalty_refresh_data(self, mock_refresh_data, faa_interest, expected_total):
+        mock_refresh_data.return_value.invoice = (
+            baker.make_recipe(
+                "compliance.tests.utils.elicensing_invoice",
+                invoice_interest_balance=faa_interest,
+            )
+            if faa_interest is not None
+            else None
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty",
+            compliance_obligation=self.obligation,
+            penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
+            penalty_amount=Decimal("15000.00"),
+            elicensing_invoice=self.invoice,
+        )
+
+        result = PenaltyCalculationService.get_late_submission_penalty_data(self.compliance_report_version.id)
+
+        assert result["has_penalty"] is True
+        assert result["penalty_amount"] == Decimal("15000.00")
+        assert result["total_amount"] == expected_total
+        assert result["due_date"] == self.invoice.due_date.isoformat()
+        assert result["invoice_number"] == self.invoice.invoice_number
+        mock_refresh_data.assert_called_once_with(
+            compliance_report_version_id=self.compliance_report_version.id,
+            invoice_type=ComplianceInvoiceTypes.LATE_SUBMISSION_PENALTY,
+        )
 
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
@@ -428,7 +522,6 @@ class TestPenaltyCalculationService:
         assert result["penalty_status"] == CompliancePenalty.Status.NOT_PAID
         assert result["penalty_type"] == CompliancePenalty.PenaltyType.LATE_SUBMISSION
         assert result["penalty_amount"] == Decimal("0.00")
-        assert result["faa_interest"] == Decimal("0.00")
         assert result["total_amount"] == Decimal("0.00")
 
     @patch(

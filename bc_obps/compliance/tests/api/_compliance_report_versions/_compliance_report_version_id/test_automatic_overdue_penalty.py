@@ -1,35 +1,14 @@
 from decimal import Decimal
 from unittest.mock import patch
-from compliance.models.compliance_obligation import ComplianceObligation
-from compliance.models.compliance_penalty import CompliancePenalty
+import pytest
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 
 
 class TestAutomaticOverduePenaltyEndpoint(CommonTestSetup):
-    @patch("compliance.service.compliance_obligation_service.ComplianceObligation.objects.get")
-    @patch(
-        "compliance.service.penalty_calculation_service.PenaltyCalculationService.get_automatic_overdue_penalty_data"
-    )
-    def test_get_automatic_overdue_penalty_success(self, mock_get_automatic_overdue_penalty_data, mock_get_obligation):
-        # Arrange
-        obligation = make_recipe(
-            "compliance.tests.utils.compliance_obligation",
-        )
-        mock_get_obligation.return_value = obligation
-
-        penalty_data = {
-            "penalty_status": ComplianceObligation.PenaltyStatus.ACCRUING,
-            "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-            "penalty_charge_rate": Decimal("0.38"),
-            "total_penalty": Decimal("38656.43"),
-            "faa_interest": Decimal("0.00"),
-            "total_amount": Decimal("38656.43"),
-        }
-        mock_get_automatic_overdue_penalty_data.return_value = penalty_data
-
-        # Mock authorization
+    def setup_method(self):
+        super().setup_method()
         operator = make_recipe('registration.tests.utils.operator')
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         compliance_report_version = make_recipe(
@@ -40,23 +19,36 @@ class TestAutomaticOverduePenaltyEndpoint(CommonTestSetup):
         TestUtils.generate_operation_operator_timeline(
             operator=operator, operations=[compliance_report_version.compliance_report.report.operation]
         )
-
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            custom_reverse_lazy(
-                "get_automatic_overdue_penalty", kwargs={"compliance_report_version_id": compliance_report_version.id}
-            ),
+        self.compliance_report_version_id = compliance_report_version.id
+        self.endpoint_url = custom_reverse_lazy(
+            "get_automatic_overdue_penalty", kwargs={"compliance_report_version_id": compliance_report_version.id}
         )
 
-        # Assert
-        assert response.status_code == 200
-        response_data = response.json()
+    @patch(
+        "compliance.service.penalty_calculation_service.PenaltyCalculationService.get_automatic_overdue_penalty_data"
+    )
+    @pytest.mark.parametrize("due_date, invoice_number", [("2025-11-30", "AUTO-PENALTY-001"), (None, None)])
+    def test_get_automatic_overdue_penalty_success(self, mock_get_penalty_data, due_date, invoice_number):
+        mock_get_penalty_data.return_value = {
+            "penalty_status": "NOT PAID",
+            "penalty_type": "Automatic Overdue",
+            "penalty_charge_rate": Decimal("0.38"),
+            "total_penalty": Decimal("38656.43"),
+            "total_amount": Decimal("38656.43"),
+            "due_date": due_date,
+            "invoice_number": invoice_number,
+        }
 
-        # Verify the response structure and data matches AutomaticOverduePenaltyOut schema
-        assert response_data["penalty_status"] == "Accruing"  # resolver makes this title case
-        assert response_data["penalty_type"] == "Automatic Overdue"
-        assert response_data["penalty_charge_rate"] == "0.38"
-        assert response_data["total_penalty"] == "38656.43"
-        assert response_data["faa_interest"] == "0.00"
-        assert response_data["total_amount"] == "38656.43"
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_url)
+
+        assert response.status_code == 200, response.content
+        assert response.json() == {
+            "penalty_status": "Not Paid",
+            "penalty_type": "Automatic Overdue",
+            "penalty_charge_rate": "0.38",
+            "total_penalty": "38656.43",
+            "total_amount": "38656.43",
+            "due_date": due_date,
+            "invoice_number": invoice_number,
+        }
+        mock_get_penalty_data.assert_called_once_with(self.compliance_report_version_id)

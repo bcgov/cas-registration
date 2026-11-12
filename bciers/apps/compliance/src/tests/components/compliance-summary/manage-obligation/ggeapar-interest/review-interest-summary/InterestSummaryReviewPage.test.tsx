@@ -35,7 +35,6 @@ vi.mock("@/compliance/src/app/utils/getLateSubmissionPenalty", () => ({
     months_late: 2,
     monthly_penalty_rate: "5%",
     accumulated_penalty: "100.00",
-    faa_interest: "10.00",
     total_amount: "110.00",
   }),
 }));

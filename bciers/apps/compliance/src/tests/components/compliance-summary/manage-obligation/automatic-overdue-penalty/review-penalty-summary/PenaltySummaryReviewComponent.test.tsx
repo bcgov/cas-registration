@@ -63,7 +63,6 @@ const mockData = {
   penalty_type: "Automatic",
   penalty_charge_rate: "10%",
   total_penalty: "1100.00",
-  faa_interest: "50.00",
   total_amount: "1000.00",
 };
 
