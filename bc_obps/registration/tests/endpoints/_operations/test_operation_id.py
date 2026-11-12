@@ -102,7 +102,7 @@ class TestOperationIdEndpoint(CommonTestSetup):
             operator=approved_user_operator.operator,
             status=Operation.Statuses.REGISTERED,
         )
-        contact = baker.make_recipe('registration.tests.utils.contact')
+        contact = baker.make_recipe('registration.tests.utils.contact', operator=operation.operator)
 
         test_payload = {
             "payload": json.dumps(
