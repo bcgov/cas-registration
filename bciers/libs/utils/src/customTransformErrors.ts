@@ -159,6 +159,10 @@ const customTransformErrors = (
       if (error.property?.match(/\.emissions\.\d+\.methodology$/)) {
         return false;
       }
+      // Filter out oneOf error for biogenicIndustrialProcessEmissions when fields are blank
+      if (error.property?.match(/\.biogenicIndustrialProcessEmissions$/)) {
+        return false;
+      }
     }
 
     // Filter out gas type enum errors ONLY from oneOf branches
