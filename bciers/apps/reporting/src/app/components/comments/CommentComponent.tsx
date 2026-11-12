@@ -6,9 +6,14 @@ import { formatDate } from "@reporting/src/app/utils/formatDate";
 interface Props {
   comment: Comment;
   handleDelete: (reportVersionId: number, commentId: number) => void;
+  canUpdate: boolean;
 }
 
-const CommentComponent: React.FC<Props> = ({ comment, handleDelete }) => {
+const CommentComponent: React.FC<Props> = ({
+  comment,
+  handleDelete,
+  canUpdate,
+}) => {
   return (
     <Paper className="p-4 mt-2">
       <div className="flex justify-between">
@@ -30,7 +35,7 @@ const CommentComponent: React.FC<Props> = ({ comment, handleDelete }) => {
               "MMM D, YYYY h:mm A",
             )}
         </Typography>
-        {comment.user_can_edit && (
+        {comment.user_can_edit && canUpdate && (
           <>
             <IconButton
               title="Delete comment"
