@@ -1,4 +1,4 @@
-import { ValidationItem } from "@bciers/components/validationErrors";
+import type { ValidationItem } from "@bciers/components/validationErrors";
 
 export type Comment = {
   id: number;
