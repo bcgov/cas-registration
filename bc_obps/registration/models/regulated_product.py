@@ -7,6 +7,8 @@ from django.core.cache import cache
 from registration.enums.enums import RegistrationTableNames
 from registration.models.rls_configs.regulated_product import Rls as RegulatedProductRls
 
+REGULATED_PRODUCTS_CACHE_VERSION_KEY = "regulated_products_version"
+
 
 class RegulatedProduct(BaseModel):
     name = models.CharField(
@@ -43,5 +45,5 @@ class RegulatedProduct(BaseModel):
         """
         Override the save method to clear the cache when/if the regulated product is saved.
         """
-        cache.delete('regulated_products')
+        cache.delete(REGULATED_PRODUCTS_CACHE_VERSION_KEY)
         super().save(*args, **kwargs)
