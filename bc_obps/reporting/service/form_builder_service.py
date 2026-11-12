@@ -239,7 +239,8 @@ def build_source_type_schema(
     add_not_applicable_methodology: bool,
 ) -> Dict:
     form_builder_cache = caches["form_builder"]
-    cache_key = f"{config_id}-{activity_id}-{source_type_id}"
+    # The "Not Applicable" flag changes the schema, so it must be part of the key
+    cache_key = f"{config_id}-{activity_id}-{source_type_id}-{add_not_applicable_methodology}"
     cache_hit: Dict = form_builder_cache.get(cache_key)
 
     if cache_hit:

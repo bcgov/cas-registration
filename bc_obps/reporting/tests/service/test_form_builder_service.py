@@ -2,6 +2,7 @@ import json
 import uuid
 from unittest.mock import MagicMock, patch
 from django.core.cache import caches
+from django.core.cache.backends.locmem import LocMemCache
 from model_bakery.baker import prepare_recipe
 import pytest
 from registration.models.activity import Activity
@@ -198,7 +199,7 @@ class TestHandleSourceTypeMethod:
         build_source_type_schema(config_id, activity_id, source_type_id, False)
 
         assert len(mock_cache.get.mock_calls) == 1
-        mock_cache.get.assert_called_once_with(f"{config_id}-{activity_id}-{source_type_id}")
+        mock_cache.get.assert_called_once_with(f"{config_id}-{activity_id}-{source_type_id}-False")
         assert len(mock_cache.set.mock_calls) == 1
 
         mock_cache.reset_mock()
@@ -210,6 +211,24 @@ class TestHandleSourceTypeMethod:
         assert return_value == "cached"
         assert len(mock_cache.get.mock_calls) == 1
         assert len(mock_cache.set.mock_calls) == 0
+
+    @pytest.mark.parametrize("first_flag", [True, False])
+    def test_form_builder_cache_is_keyed_by_not_applicable_flag(self, first_flag):
+        original_cache = caches["form_builder"]
+        caches["form_builder"] = LocMemCache("test-form-builder", {"TIMEOUT": None})
+        try:
+            config_id = Configuration.objects.first().id
+            activity_id = Activity.objects.first().id
+            source_type_id = SourceType.objects.first().id
+
+            results = {}
+            for flag in [first_flag, not first_flag]:
+                results[flag] = json.dumps(build_source_type_schema(config_id, activity_id, source_type_id, flag))
+
+            assert "Not Applicable" in results[True]
+            assert "Not Applicable" not in results[False]
+        finally:
+            caches["form_builder"] = original_cache
 
     def test_build_schema_fallback_no_activityjsonschema(self):
         mock_cache = MagicMock()
