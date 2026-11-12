@@ -3,6 +3,7 @@ from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.models import ReportNonAttributableEmissions, EmissionCategory, GasType
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from rls.utils.manager import RlsManager
 
 
 class TestReportNonAttributableEndpoints(CommonTestSetup):
@@ -108,5 +109,9 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
         assert response.status_code == 422
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_report_non_attributable_by_version_id", facility_id="uuid")
-        assert_report_version_ownership_is_validated("save_report", method="post", facility_id="uuid")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated(
+                "get_report_non_attributable_by_version_id", facility_id="uuid"
+            )
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("save_report", method="post", facility_id="uuid")

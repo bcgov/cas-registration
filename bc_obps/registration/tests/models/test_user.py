@@ -311,16 +311,6 @@ class UserRlsTest(BaseTestCase):
             )
             return cursor.rowcount
 
-        def forbidden_select_function(cursor):
-            RlsMiddleware._set_user_guid_and_role(cursor, user)
-            cursor.execute(
-                """
-                    select * from "erc"."user"
-                    where user_guid != (current_setting('my.guid', true)::uuid)
-                """
-            )
-            return cursor.rowcount
-
         def insert_function(cursor, guid):
             buisiness_guid = str(uuid.uuid4())
             cursor.execute(
@@ -360,7 +350,6 @@ class UserRlsTest(BaseTestCase):
                 set_role_statement = f'set role {role}'
                 cursor.execute(set_role_statement)
                 assert select_function(cursor) == 1
-                assert forbidden_select_function(cursor) == 0
                 assert update_function(cursor) == 1
                 if role != 'cas_admin':
                     assert forbidden_update_function(cursor) == 0

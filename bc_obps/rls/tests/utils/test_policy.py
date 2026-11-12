@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch
-from registration.enums.enums import RegistrationTableNames
-from registration.models.operation import Operation
+from reporting.enums.enums import ReportingTableNames
+from reporting.models.report import Report
 from rls.enums import RlsRoles, RlsOperations
 from rls.utils.policy import RlsPolicy
 
@@ -14,14 +14,14 @@ class TestRlsPolicy(TestCase):
             role=RlsRoles.INDUSTRY_USER,
             policy_name="test_policy",
             operation=RlsOperations.SELECT,
-            table=RegistrationTableNames.OPERATION.value,
-            using_statement=Operation.Rls.using_statement,
+            table=ReportingTableNames.REPORT.value,
+            using_statement=Report.Rls.using_statement,
             schema="erc",
         )
 
         policy.apply_policy(mock_cursor)
 
-        expected_query = "CREATE POLICY test_policy ON erc.operation FOR RlsOperations.SELECT TO industry_user  USING ( \n                    operator_id IN (\n        SELECT uo.operator_id\n        FROM erc.user_operator uo\n        WHERE uo.user_id = current_setting('my.guid', true)::uuid\n          AND uo.status = 'Approved'\n    )\n                     );"
+        expected_query = "CREATE POLICY test_policy ON erc.report FOR RlsOperations.SELECT TO industry_user  USING ( \n        exists (\n            with approved_operator as (\n                select operator_id from erc.user_operator where\n                user_id = current_setting('my.guid', true)::uuid\n                and status='Approved'\n            )\n            select 1 from erc.operation_designated_operator_timeline tline\n            join approved_operator ao on ao.operator_id = tline.operator_id\n            and report.operator_id = tline.operator_id\n            and tline.operation_id = report.operation_id\n            and (start_date <= concat(report.reporting_year_id::text, '-12-31')::date and (end_date is null or end_date >= concat(report.reporting_year_id::text, '-12-31')::date))\n        ) );"
 
         mock_cursor.execute.assert_called_once_with(expected_query)
 
@@ -32,8 +32,8 @@ class TestRlsPolicy(TestCase):
             role=RlsRoles.INDUSTRY_USER,
             policy_name="test_policy",
             operation=RlsOperations.SELECT,
-            table=RegistrationTableNames.OPERATION,
-            using_statement=Operation.Rls.using_statement,
+            table=ReportingTableNames.REPORT,
+            using_statement=Report.Rls.using_statement,
             schema="erc",
         )
 
@@ -49,14 +49,14 @@ class TestRlsPolicy(TestCase):
             role=RlsRoles.INDUSTRY_USER,
             policy_name="test_policy",
             operation=RlsOperations.SELECT,
-            table=RegistrationTableNames.OPERATION.value,
-            using_statement=Operation.Rls.using_statement,
+            table=ReportingTableNames.REPORT.value,
+            using_statement=Report.Rls.using_statement,
             schema="erc",
         )
 
         policy.drop_policy(mock_cursor)
 
-        expected_query = 'DROP POLICY IF EXISTS test_policy ON erc.operation  '
+        expected_query = 'DROP POLICY IF EXISTS test_policy ON erc.report  '
 
         mock_cursor.execute.assert_called_once_with(expected_query)
 
@@ -67,8 +67,8 @@ class TestRlsPolicy(TestCase):
             role=RlsRoles.INDUSTRY_USER,
             policy_name="test_policy",
             operation=RlsOperations.SELECT,
-            table=RegistrationTableNames.OPERATION,
-            using_statement=Operation.Rls.using_statement,
+            table=ReportingTableNames.REPORT,
+            using_statement=Report.Rls.using_statement,
             schema="erc",
         )
 

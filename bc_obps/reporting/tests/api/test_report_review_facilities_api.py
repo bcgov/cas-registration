@@ -5,6 +5,7 @@ from unittest.mock import patch, MagicMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from rls.utils.manager import RlsManager
 
 
 class TestFacilitiesReviewEndpoints(CommonTestSetup):
@@ -67,5 +68,7 @@ class TestFacilitiesReviewEndpoints(CommonTestSetup):
         assert response.status_code == 200
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_selected_facilities")
-        assert_report_version_ownership_is_validated("save_selected_facilities", method="post")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("get_selected_facilities")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("save_selected_facilities", method="post")
