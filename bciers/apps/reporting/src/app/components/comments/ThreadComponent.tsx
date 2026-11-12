@@ -117,6 +117,7 @@ const ThreadComponent: React.FC<Props> = ({
               rows={3}
               inputRef={replyInputRef}
               error={hasCommentError}
+              disabled={isUpdating}
             />
             <Button
               variant="outlined"
