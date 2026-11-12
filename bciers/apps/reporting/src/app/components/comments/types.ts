@@ -1,3 +1,5 @@
+import type { ValidationItem } from "@bciers/components/validationErrors";
+
 export type Comment = {
   id: number;
   version_id: number;
@@ -25,4 +27,12 @@ export type ThreadsResponse = {
   threads: Thread[];
   facilities: FacilityItem[];
   can_create_comment_thread: boolean;
+};
+
+export const EMPTY_COMMENT_ERROR: ValidationItem = {
+  key: "comment",
+  error: {
+    message: "Comment cannot be empty",
+    severity: "Error",
+  },
 };

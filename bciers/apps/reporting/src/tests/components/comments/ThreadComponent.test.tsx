@@ -13,6 +13,7 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={vi.fn()}
         onThreadDeleted={vi.fn()}
+        version_id={42}
         thread={{
           id: 1,
           version_id: 42,
@@ -48,12 +49,13 @@ describe("The comment thread component", () => {
     expect(screen.getByText("Jun 22, 1999 4:00 PM")).toBeVisible();
   });
 
-  it("has a non-functional reply button", () => {
+  it("displays an error when trying to submit an empty reply", () => {
     render(
       <ThreadComponent
         canUpdate={true}
         onThreadUpdated={vi.fn()}
         onThreadDeleted={vi.fn()}
+        version_id={42}
         thread={{
           id: 1,
           version_id: 42,
@@ -63,13 +65,95 @@ describe("The comment thread component", () => {
       />,
     );
 
-    const replyButton = screen.getByRole("button", { name: "Reply" });
-    expect(replyButton).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
 
-    fireEvent.click(replyButton);
+    expect(screen.getByText(/Comment cannot be empty/)).toBeVisible();
+    expect(actionHandler).not.toHaveBeenCalled();
+  });
 
-    expect(screen.getByRole("button", { name: "Reply" })).toBeVisible();
-    expect(screen.queryByText("New comment")).not.toBeInTheDocument();
+  it("posts the reply, notifies the parent, and clears the field", async () => {
+    const thread = { id: 1, version_id: 42, resolved: false, comments: [] };
+    const updatedThread = {
+      ...thread,
+      comments: [
+        {
+          id: 9,
+          version_id: 42,
+          author: "An Author",
+          comment: "A new reply",
+          user_can_edit: true,
+        },
+      ],
+    };
+    // Defer resolving the response so the in-flight state can be asserted
+    let resolvePost: (value: unknown) => void;
+    actionHandler.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolvePost = resolve;
+      }),
+    );
+    const onThreadUpdated = vi.fn();
+    render(
+      <ThreadComponent
+        canUpdate={true}
+        onThreadUpdated={onThreadUpdated}
+        onThreadDeleted={vi.fn()}
+        version_id={42}
+        thread={thread}
+      />,
+    );
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Comment" }), {
+      target: { value: "A new reply" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+
+    // While awaiting the response, the reply button is disabled
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Reply" })).toBeDisabled(),
+    );
+    expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue(
+      "A new reply",
+    );
+    expect(onThreadUpdated).not.toHaveBeenCalled();
+
+    resolvePost!(updatedThread);
+
+    await waitFor(() =>
+      expect(onThreadUpdated).toHaveBeenCalledWith(updatedThread),
+    );
+    expect(actionHandler).toHaveBeenCalledWith(
+      "reporting/v2/report-version/42/threads/1/comments",
+      "POST",
+      "reports/42/",
+      { body: JSON.stringify({ comment: "A new reply" }) },
+    );
+    expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue("");
+  });
+
+  it("shows an error and keeps the message when posting a reply fails", async () => {
+    actionHandler.mockResolvedValueOnce({ error: "Could not post" });
+    const onThreadUpdated = vi.fn();
+    render(
+      <ThreadComponent
+        canUpdate={true}
+        onThreadUpdated={onThreadUpdated}
+        onThreadDeleted={vi.fn()}
+        version_id={42}
+        thread={{ id: 1, version_id: 42, resolved: false, comments: [] }}
+      />,
+    );
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Comment" }), {
+      target: { value: "A new reply" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+
+    expect(await screen.findByText("Could not post")).toBeVisible();
+    expect(onThreadUpdated).not.toHaveBeenCalled();
+    expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue(
+      "A new reply",
+    );
   });
   it("does not show the reply button when canUpdate is false", () => {
     render(
@@ -77,6 +161,7 @@ describe("The comment thread component", () => {
         canUpdate={false}
         onThreadUpdated={vi.fn()}
         onThreadDeleted={vi.fn()}
+        version_id={42}
         thread={{
           id: 1,
           version_id: 42,
@@ -95,6 +180,7 @@ describe("The comment thread component", () => {
     render(
       <ThreadComponent
         canUpdate={true}
+        version_id={42}
         onThreadUpdated={vi.fn()}
         onThreadDeleted={vi.fn()}
         thread={{ id: 1, version_id: 42, resolved: true, comments: [] }}
@@ -121,6 +207,7 @@ describe("The comment thread component", () => {
           canUpdate={true}
           onThreadUpdated={onThreadUpdated}
           onThreadDeleted={vi.fn()}
+          version_id={42}
           thread={thread}
         />,
       );
@@ -150,6 +237,7 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         onThreadDeleted={vi.fn()}
+        version_id={42}
         thread={{ id: 1, version_id: 42, resolved: false, comments: [] }}
       />,
     );
@@ -202,11 +290,14 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         onThreadDeleted={onThreadDeleted}
-        thread={deletableThread}
+        thread={thread}
+        version_id={42}
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Delete comment" }));
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "Delete comment" })[0],
+    );
 
     await waitFor(() =>
       expect(onThreadUpdated).toHaveBeenCalledWith(updatedThread),
@@ -243,6 +334,7 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         onThreadDeleted={onThreadDeleted}
+        version_id={42}
         thread={deletableThread}
       />,
     );
@@ -262,6 +354,7 @@ describe("The comment thread component", () => {
         canUpdate={true}
         onThreadUpdated={onThreadUpdated}
         onThreadDeleted={onThreadDeleted}
+        version_id={42}
         thread={deletableThread}
       />,
     );
@@ -271,5 +364,85 @@ describe("The comment thread component", () => {
     expect(await screen.findByText("Could not delete")).toBeVisible();
     expect(onThreadUpdated).not.toHaveBeenCalled();
     expect(onThreadDeleted).not.toHaveBeenCalled();
+  });
+
+  const editableThread = {
+    id: 1,
+    version_id: 42,
+    resolved: false,
+    comments: [
+      {
+        id: 7,
+        version_id: 42,
+        author: "An Author",
+        comment: "Edit me!",
+        user_can_edit: true,
+      },
+    ],
+  };
+
+  it("patches the edited comment and notifies the parent of the updated thread", async () => {
+    const updatedThread = {
+      ...editableThread,
+      comments: [
+        { ...editableThread.comments[0], comment: "I've been edited!" },
+      ],
+    };
+    actionHandler.mockResolvedValueOnce(updatedThread);
+    const onThreadUpdated = vi.fn();
+    render(
+      <ThreadComponent
+        canUpdate={true}
+        onThreadUpdated={onThreadUpdated}
+        onThreadDeleted={vi.fn()}
+        version_id={42}
+        thread={editableThread}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit comment" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Edit comment" }), {
+      target: { value: "I've been edited!" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(onThreadUpdated).toHaveBeenCalledWith(updatedThread),
+    );
+    expect(actionHandler).toHaveBeenCalledWith(
+      "reporting/v2/report-version/42/threads/1/comments/7",
+      "PATCH",
+      "reports/42/",
+      { body: JSON.stringify({ comment: "I've been edited!" }) },
+    );
+    expect(
+      screen.queryByRole("textbox", { name: "Edit comment" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows an error and stays in edit mode when editing a comment fails", async () => {
+    actionHandler.mockResolvedValueOnce({ error: "Could not edit" });
+    const onThreadUpdated = vi.fn();
+    render(
+      <ThreadComponent
+        canUpdate={true}
+        onThreadUpdated={onThreadUpdated}
+        onThreadDeleted={vi.fn()}
+        version_id={42}
+        thread={editableThread}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Edit comment" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Edit comment" }), {
+      target: { value: "Changed text" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(await screen.findByText("Could not edit")).toBeVisible();
+    expect(onThreadUpdated).not.toHaveBeenCalled();
+    expect(screen.getByRole("textbox", { name: "Edit comment" })).toHaveValue(
+      "Changed text",
+    );
   });
 });

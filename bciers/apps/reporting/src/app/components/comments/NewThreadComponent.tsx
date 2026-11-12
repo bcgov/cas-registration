@@ -1,7 +1,7 @@
 import { Button, MenuItem, Stack, TextField } from "@mui/material";
 import ThreadFrame from "./ThreadFrame";
 import { useState, useTransition } from "react";
-import { FacilityItem, Thread } from "./types";
+import { EMPTY_COMMENT_ERROR, FacilityItem, Thread } from "./types";
 import postCommentThread from "../../utils/comments/postCommentThread";
 import { useValidationErrors } from "@bciers/components/validationErrors/useValidationErrors";
 import { handleApiResponse } from "@bciers/components/validationErrors/handleApiResponse";
@@ -29,15 +29,7 @@ const NewThreadComponent: React.FC<Props> = ({
 
   const handleSubmit = () => {
     if (!newThreadData.comment?.trim()) {
-      setErrors([
-        {
-          key: "comment",
-          error: {
-            message: "Comment cannot be empty",
-            severity: "Error",
-          },
-        },
-      ]);
+      setErrors([EMPTY_COMMENT_ERROR]);
       return;
     }
 

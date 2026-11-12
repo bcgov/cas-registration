@@ -2,6 +2,7 @@ from typing import Literal, Tuple
 from reporting.api_v2._report_versions._report_version_id.comment_thread_schema import CommentThreadSchema
 from reporting.models.comment_thread import CommentThread
 from uuid import UUID
+from reporting.api_v2._report_versions._report_version_id.comment_thread_schema import CommentThreadIn
 from reporting.service.comment_service import CommentService
 from common.api.utils.current_user_utils import get_current_user_guid
 from common.permissions import authorize
@@ -11,6 +12,7 @@ from django.http import HttpRequest
 from reporting.api_v2.router import router
 from reporting.constants import EMISSIONS_REPORT_TAGS, REPORT_COMMENTS_TAGS
 from reporting.schema.generic import Message
+from reporting.service.comment_thread_service import CommentThreadService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
@@ -26,9 +28,50 @@ def delete_comment(
     request: HttpRequest, version_id: str, thread_id: str, comment_id: str
 ) -> Tuple[Literal[200], CommentThread] | Tuple[Literal[204], None]:
     user_guid: UUID = get_current_user_guid(request)
-    thread = CommentService.delete_comment(
-        version_id=int(version_id), thread_id=int(thread_id), comment_id=int(comment_id), user_guid=user_guid
-    )
+    comment = CommentService.check_comment_owner(comment_id=int(comment_id), user_guid=user_guid)
+    thread = CommentService.delete_comment(thread_id=int(thread_id), comment=comment, user_guid=user_guid)
     if thread is None:
         return 204, None
+    return 200, thread
+
+
+@router.post(
+    "report-version/{version_id}/threads/{thread_id}/comments",
+    response={201: CommentThreadSchema, custom_codes_4xx: Message},
+    tags=[*EMISSIONS_REPORT_TAGS, *REPORT_COMMENTS_TAGS],
+    description="Creates a comment for the specified report version and thread.",
+    auth=authorize("cas_director_analyst"),
+)
+@transaction.atomic
+def create_comment(
+    request: HttpRequest, version_id: str, thread_id: str, payload: CommentThreadIn
+) -> Tuple[Literal[201], CommentThread]:
+    user_guid: UUID = get_current_user_guid(request)
+    CommentService.create_comment(
+        comment_thread_id=int(thread_id),
+        report_version_id=int(version_id),
+        content=payload.comment,
+    )
+    thread = CommentThreadService.threads_with_annotated_comments(user_guid=user_guid).get(id=int(thread_id))
+    return 201, thread
+
+
+@router.patch(
+    "report-version/{version_id}/threads/{thread_id}/comments/{comment_id}",
+    response={200: CommentThreadSchema, custom_codes_4xx: Message},
+    tags=[*EMISSIONS_REPORT_TAGS, *REPORT_COMMENTS_TAGS],
+    description="Updates a comment authored by the current user.",
+    auth=authorize("cas_director_analyst"),
+)
+@transaction.atomic
+def update_comment(
+    request: HttpRequest, version_id: str, thread_id: str, comment_id: str, payload: CommentThreadIn
+) -> Tuple[Literal[200], CommentThread]:
+    user_guid: UUID = get_current_user_guid(request)
+    comment = CommentService.check_comment_owner(comment_id=int(comment_id), user_guid=user_guid)
+    CommentService.update_comment(
+        comment=comment,
+        content=payload.comment,
+    )
+    thread = CommentThreadService.threads_with_annotated_comments(user_guid=user_guid).get(id=int(thread_id))
     return 200, thread
