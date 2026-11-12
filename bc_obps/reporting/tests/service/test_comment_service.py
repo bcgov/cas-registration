@@ -30,10 +30,6 @@ class TestCommentService(TestCase):
         self.assertTrue(CommentThread.objects.filter(id=self.thread.id).exists())
         self.assertTrue(Comment.objects.filter(id=another_comment.id).exists())
 
-    def test_delete_comment_raises_permission_error_for_wrong_user(self):
-        with self.assertRaises(PermissionError):
-            CommentService.delete_comment(self.thread.id, self.comment, '00000000-0000-0000-0000-000000000000')
-
     def test_create_comment_creates_comment_on_thread(self):
         self.assertEqual(Comment.objects.filter(comment_thread_id=self.thread.id).count(), 1)
         CommentService.create_comment(
@@ -57,3 +53,6 @@ class TestCommentService(TestCase):
     def test_check_comment_owner_raises_permission_error_for_wrong_user(self):
         with self.assertRaises(PermissionError):
             CommentService.check_comment_owner(self.comment.id, '00000000-0000-0000-0000-000000000000')
+        # and assert that it returns the comment for the correct user
+        comment = CommentService.check_comment_owner(self.comment.id, self.user.user_guid)
+        self.assertEqual(comment.id, self.comment.id)
