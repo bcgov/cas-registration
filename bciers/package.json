@@ -64,7 +64,7 @@
     "@rjsf/core": "^6.5.2",
     "@rjsf/utils": "^6.5.2",
     "@rjsf/validator-ajv8": "^6.5.2",
-    "@sentry/nextjs": "^10.75.2",
+    "@sentry/nextjs": "^11.0.0",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/jest-dom": "^6.9.1",
     "@types/lodash.throttle": "^4.1.9",
