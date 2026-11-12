@@ -28,9 +28,6 @@ class FacilityDesignatedOperationTimelineRlsTest(BaseTestCase):
         approved_operation = make_recipe(
             'registration.tests.utils.operation', operator=approved_user_operator.operator, status='Draft'
         )
-        cannot_delete_operation = make_recipe(
-            'registration.tests.utils.operation', operator=approved_user_operator.operator, status='Registered'
-        )
         approved_facility = make_recipe('registration.tests.utils.facility', operation=approved_operation)
         approved_timeline = make_recipe(
             'registration.tests.utils.facility_designated_operation_timeline',
@@ -44,9 +41,6 @@ class FacilityDesignatedOperationTimelineRlsTest(BaseTestCase):
             'registration.tests.utils.facility_designated_operation_timeline',
             operation=other_operation,
             facility=other_facility,
-        )
-        cannot_delete_timeline = other_timeline = make_recipe(
-            'registration.tests.utils.facility_designated_operation_timeline', operation=cannot_delete_operation
         )
 
         def select_function(cursor):
@@ -109,7 +103,7 @@ class FacilityDesignatedOperationTimelineRlsTest(BaseTestCase):
                     DELETE FROM "erc"."facility_designated_operation_timeline"
                     WHERE id = %s
                 """,
-                (cannot_delete_timeline.id,),
+                (other_timeline.id,),
             )
             return cursor.rowcount
 

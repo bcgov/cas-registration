@@ -4,6 +4,7 @@ from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from model_bakery import baker
+from registration.models import Contact
 
 
 class TestOperationRegistrationSubmissionEndpoint(CommonTestSetup):
@@ -52,6 +53,13 @@ class TestOperationRegistrationSubmissionEndpoint(CommonTestSetup):
         operation = set_up_valid_mock_operation(Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
         operation.operator = approved_user_operator.operator
         operation.save()
+        # RLS needs these to be set properly. The set_up_valid_mock_operation() function doesn't do this properly because we set the operation.operator above after that call.
+        Contact.objects.all().update(operator=operation.operator)
+        baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            operation=operation,
+        )
         response = TestUtils.mock_patch_with_auth_role(
             self,
             "industry_user",
@@ -63,6 +71,7 @@ class TestOperationRegistrationSubmissionEndpoint(CommonTestSetup):
             },
             custom_reverse_lazy("operation_registration_submission", kwargs={'operation_id': operation.id}),
         )
+        print("RESPONSE: ", response.json())
         # Assert
         assert response.status_code == 200
         # Additional Assertions
