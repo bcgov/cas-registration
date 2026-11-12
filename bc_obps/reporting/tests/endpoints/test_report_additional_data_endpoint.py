@@ -5,6 +5,7 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from reporting.schema.report_additional_data import ReportAdditionalDataIn
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from rls.utils.manager import RlsManager
 
 
 class TestReportAdditionalDataApi(CommonTestSetup):
@@ -93,5 +94,7 @@ class TestReportAdditionalDataApi(CommonTestSetup):
         mock_get_report_additional_data.assert_called_once_with(self.report_version.id)
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_report_additional_data_by_version_id")
-        assert_report_version_ownership_is_validated("save_report_additional_data", method="post")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("get_report_additional_data_by_version_id")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("save_report_additional_data", method="post")

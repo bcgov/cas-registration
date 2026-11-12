@@ -3,6 +3,7 @@ from model_bakery import baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from rls.utils.manager import RlsManager
 
 
 class TestReportSupplementaryApi(CommonTestSetup):
@@ -68,5 +69,7 @@ class TestReportSupplementaryApi(CommonTestSetup):
         mock_is_initial_report_version.assert_called_once_with(self.old_report_version.id)
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("create_report_supplementary_version", method="post")
-        assert_report_version_ownership_is_validated("is_supplementary_report_version")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("create_report_supplementary_version", method="post")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("is_supplementary_report_version")
