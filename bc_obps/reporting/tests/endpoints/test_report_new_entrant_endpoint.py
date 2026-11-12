@@ -7,6 +7,7 @@ from registration.utils import custom_reverse_lazy
 from reporting.models.emission_category import EmissionCategory
 from reporting.schema.report_new_entrant import ReportNewEntrantSchemaIn
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from rls.utils.manager import RlsManager
 
 
 class TestNewEntrantDataApi(CommonTestSetup):
@@ -237,5 +238,7 @@ class TestNewEntrantDataApi(CommonTestSetup):
         assert response.status_code == 200
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_new_entrant_data")
-        assert_report_version_ownership_is_validated("save_new_entrant_data", method="post")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("get_new_entrant_data")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("save_new_entrant_data", method="post")

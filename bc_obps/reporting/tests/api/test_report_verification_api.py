@@ -5,6 +5,7 @@ from registration.utils import custom_reverse_lazy
 from reporting.schema.report_verification import ReportVerificationIn
 from reporting.models.report_verification import ReportVerification
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from rls.utils.manager import RlsManager
 
 
 class TestReportVerificationApi(CommonTestSetup):
@@ -120,6 +121,9 @@ class TestReportVerificationApi(CommonTestSetup):
         assert response_json["verification_conclusion"] == payload.verification_conclusion
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_report_verification_by_version_id")
-        assert_report_version_ownership_is_validated("get_report_verification_status")
-        assert_report_version_ownership_is_validated("save_report_verification", method="post")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("get_report_verification_by_version_id")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("get_report_verification_status")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("save_report_verification", method="post")

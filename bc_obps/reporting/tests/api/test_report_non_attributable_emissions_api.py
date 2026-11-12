@@ -6,6 +6,7 @@ from registration.utils import custom_reverse_lazy
 from reporting.tests.utils.report_access_validation import (
     assert_report_version_ownership_is_validated,
 )
+from rls.utils.manager import RlsManager
 
 
 class TestReportNonAttributableApi(CommonTestSetup):
@@ -63,13 +64,15 @@ class TestReportNonAttributableApi(CommonTestSetup):
         mock_save_report_non_attributable_emissions.assert_called_once()
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated(
-            "get_report_non_attributable_by_version_id",
-            method="get",
-            facility_id=self.facility.id,
-        )
-        assert_report_version_ownership_is_validated(
-            "save_report",
-            method="post",
-            facility_id=self.facility.id,
-        )
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated(
+                "get_report_non_attributable_by_version_id",
+                method="get",
+                facility_id=self.facility.id,
+            )
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated(
+                "save_report",
+                method="post",
+                facility_id=self.facility.id,
+            )
