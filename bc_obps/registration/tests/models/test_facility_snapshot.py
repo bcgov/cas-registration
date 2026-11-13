@@ -40,6 +40,13 @@ class FacilitySnapshotRlsTest(BaseTestCase):
         approved_operation = make_recipe(
             'registration.tests.utils.operation', operator=approved_user_operator.operator, status='Draft'
         )
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            operation=approved_operation,
+            start_date='2012-01-01',
+            end_date='2099-12-31',
+        )
         approved_facility = make_recipe('registration.tests.utils.facility', operation=approved_operation)
         approved_snapshot = make_recipe(
             'registration.tests.utils.facility_snapshot',
@@ -54,9 +61,26 @@ class FacilitySnapshotRlsTest(BaseTestCase):
             operation=other_operation,
             facility=other_facility,
         )
+        previously_owned_operation = make_recipe('registration.tests.utils.operation', status='Draft')
+        make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operator=approved_user_operator.operator,
+            operation=previously_owned_operation,
+            start_date='2012-01-01',
+            end_date='2015-12-31',
+        )
+        previously_owned_facility = make_recipe(
+            'registration.tests.utils.facility', operation=previously_owned_operation
+        )
+        previously_owned_snapshot = make_recipe(
+            'registration.tests.utils.facility_snapshot',
+            operation=previously_owned_operation,
+            facility=previously_owned_facility,
+        )
 
         def select_function(cursor):
             FacilitySnapshot.objects.get(id=approved_snapshot.id)
+            FacilitySnapshot.objects.get(id=previously_owned_snapshot.id)
 
         def forbidden_select_function(cursor):
             FacilitySnapshot.objects.get(id=other_snapshot.id)
