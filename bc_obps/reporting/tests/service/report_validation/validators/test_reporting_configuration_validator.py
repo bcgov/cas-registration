@@ -214,34 +214,36 @@ class TestReportingConfigurationValidator:
         assert "Only facilities of type Small Aggregate or Medium Facility" in error.message
         assert error.key.name == "NOT_APPLICABLE_METHODOLOGY_REPORTED"  # gitleaks:allow
 
-    def test_returns_error_when_not_applicable_with_other_facility_types(self):
+    @pytest.mark.parametrize(
+        "disallowed_facility_type",
+        [
+            Facility.Types.SINGLE_FACILITY,
+            Facility.Types.LARGE_FACILITY,
+            Facility.Types.ELECTRICITY_IMPORT,
+        ],
+    )
+    def test_returns_error_when_not_applicable_with_other_facility_types(self, disallowed_facility_type):
         """
         Test error handling for various disallowed facility types.
         """
         not_applicable_methodology = make_recipe("reporting.tests.utils.methodology", name="Not Applicable")
 
-        # Test with facility types that are not in the allowed list (not Small Aggregate or Medium Facility)
-        disallowed_types = [
-            Facility.Types.SINGLE_FACILITY,
-            Facility.Types.LARGE_FACILITY,
-            Facility.Types.ELECTRICITY_IMPORT,
-        ]
+        report_methodology = make_recipe(
+            "reporting.tests.utils.report_methodology",
+            report_version=self.report_version,
+            methodology=not_applicable_methodology,
+            json_data={},
+        )
 
-        for facility_type in disallowed_types:
-            report_methodology = make_recipe(
-                "reporting.tests.utils.report_methodology",
-                report_version=self.report_version,
-                methodology=not_applicable_methodology,
-                json_data={},
-            )
+        report_methodology.report_emission.report_source_type.report_activity.facility_report.facility_type = (
+            disallowed_facility_type
+        )
+        report_methodology.report_emission.report_source_type.report_activity.facility_report.save()
 
-            report_methodology.report_emission.report_source_type.report_activity.facility_report.facility_type = (
-                facility_type
-            )
-            report_methodology.report_emission.report_source_type.report_activity.facility_report.save()
+        result = self.validator_under_test.validate(self.report_version)
 
-            result = self.validator_under_test.validate(self.report_version)
-
-            assert "not_applicable_methodology_reported" in result, f"Expected error for facility type: {facility_type}"
-            error = result["not_applicable_methodology_reported"]
-            assert error.severity.name == "ERROR"
+        assert (
+            "not_applicable_methodology_reported" in result
+        ), f"Expected error for facility type: {disallowed_facility_type}"
+        error = result["not_applicable_methodology_reported"]
+        assert error.severity.name == "ERROR"

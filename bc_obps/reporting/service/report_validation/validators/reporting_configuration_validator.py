@@ -1,6 +1,7 @@
 from common.exceptions import InternalSystemError
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Q, OuterRef, QuerySet
+from registration.models.facility import Facility
 from reporting.models.configuration_element import ConfigurationElement
 from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_version import ReportVersion
@@ -51,8 +52,8 @@ def validate_configuration_elements_present(report_version: ReportVersion) -> di
     if missing_config.filter(
         ~Q(
             report_emission__report_source_type__report_activity__facility_report__facility_type__in=[
-                'Small Aggregate',
-                'Medium Facility',
+                Facility.Types.SMALL_AGGREGATE,
+                Facility.Types.MEDIUM_FACILITY,
             ]
         )
     ).exists():
