@@ -5,7 +5,7 @@ import { ReportOperationStatus } from "@bciers/utils/src/enums";
 import { createReport } from "@reporting/src/app/utils/createReport";
 import { createReportVersion } from "@reporting/src/app/utils/createReportVersion";
 import { getReportingYear } from "@bciers/actions/api";
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
 // Mock API actions
 vi.mock("@reporting/src/app/utils/createReport", () => ({
@@ -63,8 +63,13 @@ describe("ActionCell", () => {
     vi.clearAllMocks();
 
     // Mock window.location for full-page redirection checks
-    delete (window as unknown as Record<string, unknown>).location;
-    window.location = { href: "" } as unknown as string & Location;
+    vi.spyOn(window, "location", "get").mockReturnValue({
+      href: "",
+    } as unknown as Location);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe("Restricted / Closed Reporting Flow", () => {

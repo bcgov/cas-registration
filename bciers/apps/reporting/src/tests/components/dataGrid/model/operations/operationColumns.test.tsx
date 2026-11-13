@@ -1,4 +1,4 @@
-import { describe, vi } from "vitest";
+import { describe, onTestFinished, vi } from "vitest";
 import renderGridCell from "@bciers/testConfig/helpers/renderGridCell";
 import operationColumns from "@reporting/src/app/components/datagrid/models/operations/operationColumns";
 import { GridColDef } from "@mui/x-data-grid";
@@ -158,9 +158,10 @@ describe("operationColumns function", () => {
   it("navigates to the matching report page when clicking the 'Continue' button", async () => {
     const user = userEvent.setup();
 
-    // Mock window.location so we can capture href assignments
-    delete (window as any).location;
-    window.location = { href: "" } as any;
+    const locationSpy = vi
+      .spyOn(window, "location", "get")
+      .mockReturnValue({ href: "" } as unknown as Location);
+    onTestFinished(() => locationSpy.mockRestore());
 
     const columns = operationColumns(true);
 

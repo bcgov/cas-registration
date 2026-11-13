@@ -1,4 +1,4 @@
-import { expect, beforeEach } from "vitest";
+import { expect, beforeEach, afterEach } from "vitest";
 import {
   act,
   fireEvent,
@@ -101,14 +101,14 @@ describe("SessionTimeoutHandler", () => {
     mockGetEnvValue.mockResolvedValue("http://logout.url"); // NOSONAR
     mockCreateThrottledEventHandler.mockReturnValue(vi.fn());
 
-    // eslint-disable-next-line no-global-assign
-    window = Object.create(window);
-    Object.defineProperty(window, "location", {
-      value: {
-        href: "whatever",
-        origin: "also whatever",
-      },
-    });
+    vi.spyOn(window, "location", "get").mockReturnValue({
+      href: "whatever",
+      origin: "also whatever",
+    } as unknown as Location);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("does not render anything when not authenticated", () => {
@@ -333,10 +333,7 @@ describe("SessionTimeoutHandler", () => {
       return () => {}; // Return a no-op cleanup function
     });
     // Simulate that the document is not visible
-    Object.defineProperty(document, "visibilityState", {
-      get: () => "hidden",
-      configurable: true,
-    });
+    vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
     renderWithSession();
 
     // Manually invoke the refreshSession to simulate visibility change
