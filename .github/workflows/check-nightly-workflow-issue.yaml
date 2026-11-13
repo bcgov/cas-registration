@@ -1,0 +1,105 @@
+name: Update Issue Status Title
+
+on:
+  schedule:
+    - cron: '11 8-18/2 * * *' # Runs every second hour from 6am-6pm, or trigger it manually
+  workflow_dispatch:   # Allows manual testing
+
+
+# This workflow queries the issue that has been created to track failures on the
+# nightly workflow. Then depending on the status of bot comments on it, updates the title.
+# - If the issue has no unresolved bot comments, mark it with 🟢.
+# - If it has unresolved, unseen comments, mark it with 🔴.
+# - If it has unresolved but seen comments, mark it with 👀.
+
+jobs:
+  update-nightly-issue-title:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Process Issue Comments and Update Title
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ISSUE_NUMBER = ${{ vars.NIGHTLY_WORKFLOW_ISSUE }};
+            const BOT_NAME = 'github-actions[bot]';
+
+            const EMOJI_CLEAN = '🟢';   // No unresolved failures
+            const EMOJI_FAILURE = '🔴'; // Active unresolved failures
+            const EMOJI_SEEN = '👀';    // Active failures, but someone is looking
+
+            // Fetch the Nightly Workflow's issue's title, last 10 comments, and
+            // 👀 reactions on those comments.
+            const query = `
+            query ($owner: String!, $repo: String!, $number: Int!) {
+              repository(owner: $owner, name: $repo) {
+                issue(number: $number) {
+                  title
+                  comments(last: 10) {
+                    nodes {
+                      databaseId
+                      isMinimized
+                      minimizedReason
+                      author {
+                        login
+                      }
+                      reactions(content: EYES, last: 10) {
+                        totalCount
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            `
+
+            const graphqlResult = await github.graphql(query,{
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              number: ISSUE_NUMBER
+            });
+
+            const issueData = graphqlResult.repository.issue;
+            const currentTitle = issueData.title;
+            const comments = issueData.comments.nodes;
+
+            // Filter only unresolved bot comments.
+            const activeBotComments = comments.filter(comment =>
+              comment.author &&
+              comment.author.login === BOT_NAME &&
+              !comment.isMinimized
+            );
+
+            let targetEmoji = EMOJI_CLEAN;
+
+            if (activeBotComments.length > 0) {
+              targetEmoji = EMOJI_FAILURE;
+
+              // Filter unresolved comments with no reactions.
+              const unseenBotComments = comments.filter(comment =>
+                comment.reactions &&
+                comment.reactions.totalCount == 0
+              );
+
+              if (unseenBotComments > 0) {
+                targetEmoji = EMOJI_SEEN;
+              }
+            }
+
+            // Update the issue title, if needed.
+            const emojiRegex = /^[🔴🟢👀]\s*/;
+            const cleanTitle = currentTitle.replace(emojiRegex, '');
+            const newTitle = `${targetEmoji} ${cleanTitle}`;
+
+            if (currentTitle !== newTitle) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: ISSUE_NUMBER,
+                title: newTitle
+              });
+              console.log(`Updated title to: ${newTitle}`);
+            } else {
+              console.log('Title is already up to date.');
+            }
