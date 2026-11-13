@@ -1,3 +1,4 @@
+{{- if index .Values "cas-logging-sidecar-060" "enabled" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,6 +29,8 @@ spec:
               value: "/attachment-credentials/attachment-credentials.json"
           resources: {{ toYaml .Values.checkDocumentFileStatus.resources | nindent 12 }}
           command:
+            # Kube-log-runner just as entrypoint, not to output logfiles
+            - .local/bin/kube-log-runner
             - /usr/bin/env
             - bash
             - -c
@@ -40,8 +43,8 @@ spec:
               readOnly: true
         {{- include "cas-logging-sidecar.containers" (dict
             "containerToSidecar" "check-document-file-status"
-            "logName" (index .Values "cas-logging-sidecar" "logName")
-            "host" (index .Values "cas-logging-sidecar" "host")
+            "logName" (index .Values "cas-logging-sidecar-060" "logName")
+            "host" (index .Values "cas-logging-sidecar-060" "host")
             "appName" "check-document-file-status") | nindent 8 }}
       volumes:
         {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
@@ -51,3 +54,4 @@ spec:
             items:
             - key: credentials.json
               path: attachment-credentials.json
+{{- end }}

@@ -135,9 +135,12 @@ run-reset-data-dag-on-upgrade:
   enabled: true
   airflowEndpoint: https://cas-airflow-dev.apps.silver.devops.gov.bc.ca
 
-cas-logging-sidecar:
+cas-logging-sidecar-060:
+  enabled: false
+
+cas-logging-sidecar-071:
+  enabled: true
   host: ~
-  index: "cas-bciers-dev-logs"
   prefix: "cas-bciers-dev-logs"
-  tag: "oc-cas-bciers"
-  logName: "cas-bciers-dev-logs"
+  gateway:
+    debugLogsToConsole: true

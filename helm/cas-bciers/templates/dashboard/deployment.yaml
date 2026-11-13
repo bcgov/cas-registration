@@ -1,3 +1,4 @@
+{{- if index .Values "cas-logging-sidecar-060" "enabled" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -47,15 +48,17 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.dashboardFrontend.resources | nindent 12 }}
-          {{- $containerName := printf "%s-dashboard-frontend" (include "cas-bciers.fullname" .) }}
-          {{- include "cas-logging-sidecar.containers" (dict
-              "containerToSidecar" $containerName
-              "logName" (index .Values "cas-logging-sidecar" "logName")
-              "host" (index .Values "cas-logging-sidecar" "host")
-              "appName" "dashboard") | nindent 8 }}
+          # Kube-log-runner just as entrypoint, not to output logfiles
+          args: ["node", "server.js"]
+        {{- $containerName := printf "%s-dashboard-frontend" (include "cas-bciers.fullname" .) }}
+        {{- include "cas-logging-sidecar.containers" (dict
+          "containerToSidecar" $containerName
+          "logName" (index .Values "cas-logging-sidecar-060" "logName")
+          "host" (index .Values "cas-logging-sidecar-060" "host")
+          "appName" "dashboard") | nindent 8 }}
       restartPolicy: Always
       volumes:
-              {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
+        {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
       affinity:
         {
           podAntiAffinity: {
@@ -75,3 +78,4 @@ spec:
             ]
           }
         }
+{{- end }}

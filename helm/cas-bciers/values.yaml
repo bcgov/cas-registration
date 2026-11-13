@@ -268,3 +268,45 @@ sentry:
   traceSampleRate: 0.1
 
 airflowNamespace: ~
+
+# v0.6.0 of the chart
+cas-logging-sidecar-060:
+  # Deploy just in test and prod. Dev will use the 0.7.1 chart which implements Vector.
+  enabled: true
+
+# v0.7.1 of the chart. Once ready to deploy in all environments:
+# - Drop the alias and condition in chart.yaml.
+# - Rename this value root to `cas-logging-sidecar`.
+# - Use all `-veclog.yaml` deployment templates in of the legacy templates:
+#   - `./templates/administration/deployment-veclog.yaml` replaces `./templates/administration/deployment-veclog.yaml`.
+#   - `./templates/backend/deployment-veclog.yaml` replaces `./templates/backend/deployment-veclog.yaml`.
+#   - `./templates/backend/check-file-status-deployment-veclog.yaml` replaces `./templates/backend/check-file-status-deployment-veclog.yaml`.
+#   - `./templates/compliance/deployment-veclog.yaml` replaces `./templates/compliance/deployment-veclog.yaml`.
+#   - `./templates/dashboard/deployment-veclog.yaml` replaces `./templates/dashboard/deployment-veclog.yaml`.
+#   - `./templates/registration/deployment-veclog.yaml` replaces `./templates/registration/deployment-veclog.yaml`.
+#   - `./templates/reporting/deployment-veclog.yaml` replaces `./templates/reporting/deployment-veclog.yaml`.
+# - Remove `if .Values.casLoggingSidecar071.enabled ... end` conditionals around deployment templates.
+# - Update any values usage in deployment templates from `cas-logging-sidecar-071` to `cas-logging-sidecar`.
+cas-logging-sidecar-071:
+  # Deploy just to Dev namespace for now, do not deploy in test or prod.
+  enabled: false
+  tag: "oc-cas-bciers"
+  gateway:
+    extraTransforms:
+      filter_document_check_heartbeat:
+        type: filter
+        inputs: [vector]
+        condition:
+          type: vrl
+          source: |
+            .app_name != "check-document-file-status" ||
+            !match_any(to_string!(.message), [r'Iteration \d+ \(running indefinitely\)',r'Next check is in \d+ second\(s\).',r'Checked 0 documents'])
+      filter_backend_ready_live_heartbeat:
+        type: filter
+        inputs: [filter_document_check_heartbeat]
+        condition:
+          type: vrl
+          source: |
+            .app_name != "backend" ||
+            !match(to_string!(.message), r'GET \/(liveness|readiness) HTTP.*?200')
+    sinkInputs: [filter_backend_ready_live_heartbeat]
