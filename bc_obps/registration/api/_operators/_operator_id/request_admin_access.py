@@ -5,9 +5,9 @@ from django.http import HttpRequest
 from registration.constants import OPERATOR_TAGS
 from registration.schema import RequestAccessOut, Message
 from common.api.utils import get_current_user_guid
-from service.application_access_service import ApplicationAccessService
+from registration.service.application_access_service import ApplicationAccessService
 from registration.api.router import router
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.post(

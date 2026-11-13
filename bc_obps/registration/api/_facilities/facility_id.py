@@ -3,12 +3,12 @@ from uuid import UUID
 from django.http import HttpRequest
 from registration.constants import FACILITY_TAGS
 from registration.schema import FacilityIn, FacilityOut, Message
-from service.facility_service import FacilityService
+from registration.service.facility_service import FacilityService
 from common.api.utils import get_current_user_guid
 from common.permissions import authorize
 from registration.api.router import router
 from registration.models import Facility
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.get(

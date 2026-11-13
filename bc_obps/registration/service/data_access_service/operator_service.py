@@ -1,0 +1,61 @@
+from django.db.models import QuerySet
+from common.exceptions import UserError
+from registration.utils import update_model_instance
+from registration.models import Operator, User, UserOperator
+from uuid import UUID
+from ninja.types import DictStrAny
+from compliance.models import ComplianceReportVersion
+
+
+class OperatorDataAccessService:
+    @classmethod
+    def get_operator_by_id(cls, operator_id: UUID) -> Operator:
+        return Operator.objects.get(id=operator_id)
+
+    @classmethod
+    def get_all_operators(cls) -> QuerySet[Operator]:
+        return Operator.objects.exclude(status=Operator.Statuses.DECLINED)
+
+    @classmethod
+    def get_operators_business_guid(cls, operator_id: UUID) -> UUID:
+        from registration.service.data_access_service.user_operator_service import UserOperatorDataAccessService
+
+        approved_admin_users = UserOperatorDataAccessService.get_admin_users(
+            operator_id, UserOperator.Statuses.APPROVED
+        )
+        if not approved_admin_users:
+            raise UserError('This operator does not have a business guid yet.')
+        # all approved admins will have the same business_guid so we can use first one
+        first_approved_admin: User = approved_admin_users.first()  # type: ignore[assignment] # we know this will not be None
+        return first_approved_admin.business_guid
+
+    @classmethod
+    def get_operators_by_cra_number(cls, cra_business_number: str) -> Operator:
+        return Operator.objects.exclude(status=Operator.Statuses.DECLINED).get(cra_business_number=cra_business_number)
+
+    @classmethod
+    def get_operators_by_legal_name(cls, legal_name: str) -> QuerySet[Operator]:
+        return (
+            Operator.objects.exclude(status=Operator.Statuses.DECLINED)
+            .filter(legal_name__icontains=legal_name)
+            .order_by("legal_name")
+        )
+
+    @classmethod
+    def update_operator(
+        cls,
+        operator_id: UUID,
+        operator_data: DictStrAny,
+    ) -> Operator:
+        operator = Operator.objects.get(pk=operator_id)
+        update_model_instance(
+            operator,
+            operator_data.keys(),
+            operator_data,
+        )
+        operator.save()
+        return operator
+
+    @classmethod
+    def check_operator_has_compliance_reports(cls, operator_id: UUID) -> bool:
+        return ComplianceReportVersion.objects.filter(compliance_report__report__operator_id=operator_id).exists()

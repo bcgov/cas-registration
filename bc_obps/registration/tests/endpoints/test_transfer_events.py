@@ -165,7 +165,7 @@ class TestTransferEventEndpoint(CommonTestSetup):
         assert response_items_2[0].get('status') == status_to_filter
 
     # POST
-    @patch("service.transfer_event_service.TransferEventService.create_transfer_event")
+    @patch("registration.service.transfer_event_service.TransferEventService.create_transfer_event")
     def test_user_can_post_transfer_event_success(self, mock_create_transfer_event: MagicMock):
         mock_payload = {
             "transfer_entity": "Operation",

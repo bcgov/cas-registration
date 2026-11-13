@@ -5,8 +5,8 @@ from registration.schema import OperationInformationInUpdate, OperationOut, Oper
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATION_TAGS
-from service.error_service.custom_codes_4xx import custom_codes_4xx
-from service.operation_service import OperationService, UpdateOperationData, MultipleOperatorData
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from registration.service.operation_service import OperationService, UpdateOperationData, MultipleOperatorData
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
 from registration.models import Operation

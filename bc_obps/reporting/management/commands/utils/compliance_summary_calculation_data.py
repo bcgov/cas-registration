@@ -20,7 +20,7 @@ from reporting.models import (
     ReportUnit,
     ReportVersion,
 )
-from service.report_service import ReportService
+from reporting.service.report_service import ReportService
 
 SUFFIX = " - name from admin"
 GSC_UNIT_NAME = "GSC Unit 1"

@@ -6,7 +6,7 @@ from model_bakery.baker import make_recipe
 
 class TestGetInternalUsersEndpoint(CommonTestSetup):
     @patch(
-        "service.data_access_service.user_service.UserDataAccessService.get_internal_users_including_archived",
+        "registration.service.data_access_service.user_service.UserDataAccessService.get_internal_users_including_archived",
         autospec=True,
     )
     def test_returns_data_as_provided_by_the_service(self, mock_get_internal_users_including_archived: MagicMock):

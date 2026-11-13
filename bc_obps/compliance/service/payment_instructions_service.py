@@ -3,7 +3,7 @@ from typing import Dict, Any, Tuple, Generator
 from django.utils import timezone
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.service.exceptions import ComplianceInvoiceError
-from service.pdf.pdf_generator_service import PDFGeneratorService
+from common.service.pdf.pdf_generator_service import PDFGeneratorService
 from compliance.enums import ComplianceInvoiceTypes
 from compliance.constants import CLEAN_BC_LOGO_COMPLIANCE_INVOICE
 

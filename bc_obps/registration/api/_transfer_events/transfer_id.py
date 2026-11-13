@@ -8,8 +8,8 @@ from common.api.utils import get_current_user_guid
 from common.permissions import authorize
 from registration.api.router import router
 from registration.schema import TransferEventOut, TransferEventUpdateIn, Message
-from service.error_service.custom_codes_4xx import custom_codes_4xx
-from service.transfer_event_service import TransferEventService
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from registration.service.transfer_event_service import TransferEventService
 
 
 @router.get(

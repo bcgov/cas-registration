@@ -6,7 +6,7 @@ from django.http import HttpRequest
 from compliance.schema.apply_compliance_units import ApplyComplianceUnitsIn, ApplyComplianceUnitsOut
 from compliance.service.bc_carbon_registry.apply_compliance_units_service import ApplyComplianceUnitsService
 from compliance.service.bc_carbon_registry.schema import FifteenDigitString
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.constants import COMPLIANCE
 from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth

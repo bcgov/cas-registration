@@ -42,7 +42,7 @@ class TestReportVerificationService(TestCase):
         )
 
     @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
-    @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
+    @patch("reporting.service.report_service.ReportService.get_registration_purpose_by_version_id")
     def test_get_report_verification_status_returns_true_for_regulated_purpose(
         self, mock_get_registration_purpose, mock_get_emissions
     ):
@@ -65,7 +65,7 @@ class TestReportVerificationService(TestCase):
         mock_get_emissions.assert_not_called()
 
     @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
-    @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
+    @patch("reporting.service.report_service.ReportService.get_registration_purpose_by_version_id")
     def test_get_report_verification_status_returns_false_for_non_regulated_purpose(
         self, mock_get_registration_purpose, mock_get_emissions
     ):
@@ -88,7 +88,7 @@ class TestReportVerificationService(TestCase):
         mock_get_emissions.assert_not_called()
 
     @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
-    @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
+    @patch("reporting.service.report_service.ReportService.get_registration_purpose_by_version_id")
     def test_get_report_verification_status_returns_true_for_reporting_operation_with_high_emissions(
         self, mock_get_registration_purpose, mock_get_emissions
     ):
@@ -110,7 +110,7 @@ class TestReportVerificationService(TestCase):
         mock_get_emissions.assert_called_once_with(self.report_version.id)
 
     @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
-    @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
+    @patch("reporting.service.report_service.ReportService.get_registration_purpose_by_version_id")
     def test_get_report_verification_status_returns_false_for_reporting_operation_with_low_emissions(
         self, mock_get_registration_purpose, mock_get_emissions
     ):
@@ -132,7 +132,7 @@ class TestReportVerificationService(TestCase):
         mock_get_emissions.assert_called_once_with(self.report_version.id)
 
     @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
-    @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
+    @patch("reporting.service.report_service.ReportService.get_registration_purpose_by_version_id")
     def test_get_report_verification_status_returns_true_for_electricity_import_operation(
         self, mock_get_registration_purpose, mock_get_emissions
     ):

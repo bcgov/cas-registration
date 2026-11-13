@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import Optional
 from uuid import UUID
-from service.data_access_service.user_service import UserDataAccessService
-from service.data_access_service.operator_service import OperatorDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.operator_service import OperatorDataAccessService
 from compliance.models import ComplianceReportVersion
 
 

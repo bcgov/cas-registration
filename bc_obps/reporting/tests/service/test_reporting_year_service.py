@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime, timezone
 from unittest.mock import patch
-from service.reporting_year_service import ReportingYearService
+from reporting.service.reporting_year_service import ReportingYearService
 from reporting.models import ReportingYear
 from model_bakery.baker import make_recipe
 
@@ -18,7 +18,7 @@ class TestReportingYearService:
             description='Test reporting year',
         )
 
-    @patch('service.reporting_year_service.timezone')
+    @patch('reporting.service.reporting_year_service.timezone')
     def test_get_current_reporting_year(self, mock_timezone):
         expected_reporting_year = 2000
         fake_now = datetime(2001, 1, 1, tzinfo=timezone.utc)
@@ -39,7 +39,7 @@ class TestReportingYearService:
         reporting_year = ReportingYearService.get_reporting_year_by_version_id(report_version.id)
         assert reporting_year == self.reporting_year
 
-    @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
+    @patch("reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year")
     def test_get_previous_reporting_years(self, mock_get_current_reporting_year):
         # Arrange
         for year in [2023, 2024, 2025]:

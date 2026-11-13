@@ -3,7 +3,7 @@ from typing import Literal, Tuple
 from django.http import HttpRequest
 
 from reporting.schema.generic import Message
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from ..schema.report_new_entrant import ReportNewEntrantDataOut, ReportNewEntrantSchemaIn
 

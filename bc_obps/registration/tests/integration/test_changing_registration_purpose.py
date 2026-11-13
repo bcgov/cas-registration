@@ -8,7 +8,7 @@ from registration.models.facility_designated_operation_timeline import FacilityD
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from service.tests.operation_service.test_operation_service import create_test_file
+from registration.tests.service.operation_service.test_operation_service import create_test_file
 
 
 class TestChangingRegistrationPurpose(CommonTestSetup):

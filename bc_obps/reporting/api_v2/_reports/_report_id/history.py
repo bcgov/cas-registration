@@ -11,7 +11,7 @@ from reporting.api_v2.router import router
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.report_history import ReportHistoryResponse
 from reporting.schema.generic import Message
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.service.report_history_dashboard_service import ReportingHistoryDashboardService
 
 

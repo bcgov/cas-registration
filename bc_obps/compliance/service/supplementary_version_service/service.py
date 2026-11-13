@@ -11,7 +11,7 @@ from compliance.service.supplementary_version_service.new_earned_credits_handler
 from compliance.service.supplementary_version_service.no_change_handler import NoChangeHandler
 from compliance.service.supplementary_version_service.supercede_version_handler import SupercedeVersionHandler
 from reporting.models import ReportComplianceSummary, ReportVersion
-from service.error_service.handle_exception import ExceptionHandler
+from common.service.error_service.handle_exception import ExceptionHandler
 
 logger = logging.getLogger(__name__)
 

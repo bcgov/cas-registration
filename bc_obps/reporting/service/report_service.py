@@ -1,0 +1,258 @@
+from uuid import UUID
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Case, When, Value, BooleanField
+from django.db import transaction
+from django.db.models import QuerySet
+from common.exceptions import UserError
+from registration.models import Activity
+from registration.models import RegulatedProduct
+from registration.models.operation import Operation
+from reporting.models import ReportOperationRepresentative
+from reporting.models.report import Report
+from reporting.models.facility_report import FacilityReport
+from reporting.models.report_operation import ReportOperation
+from reporting.service.report_product_service import ReportProductService
+from reporting.service.data_access_service.report_service import ReportDataAccessService
+from reporting.service.data_access_service.reporting_year import ReportingYearDataAccessService
+from registration.service.operation_designated_operator_timeline_service import (
+    OperationDesignatedOperatorTimelineService,
+)
+from reporting.service.report_version_service import ReportVersionService
+from reporting.service.facility_report_service import FacilityReportService, SaveFacilityReportData
+from typing import Any, List, Optional
+from registration.service.data_access_service.user_service import UserDataAccessService
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class CreateReportForReportingYearData:
+    operation_id: UUID
+    reporting_year: int
+    registration_purpose: str
+
+
+class SaveReportOperationData:
+    def __init__(
+        self,
+        operator_legal_name: str,
+        operation_name: str,
+        operation_type: str,
+        registration_purpose: str,
+        bc_obps_regulated_operation_id: str,
+        activities: List[int],
+        regulated_products: List[int],
+        operation_report_type: str,
+        operation_representative_name: List[int],
+        operator_trade_name: Optional[str] = None,
+        operation_bcghgid: Optional[str] = None,
+    ):
+        self.operator_legal_name = operator_legal_name
+        self.operation_name = operation_name
+        self.operation_type = operation_type
+        self.registration_purpose = registration_purpose
+        self.bc_obps_regulated_operation_id = bc_obps_regulated_operation_id
+        self.activities = activities
+        self.regulated_products = regulated_products
+        self.operation_report_type = operation_report_type
+        self.operation_representative_name = operation_representative_name
+        self.operator_trade_name = operator_trade_name
+        self.operation_bcghgid = operation_bcghgid
+
+
+class ReportService:
+    @classmethod
+    @transaction.atomic()
+    def create_report(cls, operation_id: UUID, reporting_year: int) -> int:
+        if ReportDataAccessService.report_exists(operation_id, reporting_year):
+            raise UserError("A report already exists for this operation and year, unable to create a new one.")
+
+        # Fetching report context
+        designated_operator_timeline = (
+            OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
+                operation_id=operation_id, reporting_year=reporting_year
+            )
+        )
+        if not designated_operator_timeline:
+            raise ObjectDoesNotExist(
+                f"Designated operator for reporting year {reporting_year} not found for operation {operation_id}."
+            )
+
+        operation = Operation.objects.prefetch_related("activities", "regulated_products", "opted_in_operation").get(
+            id=operation_id
+        )
+
+        # Creating report object
+
+        report = Report.objects.create(
+            operation=operation,
+            operator=designated_operator_timeline.operator,
+            reporting_year=ReportingYearDataAccessService.get_by_year(reporting_year),
+        )
+
+        report_version = ReportVersionService.create_report_version(report)
+
+        return report_version.id
+
+    @classmethod
+    @transaction.atomic()
+    def create_report_for_reporting_year(
+        cls,
+        user_guid: UUID,
+        data: CreateReportForReportingYearData,
+    ) -> int:
+        operation_id = data.operation_id
+        reporting_year = data.reporting_year
+
+        user_operator = UserDataAccessService.get_user_operator_by_user(user_guid)
+        operation = Operation.objects.prefetch_related(
+            "activities",
+            "regulated_products",
+            "opted_in_operation",
+        ).get(id=operation_id)
+
+        # Check whether the operation had a designated operator during the selected reporting year
+        designated_operator_timeline = (
+            OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
+                operation_id=operation_id,
+                reporting_year=reporting_year,
+            )
+        )
+
+        if designated_operator_timeline:
+            # Historical designation path:
+            # allow report creation only if the authenticated user's operator was
+            # the designated operator for the selected reporting year
+            if designated_operator_timeline.operator.id != user_operator.operator_id:
+                raise UserError(
+                    f"This operation was owned by another operator in {reporting_year}, "
+                    "you do not need to report on this operation. "
+                    "If you believe this is incorrect, please contact ghgregulator@gov.bc.ca."
+                )
+
+            operator = designated_operator_timeline.operator
+
+        else:
+            # Fallback path:
+            # no historical designation exists for the selected reporting year
+            # allow creation only if the operation is currently registered to the authenticated user's operator
+            if operation.operator_id != user_operator.operator_id:
+                raise UserError(
+                    f"This operation was owned by another operation in {reporting_year}, "
+                    "you do not need to report on this operation. "
+                    "If you believe this is incorrect, please contact ghgregulator@gov.bc.ca."
+                )
+
+            if operation.status != Operation.Statuses.REGISTERED:
+                raise UserError(
+                    "Only currently registered operations can be used to create a report for this reporting year."
+                )
+
+            operator = user_operator.operator
+
+        # A report cannot be created if one already exists for the same operation and reporting year
+        if ReportDataAccessService.report_exists(operation_id, reporting_year):
+            raise UserError("A report already exists for this operation and year, unable to create a new one.")
+
+        # BORO ID: validate that OBPS Regulated, Opt-in, and New Entrant operations
+        selected_registration_purpose = data.registration_purpose
+
+        requires_boro_id = selected_registration_purpose in [
+            Operation.Purposes.OBPS_REGULATED_OPERATION,
+            Operation.Purposes.OPTED_IN_OPERATION,
+            Operation.Purposes.NEW_ENTRANT_OPERATION,
+        ]
+
+        if requires_boro_id and operation.bc_obps_regulated_operation_id is None:
+            raise UserError(
+                "This operation does not have a BORO ID, please wait for a BORO ID to be issued before starting this report."
+            )
+
+        report = Report.objects.create(
+            operation=operation,
+            operator=operator,
+            reporting_year=ReportingYearDataAccessService.get_by_year(reporting_year),
+        )
+
+        report_version = ReportVersionService.create_report_version(
+            report,
+            registration_purpose=selected_registration_purpose,
+        )
+
+        return report_version.id
+
+    @staticmethod
+    def get_report_by_id(report_id: int) -> Report:
+        return Report.objects.get(id=report_id)
+
+    @classmethod
+    @transaction.atomic
+    def save_report_operation(cls, report_version_id: int, data: Any) -> ReportOperation:
+        # Fetch the existing report operation
+        report_operation = ReportOperation.objects.get(report_version__id=report_version_id)
+
+        # Update the selected_for_report field based on the provided data
+        representative_ids_in_data = data.operation_representative_name
+        ReportOperationRepresentative.objects.filter(report_version_id=report_version_id).update(
+            selected_for_report=Case(
+                When(id__in=representative_ids_in_data, then=Value(True)),
+                default=Value(False),
+                output_field=BooleanField(),
+            )
+        )
+        # Update fields from data
+        report_operation.operator_legal_name = data.operator_legal_name
+        report_operation.operator_trade_name = data.operator_trade_name
+        report_operation.operation_name = data.operation_name
+        report_operation.operation_type = data.operation_type
+        report_operation.operation_bcghgid = data.operation_bcghgid
+        report_operation.bc_obps_regulated_operation_id = data.bc_obps_regulated_operation_id
+
+        # Fetch and set ManyToMany fields
+        activities = Activity.objects.filter(id__in=data.activities)
+        report_operation.activities.set(activities)
+        regulated_products = RegulatedProduct.objects.filter(id__in=data.regulated_products)
+        report_operation.regulated_products.set(regulated_products)
+        report_operation.save()
+
+        if report_operation.operation_type == 'Linear Facilities Operation':
+            facility_reports: QuerySet[FacilityReport] = FacilityReport.objects.filter(
+                report_version__id=report_version_id
+            )
+
+            # Update empty records for unregulated products for all facility reports associated with this report version
+            facility_report_ids = facility_reports.values_list("id", flat=True)
+            ReportProductService.update_empty_records_for_unregulated_products(report_version_id, facility_report_ids)
+
+            # For facility reports that haven't yet been marked Completed,
+            # add all operation-level activities as defaults (without removing any existing facility-level selections the user may have made)
+            uncompleted_reports = (f for f in facility_reports if not f.is_completed)
+            for f in uncompleted_reports:
+                FacilityReportService.add_activities_to_facility_report(facility_report=f, activities=data.activities)
+                # Always update regulated products
+                FacilityReportService.prune_report_product_data_for_facility_report(
+                    facility_report=f, regulated_products=data.regulated_products
+                )
+        else:
+            facility_report: FacilityReport = FacilityReport.objects.get(report_version__id=report_version_id)
+
+            # Update empty records for unregulated products for all facility reports associated with this report version
+            ReportProductService.update_empty_records_for_unregulated_products(report_version_id, [facility_report.id])
+
+            facility_report_save_data = SaveFacilityReportData(
+                facility_name=report_operation.operation_name,
+                facility_type=facility_report.facility_type,
+                activities=data.activities,
+                regulated_products=data.regulated_products,
+            )
+            FacilityReportService.save_facility_report(
+                report_version_id=facility_report.report_version_id,
+                facility_id=facility_report.facility_id,
+                data=facility_report_save_data,
+            )
+
+        return report_operation
+
+    @staticmethod
+    def get_registration_purpose_by_version_id(version_id: int) -> dict:
+        registration_purpose = ReportOperation.objects.get(report_version__id=version_id).registration_purpose
+        return {"registration_purpose": registration_purpose}

@@ -6,9 +6,9 @@ from registration.constants import USER_OPERATOR_TAGS
 from common.api.utils import get_current_user_guid
 from registration.schema import UserOperatorStatusUpdate, UserOperatorStatusUpdateOut, Message
 from registration.models import UserOperator
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.api.router import router
-from service.user_operator_service import UserOperatorService
+from registration.service.user_operator_service import UserOperatorService
 
 
 @router.patch(

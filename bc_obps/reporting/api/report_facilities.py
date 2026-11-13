@@ -2,7 +2,7 @@ from typing import Literal, Tuple
 from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from reporting.service.report_facilities_service import ReportFacilitiesService
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth

@@ -57,7 +57,7 @@ class TestReportActivityJsonValidator:
             and "dependencies" not in schema["properties"]["test_prop"]
         )
 
-    @patch("service.form_builder_service.FormBuilderService.build_form_schema")
+    @patch("reporting.service.form_builder_service.FormBuilderService.build_form_schema")
     def test_validate_with_extra_field(self, mock_build_form_schema):
         mock_build_form_schema.return_value = json.dumps(
             {
@@ -126,7 +126,7 @@ class TestReportActivityJsonValidator:
             )
         }
 
-    @patch("service.form_builder_service.FormBuilderService.build_form_schema")
+    @patch("reporting.service.form_builder_service.FormBuilderService.build_form_schema")
     def test_validate_with_nested_dependent_schema(self, mock_build_form_schema):
         mock_build_form_schema.return_value = json.dumps(
             {

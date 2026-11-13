@@ -48,7 +48,7 @@ class TestReportSupplementaryApi(CommonTestSetup):
         assert response.json() == self.new_report_version.id
         mock_create_or_clone.assert_called_once_with(report_version.id)
 
-    @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
+    @patch("reporting.service.report_version_service.ReportVersionService.is_initial_report_version")
     def test_returns_data_as_provided_by_is_initial_version(self, mock_is_initial_report_version: MagicMock):
         is_initial = True
         mock_is_initial_report_version.return_value = is_initial

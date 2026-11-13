@@ -8,11 +8,11 @@ from reporting.models import ReportOperationRepresentative, ReportVersion
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.service.report_product_service import ReportProductService
-from service.activity_service import ActivityService
-from service.data_access_service.regulated_product_service import RegulatedProductDataAccessService
-from service.facility_report_service import FacilityReportService
+from registration.service.activity_service import ActivityService
+from registration.service.data_access_service.regulated_product_service import RegulatedProductDataAccessService
+from reporting.service.facility_report_service import FacilityReportService
 
-from service.reporting_year_service import ReportingYearService
+from reporting.service.reporting_year_service import ReportingYearService
 from reporting.service.sync_validation_service import SyncValidationService
 
 

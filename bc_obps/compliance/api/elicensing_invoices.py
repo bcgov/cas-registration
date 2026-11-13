@@ -8,7 +8,7 @@ from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from ninja import Query
 from registration.utils import CustomPagination
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja.pagination import paginate
 from registration.schema.generic import Message
 from .router import router

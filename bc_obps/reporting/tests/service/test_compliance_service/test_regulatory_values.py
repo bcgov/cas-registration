@@ -10,7 +10,7 @@ from reporting.service.compliance_service.regulatory_values import (
     get_industry_regulatory_values,
     get_product_regulatory_values_override,
 )
-from service.report_service import ReportService
+from reporting.service.report_service import ReportService
 
 
 class TestRegulatoryValues(TestCase):

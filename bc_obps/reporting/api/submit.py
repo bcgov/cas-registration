@@ -8,7 +8,7 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.service.report_submission_service import ReportSubmissionService
-from service.error_service.custom_codes_4xx import custom_codes_4xx
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 
 

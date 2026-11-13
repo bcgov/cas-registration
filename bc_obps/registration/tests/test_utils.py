@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from ninja.errors import HttpError
 from django.test import RequestFactory, TestCase, override_settings
 from registration.tests.utils.bakers import user_operator_baker
-from service.tests.operation_service.test_operation_service import set_up_valid_mock_operation
+from registration.tests.service.operation_service.test_operation_service import set_up_valid_mock_operation
 
 pytestmark = pytest.mark.django_db
 
