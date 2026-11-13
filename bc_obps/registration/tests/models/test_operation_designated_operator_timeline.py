@@ -1,5 +1,5 @@
 from common.tests.utils.helpers import BaseTestCase
-from model_bakery import baker
+from model_bakery.baker import make_recipe
 from registration.tests.constants import (
     TIMESTAMP_COMMON_FIELDS,
 )
@@ -8,7 +8,7 @@ from registration.tests.constants import (
 class OperationDesignatedOperatorTimelineModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = baker.make_recipe('registration.tests.utils.operation_designated_operator_timeline')
+        cls.test_object = make_recipe('registration.tests.utils.operation_designated_operator_timeline')
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
