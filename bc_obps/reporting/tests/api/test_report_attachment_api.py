@@ -7,6 +7,7 @@ from reporting.models.report_attachment import ReportAttachment
 from reporting.tests.utils.report_access_validation import (
     assert_report_version_ownership_is_validated,
 )
+from rls.utils.manager import RlsManager
 
 
 class TestReportAttachmentEndpoints(CommonTestSetup):
@@ -206,6 +207,9 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         mock_get_attachments.assert_not_called()
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_report_attachments")
-        assert_report_version_ownership_is_validated("get_report_attachment_url", file_id=1234)
-        assert_report_version_ownership_is_validated("save_report_attachments", method="post")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("get_report_attachments")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("get_report_attachment_url", file_id=1234)
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("save_report_attachments", method="post")

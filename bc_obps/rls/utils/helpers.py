@@ -124,3 +124,29 @@ def generate_report_policy_mapping_from_grants(
                 policy_data['using_statement'] = using_statement
             policy_mapping[role].append(policy_data)
     return policy_mapping
+
+
+# The above function (generate_report_policy_mapping_from_grants) can be deprecated & all calls to it from Reporting & Compliance can be refactored to use this one.
+# This functiion has been simplified and improved to use a single policy mapping parameter that allows for individual role - operation pairs to have different using statements.
+def generate_policy_mapping(
+    role_operation_policy_mapping: Dict[RlsRoles, List[Dict[str, str]]],
+) -> Dict[RlsRoles, List[Dict[str, str]]]:
+    """
+    Generates a mapping of roles to their corresponding policies based on the provided grants and using statements.
+    The result is consumed by the `generate_rls_policies` function to create RLS policies for Reporting tables.
+
+    Args:
+        role_operation_policy_mapping (dict): A dict mapping roles to their respective operations & operations to their specific using statements.
+
+    Returns:
+        dict: A mapping of roles to their corresponding policies.
+    """
+    policy_mapping: Dict[RlsRoles, List[Dict[str, str]]] = {}
+    for role, operation_policies in role_operation_policy_mapping.items():
+        policy_mapping[role] = []
+        for operation_policy in operation_policies:
+            for operation, statement in operation_policy.items():
+                policy_data = {'operation': operation}
+                policy_data['using_statement'] = statement
+                policy_mapping[role].append(policy_data)
+    return policy_mapping

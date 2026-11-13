@@ -9,6 +9,7 @@ from reporting.service.report_emission_allocation_service import (
     ReportProductEmissionAllocationData,
 )
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from rls.utils.manager import RlsManager
 
 
 class TestReportEmissionAllocationApi(CommonTestSetup):
@@ -539,9 +540,11 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
         )
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_emission_allocations", facility_id="uuid")
-        assert_report_version_ownership_is_validated(
-            "save_emission_allocation_data",
-            method="post",
-            facility_id="uuid",
-        )
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("get_emission_allocations", facility_id="uuid")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated(
+                "save_emission_allocation_data",
+                method="post",
+                facility_id="uuid",
+            )
