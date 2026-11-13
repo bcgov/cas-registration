@@ -115,12 +115,7 @@ class UserOperatorRlsTest(BaseTestCase):
 
         def delete_function(cursor):
             user = User.objects.all().first()
-            print("U_S_E_R: ", user)
             op = UserOperator.objects.first()
-            # print("OP: ", op)
-            # op.user = user
-            # op.save()
-            # print("OP: ", op)
             cursor.execute(
                 """
                     Update "erc"."user_operator" set user_id = %s where id=%s;
