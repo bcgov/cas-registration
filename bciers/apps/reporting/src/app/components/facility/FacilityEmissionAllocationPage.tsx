@@ -20,7 +20,7 @@ export default async function FacilityEmissionAllocationPage({
   if (
     page_data.payload.ordered_activities.find(
       (activity: { id: number; name: string; slug: string }) =>
-        (activity.slug = "pulp_and_paper"),
+        activity.slug === "pulp_and_paper",
     )
   ) {
     isPulpAndPaper = true;
