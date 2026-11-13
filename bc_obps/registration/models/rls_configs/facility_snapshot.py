@@ -21,12 +21,12 @@ class Rls:
 
     industry_user_using_statement = """
         exists (
-            select 1 from erc.operation o
+            select 1 from erc.operation_designated_operator_timeline t
             join erc.user_operator uo
-            on uo.user_id = current_setting('my.guid', true)::uuid
-            and uo.operator_id = o.operator_id
-            and o.id = facility_snapshot.operation_id
+            on uo.operator_id = t.operator_id
+            and uo.user_id = current_setting('my.guid', true)::uuid
             and uo.status='Approved'
+            and t.operation_id = facility_snapshot.operation_id
         )
     """
 
