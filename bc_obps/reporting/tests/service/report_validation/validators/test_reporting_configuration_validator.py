@@ -1,6 +1,7 @@
 from common.exceptions import InternalSystemError
 from model_bakery.baker import make, make_recipe, prepare_recipe
 import pytest
+from registration.models.facility import Facility
 from reporting.models.configuration_element import ConfigurationElement
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 from reporting.service.report_validation.validators import reporting_configuration_validator
@@ -139,3 +140,110 @@ class TestReportingConfigurationValidator:
         )
 
         assert self.validator_under_test.validate(self.report_version) == {}
+
+    def test_passes_with_not_applicable_methodology_for_allowed_facility_types(self):
+        """
+        Test that "Not Applicable" methodology is allowed for Small Aggregate and Medium Facility types.
+        """
+        not_applicable_methodology = make_recipe("reporting.tests.utils.methodology", name="Not Applicable")
+
+        # Create report methodology with "Not Applicable" for a Small Aggregate facility
+        # No json_data (no fields reported) for Not Applicable
+        report_methodology = make_recipe(
+            "reporting.tests.utils.report_methodology",
+            report_version=self.report_version,
+            methodology=not_applicable_methodology,
+            json_data={},
+        )
+
+        # Update facility type to Small Aggregate
+        report_methodology.report_emission.report_source_type.report_activity.facility_report.facility_type = (
+            "Small Aggregate"
+        )
+        report_methodology.report_emission.report_source_type.report_activity.facility_report.save()
+
+        # No configuration element needed for Not Applicable methodology
+        assert self.validator_under_test.validate(self.report_version) == {}
+
+    def test_passes_with_not_applicable_methodology_for_medium_facility(self):
+        """
+        Test that "Not Applicable" methodology is allowed for Medium Facility type.
+        """
+        not_applicable_methodology = make_recipe("reporting.tests.utils.methodology", name="Not Applicable")
+
+        report_methodology = make_recipe(
+            "reporting.tests.utils.report_methodology",
+            report_version=self.report_version,
+            methodology=not_applicable_methodology,
+            json_data={},
+        )
+
+        # Update facility type to Medium Facility
+        report_methodology.report_emission.report_source_type.report_activity.facility_report.facility_type = (
+            "Medium Facility"
+        )
+        report_methodology.report_emission.report_source_type.report_activity.facility_report.save()
+
+        assert self.validator_under_test.validate(self.report_version) == {}
+
+    def test_returns_error_when_not_applicable_reported_by_disallowed_facility_type(self):
+        """
+        Test that an error is returned when "Not Applicable" methodology is reported by a facility type
+        other than Small Aggregate or Medium Facility.
+        """
+        not_applicable_methodology = make_recipe("reporting.tests.utils.methodology", name="Not Applicable")
+
+        report_methodology = make_recipe(
+            "reporting.tests.utils.report_methodology",
+            report_version=self.report_version,
+            methodology=not_applicable_methodology,
+            json_data={},
+        )
+
+        # Set facility type to something other than Small Aggregate or Medium Facility
+        report_methodology.report_emission.report_source_type.report_activity.facility_report.facility_type = (
+            "Large Facility"
+        )
+        report_methodology.report_emission.report_source_type.report_activity.facility_report.save()
+
+        result = self.validator_under_test.validate(self.report_version)
+
+        assert "not_applicable_methodology_reported" in result
+        error = result["not_applicable_methodology_reported"]
+        assert error.severity.name == "ERROR"
+        assert "Only facilities of type Small Aggregate or Medium Facility" in error.message
+        assert error.key.name == "NOT_APPLICABLE_METHODOLOGY_REPORTED"  # gitleaks:allow
+
+    @pytest.mark.parametrize(
+        "disallowed_facility_type",
+        [
+            Facility.Types.SINGLE_FACILITY,
+            Facility.Types.LARGE_FACILITY,
+            Facility.Types.ELECTRICITY_IMPORT,
+        ],
+    )
+    def test_returns_error_when_not_applicable_with_other_facility_types(self, disallowed_facility_type):
+        """
+        Test error handling for various disallowed facility types.
+        """
+        not_applicable_methodology = make_recipe("reporting.tests.utils.methodology", name="Not Applicable")
+
+        report_methodology = make_recipe(
+            "reporting.tests.utils.report_methodology",
+            report_version=self.report_version,
+            methodology=not_applicable_methodology,
+            json_data={},
+        )
+
+        report_methodology.report_emission.report_source_type.report_activity.facility_report.facility_type = (
+            disallowed_facility_type
+        )
+        report_methodology.report_emission.report_source_type.report_activity.facility_report.save()
+
+        result = self.validator_under_test.validate(self.report_version)
+
+        assert (
+            "not_applicable_methodology_reported" in result
+        ), f"Expected error for facility type: {disallowed_facility_type}"
+        error = result["not_applicable_methodology_reported"]
+        assert error.severity.name == "ERROR"
