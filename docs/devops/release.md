@@ -42,9 +42,17 @@ When you're ready to make a release to test and/or prod, apply the following ste
    - bump the version number
    - generate a change log
 1. create a pull request and confirm all the migrations have been created (at the time of writing, one for each of registration, reporting, compliance, common, RLS, and task-scheduler)
-1. once the pull request is approved, use `gh pr merge {PR_NUMBER} --squash --admin` or the 'Merge without waiting for requirements to be met (bypass rules)' checkbox in the GitHub ui to bypass the queue and merge the release PR
+1. once the pull request is approved, use `gh pr merge {PR_NUMBER} --squash --admin` or the 'Merge without waiting for requirements to be met (bypass rules)' checkbox in the GitHub ui to bypass the queue and merge the release PR. This will bypass the Merge Queue _and_ Locked Branch.
+
    > [!TIP]
    > **The above step has changed**! The queue and lock can be bypassed _without_ needing to unlock. See [GH CLI docs for more info](https://cli.github.com/manual/gh_pr_merge).
+   - In the PR status page click _View merge status_, which will open a sidebar. In the sidebar, check the _Merge without waiting for requirements to be met (bypass rules)_ checkbox, which will change the button to _Bypass rules and merge (squash)_. This will bypass the Merge Queue _and_ Locked Branch.
+     1. ![GitHub Locked Branch Merge part 0](../images/locked_branch_merge_0.png)
+     1. ![GitHub Locked Branch Merge part 1](../images/locked_branch_merge_1.png)
+     1. ![GitHub Locked Branch Merge part 2](../images/locked_branch_merge_2.png)
+   - If the _Merge when ready_ button as a further actions dropdown arrow, click the dropdown, then select _Bypass requirements_.
+     1. ![GitHub Locked Branch Bypass](../images/bypass_merge.png)
+
 1. go to the shipit dev environment and keep an eye on the required checks on the merge commit (note: check-migrations will fail until https://github.com/bcgov/cas-registration/issues/3590 is completed). Once the checks pass, shipit will automatically deploy the release commit to the dev environment once CI passes.
 1. update your local develop branch and fast-forward the `main` branch using:
 

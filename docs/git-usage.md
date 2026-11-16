@@ -49,6 +49,22 @@ Developers with Admin permission on the repository can [jump their PRs to the to
 
 PRs can be merged into the `develop` branch after repeated removals from the queue due to flakiness. A repository admin (other than yourself) should check the queue failures to determine if the it is applicable to bypass. You can use the `gh pr merge {PR_NUMBER} --squash --admin` command or the bypass button in the UI.
 
+#### In GitHub
+
+##### Method 1
+
+In the PR status page click _View merge status_, which will open a sidebar. In the sidebar, check the _Merge without waiting for requirements to be met (bypass rules)_ checkbox, which will change the button to _Bypass rules and merge (squash)_. This will bypass the Merge Queue _and_ Locked Branch.
+
+1. ![GitHub Locked Branch Merge part 1](./images/locked_branch_merge_0.png)
+1. ![GitHub Locked Branch Merge part 1](./images/locked_branch_merge_1.png)
+1. ![GitHub Locked Branch Merge part 2](./images/locked_branch_merge_2.png)
+
+##### Method 2
+
+If the _Merge when ready_ button as a further actions dropdown arrow, click the dropdown, then select _Bypass requirements_.
+
+1. ![GitHub Locked Branch Bypass](./images/bypass_merge.png)
+
 ### Further Reading
 
 - [How merge queues work](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#how-merge-queues-work)
