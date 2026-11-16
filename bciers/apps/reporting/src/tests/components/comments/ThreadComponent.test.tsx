@@ -49,6 +49,56 @@ describe("The comment thread component", () => {
     expect(screen.getByText("Jun 22, 1999 4:00 PM")).toBeVisible();
   });
 
+  it("opens the reply form when clicking the reply button", async () => {
+    render(
+      <ThreadComponent
+        canUpdate={true}
+        onThreadUpdated={vi.fn()}
+        onThreadDeleted={vi.fn()}
+        version_id={42}
+        thread={{
+          id: 1,
+          version_id: 42,
+          resolved: false,
+          comments: [],
+        }}
+      />,
+    );
+
+    // Before clicking, only the reply button is shown
+    expect(
+      screen.queryByRole("textbox", { name: "Comment" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Save" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Cancel" }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+
+    expect(screen.getByRole("textbox", { name: "Comment" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeEnabled();
+    // The reply button collapses away once its exit animation completes
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("button", { name: "Reply" }),
+      ).not.toBeInTheDocument(),
+    );
+
+    // Cancel collapses the form and brings the reply button back
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("textbox", { name: "Comment" }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(screen.getByRole("button", { name: "Reply" })).toBeVisible();
+  });
+
   it("displays an error when trying to submit an empty reply", () => {
     render(
       <ThreadComponent
@@ -66,12 +116,13 @@ describe("The comment thread component", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
     expect(screen.getByText(/Comment cannot be empty/)).toBeVisible();
     expect(actionHandler).not.toHaveBeenCalled();
   });
 
-  it("posts the reply, notifies the parent, and clears the field", async () => {
+  it("posts the reply, notifies the parent, and closes the reply form", async () => {
     const thread = { id: 1, version_id: 42, resolved: false, comments: [] };
     const updatedThread = {
       ...thread,
@@ -103,14 +154,15 @@ describe("The comment thread component", () => {
       />,
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
     fireEvent.change(screen.getByRole("textbox", { name: "Comment" }), {
       target: { value: "A new reply" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
-    // While awaiting the response, the reply button is disabled
+    // While awaiting the response, the save button is disabled
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "Reply" })).toBeDisabled(),
+      expect(screen.getByRole("button", { name: "Save" })).toBeDisabled(),
     );
     expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue(
       "A new reply",
@@ -128,7 +180,13 @@ describe("The comment thread component", () => {
       "reports/42/",
       { body: JSON.stringify({ comment: "A new reply" }) },
     );
-    expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue("");
+    // On success, the reply form collapses and the reply button returns
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("textbox", { name: "Comment" }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(screen.getByRole("button", { name: "Reply" })).toBeEnabled();
   });
 
   it("shows an error and keeps the message when posting a reply fails", async () => {
@@ -144,10 +202,11 @@ describe("The comment thread component", () => {
       />,
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
     fireEvent.change(screen.getByRole("textbox", { name: "Comment" }), {
       target: { value: "A new reply" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
     expect(await screen.findByText("Could not post")).toBeVisible();
     expect(onThreadUpdated).not.toHaveBeenCalled();
