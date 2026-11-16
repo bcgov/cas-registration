@@ -246,20 +246,59 @@ class ReportSupplementaryCloningTests(TestCase):
             business_role_id="Operation Representative",
             _quantity=4,
         )
+        # Contacts with any business role are selectable, not only "Operation Representative"
+        make_recipe(
+            "registration.tests.utils.contact",
+            first_name="Sam",
+            last_name="Senior",
+            operator_id=self.new_report_version.report.operator_id,
+            business_role_id="Senior Officer",
+        )
 
         clone_or_refresh_report_version_representatives(
             self.old_report_version, self.new_report_version, is_operation_transferred=True
         )
         self.assertEqual(
-            ReportOperationRepresentative.objects.filter(report_version=self.new_report_version).count(), 4
+            ReportOperationRepresentative.objects.filter(report_version=self.new_report_version).count(), 5
         )
         self.assertQuerySetEqual(
             ReportOperationRepresentative.objects.filter(report_version=self.new_report_version).values_list(
                 "representative_name", flat=True
             ),
-            ["John Doe1", "John Doe2", "John Doe3", "John Doe4"],
+            ["John Doe1", "John Doe2", "John Doe3", "John Doe4", "Sam Senior"],
             ordered=False,
         )
+        # No representative is pre-selected for a transferred operation
+        self.assertFalse(
+            ReportOperationRepresentative.objects.filter(
+                report_version=self.new_report_version, selected_for_report=True
+            ).exists()
+        )
+
+    def test_clone_report_version_representatives_no_transfer_adds_missing_operator_contacts(self):
+        old_selections = dict(
+            ReportOperationRepresentative.objects.filter(report_version=self.old_report_version).values_list(
+                "representative_name", "selected_for_report"
+            )
+        )
+        make_recipe(
+            "registration.tests.utils.contact",
+            first_name="Nina",
+            last_name="New",
+            operator_id=self.new_report_version.report.operator_id,
+        )
+
+        clone_or_refresh_report_version_representatives(
+            self.old_report_version, self.new_report_version, is_operation_transferred=False
+        )
+
+        new_selections = dict(
+            ReportOperationRepresentative.objects.filter(report_version=self.new_report_version).values_list(
+                "representative_name", "selected_for_report"
+            )
+        )
+        # Previous selections are carried over and the new operator contact is added unselected
+        self.assertDictEqual(new_selections, {**old_selections, "Nina New": False})
 
     def test_clone_report_version_person_responsible(self):
         """
