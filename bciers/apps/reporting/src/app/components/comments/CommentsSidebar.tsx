@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Paper, Typography } from "@mui/material";
+import { Box, Button, Collapse, Paper, Typography } from "@mui/material";
 import { Thread, FacilityItem } from "./types";
 import ThreadComponent from "./ThreadComponent";
 import NewThreadComponent from "./NewThreadComponent";
@@ -60,15 +60,17 @@ const CommentsSidebar: React.FC<Props> = ({
           </Button>
         )}
       </Box>
-      {canMakeComment && isCreating && (
-        <NewThreadComponent
-          facilities={facilities}
-          onCancel={() => {
-            setIsCreating(false);
-          }}
-          onThreadCreated={handleCreate}
-          version_id={version_id}
-        />
+      {canMakeComment && (
+        <Collapse in={isCreating} timeout={400} unmountOnExit>
+          <NewThreadComponent
+            facilities={facilities}
+            onCancel={() => {
+              setIsCreating(false);
+            }}
+            onThreadCreated={handleCreate}
+            version_id={version_id}
+          />
+        </Collapse>
       )}
       {openThreads.map((thread) => (
         <ThreadComponent
