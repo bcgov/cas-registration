@@ -1,10 +1,15 @@
 from common.exceptions import InternalSystemError
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import OuterRef, QuerySet
+from django.db.models import Q, OuterRef, QuerySet
+from registration.models.facility import Facility
 from reporting.models.configuration_element import ConfigurationElement
 from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_version import ReportVersion
-from reporting.service.report_validation.report_validation_error import ReportValidationError
+from reporting.service.report_validation.report_validation_error import (
+    ReportValidationError,
+    ReportValidationErrorKey,
+    Severity,
+)
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 
 TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
@@ -30,13 +35,35 @@ def annotated_report_methodology(report_version_id: int) -> QuerySet[ReportMetho
 def validate_configuration_elements_present(report_version: ReportVersion) -> dict[str, ReportValidationError]:
 
     missing_config = (
-        annotated_report_methodology(report_version.id).filter(matching_config_id__isnull=True).values("id")  # type: ignore
+        annotated_report_methodology(report_version.id)
+        .select_related("methodology", "report_emission__report_source_type__report_activity__facility_report")
+        .filter(matching_config_id__isnull=True)  # type: ignore
     )
 
-    if missing_config.exists():
+    missing_config_ignoring_not_applicable = missing_config.filter(~Q(methodology__name='Not Applicable')).values_list(
+        'id', flat=True
+    )
+
+    if missing_config_ignoring_not_applicable:
         raise InternalSystemError(
-            f"Missing configuration elements for report methodology IDs: {str.join(', ', [str(m['id']) for m in missing_config])}"
+            f"Missing configuration elements for report methodology IDs: {str.join(', ', [str(m) for m in missing_config_ignoring_not_applicable])}"
         )
+
+    if missing_config.filter(
+        ~Q(
+            report_emission__report_source_type__report_activity__facility_report__facility_type__in=[
+                Facility.Types.SMALL_AGGREGATE,
+                Facility.Types.MEDIUM_FACILITY,
+            ]
+        )
+    ).exists():
+        return {
+            "not_applicable_methodology_reported": ReportValidationError(
+                Severity.ERROR,
+                "Only facilities of type Small Aggregate or Medium Facility are allowed to report a `Not Applicable` methodology, please review your emissions reports.",
+                ReportValidationErrorKey.NOT_APPLICABLE_METHODOLOGY_REPORTED,
+            )
+        }
 
     return {}
 
@@ -47,11 +74,15 @@ def validate_reporting_fields(report_version: ReportVersion) -> dict[str, Report
     - either listed in its configuration ConfigurationElementReportingField models
     - or are a Unit field for an available reporting field (i.e. fieldSlug + "FieldUnits")
     """
-    methodology_records = annotated_report_methodology(report_version.id).annotate(
-        allowed_slugs=(
-            ConfigurationElement.objects.filter(id=OuterRef("matching_config_id"))
-            .annotate(slugs=ArrayAgg("reporting_fields__slug"))
-            .values("slugs")
+    methodology_records = (
+        annotated_report_methodology(report_version.id)
+        .filter(matching_config_id__isnull=False)  # type: ignore
+        .annotate(
+            allowed_slugs=(
+                ConfigurationElement.objects.filter(id=OuterRef("matching_config_id"))
+                .annotate(slugs=ArrayAgg("reporting_fields__slug"))
+                .values("slugs")
+            )
         )
     )
 
@@ -78,9 +109,4 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     - Validate that the extra reporting fields reported are in that configuration element
     """
 
-    validate_configuration_elements_present(report_version)
-    validate_reporting_fields(report_version)
-
-    # This validator only raises system errors
-    # Errors found by this validator are not expected to be fixable by users, but rather indicate a bug or malicious manipulation of data inputs.
-    return {}
+    return validate_configuration_elements_present(report_version) or validate_reporting_fields(report_version)
