@@ -147,7 +147,7 @@ const ThreadComponent: React.FC<Props> = ({
                   error={hasCommentError}
                   disabled={isUpdating}
                 />
-                <Stack direction="row" spacing={2}>
+                <Stack direction="row" spacing={2} className="mt-4">
                   <Button
                     type="submit"
                     variant="contained"
