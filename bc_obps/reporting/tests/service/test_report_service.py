@@ -219,7 +219,7 @@ class TestReportService(TestCase):
                 business_role_id="Operation Representative",
                 _quantity=3,
             )
-            # Contacts with any business role are selectable, not only "Operation Representative"
+            # Contacts with any business role are selectable
             senior_officer = baker.make_recipe(
                 'registration.tests.utils.contact',
                 operator=operator_old,

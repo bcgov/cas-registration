@@ -246,11 +246,11 @@ class ReportSupplementaryCloningTests(TestCase):
             business_role_id="Operation Representative",
             _quantity=4,
         )
-        # Contacts with any business role are selectable, not only "Operation Representative"
+        # Contacts with any business role are selectable
         make_recipe(
             "registration.tests.utils.contact",
-            first_name="Sam",
-            last_name="Senior",
+            first_name="John",
+            last_name="Doe5",
             operator_id=self.new_report_version.report.operator_id,
             business_role_id="Senior Officer",
         )
@@ -265,7 +265,7 @@ class ReportSupplementaryCloningTests(TestCase):
             ReportOperationRepresentative.objects.filter(report_version=self.new_report_version).values_list(
                 "representative_name", flat=True
             ),
-            ["John Doe1", "John Doe2", "John Doe3", "John Doe4", "Sam Senior"],
+            ["John Doe1", "John Doe2", "John Doe3", "John Doe4", "John Doe5"],
             ordered=False,
         )
         # No representative is pre-selected for a transferred operation
