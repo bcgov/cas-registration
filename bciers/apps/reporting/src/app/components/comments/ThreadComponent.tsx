@@ -1,5 +1,12 @@
-import { Button, Grid, TextField, Typography } from "@mui/material";
-import { useTransition, useState, useRef } from "react";
+import {
+  Button,
+  Collapse,
+  Grid,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useTransition, useState } from "react";
 import { Thread, EMPTY_COMMENT_ERROR } from "./types";
 import CommentComponent from "./CommentComponent";
 import ThreadFrame from "./ThreadFrame";
@@ -28,7 +35,7 @@ const ThreadComponent: React.FC<Props> = ({
 }) => {
   const [_, startTransition] = useTransition();
   const { errors, setErrors, renderedErrors } = useValidationErrors();
-  const replyInputRef = useRef<HTMLTextAreaElement>(null);
+  const [isReplying, setIsReplying] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleResolveThread = (resolved: boolean) => {
@@ -61,8 +68,16 @@ const ThreadComponent: React.FC<Props> = ({
     });
   };
 
-  const handleCommentPost = (reportVersionId: number, threadId: number) => {
-    const message = replyInputRef.current?.value.trim();
+  const handleClickReply = () => {
+    setIsReplying(true);
+  };
+
+  const handleCommentPost = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const message = new FormData(event.currentTarget)
+      .get("comment")
+      ?.toString()
+      .trim();
     if (!message) {
       // If the comment message is empty, set the empty comment error and return
       setErrors([EMPTY_COMMENT_ERROR]);
@@ -72,10 +87,10 @@ const ThreadComponent: React.FC<Props> = ({
     setErrors([]);
     setIsUpdating(true);
     startTransition(async () => {
-      const resp = await postComment(reportVersionId, threadId, message);
+      const resp = await postComment(version_id, thread.id, message);
       if (handleApiResponse(resp, setErrors)) {
         onThreadUpdated(resp as Thread);
-        if (replyInputRef.current) replyInputRef.current.value = "";
+        setIsReplying(false);
       }
       setIsUpdating(false);
     });
@@ -107,27 +122,54 @@ const ThreadComponent: React.FC<Props> = ({
         />
       ))}
       {renderedErrors}
-      <Grid className="mt-2">
+      <Grid className="mt-4">
         {canUpdate && !thread.resolved && (
           <>
-            <TextField
-              fullWidth
-              label="Comment"
-              multiline
-              rows={3}
-              inputRef={replyInputRef}
-              error={hasCommentError}
-              disabled={isUpdating}
-            />
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => handleCommentPost(version_id, thread.id)}
-              fullWidth
-              disabled={isUpdating}
-            >
-              Reply
-            </Button>
+            <Collapse in={!isReplying} timeout={400} unmountOnExit>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleClickReply}
+                fullWidth
+                disabled={isUpdating}
+              >
+                Reply
+              </Button>
+            </Collapse>
+            <Collapse in={isReplying} timeout={400} unmountOnExit>
+              <form onSubmit={handleCommentPost}>
+                <TextField
+                  fullWidth
+                  name="comment"
+                  label="Comment"
+                  multiline
+                  rows={3}
+                  error={hasCommentError}
+                  disabled={isUpdating}
+                />
+                <Stack direction="row" spacing={2}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    disabled={isUpdating}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => setIsReplying(false)}
+                    fullWidth
+                    disabled={isUpdating}
+                  >
+                    Cancel
+                  </Button>
+                </Stack>
+              </form>
+            </Collapse>
           </>
         )}
       </Grid>
