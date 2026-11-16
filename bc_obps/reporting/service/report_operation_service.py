@@ -1,8 +1,10 @@
 from datetime import date
 from django.db import transaction
+from django.db.models.functions import Lower
 
 from django.forms import model_to_dict
 
+from registration.models.contact import Contact
 from registration.models.operation import Operation
 from reporting.models import ReportOperationRepresentative, ReportVersion
 from reporting.models.facility_report import FacilityReport
@@ -77,15 +79,17 @@ class ReportOperationService:
 
         existing_representatives = ReportOperationRepresentative.objects.filter(report_version__id=version_id)
         existing_names = {rep.representative_name for rep in existing_representatives}
-        contact_names = {contact.get_full_name() for contact in operation.contacts.all()}
+        contacts = Contact.objects.filter(operator=operator)
+        contact_names = {contact.get_full_name() for contact in contacts}
+        operation_contact_ids = set(operation.contacts.values_list("id", flat=True))
 
         new_representatives = [
             ReportOperationRepresentative(
                 report_version=report_operation.report_version,
                 representative_name=contact.get_full_name(),
-                selected_for_report=True,
+                selected_for_report=contact.id in operation_contact_ids,
             )
-            for contact in operation.contacts.all()
+            for contact in contacts
             if contact.get_full_name() not in existing_names
         ]
         ReportOperationRepresentative.objects.bulk_create(new_representatives)
@@ -108,7 +112,7 @@ class ReportOperationService:
         )
         report_operation_representatives = ReportOperationRepresentative.objects.filter(
             report_version__id=report_version_id
-        )
+        ).order_by(Lower("representative_name"))
         report_version = ReportVersion.objects.get(id=report_version_id)
 
         report_operation_data = model_to_dict(report_operation)

@@ -66,18 +66,16 @@ class ReportVersionService:
         )
         use_transferred_operation_handling = timeline.has_been_transferred if timeline is not None else False
 
-        if use_transferred_operation_handling:
-            contacts = Contact.objects.filter(operator=operator, business_role="Operation Representative")
-            selected_representative_state = False
-        else:
-            contacts = operation.contacts.all()
-            selected_representative_state = True
-
-        for contact in contacts:
+        # All operator contacts are selectable; the operation's assigned representatives are pre-selected
+        # (none are pre-selected for transferred operations)
+        operation_contact_ids = (
+            set() if use_transferred_operation_handling else set(operation.contacts.values_list("id", flat=True))
+        )
+        for contact in Contact.objects.filter(operator=operator):
             ReportOperationRepresentative.objects.create(
                 report_version=report_version,
                 representative_name=contact.get_full_name(),
-                selected_for_report=selected_representative_state,
+                selected_for_report=contact.id in operation_contact_ids,
             )
         report_operation.activities.add(*list(operation.activities.all()))
         report_operation.regulated_products.add(
