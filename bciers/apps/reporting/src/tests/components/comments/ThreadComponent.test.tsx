@@ -49,11 +49,7 @@ describe("The comment thread component", () => {
     expect(screen.getByText("Jun 22, 1999 4:00 PM")).toBeVisible();
   });
 
-<<<<<<< HEAD
   it("opens the reply form when clicking the reply button", async () => {
-=======
-  it("displays an error when trying to submit an empty reply", () => {
->>>>>>> b2324a884 (chore: refactor so comment reply text is not a state controlled field)
     render(
       <ThreadComponent
         canUpdate={true}
@@ -175,9 +171,9 @@ describe("The comment thread component", () => {
 
     resolvePost!(updatedThread);
 
-    // While awaiting the response, the reply button is disabled
+    // While awaiting the response, the save button is disabled
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "Reply" })).toBeDisabled(),
+      expect(screen.getByRole("button", { name: "Save" })).toBeDisabled(),
     );
     expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue(
       "A new reply",
