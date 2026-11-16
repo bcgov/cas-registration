@@ -72,7 +72,7 @@ const ThreadComponent: React.FC<Props> = ({
     setIsReplying(true);
   };
 
-  const handleCommentPost = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleCommentPost = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const message = new FormData(event.currentTarget)
       .get("comment")
