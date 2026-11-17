@@ -172,4 +172,46 @@ describe("The DataGrid component", () => {
       "2",
     );
   });
+
+  it("paginates in the browser without touching the URL when syncWithUrl is false", async () => {
+    render(
+      <DataGrid
+        columns={paginationTestColumns}
+        initialData={paginationTestData}
+        syncWithUrl={false}
+      />,
+    );
+    // 20 rows per page + header
+    expect(screen.getAllByRole("row")).toHaveLength(21);
+
+    act(() => {
+      screen.getByLabelText("Go to next page").click();
+    });
+
+    await waitFor(() => {
+      // remaining 5 rows + header
+      expect(screen.getAllByRole("row")).toHaveLength(6);
+    });
+    expect(mockReplace).not.toHaveBeenCalled();
+  });
+
+  it("sorts in the browser without touching the URL when syncWithUrl is false", async () => {
+    render(
+      <DataGrid
+        columns={defaultColumns}
+        initialData={defaultInitialData}
+        syncWithUrl={false}
+      />,
+    );
+    expect(screen.getAllByRole("gridcell")[0]).toHaveTextContent("value1");
+
+    act(() => {
+      screen.getAllByLabelText("Sort")[0].click();
+    });
+
+    await waitFor(() => {
+      expect(screen.getAllByRole("gridcell")[0]).toHaveTextContent("unicorn");
+    });
+    expect(mockReplace).not.toHaveBeenCalled();
+  });
 });

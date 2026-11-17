@@ -44,6 +44,9 @@ interface Props {
   noDataMessage?: ReactNode | string;
   hideFooter?: boolean;
   getRowClassName?: (params: GridRowParams) => string;
+  // When false, paging and sorting are kept in the grid's own state instead of the URL,
+  // so they happen entirely in the browser (e.g. a grid embedded in a form)
+  syncWithUrl?: boolean;
 }
 
 const AscendingIcon = () => {
@@ -80,6 +83,7 @@ const DataGrid: React.FC<Props> = ({
   noDataMessage,
   hideFooter = false,
   getRowClassName: rowClassName,
+  syncWithUrl = true,
 }) => {
   const PAGE_SIZE = pageSize ? pageSize : 20;
   const [rows, setRows] = useState(initialData.rows ?? []);
@@ -208,6 +212,11 @@ const DataGrid: React.FC<Props> = ({
 
   // Memoize initialState
   const initialState = useMemo(() => {
+    if (!syncWithUrl) {
+      return {
+        pagination: { paginationModel: { pageSize: PAGE_SIZE, page: 0 } },
+      };
+    }
     return {
       pagination: { paginationModel: { pageSize: PAGE_SIZE } },
       sorting: {
@@ -221,7 +230,7 @@ const DataGrid: React.FC<Props> = ({
         ],
       },
     };
-  }, [searchParams]);
+  }, [searchParams, syncWithUrl]);
 
   // Memoize sx
   const gridStyles = useMemo(() => {
@@ -254,6 +263,15 @@ const DataGrid: React.FC<Props> = ({
     };
   }, [searchParams]);
 
+  const urlControlledProps = syncWithUrl
+    ? {
+        onPaginationModelChange: handlePaginationModelChange,
+        paginationModel,
+        onSortModelChange: handleSortModelChange,
+        sortModel,
+      }
+    : {};
+
   return (
     <div className="h-auto w-full">
       <MuiGrid
@@ -271,10 +289,7 @@ const DataGrid: React.FC<Props> = ({
         pageSizeOptions={[PAGE_SIZE]}
         sortingMode={paginationMode}
         paginationMode={paginationMode}
-        onPaginationModelChange={handlePaginationModelChange}
-        paginationModel={paginationModel}
-        onSortModelChange={handleSortModelChange}
-        sortModel={sortModel}
+        {...urlControlledProps}
         // Set the row height to "auto" so that the row height will adjust to the content
         getRowHeight={() => "auto"}
         slots={slots}

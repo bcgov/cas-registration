@@ -231,6 +231,12 @@ class TestApplyComplianceUnitsService:
             holding_account_id="123",
             compliance_report_version_id=1,
         )
+        mock_bccr_service.client.list_all_units.assert_called_once_with(
+            account_id="123",
+            vintage_year=test_data.compliance_report_version.compliance_report.compliance_period.start_date.year,
+            limit=100,
+            fetch_all_pages=True,
+        )
 
     def test_get_apply_compliance_units_page_data_no_holding_account(
         self,
