@@ -32,10 +32,42 @@ This repository had [Merge Queues](https://docs.github.com/en/repositories/confi
 
 [Merging a pull request with a merge queue](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/merging-a-pull-request-with-a-merge-queue)
 
-The "Merge pull request" button in an approved PR is replaced with "Add to merge queue". After adding a PR to the queue, CI is run on that PR in the same way as if it were merged into `develop`. For the next X minutes, any additional PRs added will join a temporary branch in a "first in, first out" order. CI will run on these additional PRs as if they were merging into the base _plus any PRs ahead of them in the queue_. After X minutes have passed, or Y PRs have been added to the merge queue, and all CI is passed, this temporary branch merges onto the head of the `develop` branch.
+The "Merge pull request" button in an approved PR is replaced with "Add to merge queue". After adding a PR to the queue, CI is run on that PR in the same way as if it were merged into `develop`. For the next 7 minutes, any additional PRs added will join a temporary branch in a "first in, first out" order. CI will run on these additional PRs as if they were merging into the base _plus any PRs ahead of them in the queue_. After 7 minutes have passed, or 5 PRs have been added to the merge queue, and all CI is passed, this temporary branch merges onto the head of the `develop` branch.
 
 If a PR in the queue fails any status checks _or_ has conflicts with the base branch it is ejected from the merge queue (with reasons given). If there are PRs behind it in the queue, they will automatically change their merge target to the next successful base (all the way up until the base `develop`) and rerun CI. When all CI is reported as successful in the queue, the queue will merge into `develop`.
 
 ### Merge Halts
 
 If there is a "merge halt" (that is, the **MERGE HALT develop** ruleset's enforcement status is set to "Active"), PRs can still be added to the merge queue. CI will run on them as normal, they will queue as normal, but instead of merging when all CI passes (or after a certain amount of time) they will be held in queue until the branch is unlocked. When it is unlocked, the entire queued temporary branch will merge in (assuming all conditions/timers pass).
+
+### Bypassing branch protections
+
+> [!NOTE]
+> The following is only true when _Branches_ > _Develop_ > _Branch protection rule_: **Do not allow bypassing the above settings** is _disabled_. We keep it enabled by default, but it can be changed by an admin if queue-jumping or bypassing is required.
+
+Developers with Admin permission on the repository can [jump their PRs to the top of the queue](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#jumping-to-the-top-of-the-queue), **but this will restart _all_ ci for every PR already in queue**. Use caution when doing this! Developers with Admin permission can also **completely bypass** the merge queue, even when a merge halt is active.
+
+PRs can be merged into the `develop` branch after repeated removals from the queue due to flakiness. A repository admin (other than yourself) should check the queue failures to determine if the it is applicable to bypass. You can use the `gh pr merge {PR_NUMBER} --squash --admin` command or the bypass button in the UI.
+
+#### In GitHub
+
+##### Method 1
+
+In the PR status page click _View merge status_, which will open a sidebar. In the sidebar, check the _Merge without waiting for requirements to be met (bypass rules)_ checkbox, which will change the button to _Bypass rules and merge (squash)_. This will bypass the Merge Queue _and_ Locked Branch.
+
+1. ![GitHub Locked Branch Merge part 1](./images/locked_branch_merge_0.png)
+1. ![GitHub Locked Branch Merge part 1](./images/locked_branch_merge_1.png)
+1. ![GitHub Locked Branch Merge part 2](./images/locked_branch_merge_2.png)
+
+##### Method 2
+
+If the _Merge when ready_ button as a further actions dropdown arrow, click the dropdown, then select _Bypass requirements_.
+
+1. ![GitHub Locked Branch Bypass](./images/bypass_merge.png)
+
+### Further Reading
+
+- [How merge queues work](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#how-merge-queues-work)
+- [Successful CI](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#successful-ci)
+- [Failing CI](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#failing-ci)
+- [Jumping to the top of the queue](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue#jumping-to-the-top-of-the-queue)
