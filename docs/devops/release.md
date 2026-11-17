@@ -15,7 +15,7 @@ To make this process easy, we use [`release-it`](https://github.com/release-it/r
 When you're ready to make a release to test and/or prod, apply the following steps:
 
 1. post in the Teams developers channel that you're doing a release and there's a merge halt on
-1. go into the github settings and turn off merging to develop so no one can merge by accident if they miss the merge halt post. (Optional, but this ensures no other changes are made to the `develop` branch while the release is in progress. Release PRs can't be rebased (see note below), so if someone does merge something in, you have to restart the release.)
+1. go into the github settings and set the **MERGE HALT develop** ruleset's enforcement status is set to "Active", so no one can merge by accident if they miss the merge halt post. (Optional, but this ensures no other changes are made to the `develop` branch while the release is in progress. Release PRs can't be rebased (see note below), so if someone does merge something in, you have to restart the release.)
 1. on `develop`, check migrations against prod data. Ideally, do this using the dag:
    1. Before running the airflow dag, ensure that the test namespace is clear of past migration test deployments. Because failed deployments _do not_ clean up their resources (so that the logs can be checked), this causes subsequent deployments to fail.
    1. To manually clean the namespace from past migration test deployments (after investigating a failure, or before starting a new test), just run the `cas_bciers_test_migrations_cleanup` DAG.
@@ -53,7 +53,7 @@ When you're ready to make a release to test and/or prod, apply the following ste
 This will put the release commit onto the main branch, which is connected to the test environment.
 
 1. go to the shipit test environment and keep an eye on the required checks. Once they pass, you can click the `Deploy` button.
-1. once the deploy is complete (the logs will show `Completed Successfully`, usually takes up to 8 minutes), let the team know the release is available in test. Optionally end the merge halt and unlock the develop branch at this point.
+1. once the deploy is complete (the logs will show `Completed Successfully`, usually takes up to 8 minutes), let the team know the release is available in test. Optionally set the the **MERGE HALT develop** ruleset's enforcement status is set to "Disabled", to unlock the develop branch at this point.
 1. tag github tickets with the release version if applicable (see the team_release_process.md for more details)
 1. update the status of the tickets on the board to `UAT In Test`
 1. once a PO is ready to release to prod, they will typically click the `Deploy` button themselves.
