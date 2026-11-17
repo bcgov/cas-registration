@@ -30,6 +30,9 @@ BACKEND_CHART_TAG = os.getenv("BACKEND_CHART_TAG")
 DESTINATION_NAMESPACE_TEMPLATE = "{{ params.destination_namespace }}"
 
 default_args = {**default_dag_args, "start_date": START_DATE}
+# Define which environments this Dag loads in to
+CURRENT_ENV = os.environ.get("ENVIRONMENT")
+ALLOWED_ENVIRONMENTS = ["dev", "test"]
 
 DAG_DOC = """
 DAG to test the database and backend migrations. This DAG will uninstall the helm charts after the tests are complete, but **if the tests fail, the charts will remain installed**.
@@ -166,4 +169,5 @@ def test_migrations(
     )
 
 
-test_migrations()
+if CURRENT_ENV in ALLOWED_ENVIRONMENTS:
+    test_migrations()
