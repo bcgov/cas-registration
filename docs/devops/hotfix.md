@@ -6,6 +6,17 @@ In the event that a hotfix needs to be pushed to production ahead of the work cu
 2. Create a hotfix branch directly off of `main`
 3. Apply the fix and create a PR with `main` as the target branch
 4. Uncheck the `Lock branch` checkbox in the `main` branch settings in github
+
+   > [!NOTE]
+   > The lock can stay enabled and instead be bypassed by using `gh pr merge {PR_NUMBER} --squash --admin` or the 'Merge without waiting for requirements to be met (bypass rules)' checkbox in the GitHub ui to bypass the queue and merge the release PR. This will bypass the Merge Queue _and_ Locked Branch. Using `--squash` matches with our convention of squash merging PRs through the merge queue. See [GH CLI docs for more info](https://cli.github.com/manual/gh_pr_merge).
+   >
+   > - In the PR status page click _View merge status_, which will open a sidebar. In the sidebar, check the _Merge without waiting for requirements to be met (bypass rules)_ checkbox, which will change the button to _Bypass rules and merge (squash)_. This will bypass the Merge Queue _and_ Locked Branch.
+   >   1. ![GitHub Locked Branch Merge part 0](../images/locked_branch_merge_0.png)
+   >   1. ![GitHub Locked Branch Merge part 1](../images/locked_branch_merge_1.png)
+   >   1. ![GitHub Locked Branch Merge part 2](../images/locked_branch_merge_2.png)
+   > - If the _Merge when ready_ button as a further actions dropdown arrow, click the dropdown, then select _Bypass requirements_.
+   >   1. ![GitHub Locked Branch Bypass](../images/bypass_merge.png)
+
 5. Merge the fix to the `main` branch
 6. Re-check the `Lock branch` checkbox in the `main` branch settings in github
 7. Deploy the latest `main` to the `test` environment

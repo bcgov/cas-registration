@@ -16,6 +16,8 @@ When you're ready to make a release to test and/or prod, apply the following ste
 
 1. post in the Teams developers channel that you're doing a release and there's a merge halt on
 1. go into the github settings and set the **MERGE HALT develop** ruleset's enforcement status is set to "Active", so no one can merge by accident if they miss the merge halt post. (Optional, but this ensures no other changes are made to the `develop` branch while the release is in progress. Release PRs can't be rebased (see note below), so if someone does merge something in, you have to restart the release.)
+   > [!WARNING]
+   > The release process has changed slightly due to the change to using [GitHub Merge Queue](./git-usage.md). Because of the merge queue, developers can still queue up PRs once approved. These will stay outside of the queue while **MERGE HALT develop** has been activated in the rulesets. **Once `MERGE HALT develop` is disabled, all enqueued PRs will start processing immediately.** Keep the branch locked during the entire release process. The queue and lock can be bypassed by using `gh pr merge {PR_NUMBER} --squash --admin` or the 'Merge without waiting for requirements to be met (bypass rules)' checkbox in the GitHub ui as a repository admin. See [GH CLI docs for more info](https://cli.github.com/manual/gh_pr_merge).
 1. on `develop`, check migrations against prod data. Ideally, do this using the dag:
    1. Before running the airflow dag, ensure that the test namespace is clear of past migration test deployments. Because failed deployments _do not_ clean up their resources (so that the logs can be checked), this causes subsequent deployments to fail.
    1. To manually clean the namespace from past migration test deployments (after investigating a failure, or before starting a new test), just run the `cas_bciers_test_migrations_cleanup` DAG.
@@ -40,7 +42,17 @@ When you're ready to make a release to test and/or prod, apply the following ste
    - bump the version number
    - generate a change log
 1. create a pull request and confirm all the migrations have been created (at the time of writing, one for each of registration, reporting, compliance, common, RLS, and task-scheduler)
-1. once the pull request is approved, if you disabled merging to `develop`, temporarily re-enable merging so you can merge the release PR, and then disable merging again
+1. once the pull request is approved, use `gh pr merge {PR_NUMBER} --squash --admin` or the 'Merge without waiting for requirements to be met (bypass rules)' checkbox in the GitHub ui to bypass the queue and merge the release PR. This will bypass the Merge Queue _and_ Locked Branch.
+
+   > [!TIP]
+   > **The above step has changed**! The queue and lock can be bypassed _without_ needing to unlock. See [GH CLI docs for more info](https://cli.github.com/manual/gh_pr_merge).
+   - In the PR status page click _View merge status_, which will open a sidebar. In the sidebar, check the _Merge without waiting for requirements to be met (bypass rules)_ checkbox, which will change the button to _Bypass rules and merge (squash)_. This will bypass the Merge Queue _and_ Locked Branch.
+     1. ![GitHub Locked Branch Merge part 0](../images/locked_branch_merge_0.png)
+     1. ![GitHub Locked Branch Merge part 1](../images/locked_branch_merge_1.png)
+     1. ![GitHub Locked Branch Merge part 2](../images/locked_branch_merge_2.png)
+   - If the _Merge when ready_ button as a further actions dropdown arrow, click the dropdown, then select _Bypass requirements_.
+     1. ![GitHub Locked Branch Bypass](../images/bypass_merge.png)
+
 1. go to the shipit dev environment and keep an eye on the required checks on the merge commit (note: check-migrations will fail until https://github.com/bcgov/cas-registration/issues/3590 is completed). Once the checks pass, shipit will automatically deploy the release commit to the dev environment once CI passes.
 1. update your local develop branch and fast-forward the `main` branch using:
 
