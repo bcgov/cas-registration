@@ -280,6 +280,7 @@ class BCCarbonRegistryAPIClient:
         limit: int = 20,
         start: int = 0,
         account_type: Literal["holding_account", "sub_account"] = "holding_account",
+        fetch_all_pages: bool = False,
     ) -> Dict:
         """
         List compliance units for a given holding account or sub-account.
@@ -294,6 +295,8 @@ class BCCarbonRegistryAPIClient:
                          accountId (state: ACTIVE, accountTypeCode: REGULATED_OPERATION),
                          or "sub_account" to filter by subAccountId
                          (state: ACTIVE,RETIRED, accountTypeCode: COMPLIANCE_SUB_ACCOUNT).
+            fetch_all_pages: When True, `limit` is used as the page size and pages are requested from `start`
+                         until `totalEntities` units are collected, so every matching unit is returned.
         """
         self._check_pagination_params(limit, start)
 
@@ -339,21 +342,51 @@ class BCCarbonRegistryAPIClient:
             "columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="BCE")]
         }
 
-        def _fetch(f: FilterModel) -> Dict:
+        def _fetch_page(f: FilterModel, page_start: int) -> Dict:
+            pagination = Pagination(
+                start=page_start,
+                limit=limit,
+                sortOptions=[{"sort": "vintage.keyword", "dir": "DESC"}, {"sort": "entityId", "dir": "DESC"}],
+            )
             return self._make_request(
                 "POST",
                 self.UNIT_SEARCH_ENDPOINT,
-                data=SearchFilterWrapper(
-                    searchFilter=SearchFilter(pagination=Pagination(start=start, limit=limit), filterModel=f)
-                ),
+                data=SearchFilterWrapper(searchFilter=SearchFilter(pagination=pagination, filterModel=f)),
                 response_model=UnitDetailsResponse,
             )
+
+        def _fetch(f: FilterModel) -> Dict:
+            result = _fetch_page(f, start)
+            if not fetch_all_pages:
+                return result
+            # BCCR quirks: `last` is always False, and `start` is rounded down to a multiple of `limit`
+            # (it behaves like page = start // limit). So step by `limit` and stop once totalEntities
+            # units are collected, or on an empty page so a misbehaving API can't loop forever.
+            entities = list(result.get("entities", []))
+            total = result.get("totalEntities", 0)
+            page = result
+            page_start = start
+            while page.get("entities") and len(entities) < total:
+                page_start += limit
+                page = _fetch_page(f, page_start)
+                entities.extend(page.get("entities", []))
+            # Safety net: never hand the grid the same unit twice
+            result["entities"] = list({entity["id"]: entity for entity in entities}.values())
+            result["numberOfElements"] = len(result["entities"])
+            return result
 
         offset_result = _fetch(offset_filter)
         earned_credit_result = _fetch(earned_credit_filter)
 
         merged = offset_result.copy()
-        merged["entities"] = offset_result.get("entities", []) + earned_credit_result.get("entities", [])
+        # Offsets and earned credits are fetched separately, so re-apply the same sort across both
+        # (newest vintage first, then newest entityId); otherwise all offsets would come before all earned credits
+        # Vintage is compared as text, like BCCR's vintage.keyword sort, since it can be a range (e.g. "2024 - 2025")
+        merged["entities"] = sorted(
+            offset_result.get("entities", []) + earned_credit_result.get("entities", []),
+            key=lambda unit: (str(unit.get("vintage") or ""), int(unit.get("entityId") or 0)),
+            reverse=True,
+        )
         merged["totalEntities"] = offset_result.get("totalEntities", 0) + earned_credit_result.get("totalEntities", 0)
         merged["numberOfElements"] = offset_result.get("numberOfElements", 0) + earned_credit_result.get(
             "numberOfElements", 0

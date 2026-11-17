@@ -273,7 +273,7 @@ class ApplyComplianceUnitsService:
         )
         compliance_period_year = compliance_report.compliance_period.start_date.year
         bccr_units = bccr_account_service.client.list_all_units(
-            account_id=account_id, vintage_year=compliance_period_year
+            account_id=account_id, vintage_year=compliance_period_year, limit=100, fetch_all_pages=True
         )
 
         obligation_data = ComplianceObligationService.get_obligation_data_by_report_version(
@@ -395,6 +395,7 @@ class ApplyComplianceUnitsService:
             vintage_year=compliance_period_year,
             limit=100,
             account_type="sub_account",
+            fetch_all_pages=True,
         )
         formatted_units = cls._format_bccr_units_for_grid_display(applied_units.get("entities", []))
 

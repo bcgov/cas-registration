@@ -88,7 +88,7 @@ const ApplyComplianceUnitsWidget = ({
         key={gridKey}
         columns={columns}
         initialData={{ rows: localUnits, row_count: localUnits.length }}
-        hideFooter={true}
+        syncWithUrl={false}
         // Adjust the height of the grid and the overlay wrapper to fit the content
         sx={{
           "& .MuiDataGrid-virtualScroller": {

@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 import requests
 import logging
+import zlib
+from typing import Optional
 from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from compliance.service.bc_carbon_registry.schema import (
@@ -791,6 +793,146 @@ class TestBCCarbonRegistryAPIClient:
         assert earned_credit_filter["stateCode"]["columnFilters"][0]["type"] == "in"
         assert earned_credit_filter["unitType"]["columnFilters"][0]["filter"] == "BCE"
         assert "vintage" not in earned_credit_filter
+
+    @staticmethod
+    def _units_page(unit_type: str, serials: list, last: bool, total: int, vintages: Optional[list] = None) -> Mock:
+        # Unique 15-digit unit id per serial, so units can be told apart (and deduplicated)
+        unit_id = lambda serial: str(100000000000000 + zlib.crc32(serial.encode()))  # noqa: E731
+        entities = [
+            {
+                "id": unit_id(serial),
+                "entityId": int(unit_id(serial)),
+                "standardId": MOCK_FIFTEEN_DIGIT_INT,
+                "standardName": "Test Standard",
+                "accountId": MOCK_FIFTEEN_DIGIT_INT,
+                "accountName": "Test Account",
+                "projectId": MOCK_FIFTEEN_DIGIT_INT,
+                "holdingQuantity": 1.0,
+                "serialNo": serial,
+                "unitMeasurementName": "tCO2e",
+                "unitType": unit_type,
+                "className": unit_type,
+                "vintage": vintage,
+            }
+            for serial, vintage in zip(serials, vintages or ["2025"] * len(serials))
+        ]
+        body = {
+            "totalEntities": total,
+            "totalPages": 2,
+            "numberOfElements": len(entities),
+            "first": False,
+            "last": last,
+            "entities": entities,
+        }
+        return Mock(status_code=200, json=lambda: body)
+
+    @staticmethod
+    def _request_payload(mock_request, index: int) -> dict:
+        call = mock_request.call_args_list[index]
+        return call.kwargs.get("json") or call[1].get("json")
+
+    def test_list_all_units_fetch_all_pages(self, authenticated_client):
+        # Arrange: BCO spans two pages, BCE fits in one.
+        # Real BCCR always returns last=False, so paging must stop on totalEntities instead.
+        client, mock_request = authenticated_client
+        mock_request.side_effect = [
+            self._units_page("BCO", ["BCO-1", "BCO-2"], last=False, total=3),
+            self._units_page("BCO", ["BCO-3"], last=False, total=3),
+            self._units_page("BCE", ["BCE-1"], last=False, total=1),
+        ]
+
+        # Act
+        result = client.list_all_units(account_id="123", vintage_year=2022, limit=2, fetch_all_pages=True)
+
+        # Assert
+        assert mock_request.call_count == 3
+        assert sorted(e["serialNo"] for e in result["entities"]) == ["BCE-1", "BCO-1", "BCO-2", "BCO-3"]
+        assert result["numberOfElements"] == 4
+        assert result["totalEntities"] == 4
+        first_bco, second_bco, bce = (self._request_payload(mock_request, i) for i in range(3))
+        assert (first_bco["searchFilter"]["pagination"]["start"], first_bco["searchFilter"]["pagination"]["limit"]) == (
+            0,
+            2,
+        )
+        assert (
+            second_bco["searchFilter"]["pagination"]["start"],
+            second_bco["searchFilter"]["pagination"]["limit"],
+        ) == (2, 2)
+        assert second_bco["searchFilter"]["filterModel"]["unitType"]["columnFilters"][0]["filter"] == "BCO"
+        assert (bce["searchFilter"]["pagination"]["start"], bce["searchFilter"]["pagination"]["limit"]) == (0, 2)
+        assert bce["searchFilter"]["filterModel"]["unitType"]["columnFilters"][0]["filter"] == "BCE"
+        # Every page is sorted newest vintage first, with the unique entityId as a tiebreaker so paging is stable
+        for payload in (first_bco, second_bco, bce):
+            assert payload["searchFilter"]["pagination"]["sortOptions"] == [
+                {"sort": "vintage.keyword", "dir": "DESC"},
+                {"sort": "entityId", "dir": "DESC"},
+            ]
+
+    def test_list_all_units_fetch_all_pages_stops_on_empty_page(self, authenticated_client):
+        # Arrange: BCCR claims more pages but returns an empty one
+        client, mock_request = authenticated_client
+        mock_request.side_effect = [
+            self._units_page("BCO", ["BCO-1"], last=False, total=5),
+            self._units_page("BCO", [], last=False, total=5),
+            self._units_page("BCE", [], last=False, total=0),
+        ]
+
+        # Act
+        result = client.list_all_units(account_id="123", vintage_year=2022, limit=1, fetch_all_pages=True)
+
+        # Assert
+        assert mock_request.call_count == 3
+        assert [e["serialNo"] for e in result["entities"]] == ["BCO-1"]
+
+    def test_list_all_units_fetch_all_pages_drops_duplicate_units(self, authenticated_client):
+        # Arrange: BCCR repeats a unit across pages
+        client, mock_request = authenticated_client
+        mock_request.side_effect = [
+            self._units_page("BCO", ["BCO-1", "BCO-2"], last=False, total=4),
+            self._units_page("BCO", ["BCO-2", "BCO-3"], last=False, total=4),
+            self._units_page("BCO", [], last=False, total=4),
+            self._units_page("BCE", [], last=False, total=0),
+        ]
+
+        # Act
+        result = client.list_all_units(account_id="123", vintage_year=2022, limit=2, fetch_all_pages=True)
+
+        # Assert: each unit id appears once
+        ids = [e["id"] for e in result["entities"]]
+        assert len(ids) == len(set(ids))
+        assert result["numberOfElements"] == len(ids)
+
+    def test_list_all_units_sorts_offsets_and_earned_credits_together(self, authenticated_client):
+        # Arrange: offsets (2024, 2023) and earned credits (2025, "2024 - 2025") are fetched separately
+        client, mock_request = authenticated_client
+        mock_request.side_effect = [
+            self._units_page("BCO", ["BCO-2024", "BCO-2023"], last=False, total=2, vintages=["2024", "2023"]),
+            # BCCR vintages can be ranges, which must not break the sort
+            self._units_page(
+                "BCE", ["BCE-2025", "BCE-2024-2025"], last=False, total=2, vintages=["2025", "2024 - 2025"]
+            ),
+        ]
+
+        # Act
+        result = client.list_all_units(account_id="123", vintage_year=2025, limit=100, fetch_all_pages=True)
+
+        # Assert: newest vintage first across both unit types, not all offsets before all earned credits
+        assert [e["serialNo"] for e in result["entities"]] == ["BCE-2025", "BCE-2024-2025", "BCO-2024", "BCO-2023"]
+
+    def test_list_all_units_single_page_by_default(self, authenticated_client):
+        # Arrange: without fetch_all_pages, a non-last page is not followed
+        client, mock_request = authenticated_client
+        mock_request.side_effect = [
+            self._units_page("BCO", ["BCO-1"], last=False, total=3),
+            self._units_page("BCE", ["BCE-1"], last=False, total=3),
+        ]
+
+        # Act
+        result = client.list_all_units(account_id="123", vintage_year=2022, limit=1)
+
+        # Assert
+        assert mock_request.call_count == 2
+        assert len(result["entities"]) == 2
 
     def test_list_all_units_invalid_params(self, setup, caplog):
         # Arrange
