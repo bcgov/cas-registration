@@ -1,14 +1,9 @@
 import { useState } from "react";
-import {
-  Button,
-  IconButton,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { IconButton, Paper, TextField, Typography } from "@mui/material";
 import { DeleteOutlined, EditOutlined } from "@mui/icons-material";
 import { Comment } from "./types";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
+import SaveAndCancelButtons from "./SaveAndCancelButtons";
 
 interface Props {
   comment: Comment;
@@ -96,26 +91,14 @@ const CommentComponent: React.FC<Props> = ({
             onChange={(e) => setDraft(e.target.value)}
             disabled={isSaving}
           />
-          <div className="flex justify-end gap-2 mt-2">
-            <Button
-              variant="outlined"
-              color="primary"
-              size="small"
-              onClick={() => setIsEditing(false)}
-              disabled={isSaving}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              onClick={handleSave}
-              disabled={!draft.trim() || draft === comment.comment || isSaving}
-            >
-              Save
-            </Button>
-          </div>
+          <SaveAndCancelButtons
+            onCancel={() => setIsEditing(false)}
+            onSave={handleSave}
+            savingDisabled={
+              !draft.trim() || draft === comment.comment || isSaving
+            }
+            cancelDisabled={isSaving}
+          />
         </div>
       ) : (
         <Typography

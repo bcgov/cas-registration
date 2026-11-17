@@ -160,10 +160,11 @@ describe("The comment thread component", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
-    // While awaiting the response, the save button is disabled
+    // While awaiting the response, the save and cancel buttons are disabled
     await waitFor(() =>
       expect(screen.getByRole("button", { name: "Save" })).toBeDisabled(),
     );
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
     expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue(
       "A new reply",
     );

@@ -1,11 +1,4 @@
-import {
-  Button,
-  Collapse,
-  Grid,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, Collapse, Grid, TextField, Typography } from "@mui/material";
 import { useTransition, useState } from "react";
 import { Thread, EMPTY_COMMENT_ERROR } from "./types";
 import CommentComponent from "./CommentComponent";
@@ -18,6 +11,7 @@ import {
 } from "@bciers/components/validationErrors";
 import { deleteComment } from "../../utils/comments/deleteComment";
 import { patchComment } from "../../utils/comments/patchComment";
+import SaveAndCancelButtons from "./SaveAndCancelButtons";
 
 interface Props {
   thread: Thread;
@@ -162,27 +156,11 @@ const ThreadComponent: React.FC<Props> = ({
                   error={hasCommentError}
                   disabled={isUpdating}
                 />
-                <Stack direction="row" spacing={2} className="mt-4">
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    disabled={isUpdating}
-                  >
-                    Save
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => setIsReplying(false)}
-                    fullWidth
-                    disabled={isUpdating}
-                  >
-                    Cancel
-                  </Button>
-                </Stack>
+                <SaveAndCancelButtons
+                  onCancel={() => setIsReplying(false)}
+                  savingDisabled={isUpdating}
+                  cancelDisabled={isUpdating}
+                />
               </form>
             </Collapse>
           </>
