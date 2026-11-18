@@ -109,7 +109,7 @@ priority = 1
 
 [[repos]]
 repo = "https://github.com/renovatebot/pre-commit-hooks"
-rev = "fdcc0dbc2b0f11c69603e2c433f143591fd9309e"  # 43.227.0
+rev = "88f82b3c914439f606eab1523ecc409c9683dbb9"  # 44.252.1
 
 [[repos.hooks]]
 id = "renovate-config-validator"
