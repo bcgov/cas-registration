@@ -5,6 +5,7 @@ from django.db.models.functions import Lower
 from django.forms import model_to_dict
 
 from registration.models.contact import Contact
+from reporting.utils import CONTACT_HAS_COMPLETE_ADDRESS
 from registration.models.operation import Operation
 from reporting.models import ReportOperationRepresentative, ReportVersion
 from reporting.models.facility_report import FacilityReport
@@ -79,7 +80,7 @@ class ReportOperationService:
 
         existing_representatives = ReportOperationRepresentative.objects.filter(report_version__id=version_id)
         existing_names = {rep.representative_name for rep in existing_representatives}
-        contacts = Contact.objects.filter(operator=operator)
+        contacts = Contact.objects.filter(CONTACT_HAS_COMPLETE_ADDRESS, operator=operator)
         contact_names = {contact.get_full_name() for contact in contacts}
         operation_contact_ids = set(operation.contacts.values_list("id", flat=True))
 

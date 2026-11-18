@@ -40,12 +40,10 @@ const BUGLE_SFO_VALUES = {
 export const BEES_LFO_VALUES = {
   // Assigned as operation representative in Administration (pre-selected)
   BEES_LFO_SELECTED_REPRESENTATIVES: ["Bill Blue"],
-  // Remaining Bravo Technologies contacts
+  // Remaining Bravo Technologies contacts with a complete address
   BEES_LFO_UNSELECTED_REPRESENTATIVES: [
-    "Bart Banker - incomplete address",
     "bc-cas-dev Industry User",
     "bc-cas-dev-secondary Industry User",
-    "Blair Balloons - no address",
     "Bob Brown",
   ],
 };

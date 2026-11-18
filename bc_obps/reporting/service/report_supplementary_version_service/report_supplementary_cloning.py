@@ -32,6 +32,7 @@ from reporting.models import (
 
 from django.db.models import Q
 from registration.models import Contact
+from reporting.utils import CONTACT_HAS_COMPLETE_ADDRESS
 
 
 def clone_report_version_operation(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
@@ -59,7 +60,9 @@ def clone_or_refresh_report_version_representatives(
         # We recreate the options for operation representatives from the contacts on file
         # User will need to save an update upon filing the supplementary report
 
-        contacts = Contact.objects.filter(operator_id=new_report_version.report.operator_id)
+        contacts = Contact.objects.filter(
+            CONTACT_HAS_COMPLETE_ADDRESS, operator_id=new_report_version.report.operator_id
+        )
         for c in contacts:
             ReportOperationRepresentative.objects.create(
                 report_version=new_report_version, representative_name=c.get_full_name(), selected_for_report=False
@@ -77,7 +80,9 @@ def clone_or_refresh_report_version_representatives(
 
         # Add any operator contacts not already listed so they are selectable (unselected by default)
         cloned_names = set(representatives_to_clone.values_list("representative_name", flat=True))
-        for c in Contact.objects.filter(operator_id=new_report_version.report.operator_id):
+        for c in Contact.objects.filter(
+            CONTACT_HAS_COMPLETE_ADDRESS, operator_id=new_report_version.report.operator_id
+        ):
             if c.get_full_name() not in cloned_names:
                 ReportOperationRepresentative.objects.create(
                     report_version=new_report_version, representative_name=c.get_full_name(), selected_for_report=False

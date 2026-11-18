@@ -3,6 +3,7 @@ from django.db import transaction
 from reporting.models.report_product import ReportProduct
 from registration.models import Operation
 from registration.models.contact import Contact
+from reporting.utils import CONTACT_HAS_COMPLETE_ADDRESS
 from reporting.models.report import Report
 from reporting.models.report_operation import ReportOperation
 from reporting.service.report_product_service import ReportProductService
@@ -71,7 +72,7 @@ class ReportVersionService:
         operation_contact_ids = (
             set() if use_transferred_operation_handling else set(operation.contacts.values_list("id", flat=True))
         )
-        for contact in Contact.objects.filter(operator=operator):
+        for contact in Contact.objects.filter(CONTACT_HAS_COMPLETE_ADDRESS, operator=operator):
             ReportOperationRepresentative.objects.create(
                 report_version=report_version,
                 representative_name=contact.get_full_name(),
