@@ -50,6 +50,16 @@ class UserUpdateIn(ModelSchema):
         fields = ["first_name", "last_name", "position_title", "phone_number"]
 
 
+class UserLoginSyncIn(ModelSchema):
+    """
+    Identity-provider-owned fields (from the Keycloak/BCeID profile) that are refreshed on every login.
+    """
+
+    class Meta:
+        model = User
+        fields = ["email", "bceid_business_name"]
+
+
 class UserAppRoleOut(ModelSchema):
     class Meta:
         model = AppRole

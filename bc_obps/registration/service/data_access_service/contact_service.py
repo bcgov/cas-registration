@@ -1,10 +1,11 @@
 from uuid import UUID
 from typing import Dict, Optional, Any
-from registration.models import BusinessRole, Contact
+from registration.models import BusinessRole, Contact, UserOperator
 from django.db.models import QuerySet
 from registration.models.user import User
 from registration.service.user_operator_service import UserOperatorService
 from registration.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_access_service.user_operator_service import UserOperatorDataAccessService
 
 
 class ContactDataAccessService:
@@ -48,6 +49,26 @@ class ContactDataAccessService:
             # fetching all contacts associated with the user's operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
             return Contact.objects.filter(operator=user_operator.operator)
+
+    @classmethod
+    def update_user_contact_email(cls, user: User, old_email: str, new_email: str) -> None:
+        """
+        Carries a change of the user's login email over to their Contact record in their operator,
+        but only when the Contact still uses the old login email (i.e. the user never set a separate
+        contact email). Contacts with a customized email are left untouched.
+        Active contacts have a unique email per operator (`unique_active_email_per_operator`), so if another
+        active contact already uses the new email the update is skipped rather than failing the login sync.
+        """
+        try:
+            user_operator = UserOperatorDataAccessService.get_approved_user_operator(user)
+        except UserOperator.DoesNotExist:
+            return
+        operator_contacts = Contact.objects.filter(operator_id=user_operator.operator_id)
+        contact = operator_contacts.filter(email=old_email).first()
+        if not contact or operator_contacts.filter(email=new_email).exists():
+            return
+        contact.email = new_email
+        contact.save(update_fields=["email"])
 
     @classmethod
     def get_contact_for_user(cls, user: User) -> Contact | None:
