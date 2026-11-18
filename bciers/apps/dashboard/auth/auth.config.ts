@@ -2,6 +2,7 @@ import type { DefaultSession, NextAuthConfig } from "next-auth";
 import Keycloak, { KeycloakProfile } from "next-auth/providers/keycloak";
 import { Errors, IDP } from "@bciers/utils/src/enums";
 import { actionHandler } from "@bciers/actions";
+import { syncUserProfileOnLogin } from "./syncUserProfile";
 import "next-auth/jwt";
 
 /*
@@ -137,6 +138,13 @@ export default {
             `registration/user/user-profile/${token.user_guid}`,
             "GET",
           );
+          // 🔄 On sign in, refresh the BCeID-owned fields (email, business name) of existing industry users
+          if (profile && token.identity_provider === IDP.BCEIDBUSINESS) {
+            await syncUserProfileOnLogin(token.user_guid, response, {
+              email: (profile as KeycloakProfile).email,
+              bceid_business_name: token.bceid_business_name,
+            });
+          }
           const { first_name: firstName, last_name: lastName } = response || {};
           if (firstName && lastName) {
             token.full_name = `${firstName} ${lastName}`;

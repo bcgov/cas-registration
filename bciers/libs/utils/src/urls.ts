@@ -46,5 +46,8 @@ export const bcCarbonRegistryLink =
 
 export const bceabLink = "https://www.bceab.ca/appeal-process/start-my-appeal/";
 
+export const bceidProfileManagementLink =
+  "https://www.bceid.ca/logon.aspx?returnUrl=/profile_management";
+
 export const complianceGuidanceLink =
   "https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_compliance_guidance.pdf";
