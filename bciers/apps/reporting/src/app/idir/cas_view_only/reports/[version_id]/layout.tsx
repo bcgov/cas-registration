@@ -12,10 +12,7 @@ export default async function ReportingVersionLayout(
 
   return (
     <>
-      <ReportingPageHeading
-        version_id={+params.version_id}
-        space_below={true}
-      />
+      <ReportingPageHeading version_id={+params.version_id} className="mb-6" />
       {children}
     </>
   );
