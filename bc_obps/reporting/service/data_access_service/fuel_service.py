@@ -14,7 +14,7 @@ class FuelTypeDataAccessService:
         if cached_data:
             return cached_data
         else:
-            fuels = FuelType.objects.only(*FuelTypeSchema.Meta.fields).order_by('id')
+            fuels = FuelType.objects.only(*FuelTypeSchema.Meta.fields).order_by('name')
             cache.set("fuels", fuels, 60 * 60 * 24 * 1)  # 1 day
             return fuels
 
