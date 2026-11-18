@@ -6,7 +6,7 @@ from django.db.models import Q
 from model_bakery import baker
 from common.lib import pgtrigger
 
-from registration.models import FacilityDesignatedOperationTimeline, Operation
+from registration.models import FacilityDesignatedOperationTimeline, Operation, Facility
 from registration.models.document import Document
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
@@ -18,13 +18,20 @@ class TestOperationRegistration(CommonTestSetup):
             'registration.tests.utils.approved_user_operator', user=self.user
         )
         # add some random contacts and facilities so we can test that they are not overridden
-        random_contacts = baker.make_recipe('registration.tests.utils.contact', _quantity=5)
+        random_contacts = baker.make_recipe(
+            'registration.tests.utils.contact', _quantity=5, operator=self.approved_user_operator.operator
+        )
         self.operation = baker.make_recipe(
             'registration.tests.utils.operation',
             created_by=self.user,
             operator=self.approved_user_operator.operator,
             contacts=random_contacts,
             type=operation_type,
+        )
+        baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operator=self.approved_user_operator.operator,
+            operation=self.operation,
         )
         # add some facilities so we can test that they are not overridden
         if operation_type == Operation.Types.LFO:
@@ -33,6 +40,7 @@ class TestOperationRegistration(CommonTestSetup):
                 operation=self.operation,
                 _quantity=5,
             )
+        Facility.objects.all().update(operation=self.operation)
         # saving the created_at, updated_at and operation_representative_id to compare later
         self.created_at = self.operation.created_at
         self.updated_at = None

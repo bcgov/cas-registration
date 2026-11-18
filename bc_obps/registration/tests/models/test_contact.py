@@ -11,6 +11,8 @@ from registration.tests.constants import (
 )
 from model_bakery import baker
 from datetime import datetime, timezone
+from model_bakery.baker import make_recipe
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 
 
 class ContactModelTest(BaseTestCase):
@@ -134,3 +136,104 @@ class ContactTriggerTests(TestCase):
 
         # assert that new_contact created OK
         self.assertIsNotNone(new_contact.id)
+
+
+class ContactRlsTest(BaseTestCase):
+
+    def test_contact_rls_industry_user(self):
+        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        approved_operator = approved_user_operator.operator
+        other_operator = make_recipe('registration.tests.utils.operator')
+        approved_contact = make_recipe('registration.tests.utils.contact', operator=approved_operator)
+        other_contact = make_recipe('registration.tests.utils.contact', operator=other_operator)
+
+        def select_function(cursor):
+            Contact.objects.get(id=approved_contact.id)
+
+        def forbidden_select_function(cursor):
+            Contact.objects.get(id=other_contact.id)
+
+        def insert_function(cursor):
+            Contact.objects.create(
+                business_role=BusinessRole.objects.first(),
+                operator=approved_operator,
+                first_name="fname",
+                last_name="lname",
+                position_title="Manager",
+                email="alicesmith@example.com",
+                phone_number="+16044011234",
+            )
+
+        def forbidden_insert_function(cursor):
+            Contact.objects.create(
+                business_role=BusinessRole.objects.first(),
+                operator=other_operator,
+                first_name="fname",
+                last_name="lname",
+                position_title="Manager",
+                email="alicesmith@example.com",
+                phone_number="+16044011234",
+            )
+
+        def update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."contact"
+                    SET first_name = 'updated'
+                    WHERE id = %s
+                """,
+                (str(approved_contact.id),),
+            )
+            return cursor.rowcount
+
+        def forbidden_update_function(cursor):
+            cursor.execute(
+                """
+                    UPDATE "erc"."contact"
+                    SET first_name = 'updated'
+                    WHERE id = %s
+                """,
+                (str(other_contact.id),),
+            )
+            return cursor.rowcount
+
+        assert_policies_for_industry_user(
+            Contact,
+            approved_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+        )
+
+    def test_contact_rls_cas_user(self):
+        other_operator = make_recipe('registration.tests.utils.operator')
+        test_quantity = 2
+        make_recipe(
+            "registration.tests.utils.contact",
+        )
+        make_recipe(
+            "registration.tests.utils.contact",
+        )
+
+        def select_function(cursor):
+            assert Contact.objects.count() == test_quantity
+
+        def insert_function(cursor):
+            Contact.objects.create(
+                business_role=BusinessRole.objects.first(),
+                operator=other_operator,
+                first_name="fname",
+                last_name="lname",
+                position_title="Manager",
+                email="alicesmith@example.com",
+                phone_number="+16044011234",
+            )
+
+        assert_policies_for_cas_roles(
+            Contact,
+            select_function=select_function,
+            insert_function=insert_function,
+        )
