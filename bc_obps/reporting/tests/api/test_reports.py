@@ -14,6 +14,7 @@ from reporting.tests.utils.bakers import report_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 from common.tests.utils.helpers import assert_error_response
+from rls.utils.manager import RlsManager
 
 
 class TestReportsEndpoint(CommonTestSetup):
@@ -134,10 +135,14 @@ class TestReportsEndpoint(CommonTestSetup):
             mock_validate_operation_ownership.assert_called_once()
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_report_operation_by_version_id")
-        assert_report_version_ownership_is_validated("save_report")
-        assert_report_version_ownership_is_validated("change_report_version_type", "post")
-        assert_report_version_ownership_is_validated("get_report_version")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("get_report_operation_by_version_id")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("save_report")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("change_report_version_type", "post")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("get_report_version")
 
     @patch("reporting.service.report_version_service.ReportVersionService.delete_report_version")
     def test_returns_data_as_provided_by_delete_report_version(self, mock_delete_report_version: MagicMock):
