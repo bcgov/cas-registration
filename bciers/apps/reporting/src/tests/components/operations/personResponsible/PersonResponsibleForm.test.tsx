@@ -224,6 +224,89 @@ describe("PersonResponsibleForm component", () => {
     });
   });
 
+  describe("re-validates the contact address on sync", () => {
+    const incompleteAddressContact = {
+      ...mockPersonResponsible,
+      street_address: "",
+      municipality: "",
+      province: "",
+      postal_code: "",
+    };
+    const completeAddressContact = {
+      ...mockPersonResponsible,
+      street_address: "456 New St",
+      municipality: "New City",
+      province: "BC",
+      postal_code: "V1V 1V1",
+    };
+
+    const selectContactWithIncompleteAddress = async () => {
+      mockGetContact.mockResolvedValueOnce(incompleteAddressContact);
+      render(
+        <PersonResponsibleForm
+          {...defaultProps}
+          personResponsible={undefined}
+          initialContactId={undefined}
+          schema={createPersonResponsibleSchema(
+            personResponsibleSchema,
+            mockContacts.items,
+          )}
+        />,
+      );
+
+      fireEvent.mouseDown(screen.getByRole("combobox"));
+      fireEvent.click(await screen.findByText("John Doe"));
+
+      expect(
+        await screen.findByText(/Missing address information/i),
+      ).toBeVisible();
+    };
+
+    it("keeps the address error and blocks save when the synced contact still has an incomplete address", async () => {
+      await selectContactWithIncompleteAddress();
+
+      mockGetContacts.mockResolvedValueOnce(mockContacts);
+      mockGetContact.mockResolvedValueOnce(incompleteAddressContact);
+      fireEvent.click(screen.getByRole("button", { name: /sync/i }));
+
+      expect(
+        await screen.findByText(/Changes synced successfully/i),
+      ).toBeVisible();
+      expect(screen.getByText(/Missing address information/i)).toBeVisible();
+
+      fireEvent.click(screen.getByText("Save & Continue"));
+
+      await waitFor(() => {
+        expect(actionHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    it("clears the address error and saves after syncing a contact with a completed address", async () => {
+      actionHandler.mockResolvedValueOnce({});
+      await selectContactWithIncompleteAddress();
+
+      mockGetContacts.mockResolvedValueOnce(mockContacts);
+      mockGetContact.mockResolvedValueOnce(completeAddressContact);
+      fireEvent.click(screen.getByRole("button", { name: /sync/i }));
+
+      expect(await screen.findByDisplayValue("456 New St")).toBeVisible();
+      expect(
+        screen.queryByText(/Missing address information/i),
+      ).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByText("Save & Continue"));
+
+      await waitFor(() => {
+        expect(actionHandler).toHaveBeenCalledTimes(1);
+      });
+      const [, , , options] = actionHandler.mock.calls[0];
+      expect(JSON.parse(options.body)).toMatchObject({
+        contact_id: 1,
+        street_address: "456 New St",
+      });
+    });
+  });
+
   it("displays an error message when the request fails", async () => {
     const errorMessage = "Unable to complete the request.";
     actionHandler.mockResolvedValueOnce({

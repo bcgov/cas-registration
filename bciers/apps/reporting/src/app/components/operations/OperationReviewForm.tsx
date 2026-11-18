@@ -64,6 +64,7 @@ export default function OperationReviewForm({
     useState<string>();
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [pageSchema, setPageSchema] = useState(schema);
+  const [representatives, setRepresentatives] = useState(allRepresentatives);
   const [hasReps, setHasReps] = useState(allRepresentatives.length > 0);
 
   const missingOperationRepresentativeError: ValidationItem<ValidationMessageKey> =
@@ -121,6 +122,15 @@ export default function OperationReviewForm({
       return;
     }
 
+    // Fetch before updating state so schema and form data change in the same render;
+    // otherwise selected representative ids may not exist in the new options
+    const updatedNavigationInfo = await getNavigationInformation(
+      HeaderStep.OperationInformation,
+      ReportingPage.ReviewOperationInfo,
+      version_id,
+      facilityId,
+    );
+
     setPageSchema(
       buildOperationReviewSchema(
         newData,
@@ -136,17 +146,11 @@ export default function OperationReviewForm({
       ),
     );
 
-    setNavigationInfo(
-      await getNavigationInformation(
-        HeaderStep.OperationInformation,
-        ReportingPage.ReviewOperationInfo,
-        version_id,
-        facilityId,
-      ),
-    );
+    setNavigationInfo(updatedNavigationInfo);
     setFormDataState(newData.report_operation);
 
     const reps = newData.all_representatives || [];
+    setRepresentatives(reps);
     const hasUpdatedReps = reps.length > 0;
     setHasReps(hasUpdatedReps);
 
@@ -161,7 +165,7 @@ export default function OperationReviewForm({
   const uiSchema = buildOperationReviewUiSchema(
     allActivities,
     allRegulatedProducts,
-    allRepresentatives,
+    representatives,
     formData.operation_id,
     formData.operation_name,
   );
