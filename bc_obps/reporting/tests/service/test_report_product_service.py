@@ -266,3 +266,50 @@ class TestReportProductService(TestCase):
             regulated_products,
             ordered=False,
         )
+
+    def test_get_reported_products_includes_regulated_products_and_excludes_other_versions(self):
+        regulated_product = make_recipe("registration.tests.utils.regulated_product", is_regulated=True)
+        reported = make_recipe(
+            "reporting.tests.utils.report_product",
+            report_version=self.facility_report.report_version,
+            facility_report=self.facility_report,
+            product=regulated_product,
+        )
+        # Product data on another report version must not be returned
+        make_recipe("reporting.tests.utils.report_product", product=regulated_product)
+
+        self.assertQuerySetEqual(
+            ReportProductService.get_reported_products(self.report_version_id),
+            [reported],
+            ordered=False,
+        )
+
+    def test_get_reported_products_includes_unregulated_products_only_with_allocated_emissions(self):
+        allocated_product, zero_allocated_product, unallocated_product = make_recipe(
+            "registration.tests.utils.regulated_product", is_regulated=False, _quantity=3
+        )
+        report_version = self.facility_report.report_version
+        allocated, zero_allocated, _ = [
+            make_recipe(
+                "reporting.tests.utils.report_product",
+                report_version=report_version,
+                facility_report=self.facility_report,
+                product=product,
+            )
+            for product in [allocated_product, zero_allocated_product, unallocated_product]
+        ]
+        # Allocations in two emission categories must not duplicate the product
+        for report_product, quantities in [(allocated, [10, 5]), (zero_allocated, [0, 0])]:
+            for quantity in quantities:
+                make_recipe(
+                    "reporting.tests.utils.report_product_emission_allocation",
+                    report_version=report_version,
+                    report_product=report_product,
+                    allocated_quantity=quantity,
+                )
+
+        self.assertQuerySetEqual(
+            ReportProductService.get_reported_products(self.report_version_id),
+            [allocated],
+            ordered=False,
+        )
