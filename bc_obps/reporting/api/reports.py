@@ -113,7 +113,7 @@ def get_all_reporting_years(
     response={200: ReportingVersionOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="Retrieve report version details",
-    auth=approved_industry_user_report_version_composite_auth,
+    auth=approved_authorized_roles_report_version_composite_auth,
     exclude_none=True,
 )
 def get_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], ReportVersion]:
