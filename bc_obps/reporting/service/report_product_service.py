@@ -1,12 +1,13 @@
 from typing import Iterable, List
 from uuid import UUID
 
-from django.db.models import QuerySet
+from django.db.models import Exists, OuterRef, Q, QuerySet
 from django.db import transaction
 from registration.models.regulated_product import RegulatedProduct
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
+from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 
 
 class ReportProductService:
@@ -108,4 +109,19 @@ class ReportProductService:
     def get_allowed_products(cls, report_version_id: int) -> QuerySet[RegulatedProduct]:
         return ReportOperation.objects.get(report_version_id=report_version_id).regulated_products.exclude(
             is_regulated=False
+        )
+
+    @classmethod
+    def get_reported_products(cls, report_version_id: int) -> QuerySet[ReportProduct]:
+        """
+        Returns the products with user-reported data in the report version's facility reports:
+        regulated products with production data, and unregulated products with allocated emissions.
+        Unregulated products with no allocated emissions are excluded.
+        """
+        has_allocated_emissions = ReportProductEmissionAllocation.objects.filter(
+            report_product_id=OuterRef("pk"), allocated_quantity__gt=0
+        )
+        return ReportProduct.objects.filter(
+            Q(product__is_regulated=True) | Exists(has_allocated_emissions),
+            report_version_id=report_version_id,
         )
