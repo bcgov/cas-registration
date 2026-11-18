@@ -1,5 +1,6 @@
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  // See: https://github.com/bcgov/renovate-config
   extends: [
     'github>bcgov/renovate-config#2026.10.29',
   ],
@@ -8,9 +9,11 @@
     'run-all-ci',
   ],
   prConcurrentLimit: 5,
+  // Prevents Renovate from creating a GitHub Issue as a dashboard.
   dependencyDashboard: {
     enabled: false,
   },
+  // This overrides bcgov's default automerge behaviour.
   automerge: false,
   platformAutomerge: false,
   vulnerabilityAlerts: {
@@ -25,12 +28,19 @@
     ],
     rangeStrategy: 'bump',
   },
+
+  // Ensures Renovate uses the correct tool versions when regenerating lock files.
   constraints: {
     node: '24.x',
     yarn: '4.x',
     python: '3.15.2',
   },
+
+  // Add packages here that should never be updated by Renovate
+  // (e.g., intentionally pinned versions, packages with known breaking changes).
+  // Example: ignoreDeps: ["some-pinned-package"]
   ignoreDeps: [],
+
   ignorePaths: [
     'helm/**',
     'data_import/**',
@@ -39,15 +49,27 @@
     'k6_results/**',
     '.github/workflows/*.lock.yml',
   ],
+
+  // Renovate will open a PR to fully regenerate yarn.lock and poetry.lock
+  // from scratch. Useful for catching transitive dependency drift.
+  // Disable if the PRs are too noisy or produce no meaningful changes over time.
   lockFileMaintenance: {
     enabled: true,
     schedule: [
       'every weekend',
     ],
   },
+
+  // Waits N days before opening a PR for a newly released version.
+  // Prevents chasing packages that publish a bad release and immediately patch it —
+  // Renovate will simply wait and open a PR for the stable follow-up version instead.
+  // Re-enable if the team finds itself frequently updating to versions that get
+  // superseded within days.
   minimumReleaseAge: '7 days',
+
   packageRules: [
     {
+      // All @nx/* packages and nx itself must stay on the same version.
       description: 'Nx packages — must stay in sync',
       matchManagers: [
         'npm',
@@ -64,6 +86,9 @@
       groupSlug: 'nx-non-major',
     },
     {
+      // Each major update gets its own individual PR — never grouped.
+      // Breaking changes across unrelated packages should be reviewed independently
+      // to isolate blast radius.
       description: 'Major updates: individual PRs, never grouped',
       matchUpdateTypes: [
         'major',
