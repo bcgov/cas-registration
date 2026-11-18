@@ -100,10 +100,11 @@ describe("Reporting validationUIConfig", () => {
     });
   });
 
-  describe("operation_boro_id and missing_regulated_product", () => {
+  describe("Review Operation Information links", () => {
     const keys: ValidationMessageKey[] = [
       "operation_boro_id",
       "missing_regulated_product",
+      "product_not_in_operation_information",
     ];
 
     keys.forEach((key) => {
