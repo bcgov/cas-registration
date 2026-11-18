@@ -36,7 +36,7 @@ def list_contacts(
 
 
 @router.get(
-    "/contact/",
+    "/contact",
     response={200: int | None, custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
     description="""Retrieves the contact ID for the corresponding external user.""",
