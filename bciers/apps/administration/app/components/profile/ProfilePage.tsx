@@ -14,7 +14,7 @@ async function getUserFormData(): Promise<UserProfileFormData> {
 }
 // 🚀 API call: GET user's Contact data
 async function getUserContactData(): Promise<number | null> {
-  return actionHandler(`registration/contact/`, "GET", "");
+  return actionHandler(`registration/contact`, "GET", "");
 }
 
 // 🏗️ Async server component: dashboard\profile
