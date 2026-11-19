@@ -27,6 +27,8 @@ x-app: &app
   depends_on:
     - backend
   network_mode: host
+  # Start with kube-log-runner but don't output logfiles
+  command: ["node", "server.js"]
 
 services:
   db:
@@ -64,6 +66,7 @@ services:
       timeout: 10s
       retries: 30
       start_period: 180s
+    command: ["/bin/bash", "-c", "/app/.venv/bin/python manage.py custom_migrate && /app/.venv/bin/gunicorn --access-logfile - bc_obps.wsgi:application --timeout 200 --workers 3 --bind '0.0.0.0:8000'"]
 
   # Always started: it is the entry point every suite navigates through, not an app under test.
   dashboard:
