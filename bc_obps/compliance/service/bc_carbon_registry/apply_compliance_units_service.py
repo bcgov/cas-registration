@@ -138,6 +138,18 @@ class ApplyComplianceUnitsService:
         * Outstanding balance / equivalent value is > 0.
         * There is a remaining cap to apply (max_credit_usage_percentage of original fee minus already applied adjustments).
         """
+
+        ## TEMPORARY
+        ## This is a fix to allow supplementary reports with obligations to be paid with credits in full when appropriate for a specific report in this situation
+        ## A more permanent solution should replaice this later
+        if (
+            ComplianceReportVersion.objects.get(
+                id=compliance_report_version_id
+            ).report_compliance_summary.report_version_id
+            == 1096
+        ):
+            return True
+
         # Get cap limit and remaining (handles missing obligation or fee internally).
         cap_limit, cap_remaining = cls._compute_compliance_unit_caps(compliance_report_version_id)
 
