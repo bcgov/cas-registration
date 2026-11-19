@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import ProfileForm from "@/administration/app/components/profile/ProfileForm";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
+import { bceidProfileManagementLink } from "@bciers/utils/src/urls";
 import {
   getSessionRole,
   getSession,
@@ -46,7 +47,7 @@ describe("ProfileForm", () => {
 
   it("renders form with Submit button", () => {
     render(<ProfileForm isCreate={true} idp={"idir"} />);
-    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
   });
 
   it("does not show email help text for idir user", async () => {
@@ -54,17 +55,25 @@ describe("ProfileForm", () => {
     vi.mocked(getSession).mockResolvedValueOnce({ identity_provider: "idir" });
     render(<ProfileForm isCreate={true} idp={"idir"} />);
     await waitFor(() => {
-      expect(screen.queryByText(/This email is used to log in/)).toBeNull();
+      expect(
+        screen.queryByText(
+          /This is the email associated with your Business BCeID/,
+        ),
+      ).toBeNull();
     });
   });
 
   it("does not show email help text for external user being created", async () => {
     render(<ProfileForm isCreate={true} idp={"bceidbusiness"} />);
     await waitFor(() => {
-      expect(screen.queryByText(/This email is used to log in/)).toBeNull();
+      expect(
+        screen.queryByText(
+          /This is the email associated with your Business BCeID/,
+        ),
+      ).toBeNull();
     });
     // assert that the profile page still loaded ok
-    expect(await screen.findByText(/Position Title/)).toBeInTheDocument();
+    expect(await screen.findByText(/Position Title/)).toBeVisible();
   });
 
   it("shows extended email help text if contact record exists", async () => {
@@ -81,9 +90,18 @@ describe("ProfileForm", () => {
 
     // need to await the screen because it's rendered with useEffect
     expect(
-      await screen.findByText(/This email is used to log in/),
-    ).toBeInTheDocument();
-    expect(await screen.findByText(/To change the email/)).toBeInTheDocument();
+      await screen.findByText(
+        /This is the email associated with your Business BCeID/,
+      ),
+    ).toBeVisible();
+    expect(
+      await screen.findByText(/To change the email you are contacted with/),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("link", {
+        name: "update it in your Business BCeID account",
+      }),
+    ).toHaveAttribute("href", bceidProfileManagementLink);
   });
 
   it("shows base email help text if contact lookup fails", async () => {
@@ -98,8 +116,10 @@ describe("ProfileForm", () => {
 
     // need to await the screen because it's rendered with useEffect
     expect(
-      await screen.findByText(/This email is used to log in/),
-    ).toBeInTheDocument();
+      await screen.findByText(
+        /This is the email associated with your Business BCeID/,
+      ),
+    ).toBeVisible();
   });
 
   it("calls POST on submit when creating user", async () => {
@@ -152,7 +172,7 @@ describe("ProfileForm", () => {
 
     expect(
       await screen.findByRole("button", { name: "✅ Success" }),
-    ).toBeInTheDocument();
+    ).toBeVisible();
   });
 
   it("displays an error message when the create request fails", async () => {
