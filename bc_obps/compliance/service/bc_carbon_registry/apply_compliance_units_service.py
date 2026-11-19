@@ -17,6 +17,9 @@ from django.db.models import Sum
 
 bccr_account_service = BCCarbonRegistryAccountService()
 
+# TEMPORARY HOTFIX: compliance report version exempt from the max_credit_usage_percentage cap
+CAP_EXEMPT_COMPLIANCE_REPORT_VERSION_ID: int = 0
+
 
 class ApplyComplianceUnitsService:
     @classmethod
@@ -88,6 +91,11 @@ class ApplyComplianceUnitsService:
 
         if not obligation_data or obligation_data.fee_amount_dollars is None:
             return Decimal("0"), Decimal("0")
+
+        # TEMPORARY HOTFIX: skip the cap for the exempt version, but not allow more than is still owed
+        if compliance_report_version_id == CAP_EXEMPT_COMPLIANCE_REPORT_VERSION_ID:
+            outstanding_balance = max(Decimal("0"), obligation_data.equivalent_value or Decimal("0"))
+            return outstanding_balance, outstanding_balance
 
         compliance_unit_cap_limit = cls._calculate_apply_units_cap(compliance_report_version_id)
 
