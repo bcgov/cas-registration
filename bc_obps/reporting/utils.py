@@ -1,10 +1,18 @@
 from typing import Any, Dict, List, Optional
 
 from django.core.paginator import Paginator
-from django.db.models import Case, Count, IntegerField, QuerySet, Sum, When
+from django.db.models import Case, Count, IntegerField, Q, QuerySet, Sum, When
 from django.http import HttpRequest
 from ninja import Query, Schema
 from ninja.pagination import PaginationBase
+
+# Contacts listed as operation representative options must have a complete address
+CONTACT_HAS_COMPLETE_ADDRESS = Q(
+    address__street_address__isnull=False,
+    address__municipality__isnull=False,
+    address__province__isnull=False,
+    address__postal_code__isnull=False,
+)
 
 
 class ReportingCustomPagination(PaginationBase):

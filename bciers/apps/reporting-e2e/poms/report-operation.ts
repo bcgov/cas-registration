@@ -37,6 +37,17 @@ const BUGLE_SFO_VALUES = {
   ],
 };
 
+export const BEES_LFO_VALUES = {
+  // Assigned as operation representative in Administration (pre-selected)
+  BEES_LFO_SELECTED_REPRESENTATIVES: ["Bill Blue"],
+  // Remaining Bravo Technologies contacts with a complete address
+  BEES_LFO_UNSELECTED_REPRESENTATIVES: [
+    "bc-cas-dev Industry User",
+    "bc-cas-dev-secondary Industry User",
+    "Bob Brown",
+  ],
+};
+
 export class ReportOperationPOM {
   readonly page: Page;
 
@@ -127,6 +138,30 @@ export class ReportOperationPOM {
       BUGLE_SFO_VALUES.BUGLE_SFO_REPORTING_ACTIVITIES as unknown as string[],
       true,
     );
+  }
+
+  /**
+   * Verifies the operation representative dropdown: `selected` names render as chips
+   * and opening the dropdown lists exactly the `unselected` names
+   */
+  async verifyRepresentativeOptions(
+    selected: string[],
+    unselected: string[],
+  ): Promise<void> {
+    const input = this.page.locator("#root_operation_representative_name");
+    await expect(input).toBeVisible();
+
+    // Selected representatives render as chips
+    const chips = input.locator("..").locator(".MuiChip-root");
+    await expect(chips).toHaveText(selected);
+
+    // Open the dropdown: the remaining contacts are listed
+    await input.click();
+    await expect(this.page.getByRole("option")).toHaveText(unselected);
+
+    // Close without changing the selection
+    await this.page.keyboard.press("Escape");
+    await expect(input).toHaveAttribute("aria-expanded", "false");
   }
 
   async verifyFieldVisibility(): Promise<void> {

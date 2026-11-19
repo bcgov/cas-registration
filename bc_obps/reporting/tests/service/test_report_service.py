@@ -219,6 +219,14 @@ class TestReportService(TestCase):
                 business_role_id="Operation Representative",
                 _quantity=3,
             )
+            # Contacts with any business role are selectable
+            senior_officer = baker.make_recipe(
+                'registration.tests.utils.contact',
+                operator=operator_old,
+                business_role_id="Senior Officer",
+            )
+            # Assigned to the operation, but must not be pre-selected for a transferred operation
+            operation.contacts.add(contacts[0])
 
             # Calling the method under test
             report_version_id = ReportService.create_report(operation.id, reporting_year=2024)
@@ -264,9 +272,13 @@ class TestReportService(TestCase):
                 "representative_name"
             )
 
-            self.assertEqual(operation_representatives.count(), 3)
-            for index, contact in enumerate(contacts):
-                self.assertEqual(operation_representatives.all()[index].representative_name, contact.get_full_name())
+            self.assertEqual(operation_representatives.count(), 4)
+            self.assertSetEqual(
+                {rep.representative_name for rep in operation_representatives},
+                {contact.get_full_name() for contact in [*contacts, senior_officer]},
+            )
+            # No representative is pre-selected for a transferred operation
+            self.assertFalse(operation_representatives.filter(selected_for_report=True).exists())
 
     def test_save_report_operation_updates_fields_and_relationships(self):
         operation = operation_baker(type=Operation.Types.LFO)
