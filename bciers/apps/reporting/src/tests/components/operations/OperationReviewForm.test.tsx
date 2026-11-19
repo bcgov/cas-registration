@@ -186,7 +186,7 @@ describe("OperationReviewForm Component", () => {
     );
   };
 
-  const productRemovalText = /Are you sure you want to remove this product/i;
+  const productRemovalText = /Are you sure you want to remove/i;
 
   it("shows the SFO product removal modal when removing a product with reported data", async () => {
     renderFormWithReportedProducts([1]);
@@ -194,6 +194,9 @@ describe("OperationReviewForm Component", () => {
     await removeFirstRegulatedProduct();
 
     expect(await screen.findByText(productRemovalText)).toBeVisible();
+    expect(
+      within(screen.getByRole("dialog")).getByText("Product 1"),
+    ).toBeVisible();
     expect(screen.getByText(/will be removed from this report/i)).toBeVisible();
     expect(screen.queryByRole("listitem")).not.toBeInTheDocument();
   });

@@ -41,7 +41,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         errors[f"product_not_in_operation_information_product_{product_id}"] = ReportValidationError(
             severity=Severity.ERROR,
             message=(
-                f"{product_name} is not selected as a product on Review Operation Information "
+                f"{product_name} is not selected as a product on Review Operation Information "  # nosec B608 - user-facing message, not SQL
                 f"but is still selected on the {facilities} report. "
                 "To proceed, either select the product on the Review Operation Information page, "
                 f"or deselect them from {facilities} report."

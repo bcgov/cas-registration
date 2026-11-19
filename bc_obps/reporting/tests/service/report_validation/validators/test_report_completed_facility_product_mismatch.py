@@ -1,6 +1,5 @@
 from model_bakery.baker import make_recipe
 import pytest
-from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
     ReportValidationError,
@@ -95,7 +94,7 @@ class TestReportCompletedFacilityProductMismatchValidator:
                 unregulated_product, ["Completed Facility"]
             ),
         }
-        
+
     def test_lists_all_completed_facility_reports_for_a_product(self):
         other_completed_facility_report = make_recipe(
             "reporting.tests.utils.facility_report",
