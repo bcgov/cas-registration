@@ -215,7 +215,7 @@ class ApplyComplianceUnitsService:
             return False
 
         # Use whichever field represents the current obligation balance (e.g., equivalent_value).
-        return not obligation_data.equivalent_value <= 0
+        return obligation_data.equivalent_value > 0
 
     @classmethod
     def _validate_quantity_limits(cls, payload: Dict[str, Any], compliance_report_version_id: int) -> None:
