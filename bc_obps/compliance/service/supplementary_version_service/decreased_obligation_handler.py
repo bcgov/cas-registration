@@ -719,20 +719,29 @@ class DecreasedObligationHandler:
     @staticmethod
     def _has_credit_usage_over_cap(invoice_adjustments: List[InvoiceAdjustment]) -> bool:
         """
-        Return True if the decrease pushes the compliance units already applied to any target obligation
-        over the allowed cap (the decrease shrinks the cap). The invoice_adjustments decrease amount is passed as
-        the pending supplementary adjustment, so the cap reflects the decrease before it is posted
+        Return True if the decrease pushes the compliance units already applied across the compliance report
+        over the report-wide cap (the decrease shrinks the cap). The cap is pooled across every obligation of
+        the report, so the total decrease over all target invoices is passed once as the pending supplementary
+        adjustment, letting the cap reflect the decrease before it is posted
+
+        An invoice that will be voided is reduced by its full remaining fee, which removes it from the pool the
+        same way the void itself will once posted
         """
         from compliance.service.bc_carbon_registry.apply_compliance_units_service import ApplyComplianceUnitsService
 
-        return any(
-            ApplyComplianceUnitsService.is_credit_usage_over_cap(
-                invoice_adjustment.version_id,
-                pending_supplementary_adjustment=(
-                    ZERO_DECIMAL if invoice_adjustment.should_void_invoice else invoice_adjustment.applied
-                ),
-            )
-            for invoice_adjustment in invoice_adjustments
+        if not invoice_adjustments:
+            return False
+
+        total_pending_adjustment = sum(
+            (invoice_adjustment.applied for invoice_adjustment in invoice_adjustments), ZERO_DECIMAL
+        )
+        if total_pending_adjustment == ZERO_DECIMAL:
+            return False
+
+        # All target invoices belong to the same compliance report, so any of them resolves the same pool
+        return ApplyComplianceUnitsService.is_credit_usage_over_cap(
+            invoice_adjustments[0].version_id,
+            pending_supplementary_adjustment=total_pending_adjustment,
         )
 
     @staticmethod

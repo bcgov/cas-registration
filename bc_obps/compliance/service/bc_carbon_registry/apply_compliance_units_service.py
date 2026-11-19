@@ -44,16 +44,61 @@ class ApplyComplianceUnitsService:
         return total_adjustments
 
     @classmethod
+    def _get_report_obligation_version_ids(cls, compliance_report_version_id: int) -> List[int]:
+        """
+        Returns the IDs of every compliance report version in the same compliance report whose
+        obligation counts toward the report-wide compliance unit cap: versions that have an obligation
+        with a live (non-void) eLicensing invoice and that have not been superceded
+
+        The given version is always included so the cap can still be computed for it
+        """
+        compliance_report_id = ComplianceReportVersion.objects.values_list('compliance_report_id', flat=True).get(
+            id=compliance_report_version_id
+        )
+        version_ids = list(
+            ComplianceObligation.objects.filter(
+                compliance_report_version__compliance_report_id=compliance_report_id,
+                elicensing_invoice__isnull=False,
+                elicensing_invoice__is_void=False,
+            )
+            .exclude(compliance_report_version__status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED)
+            .order_by('compliance_report_version_id')
+            .values_list('compliance_report_version_id', flat=True)
+        )
+        if compliance_report_version_id not in version_ids:
+            version_ids.append(compliance_report_version_id)
+        return version_ids
+
+    @classmethod
+    def _get_report_wide_adjustment_total_by_reason(cls, compliance_report_version_id: int, reason: str) -> Decimal:
+        """
+        Sums adjustments of the given reason across every obligation that counts toward the
+        report-wide compliance unit cap (see _get_report_obligation_version_ids)
+        """
+        return sum(
+            (
+                cls._get_total_adjustments_for_report_version_by_reason(
+                    compliance_report_version_id=version_id, reason=reason
+                )
+                for version_id in cls._get_report_obligation_version_ids(compliance_report_version_id)
+            ),
+            Decimal("0"),
+        )
+
+    @classmethod
     def _calculate_apply_units_cap(
         cls, compliance_report_version_id: int, pending_supplementary_adjustment: Decimal = Decimal("0")
     ) -> Decimal:
         """
-        Retrieves the obligation for the given compliance report version ID and calculates the maximum
-        allowable value for applied compliance units based on the max_credit_usage_percentage
-        configured on the associated CompliancePeriod.
+        Calculates the maximum allowable value for applied compliance units across the whole compliance
+        report, based on the max_credit_usage_percentage configured on the associated CompliancePeriod
+
+        The cap is pooled across every live obligation of the report (the original obligation plus any
+        supplementary increases), so unused room on one obligation can be used on another:
+            cap = (sum of obligation fees + sum of supplementary decreases) * max_credit_usage_percentage
 
         Args:
-            compliance_report_version_id: The ID of the compliance report version for which the credit usage cap is being checked
+            compliance_report_version_id: The ID of a compliance report version in the report for which the credit usage cap is being checked
             pending_supplementary_adjustment: A supplementary decrease that has not yet been posted to
                 eLicensing (signed, negative reduces the obligation). Lets callers compute the cap that
                 will apply *after* the decrease, before its adjustment row exists.
@@ -64,8 +109,14 @@ class ApplyComplianceUnitsService:
         obligation = ComplianceObligationService.get_obligation_for_report_version(compliance_report_version_id)
         if not obligation or not obligation.fee_amount_dollars:
             raise UserError("Unable to calculate unit cap: missing obligation or fee amount.")
+
+        version_ids = cls._get_report_obligation_version_ids(compliance_report_version_id)
+        total_fee_amount_dollars = ComplianceObligation.objects.filter(
+            compliance_report_version_id__in=version_ids
+        ).aggregate(total=Sum("fee_amount_dollars"))["total"] or Decimal("0")
+
         total_supplementary_report_adjustments = (
-            cls._get_total_adjustments_for_report_version_by_reason(
+            cls._get_report_wide_adjustment_total_by_reason(
                 compliance_report_version_id=compliance_report_version_id,
                 reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT,
             )
@@ -75,12 +126,17 @@ class ApplyComplianceUnitsService:
             id=compliance_report_version_id
         )
         max_credit_usage_percentage = crv.compliance_report.compliance_period.max_credit_usage_percentage
-        return (obligation.fee_amount_dollars + total_supplementary_report_adjustments) * max_credit_usage_percentage
+        return (total_fee_amount_dollars + total_supplementary_report_adjustments) * max_credit_usage_percentage
 
     @classmethod
     def _compute_compliance_unit_caps(cls, compliance_report_version_id: int) -> tuple[Decimal, Decimal]:
         """
         Returns (compliance_unit_cap_limit, compliance_unit_cap_remaining).
+
+        The limit is report-wide: it is pooled across every live obligation of the compliance report, and the
+        remaining cap subtracts compliance units applied to any of those obligations. Because the pooled room can
+        be larger than what this obligation still owes (e.g. an earlier obligation paid fully in cash), the
+        remaining cap is also clamped to this obligation's outstanding fee balance so units can't overpay it
         """
         obligation_data = ComplianceObligationService.get_obligation_data_by_report_version(
             compliance_report_version_id
@@ -91,11 +147,15 @@ class ApplyComplianceUnitsService:
 
         compliance_unit_cap_limit = cls._calculate_apply_units_cap(compliance_report_version_id)
 
-        total_compliance_unit_adjustments = cls._get_total_adjustments_for_report_version_by_reason(
-            compliance_report_version_id=compliance_report_version_id, reason='Compliance Units Applied'
+        total_compliance_unit_adjustments = cls._get_report_wide_adjustment_total_by_reason(
+            compliance_report_version_id=compliance_report_version_id,
+            reason=ElicensingAdjustment.Reason.COMPLIANCE_UNITS_APPLIED,
         )
 
-        compliance_unit_cap_remaining = max(Decimal("0"), compliance_unit_cap_limit + total_compliance_unit_adjustments)
+        report_cap_remaining = compliance_unit_cap_limit + total_compliance_unit_adjustments
+        compliance_unit_cap_remaining = max(
+            Decimal("0"), min(report_cap_remaining, obligation_data.equivalent_value or Decimal("0"))
+        )
 
         return compliance_unit_cap_limit, compliance_unit_cap_remaining
 
@@ -104,9 +164,9 @@ class ApplyComplianceUnitsService:
         cls, compliance_report_version_id: int, pending_supplementary_adjustment: Decimal = Decimal("0")
     ) -> bool:
         """
-        Returns True if the compliance units already applied to this report version now exceed the
-        allowed cap. This happens when a supplementary report decreases the obligation, shrinking the
-        cap (max_credit_usage_percentage of the reduced obligation) below the units already applied.
+        Returns True if the compliance units already applied across the compliance report now exceed the
+        report-wide cap. This happens when a supplementary report decreases an obligation, shrinking the
+        cap (max_credit_usage_percentage of the reduced total obligation) below the units already applied
 
         Args:
             compliance_report_version_id: The ID of the compliance report version for which the credit usage cap is being checked
@@ -125,8 +185,9 @@ class ApplyComplianceUnitsService:
 
         cap_limit = cls._calculate_apply_units_cap(compliance_report_version_id, pending_supplementary_adjustment)
         # Negative value (applications reduce the balance)
-        total_compliance_unit_adjustments = cls._get_total_adjustments_for_report_version_by_reason(
-            compliance_report_version_id=compliance_report_version_id, reason='Compliance Units Applied'
+        total_compliance_unit_adjustments = cls._get_report_wide_adjustment_total_by_reason(
+            compliance_report_version_id=compliance_report_version_id,
+            reason=ElicensingAdjustment.Reason.COMPLIANCE_UNITS_APPLIED,
         )
         return (cap_limit + total_compliance_unit_adjustments) < Decimal("0")
 
@@ -154,10 +215,7 @@ class ApplyComplianceUnitsService:
             return False
 
         # Use whichever field represents the current obligation balance (e.g., equivalent_value).
-        if obligation_data.equivalent_value <= 0:
-            return False
-
-        return True
+        return obligation_data.equivalent_value > 0
 
     @classmethod
     def _validate_quantity_limits(cls, payload: Dict[str, Any], compliance_report_version_id: int) -> None:
