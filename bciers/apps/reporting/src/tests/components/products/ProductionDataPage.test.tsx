@@ -156,7 +156,7 @@ describe("The Production Data component", () => {
         reporting_year: 2020,
       },
       payload: {
-        allowed_products: [{ product_id: 123, name: "testProduct" }],
+        allowed_products: [{ id: 123, name: "testProduct" }],
         report_products: [
           {
             product_id: 123,
@@ -207,9 +207,10 @@ describe("The Production Data component", () => {
         reporting_year: 2024,
       },
       payload: {
-        allowed_products: [{ product_id: 123, name: "testProduct" }],
+        allowed_products: [{ id: 123, name: "testProduct" }],
         report_products: [
           {
+            product_id: 123,
             product_name: "testProduct",
             unit: "tonnes of tests",
           },
@@ -239,6 +240,7 @@ describe("The Production Data component", () => {
         allowed_products: [{ id: 123, name: "testProduct" }],
         report_products: [
           {
+            product_id: 123,
             product_name: "testProduct",
             unit: "tonnes of tests",
           },
