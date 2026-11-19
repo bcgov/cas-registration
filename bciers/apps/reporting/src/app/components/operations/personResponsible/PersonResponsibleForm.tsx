@@ -45,6 +45,19 @@ interface ComponentState {
   hasError: boolean;
 }
 
+// Returns an error message if any address field is missing or empty
+const getAddressError = (contact: Contact) => {
+  const missingAddressInfo =
+    !contact.street_address?.toString().trim() ||
+    !contact.municipality?.toString().trim() ||
+    !contact.province?.toString().trim() ||
+    !contact.postal_code?.toString().trim();
+
+  return missingAddressInfo
+    ? `Missing address information.  <a href="/administration/contacts/${contact.id}?contacts_title=${contact.first_name} ${contact.last_name}/" target="_blank" rel="noopener noreferrer">Add contact's address information.</a>`
+    : "";
+};
+
 const PersonResponsibleForm = ({
   versionId,
   navigationInformation,
@@ -82,16 +95,7 @@ const PersonResponsibleForm = ({
     const contactOptions = componentState.availableContacts?.items || [];
 
     if (newContactId !== undefined && newContact) {
-      // Check if any address field is missing or empty
-      const missingAddressInfo =
-        !newContact.street_address?.toString().trim() ||
-        !newContact.municipality?.toString().trim() ||
-        !newContact.province?.toString().trim() ||
-        !newContact.postal_code?.toString().trim();
-
-      const addressError = missingAddressInfo
-        ? `Missing address information.  <a href="/administration/contacts/${newContact.id}?contacts_title=${newContact.first_name} ${newContact.last_name}/" target="_blank" rel="noopener noreferrer">Add contact's address information.</a>`
-        : "";
+      const addressError = getAddressError(newContact);
 
       resetKey();
       setComponentState({
@@ -204,6 +208,7 @@ const PersonResponsibleForm = ({
       }
 
       const updatedContact: Contact = updatedContactResponse;
+      const addressError = getAddressError(updatedContact);
 
       // Update state with the updated contact information
       const updatedSchema = createPersonResponsibleSchema(
@@ -211,12 +216,14 @@ const PersonResponsibleForm = ({
         updatedContacts.items,
         componentState.selectedContactId,
         updatedContact,
+        addressError,
       );
 
       setComponentState({
         ...componentState,
         availableContacts: updatedContacts,
         contactToSubmit: updatedContact,
+        hasError: Boolean(addressError),
         schema: updatedSchema,
         formData: {
           person_responsible: componentState.selectedContactId,

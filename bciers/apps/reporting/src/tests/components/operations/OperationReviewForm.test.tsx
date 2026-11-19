@@ -431,6 +431,83 @@ describe("OperationReviewForm Component", () => {
     });
   });
 
+  it("shows the synced representatives after the selected representative is renamed", async () => {
+    // Renaming Bill Blue to Zack Blue replaces his row (id 69) with a new one (id 71)
+    const syncedRepresentatives = [
+      { id: 70, representative_name: "Bob Brown", selected_for_report: true },
+      { id: 71, representative_name: "Zack Blue", selected_for_report: true },
+    ];
+    mockGetUpdatedReportOperationDetails.mockResolvedValue({
+      report_operation: {
+        ...formData,
+        operation_representative_name: [70, 71],
+      },
+      all_representatives: syncedRepresentatives,
+      show_regulated_products: true,
+      show_boro_id: true,
+      show_activities: true,
+    });
+
+    // Hold navigation open so a render can happen mid-sync
+    let resolveNavigation!: (value: typeof dummyNavigationInformation) => void;
+    mockGetNavigationInformation.mockReturnValue(
+      new Promise((resolve) => {
+        resolveNavigation = resolve;
+      }),
+    );
+
+    const schemaWithSync = buildOperationReviewSchema(
+      formData,
+      2024,
+      activities,
+      regulatedProducts,
+      allRepresentatives,
+      reportType,
+      true,
+      true,
+      true,
+      true,
+    );
+
+    render(
+      <OperationReviewForm
+        formData={formData}
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        schema={schemaWithSync}
+        allActivities={activities}
+        allRegulatedProducts={regulatedProducts}
+        reportType={reportType}
+        reportingYear={2024}
+        facilityId={`1234`}
+        allRepresentatives={allRepresentatives}
+        isSyncAllowed={true}
+      />,
+    );
+
+    expect(screen.getByText("Bill Blue")).toBeVisible();
+
+    act(() =>
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: /Sync latest data from Administration/i,
+        }),
+      ),
+    );
+
+    await waitFor(() => {
+      expect(mockGetNavigationInformation).toHaveBeenCalled();
+    });
+    await act(async () => resolveNavigation(dummyNavigationInformation));
+
+    expect(
+      await screen.findByText(/Changes synced successfully/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Zack Blue")).toBeVisible();
+    expect(screen.getByText("Bob Brown")).toBeVisible();
+    expect(screen.queryByText("Bill Blue")).not.toBeInTheDocument();
+  });
+
   it("does not show sync button and info note when isSyncAllowed is false", async () => {
     render(
       <OperationReviewForm

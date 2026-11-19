@@ -8,6 +8,10 @@ import { ACTION_BUTTON_TEXT } from "@/reporting-e2e/utils/constants";
 import { CurrentReportsPOM } from "@/reporting-e2e/poms/current-reports";
 import { CurrentReportPOM } from "@/reporting-e2e/poms/current-report";
 import { ReportSetUpPOM } from "@/reporting-e2e/poms/report-setup";
+import {
+  BEES_LFO_VALUES,
+  ReportOperationPOM,
+} from "@/reporting-e2e/poms/report-operation";
 import { LFOFacilityReportPOM } from "@/reporting-e2e/poms/facility-report";
 import { ReviewFacilitiesPOM } from "@/reporting-e2e/poms/LFO/review-facilities";
 import { FacilityGridPOM } from "@/reporting-e2e/poms/LFO/facility-grid";
@@ -43,6 +47,11 @@ export async function runLfoSubmitReport({
 
   // ── 3. Review Operation Information
   await verifyFormTitle(page, "Review Operation Information");
+  // Representative options include all operator contacts
+  await new ReportOperationPOM(page).verifyRepresentativeOptions(
+    BEES_LFO_VALUES.BEES_LFO_SELECTED_REPRESENTATIVES,
+    BEES_LFO_VALUES.BEES_LFO_UNSELECTED_REPRESENTATIVES,
+  );
   await scanPage("Review Operation Information (LFO)");
   await takeStabilizedScreenshot(happoScreenshot, page, {
     component: "Report - Review Operation Information",

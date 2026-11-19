@@ -108,6 +108,52 @@ class TestReportOperationService:
         assert self.report_operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert self.report_operation.naics_code == self.operation.naics_code
 
+    def test_update_report_operation_syncs_representatives_from_all_operator_contacts(self):
+        operator = self.report_version.report.operator
+        assigned_contact = baker.make_recipe(
+            "registration.tests.utils.contact", operator=operator, first_name="Assigned", last_name="Rep"
+        )
+        unassigned_contact = baker.make_recipe(
+            "registration.tests.utils.contact", operator=operator, first_name="Unassigned", last_name="Contact"
+        )
+        previously_selected_contact = baker.make_recipe(
+            "registration.tests.utils.contact", operator=operator, first_name="Previously", last_name="Selected"
+        )
+        baker.make_recipe(
+            "registration.tests.utils.contact",
+            operator=baker.make_recipe("registration.tests.utils.operator"),
+            first_name="Other",
+            last_name="Operator",
+        )
+        self.operation.contacts.set([assigned_contact])
+        baker.make_recipe(
+            "reporting.tests.utils.report_operation_representative",
+            report_version=self.report_version,
+            representative_name=previously_selected_contact.get_full_name(),
+            selected_for_report=True,
+        )
+
+        ReportOperationService.update_report_operation(self.report_version.id)
+
+        reps = {
+            rep.representative_name: rep.selected_for_report
+            for rep in self.report_version.report_operation_representatives.all()
+        }
+        assert reps == {
+            assigned_contact.get_full_name(): True,
+            unassigned_contact.get_full_name(): False,
+            previously_selected_contact.get_full_name(): True,
+        }
+
+        # Representatives are returned sorted by name, regardless of creation order
+        names = [
+            rep.representative_name
+            for rep in ReportOperationService.get_report_operation_by_version_id(self.report_version.id)[
+                "report_operation_representatives"
+            ]
+        ]
+        assert names == ["Assigned Rep", "Previously Selected", "Unassigned Contact"]
+
     def test_update_report_service_creates_empty_report_products_for_unregulated_products(self):
         """Validate that calling the sync method creates empty report products for unregulated products"""
         unregulated_product = baker.make_recipe("registration.tests.utils.regulated_product", is_regulated=False)
