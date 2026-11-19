@@ -9,13 +9,13 @@ from reporting.service.report_validation.report_validation_error import (
 )
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 
-TAGS = [ValidationTags.REPORT_VALIDATION]
+TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     """
     Errors for each product that is no longer selected on Review Operation Information
-    but still has reported data in one or more completed facility reports.
+    but still has reported data in one or more facility reports, whether or not they are complete.
     """
     errors: dict[str, ReportValidationError] = {}
 
@@ -26,7 +26,6 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
 
     rows = (
         ReportProductService.get_reported_products(report_version.id)
-        .filter(facility_report__is_completed=True)
         .exclude(product_id__in=report_operation.regulated_products.values("id"))
         .order_by("product__name", "facility_report__facility_name")
         .values_list("product_id", "product__name", "facility_report__facility_name")
@@ -41,7 +40,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         errors[f"product_not_in_operation_information_product_{product_id}"] = ReportValidationError(
             severity=Severity.ERROR,
             message=(
-                f"{product_name} is not selected as a product on Review Operation Information "
+                f"{product_name} is not selected as a product on Review Operation Information "  # nosec B608 - user-facing message, not SQL
                 f"but is still selected on the {facilities} report. "
                 "To proceed, either select the product on the Review Operation Information page, "
                 f"or deselect them from {facilities} report."

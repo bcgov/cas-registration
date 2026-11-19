@@ -3,6 +3,7 @@ from model_bakery import baker
 import pytest
 from registration.models.regulated_product import RegulatedProduct
 from reporting.models.report_product import ReportProduct
+from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 from reporting.service.report_product_service import ReportProductService
 from model_bakery.baker import make_recipe
 
@@ -120,6 +121,36 @@ class TestReportProductService(TestCase):
         assert ReportProduct.objects.count() == 1
         assert ReportProduct.objects.get(product_id=29) is not None
 
+    def test_deletes_emission_allocations_for_products_not_in_submitted_data(self):
+        ReportProductService.save_production_data(
+            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
+        )
+        report_version = self.facility_report.report_version
+        report_emission_allocation = make_recipe(
+            "reporting.tests.utils.report_emission_allocation",
+            report_version=report_version,
+            facility_report=self.facility_report,
+        )
+        kept_allocation, dropped_allocation = [
+            make_recipe(
+                "reporting.tests.utils.report_product_emission_allocation",
+                report_version=report_version,
+                report_emission_allocation=report_emission_allocation,
+                report_product=ReportProduct.objects.get(facility_report=self.facility_report, product_id=product_id),
+                allocated_quantity=10,
+            )
+            for product_id in [29, 1]
+        ]
+
+        # Product 1 is no longer submitted, e.g. it was deselected on Review Operation Information
+        ReportProductService.save_production_data(
+            self.report_version_id, self.facility_id, self.test_data[:1], self.test_user_guid
+        )
+
+        assert not ReportProduct.objects.filter(facility_report=self.facility_report, product_id=1).exists()
+        assert not ReportProductEmissionAllocation.objects.filter(id=dropped_allocation.id).exists()
+        assert ReportProductEmissionAllocation.objects.filter(id=kept_allocation.id).exists()
+
     def test_saves_additional_data(self):
         self.report_operation.regulated_products.add(RegulatedProduct.objects.get(id=10))
 
@@ -183,6 +214,35 @@ class TestReportProductService(TestCase):
             ReportProductService.save_production_data(
                 self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
             )
+
+    def test_allows_resubmitting_saved_product_no_longer_in_report_operation(self):
+        # Product 1 is deselected on Review Operation Information but its data is kept (completed facility report)
+        ReportProductService.save_production_data(
+            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
+        )
+        self.report_operation.regulated_products.set(RegulatedProduct.objects.filter(id=29))
+
+        ReportProductService.save_production_data(
+            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
+        )
+
+        assert set(
+            ReportProduct.objects.filter(facility_report=self.facility_report).values_list("product_id", flat=True)
+        ) == {1, 29}
+
+    def test_deletes_saved_product_no_longer_in_report_operation_when_deselected(self):
+        ReportProductService.save_production_data(
+            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
+        )
+        self.report_operation.regulated_products.set(RegulatedProduct.objects.filter(id=29))
+
+        ReportProductService.save_production_data(
+            self.report_version_id, self.facility_id, self.test_data[:1], self.test_user_guid
+        )
+
+        assert list(
+            ReportProduct.objects.filter(facility_report=self.facility_report).values_list("product_id", flat=True)
+        ) == [29]
 
     # Test saving errors out if no product_id
     def test_errors_out_if_no_product_id(self):

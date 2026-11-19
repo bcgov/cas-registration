@@ -51,21 +51,15 @@ const ProductionDataForm: React.FC<Props> = ({
     "Large Facility",
   ].includes(facilityType);
 
-  // Drop saved products that are no longer allowed (e.g. deselected on Review
-  // Operation Information), so saving this form removes their data
-  const allowedInitialData = initialData.filter((item) =>
-    allowedProducts.some((product) => product.product_id === item.product_id),
-  );
-
   // We select all products:
   // - either if the facility is not an LFO
   // - or if the facility is an LFO but nothing has been selected before (assuming first visit)
   const selectedProductionData =
     isLfoFacility && initialData.length > 0
-      ? allowedInitialData
+      ? initialData
       : allowedProducts.map(
           (product) =>
-            allowedInitialData.find(
+            initialData.find(
               (item) => item.product_name === product.product_name,
             ) ?? product,
         );

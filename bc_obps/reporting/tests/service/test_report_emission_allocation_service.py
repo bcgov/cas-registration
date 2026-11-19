@@ -438,6 +438,24 @@ class TestReportEmissionAllocationService(TestCase):
 
         assert not retrieved_emission_allocations_data.has_missing_products
 
+    def test_has_missing_products_ignores_unregulated_report_products(self):
+        # An unregulated product on the operation gets an auto-generated report product record,
+        # which must not be treated as a mismatch with the allowed (regulated) products
+        product = make_recipe("registration.tests.utils.regulated_product", is_regulated=False)
+        self.test_infrastructure.report_version.report_operation.regulated_products.add(product)
+        make_recipe(
+            "reporting.tests.utils.report_product",
+            report_version=self.test_infrastructure.report_version,
+            facility_report=self.test_infrastructure.facility_report,
+            product=product,
+        )
+
+        retrieved_emission_allocations_data = ReportEmissionAllocationService.get_emission_allocation_data(
+            self.test_infrastructure.report_version, self.test_infrastructure.facility_report.facility_id
+        )
+
+        assert not retrieved_emission_allocations_data.has_missing_products
+
     def test_save_emission_allocation_not_applicable_deletes_existing_allocations(self):
         # save some allocations with "Other" methodology
         ReportEmissionAllocationService.save_emission_allocation_data(

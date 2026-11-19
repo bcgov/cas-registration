@@ -1,17 +1,16 @@
 from model_bakery.baker import make_recipe
 import pytest
-from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
     ReportValidationError,
     ReportValidationErrorKey,
     Severity,
 )
-from reporting.service.report_validation.validators import report_completed_facility_product_mismatch
+from reporting.service.report_validation.validators import report_facility_product_mismatch
 
 
 @pytest.mark.django_db
-class TestReportCompletedFacilityProductMismatchValidator:
+class TestReportFacilityProductMismatchValidator:
     def setup_method(self):
         self.report_version = make_recipe("reporting.tests.utils.report_version")
         self.report_operation = make_recipe(
@@ -53,26 +52,36 @@ class TestReportCompletedFacilityProductMismatchValidator:
     def test_no_errors_without_report_operation(self):
         report_version = make_recipe("reporting.tests.utils.report_version")
 
-        assert report_completed_facility_product_mismatch.validate(report_version) == {}
+        assert report_facility_product_mismatch.validate(report_version) == {}
 
     def test_no_errors_when_reported_products_are_selected(self):
         self._report_product(self.selected_product)
 
-        assert report_completed_facility_product_mismatch.validate(self.report_version) == {}
+        assert report_facility_product_mismatch.validate(self.report_version) == {}
 
-    def test_no_errors_for_incomplete_facility_report(self):
+    def test_error_for_incomplete_facility_report(self):
+        # e.g. the product was deselected while the facility was complete, then the facility was marked incomplete
         incomplete_facility_report = make_recipe(
-            "reporting.tests.utils.facility_report", report_version=self.report_version, is_completed=False
+            "reporting.tests.utils.facility_report",
+            report_version=self.report_version,
+            is_completed=False,
+            facility_name="Incomplete Facility",
         )
         self._report_product(self.deselected_product, incomplete_facility_report)
 
-        assert report_completed_facility_product_mismatch.validate(self.report_version) == {}
+        result = report_facility_product_mismatch.validate(self.report_version)
+
+        assert result == {
+            f"product_not_in_operation_information_product_{self.deselected_product.id}": self._expected_error(
+                self.deselected_product, ["Incomplete Facility"]
+            )
+        }
 
     def test_no_error_for_unregulated_product_without_allocated_emissions(self):
         unregulated_product = make_recipe("registration.tests.utils.regulated_product", is_regulated=False)
         self._report_product(unregulated_product)
 
-        assert report_completed_facility_product_mismatch.validate(self.report_version) == {}
+        assert report_facility_product_mismatch.validate(self.report_version) == {}
 
     def test_one_error_per_deselected_product(self):
         unregulated_product = make_recipe("registration.tests.utils.regulated_product", is_regulated=False)
@@ -85,7 +94,7 @@ class TestReportCompletedFacilityProductMismatchValidator:
             allocated_quantity=10,
         )
 
-        result = report_completed_facility_product_mismatch.validate(self.report_version)
+        result = report_facility_product_mismatch.validate(self.report_version)
 
         assert result == {
             f"product_not_in_operation_information_product_{self.deselected_product.id}": self._expected_error(
@@ -95,8 +104,8 @@ class TestReportCompletedFacilityProductMismatchValidator:
                 unregulated_product, ["Completed Facility"]
             ),
         }
-        
-    def test_lists_all_completed_facility_reports_for_a_product(self):
+
+    def test_lists_all_facility_reports_for_a_product(self):
         other_completed_facility_report = make_recipe(
             "reporting.tests.utils.facility_report",
             report_version=self.report_version,
@@ -104,7 +113,10 @@ class TestReportCompletedFacilityProductMismatchValidator:
             facility_name="A Completed Facility",
         )
         incomplete_facility_report = make_recipe(
-            "reporting.tests.utils.facility_report", report_version=self.report_version, is_completed=False
+            "reporting.tests.utils.facility_report",
+            report_version=self.report_version,
+            is_completed=False,
+            facility_name="Incomplete Facility",
         )
         for facility_report in [
             self.completed_facility_report,
@@ -113,10 +125,10 @@ class TestReportCompletedFacilityProductMismatchValidator:
         ]:
             self._report_product(self.deselected_product, facility_report)
 
-        result = report_completed_facility_product_mismatch.validate(self.report_version)
+        result = report_facility_product_mismatch.validate(self.report_version)
 
         assert result == {
             f"product_not_in_operation_information_product_{self.deselected_product.id}": self._expected_error(
-                self.deselected_product, ["A Completed Facility", "Completed Facility"]
+                self.deselected_product, ["A Completed Facility", "Completed Facility", "Incomplete Facility"]
             )
         }

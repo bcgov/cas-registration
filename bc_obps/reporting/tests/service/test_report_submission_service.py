@@ -1,6 +1,7 @@
 from model_bakery.baker import make_recipe
 import pytest
 from unittest.mock import patch, MagicMock
+from registration.models import Operation
 from reporting.service.report_submission_service import ReportSubmissionService
 from reporting.service.exceptions import ReportValidationException
 from reporting.models.report_version import ReportVersion
@@ -119,3 +120,32 @@ class TestReportSubmissionService:
 
         assert "test_key" in exception.value.errors
         assert exception.value.errors["test_key"].message == "test message"
+
+    def test_submit_report_rejects_deselected_product_reported_in_completed_facility(self):
+        report_version = make_recipe("reporting.tests.utils.report_version")
+        report_operation = make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=report_version,
+            operation_type=Operation.Types.LFO,
+        )
+        selected_product, deselected_product = make_recipe(
+            "registration.tests.utils.regulated_product", is_regulated=True, _quantity=2
+        )
+        report_operation.regulated_products.set([selected_product])
+        facility_report = make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version, is_completed=True
+        )
+        make_recipe(
+            "reporting.tests.utils.report_product",
+            report_version=report_version,
+            facility_report=facility_report,
+            product=deselected_product,
+        )
+
+        # Validation is not mocked, so this fails if the validator is not run on submission
+        with pytest.raises(ReportValidationException) as exception:
+            ReportSubmissionService.submit_report(report_version.id, uuid.UUID(int=0), {})
+
+        assert f"product_not_in_operation_information_product_{deselected_product.id}" in exception.value.errors
+        report_version.refresh_from_db()
+        assert report_version.status == ReportVersion.ReportVersionStatus.Draft
