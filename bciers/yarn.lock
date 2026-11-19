@@ -2595,7 +2595,7 @@ __metadata:
     "@nx/eslint": "npm:24.0.6"
     "@nx/eslint-plugin": "npm:24.0.6"
     "@nx/js": "npm:24.0.6"
-    "@nx/next": "npm:23.3.1"
+    "@nx/next": "npm:24.0.6"
     "@nx/playwright": "npm:23.3.1"
     "@nx/react": "npm:23.3.1"
     "@nx/vite": "npm:23.3.1"
@@ -4416,16 +4416,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nx/next@npm:23.3.1":
-  version: 23.3.1
-  resolution: "@nx/next@npm:23.3.1"
+"@nx/next@npm:24.0.6":
+  version: 24.0.6
+  resolution: "@nx/next@npm:24.0.6"
   dependencies:
     "@babel/plugin-proposal-decorators": "npm:^7.22.7"
-    "@nx/devkit": "npm:23.3.1"
-    "@nx/eslint": "npm:23.3.1"
-    "@nx/js": "npm:23.3.1"
-    "@nx/react": "npm:23.3.1"
-    "@nx/web": "npm:23.3.1"
+    "@nx/devkit": "npm:24.0.6"
+    "@nx/eslint": "npm:24.0.6"
+    "@nx/js": "npm:24.0.6"
+    "@nx/react": "npm:24.0.6"
+    "@nx/web": "npm:24.0.6"
     "@phenomnomnominal/tsquery": "npm:~6.2.0"
     copy-webpack-plugin: "npm:^14.0.0"
     ignore: "npm:^7.0.5"
@@ -4433,12 +4433,12 @@ __metadata:
     tslib: "npm:^2.3.0"
     webpack-merge: "npm:^5.8.0"
   peerDependencies:
-    "@nx/webpack": 23.3.1
+    "@nx/webpack": 24.0.6
     next: ">=14.0.0 <17.0.0"
   peerDependenciesMeta:
     "@nx/webpack":
       optional: true
-  checksum: 10c0/da451aa3818eae512028f0dcc8bebb6d10627abf9f91607f21c1778f09eb8de66fb028e6d906956869822e1e7a7688618ff875acea77aa063a42068cdbc5fe94
+  checksum: 10c0/0f5b6d453a66279d9e207fb772adcf49303a44eaddec3a8a9e589ff9301d45e75d5e45021d1f9387927c7bb5f2ef08cef03d4094df68d5d193e3a68aecd86c09
   languageName: node
   linkType: hard
 
@@ -4639,6 +4639,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nx/react@npm:24.0.6":
+  version: 24.0.6
+  resolution: "@nx/react@npm:24.0.6"
+  dependencies:
+    "@babel/preset-react": "npm:^7.22.5"
+    "@nx/devkit": "npm:24.0.6"
+    "@nx/eslint": "npm:24.0.6"
+    "@nx/js": "npm:24.0.6"
+    "@nx/vite": "npm:24.0.6"
+    "@nx/web": "npm:24.0.6"
+    "@phenomnomnominal/tsquery": "npm:~6.2.0"
+    minimatch: "npm:10.2.5"
+    semver: "npm:^7.6.3"
+    tslib: "npm:^2.3.0"
+  peerDependencies:
+    babel-plugin-react-compiler: ^1.0.0
+    react: ">=18.0.0 <20.0.0"
+    react-dom: ">=18.0.0 <20.0.0"
+  dependenciesMeta:
+    "@nx/vite":
+      optional: true
+  peerDependenciesMeta:
+    babel-plugin-react-compiler:
+      optional: true
+  checksum: 10c0/2e183a9604f9b1af0217043e2e7d3da7009d40ba756acfffa45126858581fc09b72161a59b955599251bf3d7edb9f05b32c68549dd8cfa64d25ec1a4a3012437
+  languageName: node
+  linkType: hard
+
 "@nx/vite@npm:23.3.1":
   version: 23.3.1
   resolution: "@nx/vite@npm:23.3.1"
@@ -4655,6 +4683,24 @@ __metadata:
   peerDependencies:
     vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
   checksum: 10c0/da4e67e07ea26c5fe9510f888e9ed74d5dfe74e0c59e1bfa9f071aabee1ecabc7c62ec1d45e0ff554304b3a3e9a54981320631b32f162bf4284dc772459ce339
+  languageName: node
+  linkType: hard
+
+"@nx/vite@npm:24.0.6":
+  version: 24.0.6
+  resolution: "@nx/vite@npm:24.0.6"
+  dependencies:
+    "@nx/devkit": "npm:24.0.6"
+    "@nx/js": "npm:24.0.6"
+    "@nx/vitest": "npm:24.0.6"
+    "@phenomnomnominal/tsquery": "npm:~6.2.0"
+    ajv: "npm:^8.0.0"
+    picomatch: "npm:^4.0.7"
+    semver: "npm:^7.6.3"
+    tslib: "npm:^2.3.0"
+  peerDependencies:
+    vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
+  checksum: 10c0/51dba7b9d6d3cc0c60204110483fc4919219ab0521fc339d207e1ed438542268e28b81d388bccfb138b66668be877f05dd3b32e5a8c46815d736159250c68f72
   languageName: node
   linkType: hard
 
@@ -4679,6 +4725,30 @@ __metadata:
     vitest:
       optional: true
   checksum: 10c0/d11816ab1e85631caeb684ea11f2597703826f54b469f5fa4a6fbd52c18b91af5ec66b812b3ca7590829315d2d2d8dcad52756ea580dc251beffe576aa223cba
+  languageName: node
+  linkType: hard
+
+"@nx/vitest@npm:24.0.6":
+  version: 24.0.6
+  resolution: "@nx/vitest@npm:24.0.6"
+  dependencies:
+    "@nx/devkit": "npm:24.0.6"
+    "@nx/js": "npm:24.0.6"
+    "@phenomnomnominal/tsquery": "npm:~6.2.0"
+    semver: "npm:^7.6.3"
+    tslib: "npm:^2.3.0"
+  peerDependencies:
+    "@nx/eslint": 24.0.6
+    vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
+    vitest: ^3.0.0 || ^4.0.0 || ^5.0.0
+  peerDependenciesMeta:
+    "@nx/eslint":
+      optional: true
+    vite:
+      optional: true
+    vitest:
+      optional: true
+  checksum: 10c0/77beebdbdbeb6cc96c9860a52f22d7e5567a2dab2c22db82476339f5a2c328e155663f00fc4110ec3ca4954f9d3035a672f867876ab3a149deb4392e20d85b01
   languageName: node
   linkType: hard
 
@@ -4713,6 +4783,40 @@ __metadata:
     "@nx/webpack":
       optional: true
   checksum: 10c0/5869f9eac05ee16e316772dbffde5c4633b18b49e014d1cf9ab72520e563b047d3e7d7099b8cefade87992e493adb844754ff91004e196f2848c9524f508da0c
+  languageName: node
+  linkType: hard
+
+"@nx/web@npm:24.0.6":
+  version: 24.0.6
+  resolution: "@nx/web@npm:24.0.6"
+  dependencies:
+    "@nx/devkit": "npm:24.0.6"
+    "@nx/js": "npm:24.0.6"
+    detect-port: "npm:^2.1.0"
+    http-server: "npm:^14.1.0"
+    picocolors: "npm:^1.1.0"
+    tslib: "npm:^2.3.0"
+  peerDependencies:
+    "@nx/cypress": 24.0.6
+    "@nx/eslint": 24.0.6
+    "@nx/jest": 24.0.6
+    "@nx/playwright": 24.0.6
+    "@nx/vite": 24.0.6
+    "@nx/webpack": 24.0.6
+  peerDependenciesMeta:
+    "@nx/cypress":
+      optional: true
+    "@nx/eslint":
+      optional: true
+    "@nx/jest":
+      optional: true
+    "@nx/playwright":
+      optional: true
+    "@nx/vite":
+      optional: true
+    "@nx/webpack":
+      optional: true
+  checksum: 10c0/9848f1487e9c989896bccc20367a47fdfbb80a3ec814f97f21e3823006de2658e257af1e8f803e6300330ca93dd83d382fd78aee5092f9bb3985b19dd61336c8
   languageName: node
   linkType: hard
 
