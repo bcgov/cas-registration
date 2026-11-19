@@ -133,6 +133,7 @@ describe("OperationReviewForm Component", () => {
         facilityId={`1234`}
         allRepresentatives={allRepresentatives}
         isSyncAllowed={false}
+        reportedProductIds={[]}
       />,
     );
   };
@@ -353,6 +354,7 @@ describe("OperationReviewForm Component", () => {
         facilityId="1234"
         allRepresentatives={[]}
         isSyncAllowed={false}
+        reportedProductIds={[]}
       />,
     );
 
@@ -409,6 +411,7 @@ describe("OperationReviewForm Component", () => {
         facilityId={`1234`}
         allRepresentatives={[]}
         isSyncAllowed={true}
+        reportedProductIds={[]}
       />,
     );
 
@@ -522,6 +525,7 @@ describe("OperationReviewForm Component", () => {
         facilityId={`1234`}
         allRepresentatives={allRepresentatives}
         isSyncAllowed={false}
+        reportedProductIds={[]}
       />,
     );
 
@@ -572,6 +576,7 @@ describe("OperationReviewForm Component", () => {
         facilityId={`1234`}
         allRepresentatives={allRepresentatives}
         isSyncAllowed={true}
+        reportedProductIds={[]}
       />,
     );
 

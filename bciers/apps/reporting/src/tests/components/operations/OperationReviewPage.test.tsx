@@ -52,6 +52,7 @@ describe("OperationReviewPage", () => {
       show_activities: true,
       facility_id: "facility-123",
       is_sync_allowed: true,
+      reported_product_ids: [10],
     };
     const fakeSchema = { schema: "my schema" };
 
@@ -79,6 +80,7 @@ describe("OperationReviewPage", () => {
       fakeNavigationInformation,
     );
     expect(result.props.isSyncAllowed).toEqual(true);
+    expect(result.props.reportedProductIds).toEqual([10]);
 
     // Verify that the dependent functions were called with the expected parameters
     expect(getNavigationInformation).toHaveBeenCalledWith(
