@@ -45,6 +45,7 @@ interface Props {
   allRepresentatives: ReportOperationRepresentative[];
   facilityId: string;
   isSyncAllowed: boolean;
+  reportedProductIds: number[];
 }
 
 export default function OperationReviewForm({
