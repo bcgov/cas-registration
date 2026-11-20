@@ -12,6 +12,7 @@ import {
   UserProfilePartialFormData,
 } from "@bciers/types/form/formData";
 import { IDP } from "@bciers/utils/src/enums";
+import { bceidProfileManagementLink } from "@bciers/utils/src/urls";
 import {
   useValidationErrors,
   handleApiResponse,
@@ -57,10 +58,18 @@ export default function ProfileForm({
   const [isSuccess, setIsSuccess] = useState(false);
 
   const emailHelpTextFirstClause = (
-    <div>
-      This email is used to log in. To change your login email, contact{" "}
-      <a href="mailto:ghgregulator@gov.bc.ca">ghgregulator@gov.bc.ca</a>
-    </div>
+    <p className="m-0">
+      <strong>Login email:</strong> This is the email associated with your
+      Business BCeID. To change this email,{" "}
+      <a
+        href={bceidProfileManagementLink}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        update it in your Business BCeID account
+      </a>
+      ; the change will appear here in BCIERS the next time you log in.
+    </p>
   );
 
   let emailHelpText: ReactNode | null = null;
@@ -70,15 +79,16 @@ export default function ProfileForm({
       emailHelpText = (
         <>
           {emailHelpTextFirstClause}
-          <div>
-            To change the email you are contacted with, edit the email in your{" "}
+          <p className="mb-0 mt-2">
+            <strong>Contact email:</strong> To change the email you are
+            contacted with, edit the email in your{" "}
             <a
               href={`/administration/contacts/${contactId.toString()}?contacts_title=${formData?.first_name} ${formData?.last_name}`}
             >
               contact details page
             </a>
             .
-          </div>
+          </p>
         </>
       );
     } else {

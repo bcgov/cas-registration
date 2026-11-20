@@ -1,6 +1,6 @@
 import json
 import uuid
-from registration.schema import UserIn, UserUpdateIn
+from registration.schema import UserIn, UserUpdateIn, UserLoginSyncIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.enums.enums import IdPs
 from registration.utils import custom_reverse_lazy
@@ -210,3 +210,25 @@ class TestUserProfileEndpoint(CommonTestSetup):
         # Additional Assertion for user_guid
         assert 'user_guid' not in content
         assert 'business_guid' not in content
+
+    def test_sync_user_profile_on_login_updates_idp_fields(self):
+        # Arrange
+        mock_payload = UserLoginSyncIn(email='new.email@email.com', bceid_business_name='New Business Name')
+
+        # Act
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            self.content_type,
+            mock_payload.model_dump_json(),
+            custom_reverse_lazy('sync_user_profile_on_login'),
+        )
+
+        # Assert
+        assert response.status_code == 200
+        content = response.json()
+        assert content['email'] == 'new.email@email.com'
+        assert content['bceid_business_name'] == 'New Business Name'
+        self.user.refresh_from_db()
+        assert self.user.email == 'new.email@email.com'
+        assert self.user.bceid_business_name == 'New Business Name'
