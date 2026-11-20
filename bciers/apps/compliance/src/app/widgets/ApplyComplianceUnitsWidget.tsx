@@ -96,7 +96,13 @@ const ApplyComplianceUnitsWidget = ({
             minHeight: "10vh",
           },
           "& .MuiDataGrid-overlayWrapper": {
-            height: "0vh",
+            width: "100%",
+          },
+          "& .MuiDataGrid-overlayWrapperInner": {
+            width: "100% !important",
+            // Same height MUI gives the empty grid (two rows), set in CSS rather than measured
+            height:
+              "var(--DataGrid-overlayHeight, calc(var(--height) * 2)) !important",
           },
         }}
       />

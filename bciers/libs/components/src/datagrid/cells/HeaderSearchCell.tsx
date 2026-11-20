@@ -81,6 +81,9 @@ const SearchCell = ({
           value={searchState}
           type="text"
           aria-label={`${fieldLabel} search field`}
+          // The "Search" placeholder anti-aliases differently between Happo renders, giving
+          // tiny diffs on every grid
+          slotProps={{ htmlInput: { "data-happo-hide": true } }}
           inputRef={(input) => {
             if (isFocused) {
               input?.focus();
