@@ -33,10 +33,9 @@ const ThreadComponent: React.FC<Props> = ({
   onThreadUpdated,
   onThreadDeleted,
 }) => {
-  const [_, startTransition] = useTransition();
+  const [isUpdating, startTransition] = useTransition();
   const { errors, setErrors, renderedErrors } = useValidationErrors();
   const [isReplying, setIsReplying] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleResolveThread = (resolved: boolean) => {
     startTransition(async () => {
@@ -85,19 +84,16 @@ const ThreadComponent: React.FC<Props> = ({
     }
 
     setErrors([]);
-    setIsUpdating(true);
     startTransition(async () => {
       const resp = await postComment(version_id, thread.id, message);
       if (handleApiResponse(resp, setErrors)) {
         onThreadUpdated(resp as Thread);
         setIsReplying(false);
       }
-      setIsUpdating(false);
     });
   };
 
-  const hasCommentError: boolean =
-    errors?.some(({ error }) => error.severity === "Error") ?? false;
+  const hasCommentError = Boolean(errors?.some((i) => i.key === "comment"));
 
   return (
     <ThreadFrame
