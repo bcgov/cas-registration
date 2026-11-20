@@ -2599,7 +2599,7 @@ __metadata:
     "@nx/playwright": "npm:24.0.6"
     "@nx/react": "npm:24.0.6"
     "@nx/vite": "npm:23.3.2"
-    "@nx/vitest": "npm:23.3.2"
+    "@nx/vitest": "npm:24.0.6"
     "@playwright/test": "npm:1.65.0"
     "@rjsf/core": "npm:^6.5.2"
     "@rjsf/utils": "npm:^6.5.2"
