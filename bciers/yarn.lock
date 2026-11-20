@@ -4282,28 +4282,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nx/eslint@npm:23.3.1":
-  version: 23.3.1
-  resolution: "@nx/eslint@npm:23.3.1"
-  dependencies:
-    "@nx/devkit": "npm:23.3.1"
-    "@nx/js": "npm:23.3.1"
-    semver: "npm:^7.6.3"
-    tslib: "npm:^2.3.0"
-    typescript: "npm:~6.0.3"
-  peerDependencies:
-    "@nx/jest": 23.3.1
-    "@zkochan/js-yaml": 0.0.7
-    eslint: ^9.0.0 || ^10.0.0
-  peerDependenciesMeta:
-    "@nx/jest":
-      optional: true
-    "@zkochan/js-yaml":
-      optional: true
-  checksum: 10c0/ce8e3d1ca590857ccc12e7f3a4a9ac27ced5673f53a9e944cf9c7fd9611c25ffc78f232b9d3ab66cafe8428f5a3b85698a348b4f8576a4dc1339ff5c75852b85
-  languageName: node
-  linkType: hard
-
 "@nx/eslint@npm:24.0.6":
   version: 24.0.6
   resolution: "@nx/eslint@npm:24.0.6"
