@@ -94,9 +94,7 @@ const CommentComponent: React.FC<Props> = ({
           <SaveAndCancelButtons
             onCancel={() => setIsEditing(false)}
             onSave={handleSave}
-            savingDisabled={
-              !draft.trim() || draft === comment.comment || isSaving
-            }
+            savingDisabled={!draft.trim() || isSaving}
             cancelDisabled={isSaving}
           />
         </div>

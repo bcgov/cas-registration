@@ -16,9 +16,9 @@ const SaveAndCancelButtons: React.FC<Props> = ({
   return (
     <Stack direction="row" spacing={2} className="mt-2">
       <Button
+        className="w-1/2"
         variant="contained"
         color="primary"
-        sx={{ width: "50%" }}
         type="submit"
         onClick={onSave}
         disabled={savingDisabled}
@@ -26,8 +26,8 @@ const SaveAndCancelButtons: React.FC<Props> = ({
         Save
       </Button>
       <Button
+        className="w-1/2"
         variant="outlined"
-        sx={{ width: "50%" }}
         type="button"
         onClick={onCancel}
         disabled={cancelDisabled}
