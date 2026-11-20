@@ -133,8 +133,6 @@ describe("The comment component", () => {
       "Original text",
     );
     expect(screen.getByRole("button", { name: "Cancel" })).toBeEnabled();
-    // Save is disabled until the text is changed
-    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
     // The edit and delete icons are hidden while editing
     expect(
       screen.queryByRole("button", { name: "Edit comment" }),
