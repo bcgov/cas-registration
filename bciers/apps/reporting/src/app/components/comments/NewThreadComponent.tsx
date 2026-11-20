@@ -1,5 +1,6 @@
-import { Button, MenuItem, Stack, TextField } from "@mui/material";
+import { MenuItem, Stack, TextField } from "@mui/material";
 import ThreadFrame from "./ThreadFrame";
+import SaveAndCancelButtons from "./SaveAndCancelButtons";
 import { useState, useTransition } from "react";
 import { EMPTY_COMMENT_ERROR, FacilityItem, Thread } from "./types";
 import postCommentThread from "../../utils/comments/postCommentThread";
@@ -98,27 +99,12 @@ const NewThreadComponent: React.FC<Props> = ({
           onChange={changeHandlerFactory("comment")}
         />
         {renderedErrors}
-        <Stack direction="row" spacing={2}>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ width: "50%" }}
-            type="button"
-            onClick={handleSubmit}
-            disabled={pending}
-          >
-            Save
-          </Button>
-          <Button
-            variant="outlined"
-            sx={{ width: "50%" }}
-            type="button"
-            onClick={handleCancel}
-            disabled={pending}
-          >
-            Cancel
-          </Button>
-        </Stack>
+        <SaveAndCancelButtons
+          onCancel={handleCancel}
+          onSave={handleSubmit}
+          savingDisabled={pending}
+          cancelDisabled={pending}
+        />
       </Stack>
     </ThreadFrame>
   );
