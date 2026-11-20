@@ -1,7 +1,7 @@
 from typing import List, Literal, Optional
 from compliance.models.elicensing_invoice import ElicensingInvoice
 from compliance.schema.elicensing_invoice import ElicensingInvoiceListOut, ElicensingInvoiceFilterSchema
-from compliance.service.elicensing_invoice_service import ElicensingInvoiceService
+from compliance.service.elicensing.elicensing_invoice_service import ElicensingInvoiceService
 from django.http import HttpRequest
 from django.db.models import QuerySet
 from common.permissions import authorize

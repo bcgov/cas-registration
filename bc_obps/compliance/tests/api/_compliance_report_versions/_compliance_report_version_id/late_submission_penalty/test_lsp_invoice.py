@@ -7,9 +7,11 @@ from model_bakery.baker import make_recipe
 
 class TestGenerateComplianceReportVersionLateSubmissionPenaltyInvoice(CommonTestSetup):
     @patch(
-        "compliance.service.elicensing_invoice_service.ElicensingInvoiceService.generate_late_submission_penalty_invoice_pdf"
+        "compliance.service.elicensing.invoice_generation.elicensing_invoice_generator.ElicensingInvoiceGeneratorService.generate_late_submission_penalty_invoice_pdf"
     )
-    @patch("compliance.service.elicensing_invoice_service.ElicensingInvoiceService.create_pdf_response")
+    @patch(
+        "compliance.service.elicensing.invoice_generation.elicensing_invoice_generator.ElicensingInvoiceGeneratorService.create_pdf_response"
+    )
     def test_get_invoice_success(
         self,
         mock_create_pdf_response,
@@ -57,7 +59,7 @@ class TestGenerateComplianceReportVersionLateSubmissionPenaltyInvoice(CommonTest
         mock_create_pdf_response.assert_called_once_with((ANY, "invoice.pdf", 12))
 
     @patch(
-        "compliance.service.elicensing_invoice_service.ElicensingInvoiceService.generate_late_submission_penalty_invoice_pdf"
+        "compliance.service.elicensing.invoice_generation.elicensing_invoice_generator.ElicensingInvoiceGeneratorService.generate_late_submission_penalty_invoice_pdf"
     )
     def test_get_invoice_error_from_service(self, mock_generate_late_submission_penalty_invoice_pdf):
         # Arrange: simulate an error result from the service
