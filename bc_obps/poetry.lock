@@ -923,24 +923,19 @@ python-stdnum = ">=2.2"
 
 [[package]]
 name = "django-ninja"
-version = "1.7.0"
+version = "1.8.0"
 description = "Django Ninja - Fast Django REST framework"
 optional = false
 python-versions = ">=3.7"
 groups = ["main"]
 files = [
-    {file = "django_ninja-1.7.0-py3-none-any.whl", hash = "sha256:f1a0f762c9810dabcb040fcff76c6e2f5d0cdb51b4a597799ee06b5df8481f3f"},
-    {file = "django_ninja-1.7.0.tar.gz", hash = "sha256:7a0ce06c978a42a808d9a9d7ba1cda383df8eea90040cfc232ad10b7d9024e0d"},
+    {file = "django_ninja-1.8.0-py3-none-any.whl", hash = "sha256:132f37a36ac5ec9569fdc141da6984c1806bdd08af36f855980fab6cdcb10038"},
+    {file = "django_ninja-1.8.0.tar.gz", hash = "sha256:0f043a1aebd2c45e2a124a83e5bd0961491b18cdf81ea57c6abd80607b2c6ef8"},
 ]
 
 [package.dependencies]
 Django = ">=3.1"
 pydantic = ">=2.0,<3.0.0"
-
-[package.extras]
-dev = ["pre-commit"]
-doc = ["markdown-include", "mkdocs", "mkdocs-material", "mkdocstrings"]
-test = ["django-stubs", "mypy (==1.7.1)", "psycopg2-binary", "pytest", "pytest-asyncio", "pytest-cov", "pytest-django", "ruff (==0.5.7)"]
 
 [[package]]
 name = "django-pgtrigger"
@@ -3364,4 +3359,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.1"
 python-versions = "~3.15"
-content-hash = "bc5591e66e1f6201b5e9abde557c53758143a3b282b2032d99344a1137617b45"
+content-hash = "f4d40db05ab1ebb60fa3c7da04070964122330bf7d8d5889be39b6103f4a74d9"
