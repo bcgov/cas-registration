@@ -12,7 +12,7 @@ export default function withReportComments<
       </Grid>
 
       <Grid size={4}>
-        <Box className="sticky top-0 max-h-screen overflow-y-auto">
+        <Box className="sticky p-1 top-0 max-h-screen overflow-y-auto">
           <Suspense fallback={<output>Loading comments...</output>}>
             <ReportComments version_id={props.version_id} />
           </Suspense>
