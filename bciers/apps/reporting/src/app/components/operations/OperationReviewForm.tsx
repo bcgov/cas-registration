@@ -45,6 +45,7 @@ interface Props {
   allRepresentatives: ReportOperationRepresentative[];
   facilityId: string;
   isSyncAllowed: boolean;
+  reportedProductIds: number[];
 }
 
 export default function OperationReviewForm({
@@ -59,10 +60,14 @@ export default function OperationReviewForm({
   allRepresentatives,
   facilityId,
   isSyncAllowed,
+  reportedProductIds,
 }: Readonly<Props>) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
   const [formDataState, setFormDataState] = useState<any>(formData);
+  const [formDataBeforeProductRemoval, setFormDataBeforeProductRemoval] =
+    useState<any>();
+  const [removedProductName, setRemovedProductName] = useState<string>();
   const [pageSchema, setPageSchema] = useState(schema);
   const [representatives, setRepresentatives] = useState(allRepresentatives);
   const [hasReps, setHasReps] = useState(allRepresentatives.length > 0);
@@ -111,8 +116,36 @@ export default function OperationReviewForm({
       setPendingChangeReportType(updatedFormData.operation_report_type);
     }
 
+    const removedReportedProductIds = (
+      formDataState?.regulated_products ?? []
+    ).filter(
+      (id: number) =>
+        reportedProductIds.includes(id) &&
+        !updatedFormData?.regulated_products?.includes(id),
+    );
+    if (removedReportedProductIds.length > 0) {
+      setFormDataBeforeProductRemoval(formDataState);
+      setRemovedProductName(
+        allRegulatedProducts
+          .filter((product) => removedReportedProductIds.includes(product.id))
+          .map((product) => product.name)
+          .join(", "),
+      );
+    }
+
     setFormDataState(updatedFormData);
   };
+
+  const cancelProductRemoval = () => {
+    setFormDataState(formDataBeforeProductRemoval);
+    setFormDataBeforeProductRemoval(undefined);
+  };
+
+  const confirmProductRemoval = () => {
+    setFormDataBeforeProductRemoval(undefined);
+  };
+
+  const isLfo = formDataState?.operation_type === "Linear Facilities Operation";
 
   const handleSync = async () => {
     const newData = await getUpdatedReportOperationDetails(version_id);
@@ -206,6 +239,37 @@ export default function OperationReviewForm({
             Are you sure you want to change your report type to{" "}
             <strong>{pendingChangeReportType}</strong>? If you proceed, all of
             the form data you have entered will be lost.
+          </>
+        )}
+      </SimpleModal>
+      <SimpleModal
+        title="Confirmation"
+        open={formDataBeforeProductRemoval !== undefined}
+        onCancel={cancelProductRemoval}
+        onConfirm={confirmProductRemoval}
+        confirmText="Remove product"
+      >
+        {isLfo ? (
+          <>
+            Are you sure you want to remove{" "}
+            <strong>{removedProductName}</strong>? If you proceed, any data
+            entered for this product
+            <ol className="list-decimal pl-6">
+              <li>
+                Will be removed from facility reports that are not marked as
+                complete.
+              </li>
+              <li>
+                Will not be removed from facility reports that are marked as
+                complete.
+              </li>
+            </ol>
+          </>
+        ) : (
+          <>
+            Are you sure you want to remove{" "}
+            <strong>{removedProductName}</strong>? If you proceed, any data
+            entered for this product will be removed from this report.
           </>
         )}
       </SimpleModal>

@@ -119,6 +119,35 @@ describe("The Production Data component", () => {
       screen.getByRole("heading", { name: /product: otherproduct/i }),
     ).toBeVisible();
   });
+  it("LFO: keeps a saved product that is no longer allowed selectable and preselected", async () => {
+    getProductionDataMock.mockReturnValue({
+      ...defaultGetProductionDataMock,
+      payload: {
+        allowed_products: [{ id: 123, name: "testProduct" }],
+        report_products: [
+          {
+            product_id: 345,
+            product_name: "removedProduct",
+            unit: "tonnes",
+            production_methodology: "other",
+          },
+        ],
+        is_operation_opted_out: false,
+      },
+    });
+    render(await ProductionDataPage(props));
+
+    // Checkboxes are ordered allowed products first, then retained products
+    const [testProductCheckbox, removedProductCheckbox] =
+      screen.getAllByRole("checkbox");
+    expect(screen.getAllByRole("checkbox")).toHaveLength(2);
+    expect(testProductCheckbox).not.toBeChecked();
+    expect(removedProductCheckbox).toBeChecked();
+    expect(screen.getAllByText(/removedProduct/)).toHaveLength(2);
+    expect(
+      screen.getByRole("heading", { name: /product: removedproduct/i }),
+    ).toBeVisible();
+  });
   it("SFO: renders the form with no checkboxes and all product forms", async () => {
     getProductionDataMock.mockReturnValue({
       ...defaultGetProductionDataMock,
@@ -156,7 +185,7 @@ describe("The Production Data component", () => {
         reporting_year: 2020,
       },
       payload: {
-        allowed_products: [{ product_id: 123, name: "testProduct" }],
+        allowed_products: [{ id: 123, name: "testProduct" }],
         report_products: [
           {
             product_id: 123,
@@ -207,9 +236,10 @@ describe("The Production Data component", () => {
         reporting_year: 2024,
       },
       payload: {
-        allowed_products: [{ product_id: 123, name: "testProduct" }],
+        allowed_products: [{ id: 123, name: "testProduct" }],
         report_products: [
           {
+            product_id: 123,
             product_name: "testProduct",
             unit: "tonnes of tests",
           },
@@ -239,6 +269,7 @@ describe("The Production Data component", () => {
         allowed_products: [{ id: 123, name: "testProduct" }],
         report_products: [
           {
+            product_id: 123,
             product_name: "testProduct",
             unit: "tonnes of tests",
           },
