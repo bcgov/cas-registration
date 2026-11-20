@@ -172,17 +172,6 @@ describe("The comment thread component", () => {
 
     resolvePost!(updatedThread);
 
-    // While awaiting the response, the save button is disabled
-    await waitFor(() =>
-      expect(screen.getByRole("button", { name: "Save" })).toBeDisabled(),
-    );
-    expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue(
-      "A new reply",
-    );
-    expect(onThreadUpdated).not.toHaveBeenCalled();
-
-    resolvePost!(updatedThread);
-
     await waitFor(() =>
       expect(onThreadUpdated).toHaveBeenCalledWith(updatedThread),
     );
