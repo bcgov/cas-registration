@@ -43,5 +43,5 @@ dependencies:
   - name: cas-logging-sidecar
     repository: https://bcgov.github.io/cas-pipeline/
     alias: cas-logging-sidecar-071
-    version: 0.7.1
+    version: 0.7.4
     condition: cas-logging-sidecar-071.enabled
