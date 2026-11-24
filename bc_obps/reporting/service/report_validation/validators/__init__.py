@@ -13,6 +13,7 @@ from . import (
     supplementary_report_attachments_confirmation,
     supplementary_report_version_change,
     report_regulated_product_presence,
+    report_emission_allocation_over_allocated_to_excluded,
 )
 
 from .required_fields import (
@@ -54,4 +55,5 @@ __all__ = [
     "required_fields_report_additional_data",
     "required_fields_report_new_entrant_information",
     "required_fields_report_electricity_import_data",
+    "report_emission_allocation_over_allocated_to_excluded",
 ]
