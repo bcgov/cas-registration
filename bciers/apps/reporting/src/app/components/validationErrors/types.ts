@@ -18,7 +18,6 @@ export const localValidationKeys = [
   "missing_supplementary_report_attachments_confirmation",
   "missing_supplementary_report_version_change",
   "missing_regulated_product",
-  "product_not_in_operation_information",
   "og_np_nc_allocation_mismatch",
   "missing_operation_representative",
 ] as const;

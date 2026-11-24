@@ -204,19 +204,6 @@ If the value is accurate, you may save & continue.`;
         : undefined,
   }),
 
-  product_not_in_operation_information:
-    createValidationUIConfig<ValidationMessageKey>({
-      label: "Review Operation Information",
-      priority: 2,
-      renderMode: "inline_link",
-      getHref: (ctx) =>
-        ctx?.report_version_id
-          ? reportRoutes.reviewOperationInformation(
-              Number(ctx.report_version_id),
-            )
-          : undefined,
-    }),
-
   og_np_nc_allocation_mismatch: createValidationUIConfig<ValidationMessageKey>({
     label: "allocation of emissions",
     priority: 3,

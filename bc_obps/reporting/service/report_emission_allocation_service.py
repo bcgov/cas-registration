@@ -135,9 +135,7 @@ class ReportEmissionAllocationService:
             ReportProductService.get_allowed_products(report_version_id).values_list("id", flat=True)
         )
         reported_product_ids = set(report_products.values_list("product_id", flat=True))
-        # Only allowed (regulated) products without a report product are missing; extra reported
-        # products, such as the auto-generated records for unregulated products, are ignored
-        has_missing_products = bool(allowed_product_ids - reported_product_ids)
+        has_missing_products = allowed_product_ids != reported_product_ids
 
         return ReportEmissionAllocationData(
             report_product_emission_allocations=report_product_emission_allocations_data,

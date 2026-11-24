@@ -145,8 +145,6 @@ export default function OperationReviewForm({
     setFormDataBeforeProductRemoval(undefined);
   };
 
-  const isLfo = formDataState?.operation_type === "Linear Facilities Operation";
-
   const handleSync = async () => {
     const newData = await getUpdatedReportOperationDetails(version_id);
     if (newData.error) {
@@ -249,29 +247,9 @@ export default function OperationReviewForm({
         onConfirm={confirmProductRemoval}
         confirmText="Remove product"
       >
-        {isLfo ? (
-          <>
-            Are you sure you want to remove{" "}
-            <strong>{removedProductName}</strong>? If you proceed, any data
-            entered for this product
-            <ol className="list-decimal pl-6">
-              <li>
-                Will be removed from facility reports that are not marked as
-                complete.
-              </li>
-              <li>
-                Will not be removed from facility reports that are marked as
-                complete.
-              </li>
-            </ol>
-          </>
-        ) : (
-          <>
-            Are you sure you want to remove{" "}
-            <strong>{removedProductName}</strong>? If you proceed, any data
-            entered for this product will be removed from this report.
-          </>
-        )}
+        Are you sure you want to remove <strong>{removedProductName}</strong>?
+        If you proceed, any data entered for this product will be removed from
+        this report.
       </SimpleModal>
       <MultiStepFormWithTaskList
         initialStep={navigationInfo.headerStepIndex}

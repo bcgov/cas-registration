@@ -61,11 +61,7 @@ class ReportProductService:
 
         # A DoesNotExist error is raised if the report doesn't have a ReportOperation object.
         allowed_products = ReportOperation.objects.get(report_version_id=report_version_id).regulated_products
-        # Products deselected on Review Operation Information keep their data in completed facility
-        # reports, so this facility's already-saved products are allowed to be resubmitted
-        allowed_product_ids = set(allowed_products.values_list("id", flat=True)) | set(
-            ReportProduct.objects.filter(facility_report=facility_report).values_list("product_id", flat=True)
-        )
+        allowed_product_ids = allowed_products.values_list("id", flat=True)
 
         # A KeyError is raised if the "product_id" key doesn't exist
         submitted_product_ids = {rp["product_id"] for rp in report_products}
@@ -118,12 +114,12 @@ class ReportProductService:
     @classmethod
     def get_reported_products(cls, report_version_id: int) -> QuerySet[ReportProduct]:
         """
-        Returns the products with user-reported data in the report version's facility reports:
-        regulated products with production data, and unregulated products with allocated emissions.
-        Unregulated products with no allocated emissions are excluded.
+        Returns ReportProduct records for a report version's regulated products
+        or products with allocated emissions.
         """
         has_allocated_emissions = ReportProductEmissionAllocation.objects.filter(
-            report_product_id=OuterRef("pk"), allocated_quantity__gt=0
+            report_product_id=OuterRef("pk"),
+            allocated_quantity__gt=0,
         )
         return ReportProduct.objects.filter(
             Q(product__is_regulated=True) | Exists(has_allocated_emissions),

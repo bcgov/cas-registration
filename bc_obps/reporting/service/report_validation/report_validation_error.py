@@ -30,7 +30,6 @@ class ReportValidationErrorKey(StrEnum):
     ERROR_REQUIRED_FIELDS = "error_required_fields"
     REPORT_ACTIVITY_JSON_VALIDATION = "report_activity_json_validation"
     MISSING_REGULATED_PRODUCT = "missing_regulated_product"
-    PRODUCT_NOT_IN_OPERATION_INFORMATION = "product_not_in_operation_information"
 
 
 class ErrorContext(BaseModel):

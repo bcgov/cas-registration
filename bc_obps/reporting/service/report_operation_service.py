@@ -1,14 +1,12 @@
 from datetime import date
 from django.db import transaction
 from django.db.models.functions import Lower
-from django.db.models import Exists, OuterRef
 
 from django.forms import model_to_dict
 
 from registration.models.contact import Contact
 from reporting.utils import CONTACT_HAS_COMPLETE_ADDRESS
 from registration.models.operation import Operation
-from registration.models.regulated_product import RegulatedProduct
 from reporting.models import ReportOperationRepresentative, ReportVersion
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
@@ -34,11 +32,10 @@ class ReportOperationService:
         facility_id = FacilityReportService.get_facility_report_by_version_id(version_id)
         is_sync_allowed = SyncValidationService.is_sync_allowed(version_id)
         reported_product_ids = list(
-            RegulatedProduct.objects.filter(
-                Exists(ReportProductService.get_reported_products(version_id).filter(product_id=OuterRef("pk")))
-            )
-            .order_by("id")
-            .values_list("id", flat=True)
+            ReportProductService.get_reported_products(version_id)
+            .values_list("product_id", flat=True)
+            .distinct()
+            .order_by("product_id")
         )
         return {
             "report_operation": report_operation,

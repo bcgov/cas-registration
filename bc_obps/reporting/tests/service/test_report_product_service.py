@@ -142,7 +142,7 @@ class TestReportProductService(TestCase):
             for product_id in [29, 1]
         ]
 
-        # Product 1 is no longer submitted, e.g. it was deselected on Review Operation Information
+        # Product 1 is no longer submitted
         ReportProductService.save_production_data(
             self.report_version_id, self.facility_id, self.test_data[:1], self.test_user_guid
         )
@@ -214,35 +214,6 @@ class TestReportProductService(TestCase):
             ReportProductService.save_production_data(
                 self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
             )
-
-    def test_allows_resubmitting_saved_product_no_longer_in_report_operation(self):
-        # Product 1 is deselected on Review Operation Information but its data is kept (completed facility report)
-        ReportProductService.save_production_data(
-            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
-        )
-        self.report_operation.regulated_products.set(RegulatedProduct.objects.filter(id=29))
-
-        ReportProductService.save_production_data(
-            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
-        )
-
-        assert set(
-            ReportProduct.objects.filter(facility_report=self.facility_report).values_list("product_id", flat=True)
-        ) == {1, 29}
-
-    def test_deletes_saved_product_no_longer_in_report_operation_when_deselected(self):
-        ReportProductService.save_production_data(
-            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
-        )
-        self.report_operation.regulated_products.set(RegulatedProduct.objects.filter(id=29))
-
-        ReportProductService.save_production_data(
-            self.report_version_id, self.facility_id, self.test_data[:1], self.test_user_guid
-        )
-
-        assert list(
-            ReportProduct.objects.filter(facility_report=self.facility_report).values_list("product_id", flat=True)
-        ) == [29]
 
     # Test saving errors out if no product_id
     def test_errors_out_if_no_product_id(self):

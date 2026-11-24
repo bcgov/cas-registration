@@ -223,15 +223,29 @@ class ReportService:
             facility_report_ids = facility_reports.values_list("id", flat=True)
             ReportProductService.update_empty_records_for_unregulated_products(report_version_id, facility_report_ids)
 
-            # For facility reports that haven't yet been marked Completed,
-            # add all operation-level activities as defaults (without removing any existing facility-level selections the user may have made)
-            uncompleted_reports = (f for f in facility_reports if not f.is_completed)
-            for f in uncompleted_reports:
-                FacilityReportService.add_activities_to_facility_report(facility_report=f, activities=data.activities)
+            # Facility reports with reported data for a removed product, identified before that data is pruned
+            facility_report_ids_losing_data = set(
+                ReportProductService.get_reported_products(report_version_id)
+                .exclude(product_id__in=data.regulated_products)
+                .values_list("facility_report_id", flat=True)
+            )
+
+            for f in facility_reports:
+                # For facility reports that haven't yet been marked Completed,
+                # add all operation-level activities as defaults (without removing any existing facility-level selections the user may have made)
+                if not f.is_completed:
+                    FacilityReportService.add_activities_to_facility_report(
+                        facility_report=f, activities=data.activities
+                    )
                 # Always update regulated products
                 FacilityReportService.prune_report_product_data_for_facility_report(
                     facility_report=f, regulated_products=data.regulated_products
                 )
+
+            # Facilities that lost reported product data must re-allocate their emissions, so they are no longer complete
+            facility_reports.filter(id__in=facility_report_ids_losing_data, is_completed=True).update(
+                is_completed=False
+            )
         else:
             facility_report: FacilityReport = FacilityReport.objects.get(report_version__id=report_version_id)
 

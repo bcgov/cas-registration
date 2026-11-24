@@ -188,36 +188,19 @@ describe("OperationReviewForm Component", () => {
 
   const productRemovalText = /Are you sure you want to remove/i;
 
-  it("shows the SFO product removal modal when removing a product with reported data", async () => {
-    renderFormWithReportedProducts([1]);
+  it.each(["Single Facility Operation", "Linear Facilities Operation"])(
+    "shows the product removal modal when removing a product with reported data (%s)",
+    async (operationType) => {
+      renderFormWithReportedProducts([1], operationType);
 
-    await removeFirstRegulatedProduct();
+      await removeFirstRegulatedProduct();
 
-    expect(await screen.findByText(productRemovalText)).toBeVisible();
-    expect(
-      within(screen.getByRole("dialog")).getByText("Product 1"),
-    ).toBeVisible();
-    expect(screen.getByText(/will be removed from this report/i)).toBeVisible();
-    expect(screen.queryByRole("listitem")).not.toBeInTheDocument();
-  });
-
-  it("shows the LFO product removal modal with both outcomes", async () => {
-    renderFormWithReportedProducts([1], "Linear Facilities Operation");
-
-    await removeFirstRegulatedProduct();
-
-    expect(await screen.findByText(productRemovalText)).toBeVisible();
-    expect(
-      screen.getByText(
-        "Will be removed from facility reports that are not marked as complete.",
-      ),
-    ).toBeVisible();
-    expect(
-      screen.getByText(
-        "Will not be removed from facility reports that are marked as complete.",
-      ),
-    ).toBeVisible();
-  });
+      expect(await screen.findByText(productRemovalText)).toBeVisible();
+      expect(screen.getByRole("dialog")).toHaveTextContent(
+        "Are you sure you want to remove Product 1? If you proceed, any data entered for this product will be removed from this report.",
+      );
+    },
+  );
 
   it("keeps the product selected when product removal is cancelled", async () => {
     renderFormWithReportedProducts([1]);

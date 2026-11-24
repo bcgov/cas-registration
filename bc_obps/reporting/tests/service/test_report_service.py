@@ -10,7 +10,14 @@ from registration.tests.utils.bakers import (
     operation_baker,
     operator_baker,
 )
-from reporting.models import ReportingYear, ReportVersion, ReportOperation, FacilityReport, ReportProduct
+from reporting.models import (
+    ReportingYear,
+    ReportVersion,
+    ReportOperation,
+    FacilityReport,
+    ReportProduct,
+    ReportProductEmissionAllocation,
+)
 from reporting.schema.report_operation import ReportOperationIn
 from reporting.tests.utils.bakers import report_baker, reporting_year_baker
 from reporting.service.report_service import ReportService
@@ -552,6 +559,170 @@ class TestReportService(TestCase):
             Activity.objects.filter(id__in=[1, 2, 3]),
             ordered=False,
         )
+
+    def _lfo_with_completed_facility_report(self):
+        operation = operation_baker(
+            type=Operation.Types.LFO, operator_id=make_recipe('registration.tests.utils.operator').id
+        )
+        report = make_recipe('reporting.tests.utils.report', operation=operation)
+        report_version = make_recipe('reporting.tests.utils.report_version', report=report)
+        make_recipe('reporting.tests.utils.report_operation', report_version=report_version).regulated_products.set(
+            [1, 2]
+        )
+        facility_report = make_recipe(
+            'reporting.tests.utils.facility_report', report_version=report_version, is_completed=True
+        )
+        return report_version, facility_report
+
+    def _report_product(self, facility_report, **kwargs):
+        return make_recipe(
+            'reporting.tests.utils.report_product',
+            report_version=facility_report.report_version,
+            facility_report=facility_report,
+            **kwargs,
+        )
+
+    def _allocate_emissions(self, report_product, allocated_quantity):
+        return make_recipe(
+            'reporting.tests.utils.report_product_emission_allocation',
+            report_version=report_product.report_version,
+            report_emission_allocation=make_recipe(
+                'reporting.tests.utils.report_emission_allocation',
+                report_version=report_product.report_version,
+                facility_report=report_product.facility_report,
+            ),
+            report_product=report_product,
+            allocated_quantity=allocated_quantity,
+        )
+
+    def _save_lfo_report_operation(self, report_version, regulated_products):
+        ReportService.save_report_operation(
+            report_version.id,
+            ReportOperationIn(
+                operator_legal_name="Updated Legal Name",
+                operator_trade_name="Updated Trade Name",
+                operation_name="Updated Operation Name",
+                operation_type="Linear Facilities Operation",
+                operation_bcghgid="Updated BC GHID",
+                bc_obps_regulated_operation_id="Updated Regulated Operation ID",
+                activities=[1],
+                regulated_products=regulated_products,
+                operation_representative_name=[1, 2],
+                operation_report_type="New Report Type",
+                registration_purpose="OBPS Regulated Operation",
+            ),
+        )
+
+    def test_lfo_removes_deselected_product_data_from_all_facility_reports(self):
+        report_version, completed_facility_report = self._lfo_with_completed_facility_report()
+        incomplete_facility_report = make_recipe(
+            'reporting.tests.utils.facility_report', report_version=report_version, is_completed=False
+        )
+        allocations = []
+        for facility_report in [completed_facility_report, incomplete_facility_report]:
+            self._report_product(facility_report, product_id=1)
+            allocations.append(
+                self._allocate_emissions(self._report_product(facility_report, product_id=2), allocated_quantity=10)
+            )
+
+        self._save_lfo_report_operation(report_version, regulated_products=[1])
+
+        for facility_report in [completed_facility_report, incomplete_facility_report]:
+            assert list(
+                ReportProduct.objects.filter(facility_report=facility_report).values_list("product_id", flat=True)
+            ) == [1]
+            facility_report.refresh_from_db()
+            assert not facility_report.is_completed
+        assert not ReportProductEmissionAllocation.objects.filter(id__in=[a.id for a in allocations]).exists()
+
+    def test_lfo_only_resets_completion_of_facility_reports_with_removed_product_data(self):
+        report_version, affected_facility_report = self._lfo_with_completed_facility_report()
+        unaffected_facility_report = make_recipe(
+            'reporting.tests.utils.facility_report', report_version=report_version, is_completed=True
+        )
+        self._report_product(affected_facility_report, product_id=2)
+        self._report_product(unaffected_facility_report, product_id=1)
+
+        self._save_lfo_report_operation(report_version, regulated_products=[1])
+
+        affected_facility_report.refresh_from_db()
+        unaffected_facility_report.refresh_from_db()
+        assert not affected_facility_report.is_completed
+        assert unaffected_facility_report.is_completed
+
+    def test_lfo_keeps_completion_when_no_product_is_removed(self):
+        report_version, facility_report = self._lfo_with_completed_facility_report()
+        self._report_product(facility_report, product_id=1)
+
+        self._save_lfo_report_operation(report_version, regulated_products=[1, 2])
+
+        facility_report.refresh_from_db()
+        assert facility_report.is_completed
+
+    def test_lfo_removed_unregulated_product_resets_completion_only_with_allocated_emissions(self):
+        unregulated_product = make_recipe('registration.tests.utils.regulated_product', is_regulated=False)
+
+        for allocated_quantity, expected_is_completed in [(0, True), (10, False)]:
+            with self.subTest(allocated_quantity=allocated_quantity):
+                report_version, facility_report = self._lfo_with_completed_facility_report()
+                report_product = self._report_product(facility_report, product=unregulated_product)
+                self._allocate_emissions(report_product, allocated_quantity)
+
+                self._save_lfo_report_operation(report_version, regulated_products=[1])
+
+                facility_report.refresh_from_db()
+                assert facility_report.is_completed is expected_is_completed
+                assert not ReportProduct.objects.filter(id=report_product.id).exists()
+
+    def test_sfo_removes_deselected_product_data_and_emission_allocations(self):
+        operation = operation_baker(
+            type=Operation.Types.SFO, operator_id=make_recipe('registration.tests.utils.operator').id
+        )
+        report = make_recipe('reporting.tests.utils.report', operation=operation)
+        report_version = make_recipe('reporting.tests.utils.report_version', report=report)
+        make_recipe('reporting.tests.utils.report_operation', report_version=report_version).regulated_products.set(
+            [1, 2]
+        )
+        facility_report = make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
+        report_emission_allocation = make_recipe(
+            'reporting.tests.utils.report_emission_allocation',
+            report_version=report_version,
+            facility_report=facility_report,
+        )
+        kept_allocation, removed_allocation = [
+            make_recipe(
+                'reporting.tests.utils.report_product_emission_allocation',
+                report_version=report_version,
+                report_emission_allocation=report_emission_allocation,
+                report_product=self._report_product(facility_report, product_id=product_id),
+                allocated_quantity=10,
+            )
+            for product_id in [1, 2]
+        ]
+
+        ReportService.save_report_operation(
+            report_version.id,
+            ReportOperationIn(
+                operator_legal_name="Updated Legal Name",
+                operator_trade_name="Updated Trade Name",
+                operation_name="Updated Operation Name",
+                operation_type="Single Facility Operation",
+                operation_bcghgid="Updated BC GHID",
+                bc_obps_regulated_operation_id="Updated Regulated Operation ID",
+                activities=[1],
+                regulated_products=[1],
+                operation_representative_name=[1, 2],
+                operation_report_type="New Report Type",
+                registration_purpose="OBPS Regulated Operation",
+            ),
+        )
+
+        assert list(
+            ReportProduct.objects.filter(facility_report=facility_report).values_list("product_id", flat=True)
+        ) == [1]
+        assert not ReportProductEmissionAllocation.objects.filter(id=removed_allocation.id).exists()
+        kept_allocation.refresh_from_db()
+        assert kept_allocation.allocated_quantity == 10
 
     def test_lfo_creates_unregulated_product_entries_for_all_facilities(self):
         operator = baker.make_recipe('registration.tests.utils.operator')

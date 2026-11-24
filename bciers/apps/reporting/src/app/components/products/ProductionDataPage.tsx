@@ -17,21 +17,10 @@ export default async function ProductionDataPage({
 }: HasFacilityId) {
   const response = await getProductionData(version_id, facility_id);
 
-  // Products deselected on Review Operation Information keep their data in completed
-  // facility reports, so they stay selectable here until they are deselected
-  const retainedProducts = response.payload.report_products
-    .filter(
-      (rp) =>
-        !response.payload.allowed_products.some((p) => p.id === rp.product_id),
-    )
-    .map((rp) => ({ id: rp.product_id, name: rp.product_name, unit: rp.unit }));
-  const selectableProducts = [
-    ...response.payload.allowed_products,
-    ...retainedProducts,
-  ];
-
-  const allowedProductNames = selectableProducts.map((p) => p.name);
-  const allowedProducts = selectableProducts.map((p) => ({
+  const allowedProductNames = response.payload.allowed_products.map(
+    (p) => p.name,
+  );
+  const allowedProducts = response.payload.allowed_products.map((p) => ({
     product_id: p.id,
     product_name: p.name,
     unit: p.unit,
