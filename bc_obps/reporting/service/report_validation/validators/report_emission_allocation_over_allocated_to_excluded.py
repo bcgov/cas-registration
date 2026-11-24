@@ -39,19 +39,19 @@ def validate_facility_report(facility_report: FacilityReport) -> dict[str, Repor
             "0"
         )
         if allocated_to_basic_categories_total < allocated_to_excluded_categories_total:
-            facility_report_errors[f"product_allocation_mismatch_{facility_report.facility_id}_{rp.product.name}"] = (
-                ReportValidationError(
-                    key=ReportValidationErrorKey.PRODUCT_EXCLUDED_EMISSION_OVER_ALLOCATION,
-                    message=f"The total excluded emissions allocated to '{rp.product.name}' for facility '{facility_report.facility_name}' "
-                    f"exceeds the total emissions allocated to '{rp.product.name}' in non-excluded categories ",
-                    severity=Severity.ERROR,
-                    context=ErrorContext(
-                        report_version_id=facility_report.report_version_id,
-                        facility_id=facility_report.facility_id,
-                        facility_name=facility_report.facility_name,
-                        product_name=rp.product.name,
-                    ),
-                )
+            facility_report_errors[
+                f"product_excluded_emission_over_allocation_{facility_report.facility_id}_{rp.product.name}"
+            ] = ReportValidationError(
+                key=ReportValidationErrorKey.PRODUCT_EXCLUDED_EMISSION_OVER_ALLOCATION,
+                message=f"The total excluded emissions allocated to '{rp.product.name}' for facility '{facility_report.facility_name}' "
+                f"exceeds the total emissions allocated to '{rp.product.name}' in non-excluded categories ",
+                severity=Severity.ERROR,
+                context=ErrorContext(
+                    report_version_id=facility_report.report_version_id,
+                    facility_id=facility_report.facility_id,
+                    facility_name=facility_report.facility_name,
+                    product_name=rp.product.name,
+                ),
             )
 
     return facility_report_errors
