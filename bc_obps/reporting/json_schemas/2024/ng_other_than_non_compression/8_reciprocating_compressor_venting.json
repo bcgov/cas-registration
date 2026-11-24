@@ -15,7 +15,8 @@
             "type": "string",
             "enum": [
               "Onshore Natural Gas Transmission Compression and Pipelines",
-              "Underground Natural Gas Storage"
+              "Underground Natural Gas Storage",
+              "Oil transmission"
             ]
           },
           "type": {
