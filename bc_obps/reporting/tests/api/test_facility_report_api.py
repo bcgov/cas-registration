@@ -8,13 +8,14 @@ from model_bakery import baker
 from reporting.schema.facility_report import FacilityReportListInSchema
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 from common.tests.utils.helpers import assert_error_response
+from rls.utils.manager import RlsManager
 
 
 class TestFacilityReportEndpoints(CommonTestSetup):
     # Ensure that this part is executed correctly
     # Create a report version to associate with the facility reports
 
-    # GET
+    # # GET
     def test_error_if_no_facility_report_exists(self):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
@@ -138,11 +139,17 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         )
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_facility_report_form_data", facility_id="uuid")
-        assert_report_version_ownership_is_validated("get_ordered_facility_report_activities", facility_id="uuid")
-        assert_report_version_ownership_is_validated("save_facility_report", method="post", facility_id="uuid")
-        assert_report_version_ownership_is_validated("get_facility_report_by_version_id")
-        assert_report_version_ownership_is_validated("save_facility_report_list", method="patch")
+
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("get_facility_report_form_data", facility_id="uuid")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("get_ordered_facility_report_activities", facility_id="uuid")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("save_facility_report", method="post", facility_id="uuid")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("get_facility_report_by_version_id")
+        with RlsManager.bypass_rls():
+            assert_report_version_ownership_is_validated("save_facility_report_list", method="patch")
 
     @patch("reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed")
     @patch("reporting.service.facility_report_service.FacilityReportService.update_facility_report")
