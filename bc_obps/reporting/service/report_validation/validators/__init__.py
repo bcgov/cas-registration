@@ -13,6 +13,7 @@ from . import (
     supplementary_report_attachments_confirmation,
     supplementary_report_version_change,
     report_regulated_product_presence,
+    report_fuel_has_amount,
 )
 
 from .required_fields import (
@@ -43,6 +44,7 @@ __all__ = [
     "report_data_by_fuel_type_validator",
     "report_regulated_product_presence",
     "reporting_configuration_validator",
+    "report_fuel_has_amount",
     "required_fields_report_operation_information",
     "required_fields_report_person_responsible",
     "required_fields_report_activity_data",

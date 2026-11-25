@@ -29,6 +29,7 @@ class ReportValidationErrorKey(StrEnum):
     REPORT_DATA_OUT_OF_BOUNDS_BY_REPORTING_FIELD = "report_data_out_of_bounds_by_reporting_field"
     ERROR_REQUIRED_FIELDS = "error_required_fields"
     REPORT_ACTIVITY_JSON_VALIDATION = "report_activity_json_validation"
+    REPORT_FUEL_MISSING_AMOUNT = "report_fuel_missing_amount"
     MISSING_REGULATED_PRODUCT = "missing_regulated_product"
 
 
