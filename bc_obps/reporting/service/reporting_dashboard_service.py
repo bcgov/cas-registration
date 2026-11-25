@@ -198,6 +198,8 @@ class ReportingDashboardService:
         Helper method to determine the sort fields based on the provided sort field and order.
         """
         sort_direction = "-" if sort_order == "desc" else ""
-        if sort_field == "report_status":
-            return [f"{sort_direction}report_status_sort_key"]
-        return [f"{sort_direction}{sort_field}"]
+        primary_field = "report_status_sort_key" if sort_field == "report_status" else sort_field
+        sort_fields = [f"{sort_direction}{primary_field}"]
+        if primary_field != "id":
+            sort_fields.append("id")
+        return sort_fields
