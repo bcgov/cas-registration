@@ -338,7 +338,7 @@ class TestSendNotifications:
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
     @patch(
-        'compliance.service.elicensing_invoice_service.ComplianceReportVersionService.calculate_outstanding_balance_tco2e'
+        'compliance.service.compliance_report_version_service.ComplianceReportVersionService.calculate_outstanding_balance_tco2e'
     )
     def test_obligation_due_email(
         self, mock_calculate_outstanding_balance_tco2e, mock_send_email_to_operators_approved_users_or_raise
@@ -378,7 +378,7 @@ class TestSendNotifications:
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
     @patch(
-        'compliance.service.elicensing_invoice_service.ComplianceReportVersionService.calculate_outstanding_balance_tco2e'
+        'compliance.service.compliance_report_version_service.ComplianceReportVersionService.calculate_outstanding_balance_tco2e'
     )
     def test_obligation_reminder_email(
         self, mock_calculate_outstanding_balance_tco2e, mock_send_email_to_operators_approved_users_or_raise
