@@ -375,6 +375,7 @@ ENDPOINTS = {
         {"method": "get", "endpoint_name": "get_all_reporting_years"},
     ],
     "industry_user": [
+        {"method": "put", "endpoint_name": "sync_user_profile_on_login"},
         {
             "method": "get",
             "endpoint_name": "get_current_operator_from_user_operator",

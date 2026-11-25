@@ -1,8 +1,10 @@
-from typing import Optional
+from typing import Annotated, Optional
 from uuid import UUID
 
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.validators import validate_email
 from ninja import ModelSchema
-from pydantic import Field, field_validator
+from pydantic import Field, StringConstraints, field_validator
 
 from registration.models import User, AppRole
 from ninja import Schema
@@ -48,6 +50,24 @@ class UserUpdateIn(ModelSchema):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "position_title", "phone_number"]
+
+
+class UserLoginSyncIn(Schema):
+    """
+    Identity-provider-owned fields (from the Keycloak/BCeID profile) that are refreshed on every login.
+    """
+
+    email: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=254)]
+    bceid_business_name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1000)]
+
+    @field_validator("email")
+    @classmethod
+    def validate_email_format(cls, value: str) -> str:
+        try:
+            validate_email(value)
+        except DjangoValidationError:
+            raise ValueError("Enter a valid email address.")
+        return value
 
 
 class UserAppRoleOut(ModelSchema):

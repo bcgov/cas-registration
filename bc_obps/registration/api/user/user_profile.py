@@ -6,7 +6,9 @@ from common.api.utils import get_current_user_guid
 from registration.constants import USER_TAGS
 from registration.service.data_access_service.user_service import UserDataAccessService
 from registration.models import User
-from registration.schema import UserUpdateIn, UserOut, Message
+from registration.service.user_profile_service import UserProfileService
+from registration.service.data_types.user_profile_service import UserLoginSyncData
+from registration.schema import UserUpdateIn, UserLoginSyncIn, UserOut, Message
 from registration.api.router import router
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 
@@ -44,3 +46,16 @@ def get_user_profile(request: HttpRequest) -> Tuple[Literal[200], Union[User, di
 )
 def update_user_profile(request: HttpRequest, payload: UserUpdateIn) -> Tuple[Literal[200], User]:
     return 200, UserDataAccessService.update_user(get_current_user_guid(request), payload)
+
+
+@router.put(
+    "/user/user-profile/login-sync",
+    response={200: UserOut, custom_codes_4xx: Message},
+    tags=USER_TAGS,
+    description="""Refreshes the current industry user's email and BCeID business name with the values from their identity provider (BCeID) profile.""",
+    auth=authorize("industry_user"),
+)
+def sync_user_profile_on_login(request: HttpRequest, payload: UserLoginSyncIn) -> Tuple[Literal[200], User]:
+    return 200, UserProfileService.sync_user_profile_from_idp(
+        get_current_user_guid(request), UserLoginSyncData(**payload.model_dump())
+    )
