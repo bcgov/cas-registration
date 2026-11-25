@@ -61,7 +61,7 @@ class TestReportFuelHasAmountValidator(TestCase):
             "reporting.tests.utils.report_fuel",
             report_source_type=self.report_source_type,
             report_version=self.report_version,
-            json_data={"annual_fuel_amount": 1000},
+            json_data={"annualFuelAmount": 1000},
         )
 
         result = validate(self.report_version)
@@ -81,7 +81,7 @@ class TestReportFuelHasAmountValidator(TestCase):
             "reporting.tests.utils.report_fuel",
             report_source_type=self.report_source_type_2,
             report_version=self.report_version,
-            json_data={},
+            json_data={"annualFuelAmount": None},
         )
 
         result = validate(self.report_version)

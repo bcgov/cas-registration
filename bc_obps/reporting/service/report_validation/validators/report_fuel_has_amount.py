@@ -1,5 +1,5 @@
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import F
+from django.db.models import F, Q
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
@@ -15,7 +15,7 @@ TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
 
     report_fuels_missing_amounts = ReportFuel.objects.filter(
-        report_version=report_version, json_data__annual_fuel_amount__isnull=True
+        Q(json_data__annualFuelAmount__isnull=True) | Q(json_data__annualFuelAmount=None), report_version=report_version
     )
 
     if report_fuels_missing_amounts.exists():
