@@ -14,11 +14,13 @@ TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
 
-    report_fuels = ReportFuel.objects.filter(report_version=report_version, json_data__annual_fuel_amount__isnull=True)
+    report_fuels_missing_amounts = ReportFuel.objects.filter(
+        report_version=report_version, json_data__annual_fuel_amount__isnull=True
+    )
 
-    if report_fuels.exists():
+    if report_fuels_missing_amounts.exists():
 
-        grouped_activities = report_fuels.values(
+        grouped_activities = report_fuels_missing_amounts.values(
             facility_name=F("report_source_type__report_activity__facility_report__facility_name")
         ).annotate(activities=ArrayAgg("report_source_type__report_activity__activity__name", distinct=True))
 
