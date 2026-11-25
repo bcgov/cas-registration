@@ -79,7 +79,6 @@ spec:
             timeoutSeconds: 5
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
-          # Kube-log-runner just as entrypoint, not to output logfiles
           args:
             - "/bin/bash"
             - "-c"
