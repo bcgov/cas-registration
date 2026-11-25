@@ -138,6 +138,13 @@ describe("The DataGrid component", () => {
       extractParams(String(mockReplace.mock.calls[1][2]), "sort_order"),
     ).toBe("desc");
 
+    // Wait for the grid to apply the descending sort before clicking again: on slow runners the next click can
+    // otherwise be computed from the previous sort state and not change the sort (so no URL update)
+    await waitFor(() => {
+      expect(screen.getAllByRole("gridcell")[0]).toHaveTextContent("value1");
+      expect(screen.getAllByRole("gridcell")[3]).toHaveTextContent("unicorn");
+    });
+
     // unsort
     act(() => {
       screen.getAllByLabelText("Sort")[0].click();

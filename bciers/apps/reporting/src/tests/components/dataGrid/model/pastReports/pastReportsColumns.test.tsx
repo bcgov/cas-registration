@@ -1,4 +1,4 @@
-import { describe, vi } from "vitest";
+import { describe, onTestFinished, vi } from "vitest";
 import renderGridCell from "@bciers/testConfig/helpers/renderGridCell";
 import { GridColDef } from "@mui/x-data-grid";
 import { render, screen } from "@testing-library/react";
@@ -159,8 +159,10 @@ describe("pastReportsColumns function", () => {
   it("navigates to the matching report page when clicking the 'Continue' button", async () => {
     const user = userEvent.setup();
 
-    delete (window as any).location;
-    window.location = { href: "" } as any;
+    const locationSpy = vi
+      .spyOn(window, "location", "get")
+      .mockReturnValue({ href: "" } as unknown as Location);
+    onTestFinished(() => locationSpy.mockRestore());
 
     const columns = pastReportsColumns();
 
