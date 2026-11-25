@@ -54,4 +54,8 @@ spec:
             successThreshold: 1
             timeoutSeconds: 5
           resources: {{ toYaml .Values.backend.resources | nindent 12 }}
+          args:
+            - "/bin/bash"
+            - "-c"
+            - "${HOME}/.venv/bin/python manage.py custom_migrate && ${HOME}/.venv/bin/gunicorn --access-logfile - bc_obps.wsgi:application --timeout 200 --workers 3 --bind '0.0.0.0:8000'"
       restartPolicy: Always

@@ -79,11 +79,10 @@ spec:
             timeoutSeconds: 5
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
-          # Kube-log-runner just as entrypoint, not to output logfiles
           args:
-            -"/bin/bash"
+            - "/bin/bash"
             - "-c"
-            - "${HOME}/.venv/bin/python manage.py custom_migrate && ${HOME}/.venv/bin/gunicorn --access-logfile - bc_obps.wsgi:application --timeout 200 --workers 3 --bind '0.0.0.0:800'"
+            - "${HOME}/.venv/bin/python manage.py custom_migrate && ${HOME}/.venv/bin/gunicorn --access-logfile - bc_obps.wsgi:application --timeout 200 --workers 3 --bind '0.0.0.0:8000'"
           volumeMounts:
             - mountPath: "/attachment-credentials"
               name: gcs-attachment-credentials
