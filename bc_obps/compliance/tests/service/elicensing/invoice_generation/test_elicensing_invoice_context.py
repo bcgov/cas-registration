@@ -11,7 +11,6 @@ from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 from reporting.service.reporting_year_service import ReportingYearService
 
-
 pytestmark = pytest.mark.django_db
 MOCK_REPORTING_YEAR = date.today().year - 1
 

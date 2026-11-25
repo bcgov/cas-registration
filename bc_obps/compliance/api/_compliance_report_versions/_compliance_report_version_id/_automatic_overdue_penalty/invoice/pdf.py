@@ -21,7 +21,7 @@ def generate_compliance_report_version_automatic_overdue_penalty_invoice(
 ) -> StreamingHttpResponse:
     """
     Generate a PDF invoice for a compliance report version's automatic penalty and stream it to the client.
-    Delegates all context-building and error handling to ElicensingInvoiceService.generate_automatic_overdue_penalty_invoice_pdf.
+    Delegates all context-building and error handling to ElicensingInvoiceGeneratorService.generate_automatic_overdue_penalty_invoice_pdf.
     """
     # Call the refactored service method; it returns either a PDF tuple or an errors dict
     result = ElicensingInvoiceGeneratorService.generate_automatic_overdue_penalty_invoice_pdf(
