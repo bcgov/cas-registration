@@ -6,13 +6,12 @@ from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 from registration.utils import custom_reverse_lazy
 from unittest.mock import patch
 
-
 MOCK_REPORTING_YEAR = date.today().year - 1
 
 
 class TestElicensingInvoicesEndpoint(CommonTestSetup):
     @patch(
-        "compliance.service.elicensing_invoice_service.ElicensingInvoiceService.get_elicensing_invoice_for_dashboard"
+        "compliance.service.elicensing.elicensing_invoice_service.ElicensingInvoiceService.get_elicensing_invoice_for_dashboard"
     )
     def test_get_elicensing_invoices_list_success_for_irc_user(self, mock_get_invoices):
         # Arrange

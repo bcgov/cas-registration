@@ -1,6 +1,8 @@
 from django.http import HttpRequest, StreamingHttpResponse
+from compliance.service.elicensing.invoice_generation.elicensing_invoice_generator import (
+    ElicensingInvoiceGeneratorService,
+)
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
-from compliance.service.elicensing_invoice_service import ElicensingInvoiceService
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.api.router import router
@@ -23,12 +25,12 @@ def generate_compliance_report_version_invoice(
 ) -> StreamingHttpResponse:
     """
     Generate a PDF invoice for a compliance report version's obligation and stream it to the client.
-    Delegates all context-building and error handling to ElicensingInvoiceService.generate_obligation_invoice_pdf.
+    Delegates all context-building and error handling to ElicensingInvoiceGeneratorService.generate_obligation_invoice_pdf.
     """
     # Call the refactored service method; it returns either a PDF tuple or an errors dict
-    result = ElicensingInvoiceService.generate_obligation_invoice_pdf(compliance_report_version_id)
+    result = ElicensingInvoiceGeneratorService.generate_obligation_invoice_pdf(compliance_report_version_id)
 
-    return ElicensingInvoiceService.create_pdf_response(result)
+    return ElicensingInvoiceGeneratorService.create_pdf_response(result)
 
 
 @router.get(
