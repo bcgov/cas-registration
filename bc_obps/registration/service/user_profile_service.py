@@ -1,8 +1,9 @@
+from dataclasses import asdict
 from django.conf import settings
 from django.db import transaction
-from registration.schema import UserIn, UserLoginSyncIn
+from registration.schema import UserIn
 from registration.service.data_access_service.user_service import UserDataAccessService
-from registration.service.data_access_service.contact_service import ContactDataAccessService
+from registration.service.data_types.user_profile_service import UserLoginSyncData
 from registration.models import AppRole
 from registration.enums.enums import IdPs
 from uuid import UUID
@@ -26,7 +27,7 @@ class UserProfileService:
 
     @classmethod
     @transaction.atomic()
-    def sync_user_profile_from_idp(cls, user_guid: UUID, idp_data: UserLoginSyncIn) -> User:
+    def sync_user_profile_from_idp(cls, user_guid: UUID, idp_data: UserLoginSyncData) -> User:
         """
         Refreshes the identity-provider-owned fields (email, BCeID business name) of an existing industry user.
         Called on every login so that changes made in the BCeID portal are reflected in BCIERS
@@ -35,20 +36,12 @@ class UserProfileService:
         if not user.is_industry_user():
             return user
 
-        old_email = user.email
         has_changes = False
-        for field, value in idp_data.dict().items():
-            value = (value or "").strip()
-            # never blank out a stored value
-            if value and getattr(user, field) != value:
+        for field, value in asdict(idp_data).items():
+            if getattr(user, field) != value:
                 setattr(user, field, value)
                 has_changes = True
 
-        if not has_changes:
-            return user
-
-        user.save()
-        if user.email != old_email:
-            # keep the user's Contact record (looked up by email) linked to the user
-            ContactDataAccessService.update_user_contact_email(user, old_email, user.email)
+        if has_changes:
+            user.save()
         return user

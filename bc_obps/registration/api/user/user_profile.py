@@ -7,6 +7,7 @@ from registration.constants import USER_TAGS
 from registration.service.data_access_service.user_service import UserDataAccessService
 from registration.models import User
 from registration.service.user_profile_service import UserProfileService
+from registration.service.data_types.user_profile_service import UserLoginSyncData
 from registration.schema import UserUpdateIn, UserLoginSyncIn, UserOut, Message
 from registration.api.router import router
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -55,4 +56,6 @@ def update_user_profile(request: HttpRequest, payload: UserUpdateIn) -> Tuple[Li
     auth=authorize("industry_user"),
 )
 def sync_user_profile_on_login(request: HttpRequest, payload: UserLoginSyncIn) -> Tuple[Literal[200], User]:
-    return 200, UserProfileService.sync_user_profile_from_idp(get_current_user_guid(request), payload)
+    return 200, UserProfileService.sync_user_profile_from_idp(
+        get_current_user_guid(request), UserLoginSyncData(**payload.model_dump())
+    )

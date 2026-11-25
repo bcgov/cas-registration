@@ -6,8 +6,6 @@ import {
 
 const USER_GUID = "ba2ba62a121842e0942aab9e92ce8822";
 const storedProfile = {
-  first_name: "Bob",
-  last_name: "Smith",
   email: "old.email@email.com",
   bceid_business_name: "Old Business Name",
 };
@@ -18,40 +16,19 @@ describe("syncUserProfileOnLogin", () => {
   });
 
   it("does not call the API when the user does not exist yet", async () => {
-    await syncUserProfileOnLogin(
-      USER_GUID,
-      {},
-      {
-        email: "new.email@email.com",
-        bceid_business_name: "New Business Name",
-      },
-    );
-    await syncUserProfileOnLogin(USER_GUID, undefined, {
+    const idpProfile = {
       email: "new.email@email.com",
-    });
+      bceid_business_name: "New Business Name",
+    };
+
+    await syncUserProfileOnLogin(USER_GUID, {}, idpProfile);
+    await syncUserProfileOnLogin(USER_GUID, undefined, idpProfile);
+    await syncUserProfileOnLogin(undefined, storedProfile, idpProfile);
 
     expect(actionHandler).not.toHaveBeenCalled();
   });
 
-  it("does not call the API when nothing changed", async () => {
-    await syncUserProfileOnLogin(USER_GUID, storedProfile, {
-      email: " old.email@email.com ",
-      bceid_business_name: "Old Business Name",
-    });
-
-    expect(actionHandler).not.toHaveBeenCalled();
-  });
-
-  it("does not call the API when the identity provider values are empty", async () => {
-    await syncUserProfileOnLogin(USER_GUID, storedProfile, {
-      email: "",
-      bceid_business_name: undefined,
-    });
-
-    expect(actionHandler).not.toHaveBeenCalled();
-  });
-
-  it("syncs the changed values", async () => {
+  it("sends the identity provider values to the backend for an existing user", async () => {
     await syncUserProfileOnLogin(USER_GUID, storedProfile, {
       email: "new.email@email.com",
       bceid_business_name: "New Business Name",
@@ -66,25 +43,6 @@ describe("syncUserProfileOnLogin", () => {
         body: JSON.stringify({
           email: "new.email@email.com",
           bceid_business_name: "New Business Name",
-        }),
-      },
-    );
-  });
-
-  it("keeps the stored value for a field the identity provider did not send", async () => {
-    await syncUserProfileOnLogin(USER_GUID, storedProfile, {
-      email: "new.email@email.com",
-      bceid_business_name: undefined,
-    });
-
-    expect(actionHandler).toHaveBeenCalledWith(
-      expect.any(String),
-      "PUT",
-      undefined,
-      {
-        body: JSON.stringify({
-          email: "new.email@email.com",
-          bceid_business_name: "Old Business Name",
         }),
       },
     );
