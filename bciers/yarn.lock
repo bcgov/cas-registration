@@ -2598,7 +2598,7 @@ __metadata:
     "@nx/next": "npm:24.0.6"
     "@nx/playwright": "npm:24.0.6"
     "@nx/react": "npm:24.0.6"
-    "@nx/vite": "npm:23.3.2"
+    "@nx/vite": "npm:24.0.6"
     "@nx/vitest": "npm:24.0.6"
     "@playwright/test": "npm:1.65.1"
     "@rjsf/core": "npm:^6.5.2"
@@ -4225,21 +4225,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nx/devkit@npm:23.3.2":
-  version: 23.3.2
-  resolution: "@nx/devkit@npm:23.3.2"
-  dependencies:
-    ejs: "npm:5.0.1"
-    minimatch: "npm:10.2.5"
-    semver: "npm:^7.6.3"
-    tslib: "npm:^2.3.0"
-    yargs-parser: "npm:21.1.1"
-  peerDependencies:
-    nx: ">= 22 <= 24 || ^23.0.0-0"
-  checksum: 10c0/7f94aaac2c2b1a535369008f3e0410f76e43907cc2cdb850fba00e3553b5aa2551bc24bfede59dd03fe68b99d6fb7aa077441d73db276367daa0012e50af5177
-  languageName: node
-  linkType: hard
-
 "@nx/devkit@npm:24.0.6":
   version: 24.0.6
   resolution: "@nx/devkit@npm:24.0.6"
@@ -4301,51 +4286,6 @@ __metadata:
     "@zkochan/js-yaml":
       optional: true
   checksum: 10c0/134aec77d3d8a8c3b493f5ca213a08bf140a186dee812c191ebe87a9319bf73f8ee98f887f486836a92894bda1dd21e0d74caa007250f24cdf27bbe528771454
-  languageName: node
-  linkType: hard
-
-"@nx/js@npm:23.3.2":
-  version: 23.3.2
-  resolution: "@nx/js@npm:23.3.2"
-  dependencies:
-    "@babel/core": "npm:^7.29.6"
-    "@babel/plugin-proposal-decorators": "npm:^7.22.7"
-    "@babel/plugin-transform-class-properties": "npm:^7.22.5"
-    "@babel/plugin-transform-class-static-block": "npm:^7.22.5"
-    "@babel/plugin-transform-private-methods": "npm:^7.22.5"
-    "@babel/plugin-transform-private-property-in-object": "npm:^7.22.5"
-    "@babel/plugin-transform-runtime": "npm:^7.23.2"
-    "@babel/preset-env": "npm:^7.23.2"
-    "@babel/preset-typescript": "npm:^7.22.5"
-    "@babel/runtime": "npm:^7.22.6"
-    "@nx/devkit": "npm:23.3.2"
-    "@nx/workspace": "npm:23.3.2"
-    "@zkochan/js-yaml": "npm:0.0.7"
-    babel-plugin-const-enum: "npm:^1.0.1"
-    babel-plugin-macros: "npm:^3.1.0"
-    babel-plugin-transform-typescript-metadata: "npm:^0.3.1"
-    chalk: "npm:^4.1.0"
-    columnify: "npm:^1.6.0"
-    detect-port: "npm:^2.1.0"
-    ignore: "npm:^7.0.5"
-    js-tokens: "npm:^4.0.0"
-    jsonc-parser: "npm:^3.2.0"
-    npm-run-path: "npm:^4.0.1"
-    picocolors: "npm:^1.1.0"
-    picomatch: "npm:4.0.4"
-    semver: "npm:^7.6.3"
-    source-map-support: "npm:0.5.19"
-    tinyglobby: "npm:^0.2.12"
-    tslib: "npm:^2.3.0"
-  peerDependencies:
-    "@swc/cli": ">=0.6.0 <0.9.0"
-    verdaccio: ^6.0.5
-  peerDependenciesMeta:
-    "@swc/cli":
-      optional: true
-    verdaccio:
-      optional: true
-  checksum: 10c0/a647eeeddf2a1874ccccfdb66ddbe48687df8cda7974becec1b48d340ea6c2b76639f81cb982a627bf084eee022136e3b92b57f872717d5a16feb76f8892ee46
   languageName: node
   linkType: hard
 
@@ -4608,25 +4548,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nx/vite@npm:23.3.2":
-  version: 23.3.2
-  resolution: "@nx/vite@npm:23.3.2"
-  dependencies:
-    "@nx/devkit": "npm:23.3.2"
-    "@nx/js": "npm:23.3.2"
-    "@nx/vitest": "npm:23.3.2"
-    "@phenomnomnominal/tsquery": "npm:~6.2.0"
-    ajv: "npm:^8.0.0"
-    picomatch: "npm:4.0.4"
-    semver: "npm:^7.6.3"
-    tsconfig-paths: "npm:^4.1.2"
-    tslib: "npm:^2.3.0"
-  peerDependencies:
-    vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
-  checksum: 10c0/d8bda102957426c01717b1e75fb98da8f8ed17acb13bf8f36694cb2426707d0d6c97196d53be432ec6a09004b7ec9a29e387feb3610da1c73ef390e3ef0a9d57
-  languageName: node
-  linkType: hard
-
 "@nx/vite@npm:24.0.6":
   version: 24.0.6
   resolution: "@nx/vite@npm:24.0.6"
@@ -4642,30 +4563,6 @@ __metadata:
   peerDependencies:
     vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
   checksum: 10c0/51dba7b9d6d3cc0c60204110483fc4919219ab0521fc339d207e1ed438542268e28b81d388bccfb138b66668be877f05dd3b32e5a8c46815d736159250c68f72
-  languageName: node
-  linkType: hard
-
-"@nx/vitest@npm:23.3.2":
-  version: 23.3.2
-  resolution: "@nx/vitest@npm:23.3.2"
-  dependencies:
-    "@nx/devkit": "npm:23.3.2"
-    "@nx/js": "npm:23.3.2"
-    "@phenomnomnominal/tsquery": "npm:~6.2.0"
-    semver: "npm:^7.6.3"
-    tslib: "npm:^2.3.0"
-  peerDependencies:
-    "@nx/eslint": 23.3.2
-    vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
-    vitest: ^3.0.0 || ^4.0.0 || ^5.0.0
-  peerDependenciesMeta:
-    "@nx/eslint":
-      optional: true
-    vite:
-      optional: true
-    vitest:
-      optional: true
-  checksum: 10c0/8fed126f0251e6ab22fb258386fceb7a016d9b20b2dcf1dae4a2e7c80ae051a66d5898427886dc59f69d4ac55e3caace06ba8731c0fe32a3053c258c2f5928b0
   languageName: node
   linkType: hard
 
@@ -4724,22 +4621,6 @@ __metadata:
     "@nx/webpack":
       optional: true
   checksum: 10c0/9848f1487e9c989896bccc20367a47fdfbb80a3ec814f97f21e3823006de2658e257af1e8f803e6300330ca93dd83d382fd78aee5092f9bb3985b19dd61336c8
-  languageName: node
-  linkType: hard
-
-"@nx/workspace@npm:23.3.2":
-  version: 23.3.2
-  resolution: "@nx/workspace@npm:23.3.2"
-  dependencies:
-    "@nx/devkit": "npm:23.3.2"
-    "@zkochan/js-yaml": "npm:0.0.7"
-    chalk: "npm:^4.1.0"
-    nx: "npm:23.3.2"
-    picomatch: "npm:4.0.4"
-    semver: "npm:^7.6.3"
-    tslib: "npm:^2.3.0"
-    yargs-parser: "npm:21.1.1"
-  checksum: 10c0/16ab60731f719f51779e59a96ab03d134c648786546acd4dc214377b6b9e464f1e5d05d0eb4718ea0c10629d728fd61dcd1fb3857fdc3decd1840628e23413eb
   languageName: node
   linkType: hard
 
@@ -11523,13 +11404,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"picomatch@npm:4.0.4":
-  version: 4.0.4
-  resolution: "picomatch@npm:4.0.4"
-  checksum: 10c0/e2c6023372cc7b5764719a5ffb9da0f8e781212fa7ca4bd0562db929df8e117460f00dff3cb7509dacfc06b86de924b247f504d0ce1806a37fac4633081466b0
-  languageName: node
-  linkType: hard
-
 "picomatch@npm:^2.3.1":
   version: 2.3.2
   resolution: "picomatch@npm:2.3.2"
@@ -12592,16 +12466,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:0.5.19":
-  version: 0.5.19
-  resolution: "source-map-support@npm:0.5.19"
-  dependencies:
-    buffer-from: "npm:^1.0.0"
-    source-map: "npm:^0.6.0"
-  checksum: 10c0/a232cb02dc5c2c048460dff3ca1a4c2aa44488822028932daff99b8707c8e4f87d2535dae319d65691c905096f2c06a2517793472634efb01f8a095661b9aa93
-  languageName: node
-  linkType: hard
-
 "source-map-support@npm:0.5.21, source-map-support@npm:^0.5.21":
   version: 0.5.21
   resolution: "source-map-support@npm:0.5.21"
@@ -13049,7 +12913,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsconfig-paths@npm:4.2.0, tsconfig-paths@npm:^4.1.2":
+"tsconfig-paths@npm:4.2.0":
   version: 4.2.0
   resolution: "tsconfig-paths@npm:4.2.0"
   dependencies:
