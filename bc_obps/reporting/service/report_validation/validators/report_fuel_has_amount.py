@@ -28,13 +28,11 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         ]
 
         return {
-            f"report_fuel_{rf.id}": ReportValidationError(
+            "report_fuel_missing_amount": ReportValidationError(
                 Severity.ERROR,
-                f"""Fuel amount values are missing for the following facilities and activities:
-{"\n".join(details)}""",
+                f"Fuel amount values are missing for the following facilities and activities:\n{"".join(details)}",
                 key=ReportValidationErrorKey.REPORT_FUEL_MISSING_AMOUNT,
             )
-            for rf in report_fuels
         }
 
     return {}
