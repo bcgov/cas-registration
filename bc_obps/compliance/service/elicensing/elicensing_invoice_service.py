@@ -19,6 +19,9 @@ from compliance.models import (
 from registration.service.user_operator_service import UserOperatorService
 from compliance.schema.elicensing_invoice import ElicensingInvoiceFilterSchema
 
+# string formatter for dates that appear in invoices
+STRFTIME_FORMAT = "%b %-d, %Y"
+
 
 class ElicensingInvoiceService:
     @classmethod

@@ -3,6 +3,7 @@ import json
 from typing import Any, Dict, Generator, Tuple
 from django.http import StreamingHttpResponse
 
+from compliance.service.elicensing.elicensing_invoice_service import STRFTIME_FORMAT
 from compliance.enums import ComplianceInvoiceTypes
 from compliance.models.compliance_penalty import CompliancePenalty
 from common.service.pdf.pdf_generator_service import PDFGeneratorService
@@ -80,7 +81,7 @@ class ElicensingInvoiceGeneratorService:
                 compliance_report_version_id, invoice, compliance_obligation.obligation_id
             )
             invoice_date = (
-                compliance_obligation.fee_date.strftime("%b %-d, %Y") if compliance_obligation.fee_date else "—"
+                compliance_obligation.fee_date.strftime(STRFTIME_FORMAT) if compliance_obligation.fee_date else "—"
             )
             # Get compliance obligation amounts
             # Get fee_amount_dollars (calculated emmissions * charge rate) from
@@ -176,7 +177,7 @@ class ElicensingInvoiceGeneratorService:
                 penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             )
 
-            invoice_date = compliance_penalty.fee_date.strftime("%b %-d, %Y") if compliance_penalty.fee_date else "—"
+            invoice_date = compliance_penalty.fee_date.strftime(STRFTIME_FORMAT) if compliance_penalty.fee_date else "—"
 
             penalty_invoice_is_void = penalty_invoice.is_void and (
                 compliance_obligation.penalty_status == ComplianceObligation.PenaltyStatus.PAID
@@ -249,7 +250,7 @@ class ElicensingInvoiceGeneratorService:
                 penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
             )
 
-            invoice_date = compliance_penalty.fee_date.strftime("%b %-d, %Y") if compliance_penalty.fee_date else "—"
+            invoice_date = compliance_penalty.fee_date.strftime(STRFTIME_FORMAT) if compliance_penalty.fee_date else "—"
 
             penalty_invoice_is_void = penalty_invoice.is_void and (
                 compliance_obligation.penalty_status == ComplianceObligation.PenaltyStatus.PAID

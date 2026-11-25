@@ -2,6 +2,7 @@ from decimal import Decimal
 from typing import Any, Dict, List, Tuple
 from django.db.models import Prefetch, QuerySet
 
+from compliance.service.elicensing.elicensing_invoice_service import STRFTIME_FORMAT
 from compliance.models.elicensing_line_item import ElicensingLineItem
 from compliance.models.elicensing_invoice import ElicensingInvoice
 
@@ -55,7 +56,7 @@ class ElicensingInvoiceCalculatorService:
 
     @classmethod
     def _build_line_item_entry(cls, line_item: ElicensingLineItem) -> Tuple[Decimal, List[Dict[str, Any]]]:
-        fee_date = line_item.fee_date.strftime("%b %-d, %Y") if line_item.fee_date else "—"
+        fee_date = line_item.fee_date.strftime(STRFTIME_FORMAT) if line_item.fee_date else "—"
         amount = line_item.base_amount
         entry = {
             "date": fee_date,
@@ -74,7 +75,7 @@ class ElicensingInvoiceCalculatorService:
         total = Decimal("0.00")
 
         for payment in line_item.elicensing_payments.all():
-            date = payment.received_date.strftime("%b %-d, %Y") if payment.received_date else "—"
+            date = payment.received_date.strftime(STRFTIME_FORMAT) if payment.received_date else "—"
             if line_item.line_item_type == ElicensingLineItem.LineItemType.INTEREST:
                 description = "FAA Interest Payment"
             else:
@@ -97,7 +98,7 @@ class ElicensingInvoiceCalculatorService:
         total = Decimal("0.00")
 
         for adjustment in line_item.elicensing_adjustments.all():
-            date = adjustment.adjustment_date.strftime("%b %-d, %Y") if adjustment.adjustment_date else "—"
+            date = adjustment.adjustment_date.strftime(STRFTIME_FORMAT) if adjustment.adjustment_date else "—"
             description = adjustment.reason or f"Adjustment {adjustment.adjustment_object_id} ({adjustment.type})"
             amount = adjustment.amount
             billing_items.append(

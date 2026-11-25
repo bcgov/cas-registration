@@ -6,6 +6,7 @@ from datetime import date
 from model_bakery.baker import make_recipe
 
 from compliance.service.elicensing.invoice_generation.elicensing_invoice_context import ElicensingInvoiceContextService
+from compliance.service.elicensing.elicensing_invoice_service import STRFTIME_FORMAT
 from reporting.models.report_operation import ReportOperation
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
@@ -94,9 +95,9 @@ class TestElicensingInvoiceContextService:
         )
         assert context["invoice_number"] == self.test_data.compliance_obligation.elicensing_invoice.invoice_number
         assert context["invoice_due_date"] == self.test_data.compliance_obligation.elicensing_invoice.due_date.strftime(
-            "%b %-d, %Y"
+            STRFTIME_FORMAT
         )
-        assert context["invoice_printed_date"] == timezone.now().strftime("%b %-d, %Y")
+        assert context["invoice_printed_date"] == timezone.now().strftime(STRFTIME_FORMAT)
         assert "logo_base64" in context
 
         assert context["billing_items"] == [

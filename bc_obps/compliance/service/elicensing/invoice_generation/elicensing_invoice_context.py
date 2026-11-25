@@ -2,6 +2,7 @@ from django.utils import timezone
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any, Dict, Optional, Tuple
 
+from compliance.service.elicensing.elicensing_invoice_service import STRFTIME_FORMAT
 from compliance.models.elicensing_invoice import ElicensingInvoice
 from compliance.constants import CLEAN_BC_LOGO_COMPLIANCE_INVOICE
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
@@ -65,7 +66,7 @@ class ElicensingInvoiceContextService:
     def prepare_partial_invoice_context(
         cls, compliance_report_version_id: int, invoice: ElicensingInvoice, compliance_obligation_id: str
     ) -> Dict[str, Any]:
-        DATE_TODAY = timezone.now().strftime("%b %-d, %Y")
+        DATE_TODAY = timezone.now().strftime(STRFTIME_FORMAT)
         # Get operation (from report, not admin) information
         report_operation = ComplianceReportVersionService.get_report_operation_by_compliance_report_version(
             compliance_report_version_id
@@ -76,7 +77,7 @@ class ElicensingInvoiceContextService:
         # Operator → Address
         operator_address_line1, operator_address_line2 = cls._format_operator_address(operator.mailing_address)
         invoice_number = invoice.invoice_number
-        invoice_due_date = invoice.due_date.strftime("%b %-d, %Y") if invoice.due_date else "—"
+        invoice_due_date = invoice.due_date.strftime(STRFTIME_FORMAT) if invoice.due_date else "—"
         amount_due, billing_items, _, _, _ = ElicensingInvoiceCalculatorService.calculate_invoice_amount_due(invoice)
         # Apply interest to the invoice if interest exists and compliance obligation is not paid yet
         if (

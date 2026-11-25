@@ -16,6 +16,7 @@ from compliance.models import (
 from compliance.service.elicensing.invoice_generation.elicensing_invoice_generator import (
     ElicensingInvoiceGeneratorService,
 )
+from compliance.service.elicensing.elicensing_invoice_service import STRFTIME_FORMAT
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 from reporting.models import ReportOperation
 from reporting.service.reporting_year_service import ReportingYearService
@@ -156,8 +157,10 @@ class TestElicensingInvoiceGeneratorService:
             "operator_address_line2": "City, BC  V1A 2B3",
             "operation_name": ReportOperation.objects.get(report_version=self.test_data.report_version),
             "invoice_number": self.test_data.compliance_obligation.elicensing_invoice.invoice_number,
-            "invoice_due_date": self.test_data.compliance_obligation.elicensing_invoice.due_date.strftime("%b %-d, %Y"),
-            "invoice_printed_date": timezone.now().strftime("%b %-d, %Y"),
+            "invoice_due_date": self.test_data.compliance_obligation.elicensing_invoice.due_date.strftime(
+                STRFTIME_FORMAT
+            ),
+            "invoice_printed_date": timezone.now().strftime(STRFTIME_FORMAT),
             "logo_base64": "data:image/png;base64,...",
             "billing_items": [
                 {
@@ -223,8 +226,10 @@ class TestElicensingInvoiceGeneratorService:
             "operator_address_line2": "City, BC  V1A 2B3",
             "operation_name": ReportOperation.objects.get(report_version=self.test_data.report_version).operation_name,
             "invoice_number": self.test_data.compliance_obligation.elicensing_invoice.invoice_number,
-            "invoice_due_date": self.test_data.compliance_obligation.elicensing_invoice.due_date.strftime("%b %-d, %Y"),
-            "invoice_printed_date": timezone.now().strftime("%b %-d, %Y"),
+            "invoice_due_date": self.test_data.compliance_obligation.elicensing_invoice.due_date.strftime(
+                STRFTIME_FORMAT
+            ),
+            "invoice_printed_date": timezone.now().strftime(STRFTIME_FORMAT),
             "logo_base64": "data:image/png;base64,...",
             "billing_items": [
                 {
