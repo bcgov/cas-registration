@@ -54,6 +54,4 @@ class TestOperatorRequestAdminAccessEndpoint(CommonTestSetup):
             custom_reverse_lazy("request_admin_access", kwargs={"operator_id": 99999}),
         )
         assert response.status_code == 422
-        assert response.json() == {
-            "message": "Operator Id: Input should be a valid UUID, invalid length: expected length 32 for simple format, found 5"
-        }
+        assert response.json() == {'message': 'Operator Id: Input should be a valid UUID, invalid length: found 5'}
