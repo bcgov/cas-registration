@@ -4,6 +4,7 @@ import {
   waitFor,
   fireEvent,
   act,
+  within,
 } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import type { MockedFunction } from "vitest";
@@ -133,9 +134,120 @@ describe("OperationReviewForm Component", () => {
         facilityId={`1234`}
         allRepresentatives={allRepresentatives}
         isSyncAllowed={false}
+        reportedProductIds={[]}
       />,
     );
   };
+
+  const renderFormWithReportedProducts = (
+    reportedProductIds: number[],
+    operationType = "Single Facility Operation",
+  ) => {
+    const productFormData = {
+      ...formData,
+      operation_type: operationType,
+      operation_report_type: "Annual Report",
+      regulated_products: [1, 2],
+    };
+    render(
+      <OperationReviewForm
+        formData={productFormData}
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        schema={buildOperationReviewSchema(
+          productFormData,
+          2024,
+          activities,
+          regulatedProducts,
+          allRepresentatives,
+          reportType,
+          true,
+          true,
+          true,
+          false,
+        )}
+        allActivities={activities}
+        allRegulatedProducts={regulatedProducts}
+        reportType={reportType}
+        reportingYear={2024}
+        facilityId={`1234`}
+        allRepresentatives={allRepresentatives}
+        isSyncAllowed={false}
+        reportedProductIds={reportedProductIds}
+      />,
+    );
+  };
+
+  const productChip = (name: string) => screen.queryByRole("button", { name });
+
+  const removeFirstRegulatedProduct = async () => {
+    await userEvent.click(
+      within(productChip("Product 1") as HTMLElement).getByTestId("CancelIcon"),
+    );
+  };
+
+  const productRemovalText = /Are you sure you want to remove/i;
+
+  it.each(["Single Facility Operation", "Linear Facilities Operation"])(
+    "shows the product removal modal when removing a product with reported data (%s)",
+    async (operationType) => {
+      renderFormWithReportedProducts([1], operationType);
+
+      await removeFirstRegulatedProduct();
+
+      expect(await screen.findByText(productRemovalText)).toBeVisible();
+      expect(screen.getByRole("dialog")).toHaveTextContent(
+        "Are you sure you want to remove Product 1? If you proceed, any data entered for this product will be removed from this report.",
+      );
+    },
+  );
+
+  it("keeps the product selected when product removal is cancelled", async () => {
+    renderFormWithReportedProducts([1]);
+
+    await removeFirstRegulatedProduct();
+    expect(await screen.findByText(productRemovalText)).toBeVisible();
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+    await waitFor(() => {
+      expect(screen.queryByText(productRemovalText)).not.toBeInTheDocument();
+    });
+    expect(productChip("Product 1")).toBeVisible();
+  });
+
+  it("removes the product and saves the new list when removal is confirmed", async () => {
+    renderFormWithReportedProducts([1]);
+
+    await removeFirstRegulatedProduct();
+    expect(await screen.findByText(productRemovalText)).toBeVisible();
+
+    fireEvent.click(screen.getByRole("button", { name: "Remove product" }));
+
+    await waitFor(() => {
+      expect(screen.queryByText(productRemovalText)).not.toBeInTheDocument();
+    });
+    expect(productChip("Product 1")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText(/Save & Continue/i));
+
+    await waitFor(() => {
+      expect(mockActionHandler).toHaveBeenCalledTimes(1);
+    });
+    const body = JSON.parse(mockActionHandler.mock.calls[0][3]?.body as string);
+    expect(body.regulated_products).toEqual([2]);
+  });
+
+  it("does not show the product removal modal when the product has no reported data", async () => {
+    renderFormWithReportedProducts([2]);
+
+    await removeFirstRegulatedProduct();
+
+    await waitFor(() => {
+      expect(productChip("Product 1")).not.toBeInTheDocument();
+    });
+    expect(screen.queryByText(productRemovalText)).not.toBeInTheDocument();
+  });
 
   it("renders the form with the correct content", async () => {
     renderForm();
@@ -353,6 +465,7 @@ describe("OperationReviewForm Component", () => {
         facilityId="1234"
         allRepresentatives={[]}
         isSyncAllowed={false}
+        reportedProductIds={[]}
       />,
     );
 
@@ -409,6 +522,7 @@ describe("OperationReviewForm Component", () => {
         facilityId={`1234`}
         allRepresentatives={[]}
         isSyncAllowed={true}
+        reportedProductIds={[]}
       />,
     );
 
@@ -482,6 +596,7 @@ describe("OperationReviewForm Component", () => {
         facilityId={`1234`}
         allRepresentatives={allRepresentatives}
         isSyncAllowed={true}
+        reportedProductIds={[]}
       />,
     );
 
@@ -522,6 +637,7 @@ describe("OperationReviewForm Component", () => {
         facilityId={`1234`}
         allRepresentatives={allRepresentatives}
         isSyncAllowed={false}
+        reportedProductIds={[]}
       />,
     );
 
@@ -572,6 +688,7 @@ describe("OperationReviewForm Component", () => {
         facilityId={`1234`}
         allRepresentatives={allRepresentatives}
         isSyncAllowed={true}
+        reportedProductIds={[]}
       />,
     );
 

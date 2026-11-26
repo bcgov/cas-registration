@@ -80,6 +80,7 @@ class TestReportOperationService:
         assert result["show_activities"] is True
         assert "is_sync_allowed" in result
         assert isinstance(result["is_sync_allowed"], bool)
+        assert result["reported_product_ids"] == []
         assert result["reporting_year"] == self.report_version.report.reporting_year.reporting_year
 
     def test_get_report_operation_data_by_version_id_shows_valid_regulated_products(self):
@@ -95,6 +96,30 @@ class TestReportOperationService:
 
         assert valid_product in result["all_regulated_products"]
         assert expired_product not in result["all_regulated_products"]
+
+    def test_get_report_operation_data_by_version_id_returns_reported_product_ids(self):
+        unregulated_product = baker.make_recipe("registration.tests.utils.regulated_product", is_regulated=False)
+        second_facility_report = baker.make_recipe(
+            "reporting.tests.utils.facility_report", report_version=self.report_version
+        )
+        # Same regulated product reported in two facility reports is returned once
+        for facility_report in [self.facility_report, second_facility_report]:
+            baker.make_recipe(
+                "reporting.tests.utils.report_product",
+                report_version=self.report_version,
+                facility_report=facility_report,
+                product=self.regulated_product,
+            )
+        baker.make_recipe(
+            "reporting.tests.utils.report_product",
+            report_version=self.report_version,
+            facility_report=self.facility_report,
+            product=unregulated_product,
+        )
+
+        result = ReportOperationService.get_report_operation_data_by_version_id(self.report_version.id)
+
+        assert result["reported_product_ids"] == [self.regulated_product.id]
 
     def test_update_report_service(self):
         self.operation.name = "New Operation Name"

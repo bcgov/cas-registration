@@ -31,6 +31,12 @@ class ReportOperationService:
         purpose = report_operation["registration_purpose"]
         facility_id = FacilityReportService.get_facility_report_by_version_id(version_id)
         is_sync_allowed = SyncValidationService.is_sync_allowed(version_id)
+        reported_product_ids = list(
+            ReportProductService.get_reported_products(version_id)
+            .values_list("product_id", flat=True)
+            .distinct()
+            .order_by("product_id")
+        )
         return {
             "report_operation": report_operation,
             "facility_id": facility_id,
@@ -56,6 +62,7 @@ class ReportOperationService:
             ],
             "reporting_year": reporting_year.reporting_year,
             "is_sync_allowed": is_sync_allowed,
+            "reported_product_ids": reported_product_ids,
         }
 
     @classmethod

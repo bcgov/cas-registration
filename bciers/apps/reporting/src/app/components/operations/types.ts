@@ -108,4 +108,5 @@ export interface OperationReviewPageData {
   show_activities: boolean;
   reporting_year: number;
   is_sync_allowed: boolean;
+  reported_product_ids: number[];
 }
