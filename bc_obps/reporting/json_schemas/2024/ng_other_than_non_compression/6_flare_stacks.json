@@ -14,9 +14,11 @@
             "default": "",
             "type": "string",
             "enum": [
-              "Onshore Natural Gas Transmission Compression and Pipelines",
-              "Underground Natural Gas Storage",
-              "Natural Gas Distribution"
+              "Onshore Natural Gas Transmission Compression and Pipelines - Pipeline flaring",
+              "Underground Natural Gas Storage - Flares",
+              "Natural Gas Distribution - Pipeline flaring",
+              "Natural Gas Distribution - Flares",
+              "Oil Transmission"
             ]
           },
           "type": {
