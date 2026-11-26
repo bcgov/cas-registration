@@ -109,7 +109,7 @@ priority = 1
 
 [[repos]]
 repo = "https://github.com/renovatebot/pre-commit-hooks"
-rev = "88f82b3c914439f606eab1523ecc409c9683dbb9"  # 44.252.1
+rev = "88f82b3c914439f606eab1523ecc409c9683dbb9"         # 44.252.1
 
 [[repos.hooks]]
 id = "renovate-config-validator"
@@ -129,7 +129,7 @@ priority = 0
 
 [[repos]]
 repo = "https://github.com/rhysd/actionlint"
-rev = "914e7df21a07ef503a81201c76d2b11c789d3fca"  # v1.7.12
+rev = "914e7df21a07ef503a81201c76d2b11c789d3fca" # v1.7.12
 
 [[repos.hooks]]
 id = "actionlint"
@@ -168,7 +168,7 @@ priority = 3
 
 [[repos]]
 repo = "https://github.com/python-poetry/poetry"
-rev = "2.4.1"
+rev = "2.5.1"
 
 [[repos.hooks]]
 id = "poetry-check"
