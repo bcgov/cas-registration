@@ -136,7 +136,7 @@
     "jiti": "2.7.0",
     "jsdom": "~31.0.0",
     "jsonc-eslint-parser": "^3.0.0",
-    "nx": "23.3.2",
+    "nx": "24.0.6",
     "pdf-parse": "^2.4.5",
     "playwright-core": "1.65.1",
     "prettier": "~3.10.0",
