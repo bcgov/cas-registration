@@ -50,13 +50,14 @@ class TestInfrastructure:
         t.facility_report = make_recipe(
             REPORTING_FACILITY_REPORT_RECIPE_NAME,
             report_version__report__reporting_year_id=2025,
+            facility_name="This is a testing facility",
         )
         t.facility_report.refresh_from_db()
         t.report_version = t.facility_report.report_version
         t.user = make_recipe(REGISTRATION_INDUSTRY_OPERATOR_USER_RECIPE_NAME)
         valid_date = get_report_valid_date_from_version_id(t.report_version.id)
         t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
-        t.activity = make_recipe("reporting.tests.utils.activity")
+        t.activity = make_recipe("reporting.tests.utils.activity", name="Test Infrastructure Activity")
         t.activity_json_schema = make_recipe(
             "reporting.tests.utils.activity_json_schema",
             activity=t.activity,

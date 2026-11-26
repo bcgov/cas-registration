@@ -61,6 +61,7 @@ const AlertNote: FC<PropsWithChildren<AlertNoteProps>> = ({
       id={id}
       className={`${bgClassMap[alertType]} text-bc-text mb-2 items-center`}
       icon={defaultedIcon}
+      style={{ whiteSpace: "pre-wrap" }}
     >
       {children}
     </Alert>
