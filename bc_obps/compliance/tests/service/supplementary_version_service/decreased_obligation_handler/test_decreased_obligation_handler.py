@@ -2,7 +2,10 @@ from decimal import Decimal
 import pytest
 import common.lib.pgtrigger as pgtrigger
 from model_bakery import baker
-from compliance.models import ComplianceReportVersion, ElicensingInvoice
+from compliance.models import (
+    ComplianceReportVersion,
+    ElicensingInvoice,
+)
 from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
 from compliance.models.elicensing_line_item import ElicensingLineItem
@@ -53,6 +56,12 @@ def mock_collect_unpaid():
 @pytest.fixture
 def mock_void_invoices():
     with patch(f"{_DEC_OBL}.DecreasedObligationHandler._void_unpaid_invoices") as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_reset_accruing_penalty_status():
+    with patch(f"{_DEC_OBL}.DecreasedObligationHandler._reset_accruing_penalty_status") as mock:
         yield mock
 
 
@@ -212,6 +221,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_create_earned_credits,
         mock_is_credit_usage_over_cap,
@@ -275,6 +285,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_create_earned_credits,
         mock_is_credit_usage_over_cap,
@@ -328,6 +339,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
 
         # Invoice is voided, and the applied units are flagged for manual handling
         mock_void_invoices.assert_called_once_with(prev_crv.id)
+        mock_reset_accruing_penalty_status.assert_called_once_with(prev_crv.id)
         mock_record_manual_handling.assert_called_once_with(
             res.id,
             context=ComplianceReportVersionManualHandling.Context.COMPLIANCE_UNITS_APPLIED_TO_VOIDED_INVOICE,
@@ -343,6 +355,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_sum_already_applied,
         mock_create_earned_credits,
@@ -428,6 +441,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_mark_fully_met.assert_any_call(anchor.id)
         mock_mark_fully_met.assert_any_call(older.id)
         assert mock_void_invoices.call_count == 0
+        assert mock_reset_accruing_penalty_status.call_count == 0
 
         # Leftover refund dollars AND cash present across invoices → record manual handling
         mock_record_manual_handling.assert_called_once_with(
@@ -447,6 +461,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_sum_already_applied,
         mock_create_earned_credits,
@@ -530,6 +545,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_mark_fully_met.assert_any_call(anchor.id)
         mock_mark_fully_met.assert_any_call(older.id)
         assert mock_void_invoices.call_count == 2
+        assert mock_reset_accruing_penalty_status.call_count == 2
 
         # No cash across invoices → refundable_dollars == 0 → no manual handling record
         mock_record_manual_handling.assert_not_called()
@@ -547,6 +563,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_sum_already_applied,
         mock_create_earned_credits,
@@ -622,6 +639,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_mark_fully_met.assert_any_call(anchor.id)
         mock_mark_fully_met.assert_any_call(older.id)
         assert mock_void_invoices.call_count == 2
+        assert mock_reset_accruing_penalty_status.call_count == 2
 
         # No cash → no manual handling
         mock_record_manual_handling.assert_not_called()
@@ -640,6 +658,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_sum_already_applied,
         mock_fallback_invoice_filter,
@@ -698,6 +717,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         )
         mock_create_adjustment.assert_not_called()
         mock_void_invoices.assert_not_called()
+        mock_reset_accruing_penalty_status.assert_not_called()
         mock_mark_fully_met.assert_not_called()
 
         # Placeholder status remains and no credits created
@@ -771,6 +791,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_create_earned_credits,
         run_on_commit_immediately,
@@ -846,6 +867,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # Not fully met → no mark/void and no credits
         mock_mark_fully_met.assert_not_called()
         mock_void_invoices.assert_not_called()
+        mock_reset_accruing_penalty_status.assert_not_called()
         mock_record_manual_handling.assert_not_called()
 
         # Placeholder status remains and no credits created
@@ -861,6 +883,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_create_earned_credits,
         run_on_commit_immediately,
@@ -935,6 +958,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # Fully met, no cash → mark & void
         mock_mark_fully_met.assert_called_once_with(prev_crv.id)
         mock_void_invoices.assert_called_once_with(prev_crv.id)
+        mock_reset_accruing_penalty_status.assert_called_once_with(prev_crv.id)
 
         # No remainder, no over-compliance, no credited_emissions → no manual handling created
         mock_record_manual_handling.assert_not_called()
@@ -953,6 +977,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_create_earned_credits,
         run_on_commit_immediately,
@@ -1017,6 +1042,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
 
         mock_mark_fully_met.assert_not_called()
         mock_void_invoices.assert_not_called()
+        mock_reset_accruing_penalty_status.assert_not_called()
         mock_record_manual_handling.assert_not_called()
 
         # Placeholder status remains and no credits created
@@ -1032,6 +1058,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_create_earned_credits,
         run_on_commit_immediately,
@@ -1098,6 +1125,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
 
         mock_mark_fully_met.assert_called_once_with(prev_crv.id)
         mock_void_invoices.assert_not_called()
+        mock_reset_accruing_penalty_status.assert_not_called()
         mock_record_manual_handling.assert_not_called()
 
         # Placeholder status remains and no credits created
@@ -1114,6 +1142,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_create_earned_credits,
         run_on_commit_immediately,
@@ -1177,6 +1206,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
 
         mock_mark_fully_met.assert_not_called()
         mock_void_invoices.assert_not_called()
+        mock_reset_accruing_penalty_status.assert_not_called()
         mock_record_manual_handling.assert_not_called()
 
         # Placeholder status remains and no credits created
@@ -1194,6 +1224,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_create_earned_credits,
         run_on_commit_immediately,
@@ -1253,6 +1284,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_mark_fully_met.assert_any_call(older.id)
         # No cash on either -> void both
         assert mock_void_invoices.call_count == 2
+        assert mock_reset_accruing_penalty_status.call_count == 2
         mock_record_manual_handling.assert_not_called()
 
         # Placeholder status remains and no credits created
@@ -1270,6 +1302,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_create_earned_credits,
         run_on_commit_immediately,
@@ -1361,8 +1394,10 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # Fully met anchor (no cash) → mark & void
         mock_mark_fully_met.assert_any_call(crv_anchor.id)
         mock_void_invoices.assert_any_call(crv_anchor.id)
+        mock_reset_accruing_penalty_status.assert_any_call(crv_anchor.id)
         assert mock_mark_fully_met.call_count == 1
         assert mock_void_invoices.call_count == 1
+        assert mock_reset_accruing_penalty_status.call_count == 1
 
         # Not all invoices cleared → no manual handling
         mock_record_manual_handling.assert_not_called()
@@ -1381,6 +1416,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_create_earned_credits,
         run_on_commit_immediately,
@@ -1442,6 +1478,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         assert adj["reason"] == ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT
         mock_mark_fully_met.assert_not_called()
         mock_void_invoices.assert_not_called()
+        mock_reset_accruing_penalty_status.assert_not_called()
         mock_record_manual_handling.assert_not_called()
 
         # Placeholder status remains and no credits created
@@ -1457,6 +1494,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_create_earned_credits,
         run_on_commit_immediately,
@@ -1515,6 +1553,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_mark_fully_met.assert_any_call(anchor.id)
         mock_mark_fully_met.assert_any_call(older.id)
         mock_void_invoices.assert_not_called()
+        mock_reset_accruing_penalty_status.assert_not_called()
         mock_record_manual_handling.assert_not_called()
 
         # Placeholder status remains and no credits created
@@ -1530,6 +1569,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_record_manual_handling,
         mock_collect_unpaid,
         mock_void_invoices,
+        mock_reset_accruing_penalty_status,
         mock_mark_fully_met,
         mock_create_earned_credits,
         run_on_commit_immediately,
@@ -1591,6 +1631,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_mark_fully_met.assert_any_call(anchor.id)
         # CASH present on anchor → DO NOT void
         mock_void_invoices.assert_not_called()
+        mock_reset_accruing_penalty_status.assert_not_called()
         # Not all cleared → no manual handling
         mock_record_manual_handling.assert_not_called()
 
