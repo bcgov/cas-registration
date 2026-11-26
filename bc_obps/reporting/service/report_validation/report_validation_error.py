@@ -30,6 +30,7 @@ class ReportValidationErrorKey(StrEnum):
     ERROR_REQUIRED_FIELDS = "error_required_fields"
     REPORT_ACTIVITY_JSON_VALIDATION = "report_activity_json_validation"
     MISSING_REGULATED_PRODUCT = "missing_regulated_product"
+    PRODUCT_EXCLUDED_EMISSION_OVER_ALLOCATION = "product_excluded_emission_over_allocation"
 
 
 class ErrorContext(BaseModel):
@@ -55,6 +56,7 @@ class ErrorContext(BaseModel):
     missing_fields: list[str] | None = None
     expected_range: Optional[str] = None
     user_input: Optional[str] = None
+    product_name: Optional[str] = None
 
 
 @dataclass
