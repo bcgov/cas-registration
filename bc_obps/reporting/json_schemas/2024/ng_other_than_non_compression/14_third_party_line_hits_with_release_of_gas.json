@@ -16,7 +16,7 @@
             "enum": [
               "Onshore Natural Gas Transmission Compression and Pipelines",
               "Natural Gas Distribution",
-              "Oil transmission"
+              "Oil Transmission"
             ]
           },
           "type": {
