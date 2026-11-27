@@ -75,6 +75,7 @@ class TestReportOperationDataApi(CommonTestSetup):
             "reporting_year": self.reporting_year.reporting_year,
             "is_sync_allowed": True,
             "reported_product_ids": [1],
+            "reported_activity_ids": [2],
         }
         expected_purpose = self.report_operation["registration_purpose"]
 
@@ -95,6 +96,7 @@ class TestReportOperationDataApi(CommonTestSetup):
         assert response_json["report_type"] == self.report_operation["operation_report_type"]
         assert response_json["reporting_year"] == self.reporting_year.reporting_year
         assert response_json["reported_product_ids"] == [1]
+        assert response_json["reported_activity_ids"] == [2]
 
         assert response_json["show_regulated_products"] == (
             expected_purpose
@@ -146,6 +148,7 @@ class TestReportOperationDataApi(CommonTestSetup):
             "reporting_year": self.reporting_year.reporting_year,
             "is_sync_allowed": True,
             "reported_product_ids": [],
+            "reported_activity_ids": [],
         }
 
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)

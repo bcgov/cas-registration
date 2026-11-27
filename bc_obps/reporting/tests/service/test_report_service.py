@@ -15,8 +15,10 @@ from reporting.models import (
     ReportVersion,
     ReportOperation,
     FacilityReport,
+    ReportActivity,
     ReportProduct,
     ReportProductEmissionAllocation,
+    ReportRawActivityData,
 )
 from reporting.schema.report_operation import ReportOperationIn
 from reporting.tests.utils.bakers import report_baker, reporting_year_baker
@@ -421,12 +423,11 @@ class TestReportService(TestCase):
 
     def test_lfo_adds_newly_selected_operation_activities_to_existing_facility(self):
         """
-        For LFOs, when a facility already has activities and the user adds new
-        activities at the operation level, those newly-selected operation activities
-        are added to the facility report (so they appear pre-selected in the
-        operation list on the Review Facility Information page). Activities removed
-        from the operation are NOT removed from the facility, so any user-made
-        facility-level selections are preserved.
+        For LFOs, when the user changes operation-level activities, newly-selected
+        operation activities are added to the facility report (so they appear
+        pre-selected on the Review Facility Information page) and deselected
+        operation activities are removed, along with their reported data.
+        Activities selected from "Other activities" at the facility level are kept.
         """
         operator = baker.make_recipe('registration.tests.utils.operator')
         operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
@@ -435,9 +436,17 @@ class TestReportService(TestCase):
         report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
         report_operation.activities.set([1, 2, 3])
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
-        facility_report.activities.set([1, 2, 3])
-        report_activity = baker.make_recipe(
+        # Activity 5 is an "Other activities" selection made at the facility level
+        facility_report.activities.set([1, 2, 3, 5])
+        kept_report_activity = baker.make_recipe(
             'reporting.tests.utils.report_activity',
+            report_version=report_version,
+            facility_report=facility_report,
+            activity_id=1,
+        )
+        removed_report_activity = baker.make_recipe(
+            'reporting.tests.utils.report_activity',
+            report_version=report_version,
             facility_report=facility_report,
             activity_id=2,
         )
@@ -461,20 +470,20 @@ class TestReportService(TestCase):
 
         facility_report.refresh_from_db()
 
-        # Newly-selected operation activities (18, 14) are added.
-        # Existing facility activities (1, 2, 3) are preserved -- including 2 & 3
-        # which were deselected at the operation level (user choice is not lost).
+        # Newly-selected operation activities (18, 14) are added, deselected ones (2, 3) are removed,
+        # and the "Other activities" selection (5) is preserved.
         self.assertQuerySetEqual(
             facility_report.activities.all(),
-            Activity.objects.filter(id__in=[1, 2, 3, 18, 14]),
+            Activity.objects.filter(id__in=[1, 5, 18, 14]),
             ordered=False,
         )
-        # Existing report activity rows for kept activities are preserved.
+        # Report activity data for the kept activity is preserved; data for the removed activity is deleted.
         self.assertQuerySetEqual(
             facility_report.reportactivity_records.all(),
-            [report_activity],
+            [kept_report_activity],
             ordered=False,
         )
+        assert not ReportActivity.objects.filter(id=removed_report_activity.id).exists()
 
     def test_lfo_sets_initial_activities_for_facility_without_activities(self):
         """
@@ -517,10 +526,12 @@ class TestReportService(TestCase):
             ordered=False,
         )
 
-    def test_lfo_does_not_update_activities_for_completed_facility_report(self):
+    def test_lfo_completed_facility_report_only_loses_deselected_activities(self):
         """
-        Once a facility report is marked as completed, changes to operation-level
-        activities must NOT propagate to that facility's activities.
+        Once a facility report is marked as completed, newly-selected operation-level
+        activities must NOT be added to that facility, but deselected operation
+        activities are still removed. Without reported data for those activities,
+        the facility report stays completed.
         """
         operator = baker.make_recipe('registration.tests.utils.operator')
         operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
@@ -553,12 +564,13 @@ class TestReportService(TestCase):
 
         facility_report.refresh_from_db()
 
-        # The completed facility's activities are unchanged.
+        # Deselected activities (2, 3) are removed; new activities (18, 14) are not added.
         self.assertQuerySetEqual(
             facility_report.activities.all(),
-            Activity.objects.filter(id__in=[1, 2, 3]),
+            Activity.objects.filter(id__in=[1]),
             ordered=False,
         )
+        assert facility_report.is_completed
 
     def _lfo_with_completed_facility_report(self):
         operation = operation_baker(
@@ -673,6 +685,134 @@ class TestReportService(TestCase):
                 facility_report.refresh_from_db()
                 assert facility_report.is_completed is expected_is_completed
                 assert not ReportProduct.objects.filter(id=report_product.id).exists()
+
+    def _report_activity_data(self, facility_report, activity_id):
+        """Creates reported activity data (report activity and raw activity data) for a facility report."""
+        report_activity = make_recipe(
+            'reporting.tests.utils.report_activity',
+            report_version=facility_report.report_version,
+            facility_report=facility_report,
+            activity_id=activity_id,
+        )
+        raw_activity_data = make_recipe(
+            'reporting.tests.utils.report_raw_activity_data',
+            report_version=facility_report.report_version,
+            facility_report=facility_report,
+            activity_id=activity_id,
+        )
+        return report_activity, raw_activity_data
+
+    def test_lfo_removes_deselected_activity_data_from_facility_reports(self):
+        operation = operation_baker(
+            type=Operation.Types.LFO, operator_id=make_recipe('registration.tests.utils.operator').id
+        )
+        report = make_recipe('reporting.tests.utils.report', operation=operation)
+        report_version = make_recipe('reporting.tests.utils.report_version', report=report)
+        make_recipe('reporting.tests.utils.report_operation', report_version=report_version).activities.set([1, 2])
+
+        # Has reported data for the removed activity (2) and an "Other activities" selection (5)
+        affected_facility_report = make_recipe(
+            'reporting.tests.utils.facility_report', report_version=report_version, is_completed=True
+        )
+        affected_facility_report.activities.set([1, 2, 5])
+        kept_report_activity, kept_raw_data = self._report_activity_data(affected_facility_report, activity_id=1)
+        other_report_activity, other_raw_data = self._report_activity_data(affected_facility_report, activity_id=5)
+        removed_report_activity, removed_raw_data = self._report_activity_data(affected_facility_report, activity_id=2)
+        affected_allocation = self._allocate_emissions(
+            self._report_product(affected_facility_report, product_id=1), allocated_quantity=10
+        )
+
+        # Only reported data for the kept activity (1)
+        unaffected_facility_report = make_recipe(
+            'reporting.tests.utils.facility_report', report_version=report_version, is_completed=True
+        )
+        unaffected_facility_report.activities.set([1])
+        unaffected_report_activity, unaffected_raw_data = self._report_activity_data(
+            unaffected_facility_report, activity_id=1
+        )
+        unaffected_allocation = self._allocate_emissions(
+            self._report_product(unaffected_facility_report, product_id=1), allocated_quantity=10
+        )
+
+        # Has the removed activity selected, but no reported data for it
+        selected_only_facility_report = make_recipe(
+            'reporting.tests.utils.facility_report', report_version=report_version, is_completed=True
+        )
+        selected_only_facility_report.activities.set([1, 2])
+
+        self._save_lfo_report_operation(report_version, regulated_products=[1])
+
+        # The removed activity's selection, data and the facility's emission allocations are deleted
+        self.assertQuerySetEqual(
+            affected_facility_report.activities.all(), Activity.objects.filter(id__in=[1, 5]), ordered=False
+        )
+        assert not ReportActivity.objects.filter(id=removed_report_activity.id).exists()
+        assert not ReportRawActivityData.objects.filter(id=removed_raw_data.id).exists()
+        assert not ReportProductEmissionAllocation.objects.filter(id=affected_allocation.id).exists()
+        # Data for kept and "Other activities" selections is preserved
+        assert ReportActivity.objects.filter(id__in=[kept_report_activity.id, other_report_activity.id]).count() == 2
+        assert ReportRawActivityData.objects.filter(id__in=[kept_raw_data.id, other_raw_data.id]).count() == 2
+
+        # The unaffected facility report is unchanged
+        self.assertQuerySetEqual(
+            unaffected_facility_report.activities.all(), Activity.objects.filter(id__in=[1]), ordered=False
+        )
+        assert ReportActivity.objects.filter(id=unaffected_report_activity.id).exists()
+        assert ReportRawActivityData.objects.filter(id=unaffected_raw_data.id).exists()
+        assert ReportProductEmissionAllocation.objects.filter(id=unaffected_allocation.id).exists()
+
+        # The removed activity is deselected even without reported data
+        self.assertQuerySetEqual(
+            selected_only_facility_report.activities.all(), Activity.objects.filter(id__in=[1]), ordered=False
+        )
+
+        # Completion is reset only where reported data was lost
+        for facility_report, expected_is_completed in [
+            (affected_facility_report, False),
+            (unaffected_facility_report, True),
+            (selected_only_facility_report, True),
+        ]:
+            facility_report.refresh_from_db()
+            assert facility_report.is_completed is expected_is_completed
+
+    def test_sfo_removes_deselected_activity_data_and_emission_allocations(self):
+        operation = operation_baker(
+            type=Operation.Types.SFO, operator_id=make_recipe('registration.tests.utils.operator').id
+        )
+        report = make_recipe('reporting.tests.utils.report', operation=operation)
+        report_version = make_recipe('reporting.tests.utils.report_version', report=report)
+        make_recipe('reporting.tests.utils.report_operation', report_version=report_version).activities.set([1, 2])
+        facility_report = make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
+        facility_report.activities.set([1, 2])
+        kept_report_activity, kept_raw_data = self._report_activity_data(facility_report, activity_id=1)
+        removed_report_activity, removed_raw_data = self._report_activity_data(facility_report, activity_id=2)
+        allocation = self._allocate_emissions(
+            self._report_product(facility_report, product_id=1), allocated_quantity=10
+        )
+
+        ReportService.save_report_operation(
+            report_version.id,
+            ReportOperationIn(
+                operator_legal_name="Updated Legal Name",
+                operator_trade_name="Updated Trade Name",
+                operation_name="Updated Operation Name",
+                operation_type="Single Facility Operation",
+                operation_bcghgid="Updated BC GHID",
+                bc_obps_regulated_operation_id="Updated Regulated Operation ID",
+                activities=[1],
+                regulated_products=[1],
+                operation_representative_name=[1, 2],
+                operation_report_type="New Report Type",
+                registration_purpose="OBPS Regulated Operation",
+            ),
+        )
+
+        self.assertQuerySetEqual(facility_report.activities.all(), Activity.objects.filter(id__in=[1]), ordered=False)
+        assert not ReportActivity.objects.filter(id=removed_report_activity.id).exists()
+        assert not ReportRawActivityData.objects.filter(id=removed_raw_data.id).exists()
+        assert not ReportProductEmissionAllocation.objects.filter(id=allocation.id).exists()
+        assert ReportActivity.objects.filter(id=kept_report_activity.id).exists()
+        assert ReportRawActivityData.objects.filter(id=kept_raw_data.id).exists()
 
     def test_sfo_removes_deselected_product_data_and_emission_allocations(self):
         operation = operation_baker(

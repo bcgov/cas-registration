@@ -87,3 +87,4 @@ class ReportOperationDataSchema(Schema):
     reporting_year: int
     is_sync_allowed: bool
     reported_product_ids: List[int]
+    reported_activity_ids: List[int]

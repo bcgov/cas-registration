@@ -80,7 +80,22 @@ class FacilityReportService:
         for field_name in ('facility_activities', 'other_activities'):
             setattr(facility_report, field_name, getattr(facility_report_data, field_name))
 
+        facility_report.reported_activity_ids = list(  # type: ignore[attr-defined]
+            cls.get_reported_activities(report_version_id)
+            .filter(facility_report_id=facility_report.id)
+            .values_list('activity_id', flat=True)
+            .distinct()
+            .order_by('activity_id')
+        )
+
         return facility_report
+
+    @classmethod
+    def get_reported_activities(cls, report_version_id: int) -> QuerySet[ReportActivity]:
+        """
+        Returns ReportActivity records (activities with reported data) for a report version.
+        """
+        return ReportActivity.objects.filter(report_version_id=report_version_id)
 
     @classmethod
     def get_facility_report_by_version_id(cls, report_version_id: int) -> Optional[UUID]:

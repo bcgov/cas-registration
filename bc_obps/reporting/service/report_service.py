@@ -207,6 +207,9 @@ class ReportService:
         report_operation.operation_bcghgid = data.operation_bcghgid
         report_operation.bc_obps_regulated_operation_id = data.bc_obps_regulated_operation_id
 
+        # Operation activities being deselected, identified before the operation's activities are replaced
+        removed_activity_ids = set(report_operation.activities.values_list("id", flat=True)) - set(data.activities)
+
         # Fetch and set ManyToMany fields
         activities = Activity.objects.filter(id__in=data.activities)
         report_operation.activities.set(activities)
@@ -229,6 +232,25 @@ class ReportService:
                 .exclude(product_id__in=data.regulated_products)
                 .values_list("facility_report_id", flat=True)
             )
+            # Facility reports with reported data for a removed activity, identified before that data is pruned
+            facility_report_ids_losing_data |= set(
+                FacilityReportService.get_reported_activities(report_version_id)
+                .filter(activity_id__in=removed_activity_ids)
+                .values_list("facility_report_id", flat=True)
+            )
+
+            # Remove deselected operation activities (and their reported data) from every facility report that has them selected,
+            # keeping the facility's other selections, including activities chosen from "Other activities"
+            if removed_activity_ids:
+                for f in facility_reports.filter(activities__id__in=removed_activity_ids).distinct():
+                    remaining_activity_ids = [
+                        activity_id
+                        for activity_id in f.activities.values_list("id", flat=True)
+                        if activity_id not in removed_activity_ids
+                    ]
+                    FacilityReportService.set_activities_for_facility_report(
+                        facility_report=f, activities=remaining_activity_ids
+                    )
 
             for f in facility_reports:
                 # For facility reports that haven't yet been marked Completed,
@@ -242,7 +264,7 @@ class ReportService:
                     facility_report=f, regulated_products=data.regulated_products
                 )
 
-            # Facilities that lost reported product data must re-allocate their emissions, so they are no longer complete
+            # Facilities that lost reported product or activity data must re-allocate their emissions, so they are no longer complete
             facility_reports.filter(id__in=facility_report_ids_losing_data, is_completed=True).update(
                 is_completed=False
             )

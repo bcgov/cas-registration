@@ -81,6 +81,7 @@ class TestReportOperationService:
         assert "is_sync_allowed" in result
         assert isinstance(result["is_sync_allowed"], bool)
         assert result["reported_product_ids"] == []
+        assert result["reported_activity_ids"] == []
         assert result["reporting_year"] == self.report_version.report.reporting_year.reporting_year
 
     def test_get_report_operation_data_by_version_id_shows_valid_regulated_products(self):
@@ -120,6 +121,34 @@ class TestReportOperationService:
         result = ReportOperationService.get_report_operation_data_by_version_id(self.report_version.id)
 
         assert result["reported_product_ids"] == [self.regulated_product.id]
+
+    def test_get_report_operation_data_by_version_id_returns_reported_activity_ids(self):
+        second_activity = baker.make_recipe("registration.tests.utils.activity")
+        second_facility_report = baker.make_recipe(
+            "reporting.tests.utils.facility_report", report_version=self.report_version
+        )
+        # Same activity reported in two facility reports is returned once
+        for facility_report in [self.facility_report, second_facility_report]:
+            baker.make_recipe(
+                "reporting.tests.utils.report_activity",
+                report_version=self.report_version,
+                facility_report=facility_report,
+                activity=self.activity,
+            )
+        # Activity reported in another report version is excluded
+        other_report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        baker.make_recipe(
+            "reporting.tests.utils.report_activity",
+            report_version=other_report_version,
+            facility_report=baker.make_recipe(
+                "reporting.tests.utils.facility_report", report_version=other_report_version
+            ),
+            activity=second_activity,
+        )
+
+        result = ReportOperationService.get_report_operation_data_by_version_id(self.report_version.id)
+
+        assert result["reported_activity_ids"] == [self.activity.id]
 
     def test_update_report_service(self):
         self.operation.name = "New Operation Name"

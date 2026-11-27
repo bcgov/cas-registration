@@ -58,6 +58,52 @@ class TestFacilityReportService(TestCase):
         assert facility_activity_ids == {a1.id, a2.id}
         assert other_activity_ids == {a.id for a in Activity.objects.exclude(id__in=[a1.id, a2.id])}
 
+    @staticmethod
+    def test_returns_facility_report_with_reported_activity_ids_for_facility_only():
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
+        other_facility_report = baker.make_recipe(
+            'reporting.tests.utils.facility_report', report_version=facility_report.report_version
+        )
+        a1 = activity_baker()
+        a2 = activity_baker()
+        a3 = activity_baker()
+        baker.make_recipe(
+            'reporting.tests.utils.report_activity',
+            report_version=facility_report.report_version,
+            facility_report=facility_report,
+            activity=a2,
+        )
+        baker.make_recipe(
+            'reporting.tests.utils.report_activity',
+            report_version=facility_report.report_version,
+            facility_report=facility_report,
+            activity=a1,
+        )
+        # Activity reported for another facility in the same version is excluded
+        baker.make_recipe(
+            'reporting.tests.utils.report_activity',
+            report_version=facility_report.report_version,
+            facility_report=other_facility_report,
+            activity=a3,
+        )
+
+        result = FacilityReportService.get_facility_report_by_version_and_id(
+            report_version_id=facility_report.report_version_id,
+            facility_id=facility_report.facility_id,
+        )
+
+        assert result.reported_activity_ids == sorted([a1.id, a2.id])
+
+    @staticmethod
+    def test_get_reported_activities_excludes_other_versions():
+        report_activity = baker.make_recipe('reporting.tests.utils.report_activity')
+        other_report_activity = baker.make_recipe('reporting.tests.utils.report_activity')
+
+        result = FacilityReportService.get_reported_activities(report_activity.report_version_id)
+
+        assert list(result) == [report_activity]
+        assert other_report_activity not in result
+
     def test_get_activities_throws_if_facility_report_does_not_exist(self):
         with self.assertRaises(ObjectDoesNotExist) as exception_context:
             FacilityReportService.get_activity_ids_for_facility(
