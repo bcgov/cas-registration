@@ -11,6 +11,8 @@ import RootLayout, {
 } from "@bciers/components/layout/RootLayout";
 import { auth } from "@/dashboard/auth";
 import type { Metadata } from "next";
+import { isChatEnabled } from "@bciers/utils/src/environmentDetection";
+import ChatWidget from "@/dashboard/app/components/chat/ChatWidget";
 
 export const metadata: Metadata = generateMetadata("Dashboard");
 
@@ -21,5 +23,10 @@ export default async function DashboardLayout({
 }) {
   const session = await auth();
 
-  return <RootLayout session={session}>{children}</RootLayout>;
+  return (
+    <RootLayout session={session}>
+      {children}
+      {session && isChatEnabled() && <ChatWidget />}
+    </RootLayout>
+  );
 }

@@ -48,3 +48,23 @@ export function isLocalEnvironment(): boolean {
 export function shouldUseSecureCookies(): boolean {
   return !isLocalEnvironment() && !isCIEnvironment() && !isVitestEnvironment();
 }
+
+/**
+ * Environments where the dashboard docs chat may run. Local only for now; add
+ * "dev" here once the dev namespace has its own CHAT_API_KEY secret.
+ */
+const CHAT_ENVIRONMENTS = ["local"];
+
+/**
+ * Determines if the dashboard docs chat (apps/dashboard/app/api/chat) is enabled.
+ * Requires an allowed ENVIRONMENT plus CHAT_API_KEY and CHAT_MODELS. CI is not
+ * checked: some local .env files set CI=true, and CI pipelines have no key.
+ * @returns true if the chat should be shown and served, false otherwise
+ */
+export function isChatEnabled(): boolean {
+  return (
+    CHAT_ENVIRONMENTS.includes(process.env.ENVIRONMENT ?? "") &&
+    Boolean(process.env.CHAT_API_KEY) &&
+    Boolean(process.env.CHAT_MODELS?.trim())
+  );
+}
