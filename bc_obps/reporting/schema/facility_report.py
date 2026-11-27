@@ -24,6 +24,7 @@ class FacilityReportOut(ModelSchema):
     is_sync_allowed: bool = True
     facility_activities: List[ActivitySchema] = []
     other_activities: List[ActivitySchema] = []
+    reported_activity_ids: List[int] = []
 
 
 class FacilityReportIn(ModelSchema):

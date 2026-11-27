@@ -37,6 +37,12 @@ class ReportOperationService:
             .distinct()
             .order_by("product_id")
         )
+        reported_activity_ids = list(
+            FacilityReportService.get_reported_activities(version_id)
+            .values_list("activity_id", flat=True)
+            .distinct()
+            .order_by("activity_id")
+        )
         return {
             "report_operation": report_operation,
             "facility_id": facility_id,
@@ -63,6 +69,7 @@ class ReportOperationService:
             "reporting_year": reporting_year.reporting_year,
             "is_sync_allowed": is_sync_allowed,
             "reported_product_ids": reported_product_ids,
+            "reported_activity_ids": reported_activity_ids,
         }
 
     @classmethod
