@@ -152,6 +152,47 @@ export class PenaltyCalculatorPOM {
     });
   }
 
+  /**
+   * Leaves the accrual grid's cells under the given column headers out of Happo's comparison. Use it for
+   * values that change with the day the test runs, e.g.
+   */
+  async hideGridColumnsFromScreenshot(headerNames: string[]): Promise<void> {
+    // One call in the page for all columns: find each header's field, then mark that column's cells
+    const missingHeaders = await this.page.evaluate((names) => {
+      const headers = Array.from(
+        document.querySelectorAll<HTMLElement>('[role="columnheader"]'),
+      );
+      return names.filter((name) => {
+        const field = headers
+          .find((header) => header.textContent?.trim() === name)
+          ?.getAttribute("data-field");
+        if (!field) return true;
+
+        document
+          .querySelectorAll<HTMLElement>(
+            `[role="gridcell"][data-field="${field}"]`,
+          )
+          .forEach((cell) => (cell.dataset.happoHide = ""));
+        return false;
+      });
+    }, headerNames);
+
+    expect(missingHeaders, "Columns not found in the grid").toEqual([]);
+  }
+
+  /**
+   * Leaves the "Total penalty amount" value out of Happo's comparison, for the same reason as
+   * hideGridColumnsFromScreenshot.
+   */
+  async hideTotalPenaltyAmountFromScreenshot(): Promise<void> {
+    await this.page
+      .getByText("Total penalty amount", { exact: true })
+      .locator("xpath=following-sibling::*[1]")
+      .evaluate((el) => {
+        (el as HTMLElement).dataset.happoHide = "";
+      });
+  }
+
   async assertGgeaparNotApplicable(): Promise<void> {
     await expect(this.ggeaparNotApplicableAlert).toBeVisible({
       timeout: 15_000,
