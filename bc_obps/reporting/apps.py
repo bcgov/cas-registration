@@ -16,6 +16,10 @@ class ReportingConfig(AppConfig):
 
     def ready(self):
         pre_migrate.connect(create_erc_schemas, sender=self)
+        from importlib import import_module
+
+        import_module("reporting.signals.consumers")
+        import_module("reporting.signals.signals")
 
         if settings.ENVIRONMENT != "prod":
-            pass
+            import_module("reporting.signals.post_save_fixtures")
