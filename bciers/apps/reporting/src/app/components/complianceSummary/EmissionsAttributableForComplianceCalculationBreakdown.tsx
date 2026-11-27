@@ -97,15 +97,21 @@ const getSections = (
 const headerCellClass = "py-1 pr-2 text-sm font-bold align-bottom";
 const bodyCellClass = "py-1 pr-2 text-sm align-top";
 
-const TotalRow: React.FC<{ colSpan: number; value: string }> = ({
-  colSpan,
-  value,
-}) => (
+const totalCellClass =
+  "py-2 text-sm font-bold border-0 border-t-2 border-solid border-bc-bg-blue bg-bc-light-blue";
+
+const TotalRow: React.FC<{
+  colSpan: number;
+  value: string;
+  testId?: string;
+}> = ({ colSpan, value, testId }) => (
   <tfoot>
-    <tr>
-      <td colSpan={colSpan} />
-      <td className="py-1 text-sm font-bold text-right whitespace-nowrap">
-        total {formatEmissions(value)}
+    <tr data-testid={testId}>
+      <th scope="row" colSpan={colSpan} className={`${totalCellClass} px-2`}>
+        Total
+      </th>
+      <td className={`${totalCellClass} pr-0 text-right whitespace-nowrap`}>
+        {formatEmissions(value)}
       </td>
     </tr>
   </tfoot>
@@ -160,7 +166,7 @@ const EmissionsSection: React.FC<{ section: Section }> = ({ section }) => (
           ))
         )}
       </tbody>
-      {section.rows.length > 1 && (
+      {section.rows.length > 0 && (
         <TotalRow colSpan={3} value={section.value} />
       )}
     </table>
@@ -240,7 +246,7 @@ const UnregulatedProductsSection: React.FC<{
           </tr>
         ))}
       </tbody>
-      {rows.length + deductions.length > 1 && (
+      {rows.length + deductions.length > 0 && (
         <TotalRow colSpan={1} value={value} />
       )}
     </table>
@@ -469,18 +475,11 @@ const EmissionsAttributableForComplianceCalculationBreakdown: React.FC<
                       </tr>
                     ))}
                   </tbody>
-                  <tfoot>
-                    <tr>
-                      <td colSpan={4} />
-                      <td
-                        className="py-1 text-sm font-bold text-right whitespace-nowrap"
-                        data-testid="emissions-attributable-for-compliance-step2-total"
-                      >
-                        total{" "}
-                        {formatEmissions(emissionsAttributableForCompliance)}
-                      </td>
-                    </tr>
-                  </tfoot>
+                  <TotalRow
+                    colSpan={4}
+                    value={emissionsAttributableForCompliance}
+                    testId="emissions-attributable-for-compliance-step2-total"
+                  />
                 </table>
               </>
             )}

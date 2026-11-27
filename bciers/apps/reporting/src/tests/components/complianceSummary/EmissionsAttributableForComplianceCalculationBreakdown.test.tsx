@@ -120,6 +120,15 @@ const getSection = (title: string) =>
     .getByRole("heading", { name: title })
     .closest("section") as HTMLElement;
 
+const getTotal = (container: HTMLElement) => {
+  const totalHeader = within(container).queryByRole("rowheader", {
+    name: "Total",
+  });
+  if (!totalHeader) return null;
+  return within(totalHeader.closest("tr") as HTMLElement).getByRole("cell")
+    .textContent;
+};
+
 describe("EmissionsAttributableForComplianceCalculationBreakdown", () => {
   it("is collapsed by default", () => {
     renderBreakdown();
@@ -281,18 +290,26 @@ describe("EmissionsAttributableForComplianceCalculationBreakdown", () => {
     expect(within(rows[1]).getAllByRole("cell")[2]).toHaveTextContent("-");
   });
 
-  it("shows a total only when a term has more than one row", async () => {
+  it.each([
+    ["Emissions attributable for reporting", "1,000.5000"], // single row
+    ["Excluded emissions by fuels", "100.2500"], // single row
+    ["Fugitive emissions", "25.0000"], // multiple rows
+    ["Remaining NPNC", "10.0000"], // single row
+  ])(
+    "shows the total for the %s term when it has at least one row",
+    async (title, total) => {
+      renderBreakdown();
+      await expand();
+
+      expect(getTotal(getSection(title))).toBe(total);
+    },
+  );
+
+  it("does not show a total for a term with no rows", async () => {
     renderBreakdown();
     await expand();
 
-    expect(
-      within(getSection("Fugitive emissions")).getByText("total 25.0000"),
-    ).toBeVisible();
-    expect(
-      within(getSection("Emissions attributable for reporting")).queryByText(
-        /total/,
-      ),
-    ).not.toBeInTheDocument();
+    expect(getTotal(getSection("Non-useful venting"))).toBeNull();
   });
 
   it("hides the unregulated products term when it is 0", async () => {
@@ -349,7 +366,9 @@ describe("EmissionsAttributableForComplianceCalculationBreakdown", () => {
         .getAllByRole("cell")
         .map((c) => c.textContent),
     ).toEqual(["Less remaining NPNC", "-10.0000"]);
-    expect(unregulated.getByText("total 15.5000")).toBeVisible();
+    expect(getTotal(getSection("Allocated to unregulated products"))).toBe(
+      "15.5000",
+    );
   });
 
   it("shows the gross product allocations less each term allocated to unregulated products", async () => {
@@ -388,7 +407,9 @@ describe("EmissionsAttributableForComplianceCalculationBreakdown", () => {
       ["Less fugitive emissions allocated to unregulated products", "-5.0000"],
       ["Less remaining NPNC", "-10.0000"],
     ]);
-    expect(unregulated.getByText("total 20.5000")).toBeVisible();
+    expect(getTotal(getSection("Allocated to unregulated products"))).toBe(
+      "20.5000",
+    );
   });
 
   it("does not show deductions that are 0", async () => {
@@ -407,8 +428,9 @@ describe("EmissionsAttributableForComplianceCalculationBreakdown", () => {
 
     const unregulated = within(getSection("Allocated to unregulated products"));
     expect(unregulated.queryAllByText(/^Less /)).toHaveLength(0);
-    // A single row needs no total
-    expect(unregulated.queryByText(/total/)).not.toBeInTheDocument();
+    expect(getTotal(getSection("Allocated to unregulated products"))).toBe(
+      "15.5000",
+    );
   });
 
   it("formats emissions to 4 decimal places with thousands separators", async () => {
@@ -538,7 +560,8 @@ describe("EmissionsAttributableForComplianceCalculationBreakdown", () => {
 
       expect(
         screen.getByTestId("emissions-attributable-for-compliance-step2-total"),
-      ).toHaveTextContent("total 611.4375");
+      ).toBe(rows[3]);
+      expect(getTotal(prorationTable)).toBe("611.4375");
     },
   );
 
