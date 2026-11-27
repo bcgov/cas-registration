@@ -157,11 +157,8 @@ priority = 2
 id = "ruff-check"
 alias = "ruff-lint-obps"
 name = "ruff linter"
-args = [
-    "--ignore",
-    "F401,F403,E712,E731,UP035,B,TRY,SIM,BLE,RUF,PLC,PGH,PLW,LOG,PIE,PYI,G,C,ISC,FURB,PLR,RET",
-    "--fix",
-]
+# Rules live in bc_obps/pyproject.toml [tool.ruff]
+args = ["--fix"]
 files = "^bc_obps/"
 exclude = { glob = [
     "bc_obps/common/lib/pgtrigger/**",
