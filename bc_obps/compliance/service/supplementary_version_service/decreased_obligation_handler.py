@@ -139,7 +139,7 @@ class DecreasedObligationHandler:
             reduction applies from the start of the fee's accrual window (works for regular and
             supplementary obligations, and eLicensing accepts it since it is never dated before the fee).
           - If net outstanding hits zero, mark that previous CRV as FULLY_MET.
-          - If fully met AND no prior CASH payments, void the invoice.
+          - If fully met AND no prior CASH payments, void the invoice and reset an ACCRUING penalty status.
 
         Then act on the single outcome of the strategy already decided for the new supplementary CRV:
         record manual handling (with the strategy's context) or create earned credits.
@@ -164,6 +164,7 @@ class DecreasedObligationHandler:
                 DecreasedObligationHandler._mark_previous_version_fully_met(invoice.version_id)
             if invoice.should_void_invoice:
                 DecreasedObligationHandler._void_unpaid_invoices(invoice.version_id)
+                DecreasedObligationHandler._reset_accruing_penalty_status(invoice.version_id)
 
         # Act on the single outcome decided by the strategy builder.
         if strategy.manual_handling_context:
@@ -656,6 +657,28 @@ class DecreasedObligationHandler:
             compliance_obligation__compliance_report_version_id=previous_version_id,
             is_void=False,
         ).update(is_void=True)
+
+    @staticmethod
+    def _reset_accruing_penalty_status(previous_version_id: int) -> None:
+        """
+        Reset an ACCRUING penalty status back to NONE once the obligation's invoice has been voided.
+
+        The decrease adjustment is back-dated to the fee date, so a voided obligation never owed anything
+        and no automatic overdue penalty or GGEAPAR interest applies. The obligation is no longer
+        OBLIGATION_NOT_MET, so the overnight handlers never revisit it and the status would otherwise
+        stay ACCRUING forever
+        """
+        obligation = (
+            ComplianceObligation.objects.filter(
+                compliance_report_version_id=previous_version_id,
+                penalty_status=ComplianceObligation.PenaltyStatus.ACCRUING,
+            )
+            .exclude(compliance_penalties__isnull=False)
+            .first()
+        )
+        if obligation:
+            obligation.penalty_status = ComplianceObligation.PenaltyStatus.NONE
+            obligation.save(update_fields=["penalty_status"])
 
     @staticmethod
     def _mark_previous_version_fully_met(previous_version_id: int) -> None:
