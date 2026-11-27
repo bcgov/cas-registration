@@ -157,24 +157,27 @@ export class PenaltyCalculatorPOM {
    * values that change with the day the test runs, e.g.
    */
   async hideGridColumnsFromScreenshot(headerNames: string[]): Promise<void> {
-    for (const headerName of headerNames) {
-      const field = this.page.getByRole("columnheader", {
-        name: headerName,
-        exact: true,
-      });
-      await expect(
-        field,
-        `No "${headerName}" column in the grid`,
-      ).toHaveAttribute("data-field");
+    // One call in the page for all columns: find each header's field, then mark that column's cells
+    const missingHeaders = await this.page.evaluate((names) => {
+      const headers = Array.from(
+        document.querySelectorAll<HTMLElement>('[role="columnheader"]'),
+      );
+      return names.filter((name) => {
+        const field = headers
+          .find((header) => header.textContent?.trim() === name)
+          ?.getAttribute("data-field");
+        if (!field) return true;
 
-      await this.page
-        .locator(`[role="gridcell"][data-field="${field}"]`)
-        .evaluateAll((cells) =>
-          cells.forEach(
-            (cell) => ((cell as HTMLElement).dataset.happoHide = ""),
-          ),
-        );
-    }
+        document
+          .querySelectorAll<HTMLElement>(
+            `[role="gridcell"][data-field="${field}"]`,
+          )
+          .forEach((cell) => (cell.dataset.happoHide = ""));
+        return false;
+      });
+    }, headerNames);
+
+    expect(missingHeaders, "Columns not found in the grid").toEqual([]);
   }
 
   /**
