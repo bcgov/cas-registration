@@ -108,7 +108,10 @@ class RlsManager:
                 cls.apply_m2m_rls(cursor, m2m_rls)
             if getattr(rls, "enable_rls", None) and getattr(rls, "policies", None):
                 cursor.execute(
-                    f"alter table {rls.schema}.{rls.table.value} enable row level security"
+                    SQL("alter table {}.{} enable row level security").format(
+                        Identifier(rls.schema),
+                        Identifier(rls.table.value),
+                    )
                 )
                 for policy in rls.policies:
                     policy.apply_policy(cursor)
@@ -139,7 +142,10 @@ class RlsManager:
             grant.apply_grant(cursor)
         if m2m_rls.enable_rls:
             cursor.execute(
-                f"alter table {m2m_rls.schema}.{m2m_rls.table} enable row level security"
+                SQL("alter table {}.{} enable row level security").format(
+                    Identifier(m2m_rls.schema),
+                    Identifier(m2m_rls.table),  # type: ignore[arg-type]
+                )
             )
             for policy in m2m_rls.policies:
                 policy.apply_policy(cursor)

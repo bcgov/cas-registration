@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, TypedDict
+from typing import Any, TypedDict
 
 from common.enums import Schemas
 from rls.utils.grant import RlsGrant
