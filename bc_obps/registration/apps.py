@@ -16,6 +16,10 @@ class RegistrationConfig(AppConfig):
 
     def ready(self):
         pre_migrate.connect(create_erc_schemas, sender=self)
+        from importlib import import_module
+
+        import_module("registration.signals.consumers")
+        import_module("registration.signals.signals")
 
         if settings.ENVIRONMENT != "prod":
-            pass
+            import_module("registration.signals.post_save_fixtures")
