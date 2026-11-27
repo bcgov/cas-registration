@@ -146,7 +146,11 @@ rev = "v0.17.6"
 [[repos.hooks]]
 id = "ruff-format"
 name = "ruff formatter"
-args = ["bc_obps/"]
+files = "^bc_obps/"
+exclude = { glob = [
+    "bc_obps/common/lib/pgtrigger/**",
+    "bc_obps/*/migrations/*.py",
+] }
 priority = 2
 
 [[repos.hooks]]
