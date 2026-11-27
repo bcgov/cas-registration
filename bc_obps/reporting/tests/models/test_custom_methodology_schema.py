@@ -1,6 +1,6 @@
 from django.test import TestCase
 from registration.models import Activity
-from reporting.models import Configuration, SourceType, GasType, Methodology
+from reporting.models import Configuration, GasType, Methodology, SourceType
 from reporting.models.custom_methodology_schema import CustomMethodologySchema
 
 
@@ -12,7 +12,9 @@ class CustomMethodologySchemaTest(TestCase):
         cls.source_type = SourceType.objects.get(pk=1)
         cls.gas_type = GasType.objects.get(pk=1)
         cls.methodology = Methodology.objects.get(pk=1)
-        cls.configuration = Configuration.objects.get(pk=1)  # Adjust the pk to match an existing instance if needed
+        cls.configuration = Configuration.objects.get(
+            pk=1
+        )  # Adjust the pk to match an existing instance if needed
 
         # Create a CustomMethodologySchema instance using existing instances
         cls.custom_methodology_schema = CustomMethodologySchema.objects.create(
@@ -27,11 +29,17 @@ class CustomMethodologySchemaTest(TestCase):
 
     def test_create_custom_methodology_schema(self):
         """Test that a CustomMethodologySchema instance can be created and saved successfully."""
-        self.assertTrue(CustomMethodologySchema.objects.filter(id=self.custom_methodology_schema.id).exists())
+        self.assertTrue(
+            CustomMethodologySchema.objects.filter(
+                id=self.custom_methodology_schema.id
+            ).exists()
+        )
 
     def test_field_values(self):
         """Test that the fields in CustomMethodologySchema have the expected values."""
-        schema = CustomMethodologySchema.objects.get(id=self.custom_methodology_schema.id)
+        schema = CustomMethodologySchema.objects.get(
+            id=self.custom_methodology_schema.id
+        )
         self.assertEqual(schema.activity, self.activity)
         self.assertEqual(schema.source_type, self.source_type)
         self.assertEqual(schema.gas_type, self.gas_type)
@@ -45,7 +53,8 @@ class CustomMethodologySchemaTest(TestCase):
         meta = CustomMethodologySchema._meta
         self.assertEqual(meta.db_table, 'erc"."custom_methodology_schema')
         self.assertEqual(
-            meta.db_table_comment, "Custom methodology schema used to define additional fields for reporting"
+            meta.db_table_comment,
+            "Custom methodology schema used to define additional fields for reporting",
         )
 
     def test_field_constraints(self):

@@ -1,8 +1,8 @@
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from typing import Optional
+
 from reporting.models import ReportPersonResponsible
 from reporting.models.report_version import ReportVersion
-from dataclasses import dataclass
 
 
 @dataclass
@@ -22,8 +22,12 @@ class ReportPersonResponsibleData:
 
 class ReportContactService:
     @classmethod
-    def get_report_person_responsible_by_version_id(cls, report_version_id: int) -> Optional[ReportPersonResponsible]:
-        return ReportPersonResponsible.objects.filter(report_version__id=report_version_id).first()
+    def get_report_person_responsible_by_version_id(
+        cls, report_version_id: int
+    ) -> ReportPersonResponsible | None:
+        return ReportPersonResponsible.objects.filter(
+            report_version__id=report_version_id
+        ).first()
 
     @classmethod
     def save_report_contact(
@@ -31,12 +35,13 @@ class ReportContactService:
         version_id: int,
         data: ReportPersonResponsibleData,
     ) -> ReportPersonResponsible:
-
         report_version = ReportVersion.objects.get(id=version_id)
 
-        report_person_responsible, _created = ReportPersonResponsible.objects.update_or_create(
-            report_version=report_version,
-            defaults=asdict(data),
+        report_person_responsible, _created = (
+            ReportPersonResponsible.objects.update_or_create(
+                report_version=report_version,
+                defaults=asdict(data),
+            )
         )
 
         return report_person_responsible

@@ -1,4 +1,5 @@
 import unittest
+
 from common.tests.squash_integrity_base import SquashIntegrityTestBase
 
 

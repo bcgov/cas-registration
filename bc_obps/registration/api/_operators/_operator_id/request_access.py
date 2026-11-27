@@ -1,12 +1,13 @@
 from typing import Dict, Literal, Tuple
 from uuid import UUID
-from common.permissions import authorize
-from django.http import HttpRequest
-from registration.constants import OPERATOR_TAGS
-from registration.schema import RequestAccessOut, Message
+
 from common.api.utils import get_current_user_guid
-from registration.api.router import router
+from common.permissions import authorize
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest
+from registration.api.router import router
+from registration.constants import OPERATOR_TAGS
+from registration.schema import Message, RequestAccessOut
 from registration.service.application_access_service import ApplicationAccessService
 
 
@@ -19,6 +20,9 @@ from registration.service.application_access_service import ApplicationAccessSer
     An email notification is sent to the operator if a new request is created.""",
     auth=authorize("industry_user"),
 )
-def request_access(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[201], Dict[str, UUID]]:
-
-    return 201, ApplicationAccessService.request_access(operator_id, get_current_user_guid(request))
+def request_access(
+    request: HttpRequest, operator_id: UUID
+) -> tuple[Literal[201], dict[str, UUID]]:
+    return 201, ApplicationAccessService.request_access(
+        operator_id, get_current_user_guid(request)
+    )

@@ -1,22 +1,29 @@
-from datetime import timedelta, date
 import logging
 import uuid
-from typing import Dict, Any
+from datetime import date, timedelta
+from typing import Any, Dict
 from zoneinfo import ZoneInfo
 
-from django.db.models import QuerySet
-
-from compliance.service.elicensing.elicensing_operator_service import ElicensingOperatorService
+from compliance.models import (
+    ComplianceObligation,
+    CompliancePeriod,
+    ComplianceReportVersion,
+    ElicensingInvoice,
+)
 from compliance.service.elicensing.elicensing_api_client import (
     ELicensingAPIClient,
     FeeCreationRequest,
     InvoiceCreationRequest,
 )
+from compliance.service.elicensing.elicensing_data_refresh_service import (
+    ElicensingDataRefreshService,
+)
+from compliance.service.elicensing.elicensing_operator_service import (
+    ElicensingOperatorService,
+)
 from compliance.service.elicensing.schema import FeeCreationItem
 from django.db import transaction
-from compliance.models import ComplianceObligation, ElicensingInvoice, ComplianceReportVersion, CompliancePeriod
-from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
-
+from django.db.models import QuerySet
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
@@ -34,14 +41,18 @@ class ElicensingObligationService:
     """
 
     @classmethod
-    def _is_invoice_generation_date_reached(cls, compliance_period: CompliancePeriod) -> bool:
+    def _is_invoice_generation_date_reached(
+        cls, compliance_period: CompliancePeriod
+    ) -> bool:
         # Convert current UTC time to Vancouver timezone before extracting date to ensure proper comparison
         vancouver_timezone = ZoneInfo(DEFAULT_TIMEZONE_NAME)
         current_date = timezone.now().astimezone(vancouver_timezone).date()
         return current_date >= compliance_period.invoice_generation_date
 
     @classmethod
-    def _is_invoice_generation_date_today(cls, compliance_period: CompliancePeriod) -> bool:
+    def _is_invoice_generation_date_today(
+        cls, compliance_period: CompliancePeriod
+    ) -> bool:
         # Convert current UTC time to Vancouver timezone before extracting date to ensure proper comparison
         vancouver_timezone = ZoneInfo(DEFAULT_TIMEZONE_NAME)
         current_date = timezone.now().astimezone(vancouver_timezone).date()
@@ -55,7 +66,9 @@ class ElicensingObligationService:
         return current_date > obligation_deadline
 
     @classmethod
-    def handle_obligation_integration(cls, obligation_id: int, compliance_period: CompliancePeriod) -> None:
+    def handle_obligation_integration(
+        cls, obligation_id: int, compliance_period: CompliancePeriod
+    ) -> None:
         """
         Handle the obligation integration with eLicensing if the invoice generation date has passed.
         If the invoice generation date has not passed, update the status to pending invoice creation.
@@ -70,13 +83,13 @@ class ElicensingObligationService:
             from compliance.tasks import retryable_process_obligation_integration
 
             # This is done outside the main transaction to prevent rollback if integration fails
-            transaction.on_commit(lambda: retryable_process_obligation_integration.execute(obligation_id))
+            transaction.on_commit(
+                lambda: retryable_process_obligation_integration.execute(obligation_id)
+            )
         else:
             # Update the status to pending invoice creation if the invoice generation date hasn't passed
             obligation = ComplianceObligation.objects.get(id=obligation_id)
-            obligation.compliance_report_version.status = (
-                ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
-            )
+            obligation.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
             obligation.compliance_report_version.save(update_fields=["status"])
 
     @classmethod
@@ -92,10 +105,12 @@ class ElicensingObligationService:
             ComplianceObligation.DoesNotExist: If the obligation doesn't exist
             requests.RequestException: If there's an API error
         """
-        from compliance.service.compliance_report_version_service import ComplianceReportVersionService
+        from compliance.service.compliance_report_version_service import (
+            ComplianceReportVersionService,
+        )
         from compliance.tasks import (
-            retryable_send_notice_of_obligation_due_email,
             retryable_notice_of_supplementary_report_post_deadline_increases_emissions,
+            retryable_send_notice_of_obligation_due_email,
         )
 
         # Validate the obligation exists
@@ -111,69 +126,88 @@ class ElicensingObligationService:
                 # Create fee in eLicensing
                 fee_data = cls._map_obligation_to_fee_data(obligation)
                 fee_response = elicensing_api_client.create_fees(
-                    client_operator.client_object_id, FeeCreationRequest(fees=[FeeCreationItem(**fee_data)])
+                    client_operator.client_object_id,
+                    FeeCreationRequest(fees=[FeeCreationItem(**fee_data)]),
                 )
 
                 # Create invoice in eLicensing
-                invoice_data = cls._map_obligation_to_invoice_data(obligation, fee_response.fees[0].feeObjectId)
+                invoice_data = cls._map_obligation_to_invoice_data(
+                    obligation, fee_response.fees[0].feeObjectId
+                )
 
                 vancouver_timezone = ZoneInfo(DEFAULT_TIMEZONE_NAME)
-                obligation_created_date = obligation.created_at.astimezone(vancouver_timezone).date()  # type: ignore[union-attr]
+                obligation_created_date = obligation.created_at.astimezone(  # type: ignore[union-attr]
+                    vancouver_timezone
+                ).date()
                 # Set the invoice due date to 30 days past date of obligation creation if the compliance period's deadline has passed
                 if (
                     obligation_created_date
                     > obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
                 ):
-                    invoice_data["paymentDueDate"] = (obligation_created_date + timedelta(days=30)).strftime("%Y-%m-%d")
+                    invoice_data["paymentDueDate"] = (
+                        obligation_created_date + timedelta(days=30)
+                    ).strftime("%Y-%m-%d")
 
                 invoice_response = elicensing_api_client.create_invoice(
-                    client_operator.client_object_id, InvoiceCreationRequest(**invoice_data)
+                    client_operator.client_object_id,
+                    InvoiceCreationRequest(**invoice_data),
                 )
                 # Set obligation.invoice_number when invoice successfully created in elicensing
                 obligation.invoice_number = invoice_response.invoiceNumber
                 obligation.save()
                 obligation.refresh_from_db()
         except Exception:
-            obligation.compliance_report_version.status = (
-                ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
-            )
+            obligation.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
             obligation.compliance_report_version.save(update_fields=["status"])
             raise
 
         try:
             with transaction.atomic():
-
                 # Create data in BCIERS database
                 ElicensingDataRefreshService.refresh_data_by_invoice(
-                    client_operator_id=client_operator.id, invoice_number=obligation.invoice_number
+                    client_operator_id=client_operator.id,
+                    invoice_number=obligation.invoice_number,
                 )
-                invoice_record = ElicensingInvoice.objects.get(invoice_number=obligation.invoice_number)
+                invoice_record = ElicensingInvoice.objects.get(
+                    invoice_number=obligation.invoice_number
+                )
                 obligation.elicensing_invoice = invoice_record
                 obligation.save()
 
                 # If successful, update the compliance status
-                ComplianceReportVersionService.update_compliance_status(obligation.compliance_report_version)
+                ComplianceReportVersionService.update_compliance_status(
+                    obligation.compliance_report_version
+                )
                 # If the new obligation was created by a supplementary report and the compliance deadline has passed, we send a specific email. Otherwise, we send the general one about the obligation being due.
-                if obligation.compliance_report_version.is_supplementary and cls._has_compliance_deadline_passed(
-                    obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
+                if (
+                    obligation.compliance_report_version.is_supplementary
+                    and cls._has_compliance_deadline_passed(
+                        obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
+                    )
                 ):
                     transaction.on_commit(
-                        lambda: retryable_notice_of_supplementary_report_post_deadline_increases_emissions.execute(
-                            obligation.id
+                        lambda: (
+                            retryable_notice_of_supplementary_report_post_deadline_increases_emissions.execute(
+                                obligation.id
+                            )
                         )
                     )
                 else:
-                    transaction.on_commit(lambda: retryable_send_notice_of_obligation_due_email.execute(obligation.id))
+                    transaction.on_commit(
+                        lambda: retryable_send_notice_of_obligation_due_email.execute(
+                            obligation.id
+                        )
+                    )
 
         except Exception:
-            obligation.compliance_report_version.status = (
-                ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
-            )
+            obligation.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
             obligation.compliance_report_version.save(update_fields=["status"])
             raise
 
     @classmethod
-    def _map_obligation_to_fee_data(cls, obligation: ComplianceObligation) -> Dict[str, Any]:
+    def _map_obligation_to_fee_data(
+        cls, obligation: ComplianceObligation
+    ) -> dict[str, Any]:
         """
         Map obligation data to eLicensing fee data format.
 
@@ -188,12 +222,18 @@ class ElicensingObligationService:
             "feeGUID": str(uuid.uuid4()),
             "feeProfileGroupName": "OBPS Compliance Obligation",
             "feeDescription": f"{obligation.compliance_report_version.compliance_report.compliance_period.reporting_year.reporting_year} GGIRCA Compliance Obligation",
-            "feeAmount": float(obligation.fee_amount_dollars) if obligation.fee_amount_dollars else 0.0,
-            "feeDate": obligation.fee_date.strftime("%Y-%m-%d") if obligation.fee_date else None,
+            "feeAmount": float(obligation.fee_amount_dollars)
+            if obligation.fee_amount_dollars
+            else 0.0,
+            "feeDate": obligation.fee_date.strftime("%Y-%m-%d")
+            if obligation.fee_date
+            else None,
         }
 
     @classmethod
-    def _map_obligation_to_invoice_data(cls, obligation: ComplianceObligation, fee_id: str) -> Dict[str, Any]:
+    def _map_obligation_to_invoice_data(
+        cls, obligation: ComplianceObligation, fee_id: str
+    ) -> dict[str, Any]:
         """
         Map obligation data to eLicensing invoice data format.
 
@@ -231,9 +271,13 @@ class ElicensingObligationService:
         current_reporting_year = ReportingYearService.get_current_reporting_year()
 
         try:
-            compliance_period = CompliancePeriod.objects.get(reporting_year=current_reporting_year)
+            compliance_period = CompliancePeriod.objects.get(
+                reporting_year=current_reporting_year
+            )
         except CompliancePeriod.DoesNotExist:
-            logger.warning(f"No compliance period found for reporting year {current_reporting_year.reporting_year}")
+            logger.warning(
+                f"No compliance period found for reporting year {current_reporting_year.reporting_year}"
+            )
             return
 
         if not cls._is_invoice_generation_date_today(compliance_period):
@@ -269,12 +313,15 @@ class ElicensingObligationService:
                 compliance_report_version__status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED
             )  # Not superseded
             .select_related(
-                'compliance_report_version__compliance_report__compliance_period', 'compliance_report_version'
+                "compliance_report_version__compliance_report__compliance_period",
+                "compliance_report_version",
             )
         )
 
     @classmethod
-    def _get_obligations_for_reminders(cls, compliance_period: CompliancePeriod) -> QuerySet[ComplianceObligation]:
+    def _get_obligations_for_reminders(
+        cls, compliance_period: CompliancePeriod
+    ) -> QuerySet[ComplianceObligation]:
         """
         Get obligations that need reminders for the given compliance period.
 
@@ -290,7 +337,10 @@ class ElicensingObligationService:
             elicensing_invoice__isnull=False,
             elicensing_invoice__outstanding_balance__gt=0,
             elicensing_invoice__is_void=False,
-        ).select_related('compliance_report_version__compliance_report__compliance_period', 'compliance_report_version')
+        ).select_related(
+            "compliance_report_version__compliance_report__compliance_period",
+            "compliance_report_version",
+        )
 
     @classmethod
     def send_reminders_for_current_period(cls) -> None:
@@ -304,15 +354,19 @@ class ElicensingObligationService:
         3. Sends a reminder email for all obligations for that period that have an outstanding balance > 0
         """
 
-        from reporting.service.reporting_year_service import ReportingYearService
         from compliance.tasks import retryable_send_reminder_of_obligation_due_email
+        from reporting.service.reporting_year_service import ReportingYearService
 
         current_reporting_year = ReportingYearService.get_current_reporting_year()
 
         try:
-            compliance_period = CompliancePeriod.objects.get(reporting_year=current_reporting_year)
+            compliance_period = CompliancePeriod.objects.get(
+                reporting_year=current_reporting_year
+            )
         except CompliancePeriod.DoesNotExist:
-            logger.warning(f"No compliance period found for reporting year {current_reporting_year.reporting_year}")
+            logger.warning(
+                f"No compliance period found for reporting year {current_reporting_year.reporting_year}"
+            )
             return
 
         obligations = cls._get_obligations_for_reminders(compliance_period)
@@ -334,15 +388,19 @@ class ElicensingObligationService:
         2) Find the compliance period
         3) Take the “reminders” queryset and further restrict to obligation due date <= period deadline
         """
-        from reporting.service.reporting_year_service import ReportingYearService
         from compliance.tasks import retryable_send_notice_of_penalty_accrual_email
+        from reporting.service.reporting_year_service import ReportingYearService
 
         current_reporting_year = ReportingYearService.get_current_reporting_year()
 
         try:
-            compliance_period = CompliancePeriod.objects.get(reporting_year=current_reporting_year)
+            compliance_period = CompliancePeriod.objects.get(
+                reporting_year=current_reporting_year
+            )
         except CompliancePeriod.DoesNotExist:
-            logger.warning(f"No compliance period found for reporting year {current_reporting_year.reporting_year}")
+            logger.warning(
+                f"No compliance period found for reporting year {current_reporting_year.reporting_year}"
+            )
             return
 
         # Reuse the reminders base (unpaid, unmet, non-void, has invoice)

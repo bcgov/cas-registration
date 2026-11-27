@@ -7,16 +7,26 @@ from ninja import Field, FilterSchema, ModelSchema
 from reporting.models.report_operation import ReportOperation
 
 # report aliases
-OPERATOR_NAME_ALIAS = "report_compliance_summary.report_version.report_operation.operator_legal_name"
-OPERATION_NAME_ALIAS = "report_compliance_summary.report_version.report_operation.operation_name"
-OPERATION_BCGHG_ID_ALIAS = "report_compliance_summary.report_version.report.operation.bcghg_id.id"
+OPERATOR_NAME_ALIAS = (
+    "report_compliance_summary.report_version.report_operation.operator_legal_name"
+)
+OPERATION_NAME_ALIAS = (
+    "report_compliance_summary.report_version.report_operation.operation_name"
+)
+OPERATION_BCGHG_ID_ALIAS = (
+    "report_compliance_summary.report_version.report.operation.bcghg_id.id"
+)
 
 # reporting_year aliases
-REPORTING_YEAR_ALIAS = "report_compliance_summary.report_version.report.reporting_year.reporting_year"
+REPORTING_YEAR_ALIAS = (
+    "report_compliance_summary.report_version.report.reporting_year.reporting_year"
+)
 
 # report_compliance_summary aliases
 EXCESS_EMISSIONS_ALIAS = "report_compliance_summary.excess_emissions"
-ATTRIBUTABLE_EMISSIONS_ALIAS = "report_compliance_summary.emissions_attributable_for_compliance"
+ATTRIBUTABLE_EMISSIONS_ALIAS = (
+    "report_compliance_summary.emissions_attributable_for_compliance"
+)
 EMISSIONS_LIMIT_ALIAS = "report_compliance_summary.emissions_limit"
 CREDITED_EMISSIONS_ALIAS = "report_compliance_summary.credited_emissions"
 
@@ -25,7 +35,9 @@ OBLIGATION_ID_ALIAS = "obligation.obligation_id"
 OBLIGATION_PENALTY_STATUS_ALIAS = "obligation.penalty_status"
 
 # compliance_period aliases
-MAX_CREDIT_USAGE_PERCENTAGE_ALIAS = "compliance_report.compliance_period.max_credit_usage_percentage"
+MAX_CREDIT_USAGE_PERCENTAGE_ALIAS = (
+    "compliance_report.compliance_period.max_credit_usage_percentage"
+)
 
 # compliance_earned_credits aliases
 ISSUANCE_STATUS_ALIAS = "compliance_earned_credit.issuance_status"
@@ -38,39 +50,41 @@ class ComplianceReportVersionListOut(ModelSchema):
     operator_name: str = Field(..., alias=OPERATOR_NAME_ALIAS)
     operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
-    obligation_id: Optional[str] = Field(None, alias=OBLIGATION_ID_ALIAS)
-    outstanding_balance_tco2e: Optional[Decimal] = None
+    obligation_id: str | None = Field(None, alias=OBLIGATION_ID_ALIAS)
+    outstanding_balance_tco2e: Decimal | None = None
     excess_emissions: Decimal = Field(
         ..., alias=EXCESS_EMISSIONS_ALIAS
     )  # for supplementary reports, this is the delta from the previous report
-    display_status: Optional[str] = None
-    issuance_status: Optional[str] = Field(None, alias=ISSUANCE_STATUS_ALIAS)
-    penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
+    display_status: str | None = None
+    issuance_status: str | None = Field(None, alias=ISSUANCE_STATUS_ALIAS)
+    penalty_status: str | None = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
     # derived flag: True only when manual_handling_record exists
-    requires_manual_handling: Optional[bool] = None
-    director_decision: Optional[str] = Field(None, alias=DIRECTOR_DECISION_ALIAS)
+    requires_manual_handling: bool | None = None
+    director_decision: str | None = Field(None, alias=DIRECTOR_DECISION_ALIAS)
 
     class Meta:
         model = ComplianceReportVersion
-        fields = ['id', 'status']
+        fields = ["id", "status"]
 
 
 class ComplianceReportVersionOut(ModelSchema):
-    obligation_id: Optional[str] = Field(None, alias=OBLIGATION_ID_ALIAS)
+    obligation_id: str | None = Field(None, alias=OBLIGATION_ID_ALIAS)
     operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
-    operation_bcghg_id: Optional[str] = Field(None, alias=OPERATION_BCGHG_ID_ALIAS)
+    operation_bcghg_id: str | None = Field(None, alias=OPERATION_BCGHG_ID_ALIAS)
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
     credited_emissions: Decimal = Field(..., alias=CREDITED_EMISSIONS_ALIAS)
-    compliance_charge_rate: Optional[Decimal] = None
-    equivalent_value: Optional[Decimal] = None
-    outstanding_balance_tco2e: Optional[Decimal] = None
-    outstanding_balance_equivalent_value: Optional[Decimal] = None
-    penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
+    compliance_charge_rate: Decimal | None = None
+    equivalent_value: Decimal | None = None
+    outstanding_balance_tco2e: Decimal | None = None
+    outstanding_balance_equivalent_value: Decimal | None = None
+    penalty_status: str | None = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
     has_late_submission_penalty: bool
     has_overdue_penalty: bool
     # derived flag: True only when manual_handling_record exists
-    requires_manual_handling: Optional[bool] = None
-    max_credit_usage_percentage: Decimal = Field(..., alias=MAX_CREDIT_USAGE_PERCENTAGE_ALIAS)
+    requires_manual_handling: bool | None = None
+    max_credit_usage_percentage: Decimal = Field(
+        ..., alias=MAX_CREDIT_USAGE_PERCENTAGE_ALIAS
+    )
 
     @staticmethod
     def resolve_has_late_submission_penalty(obj: Any) -> bool:
@@ -78,11 +92,12 @@ class ComplianceReportVersionOut(ModelSchema):
         Check if a late submission penalty exists for this compliance report version.
         """
 
-        if not hasattr(obj, 'obligation') or not obj.obligation:
+        if not hasattr(obj, "obligation") or not obj.obligation:
             return False
 
         return CompliancePenalty.objects.filter(
-            compliance_obligation=obj.obligation, penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION
+            compliance_obligation=obj.obligation,
+            penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
         ).exists()
 
     @staticmethod
@@ -91,28 +106,29 @@ class ComplianceReportVersionOut(ModelSchema):
         Check if an automatic overdue penalty exists for this compliance report version.
         """
 
-        if not hasattr(obj, 'obligation') or not obj.obligation:
+        if not hasattr(obj, "obligation") or not obj.obligation:
             return False
 
         return CompliancePenalty.objects.filter(
-            compliance_obligation=obj.obligation, penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
+            compliance_obligation=obj.obligation,
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
         ).exists()
 
     class Meta:
         model = ComplianceReportVersion
-        fields = ['id', 'status']
+        fields = ["id", "status"]
 
 
 class OperationByComplianceSummaryOut(ModelSchema):
     class Meta:
         model = ReportOperation
-        fields = ['operation_name']
+        fields = ["operation_name"]
 
 
 class ComplianceReportVersionFilterSchema(FilterSchema):
-    operator_name: Annotated[str | None, Field(q='operator_name__icontains')] = None
-    operation_name: Annotated[str | None, Field(q='operation_name__icontains')] = None
-    display_status: Annotated[str | None, Field(q='display_status__icontains')] = None
-    penalty_status: Annotated[str | None, Field(q='penalty_status__icontains')] = None
-    obligation_id: Annotated[str | None, Field(q='obligation_id__icontains')] = None
-    reporting_year: Annotated[str | None, Field(q='reporting_year__icontains')] = None
+    operator_name: Annotated[str | None, Field(q="operator_name__icontains")] = None
+    operation_name: Annotated[str | None, Field(q="operation_name__icontains")] = None
+    display_status: Annotated[str | None, Field(q="display_status__icontains")] = None
+    penalty_status: Annotated[str | None, Field(q="penalty_status__icontains")] = None
+    obligation_id: Annotated[str | None, Field(q="obligation_id__icontains")] = None
+    reporting_year: Annotated[str | None, Field(q="reporting_year__icontains")] = None

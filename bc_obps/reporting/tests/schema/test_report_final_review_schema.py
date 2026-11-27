@@ -5,7 +5,6 @@ from reporting.schema.report_final_review import FacilityReportSchema
 
 @pytest.mark.django_db
 class TestReportFinalReviewSchema:
-
     def test_report_products_should_only_resolve_regulated_products(self):
         facility_report = baker.make_recipe("reporting.tests.utils.facility_report")
         report_products = [

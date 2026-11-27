@@ -1,4 +1,5 @@
 from typing import Optional
+
 from ninja import Schema
 
 
@@ -15,4 +16,4 @@ class ErrorItem(Schema):
 # Generic schemas
 class Message(Schema):
     message: str
-    errors: Optional[list[ErrorItem]] = None
+    errors: list[ErrorItem] | None = None

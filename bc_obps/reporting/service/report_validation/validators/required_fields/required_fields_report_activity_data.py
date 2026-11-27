@@ -1,7 +1,6 @@
 from typing import ClassVar
 
 from django.db.models import Count
-
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
@@ -15,7 +14,6 @@ from reporting.service.report_validation.validators.required_fields.types import
     RequiredFieldConfig,
 )
 from reporting.service.reporting_flow_service import ReportingFlow
-
 
 TAGS = [ValidationTags.REPORT_VALIDATION]
 

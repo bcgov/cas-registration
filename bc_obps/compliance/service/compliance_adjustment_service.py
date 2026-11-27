@@ -1,15 +1,18 @@
-from typing import Optional
-import uuid
 import logging
+import uuid
 from decimal import Decimal
+from typing import Optional
+
+from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
-from django.utils import timezone
 from compliance.models.elicensing_client_operator import ElicensingClientOperator
 from compliance.models.elicensing_line_item import ElicensingLineItem
-from compliance.models.compliance_obligation import ComplianceObligation
-from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
+from compliance.service.elicensing.elicensing_data_refresh_service import (
+    ElicensingDataRefreshService,
+)
 from django.db import transaction
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +55,7 @@ class ComplianceAdjustmentService:
         target_compliance_report_version_id: int,
         adjustment_total: Decimal,
         supplementary_compliance_report_version_id: int,
-        reason: Optional[ElicensingAdjustment.Reason] = None,
+        reason: ElicensingAdjustment.Reason | None = None,
         date_adjustment_to_fee_date: bool = False,
     ) -> None:
         """
@@ -85,7 +88,7 @@ class ComplianceAdjustmentService:
         compliance_report_version_id: int,
         adjustment_total: Decimal,
         supplementary_compliance_report_version_id: int | None = None,
-        reason: Optional[ElicensingAdjustment.Reason] = None,
+        reason: ElicensingAdjustment.Reason | None = None,
         date_adjustment_to_fee_date: bool = False,
     ) -> None:
         """
@@ -142,13 +145,17 @@ class ComplianceAdjustmentService:
         request_body = {"adjustments": adjustment_data}
 
         # Grab client ID from invoice
-        client_operator = ElicensingClientOperator.objects.get(id=elicensing_invoice.elicensing_client_operator_id)
+        client_operator = ElicensingClientOperator.objects.get(
+            id=elicensing_invoice.elicensing_client_operator_id
+        )
         client_operator_object_id = client_operator.client_object_id
 
         # Call the elicensing API to create the adjustment
         elicensing_api_client = ELicensingAPIClient()
         try:
-            response = elicensing_api_client.adjust_fees(client_operator_object_id, request_body)
+            response = elicensing_api_client.adjust_fees(
+                client_operator_object_id, request_body
+            )
         except Exception as e:
             logger.error(f"Failed to adjust fees: {str(e)}")
             raise ValueError("Failed to adjust fees")

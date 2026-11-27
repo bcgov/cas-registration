@@ -1,14 +1,15 @@
 from typing import Literal, Tuple
 from uuid import UUID
-from django.http import HttpRequest
-from registration.constants import FACILITY_TAGS
-from registration.schema import FacilityIn, FacilityOut, Message
-from registration.service.facility_service import FacilityService
+
 from common.api.utils import get_current_user_guid
 from common.permissions import authorize
-from registration.api.router import router
-from registration.models import Facility
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest
+from registration.api.router import router
+from registration.constants import FACILITY_TAGS
+from registration.models import Facility
+from registration.schema import FacilityIn, FacilityOut, Message
+from registration.service.facility_service import FacilityService
 
 
 @router.get(
@@ -20,8 +21,12 @@ from common.service.error_service.custom_codes_4xx import custom_codes_4xx
     exclude_none=True,  # To exclude None values from the response(used for address fields)
     auth=authorize("approved_authorized_roles"),
 )
-def get_facility(request: HttpRequest, facility_id: UUID) -> Tuple[Literal[200], Facility]:
-    return 200, FacilityService.get_if_authorized(get_current_user_guid(request), facility_id)
+def get_facility(
+    request: HttpRequest, facility_id: UUID
+) -> tuple[Literal[200], Facility]:
+    return 200, FacilityService.get_if_authorized(
+        get_current_user_guid(request), facility_id
+    )
 
 
 @router.put(
@@ -35,5 +40,9 @@ def get_facility(request: HttpRequest, facility_id: UUID) -> Tuple[Literal[200],
     """,
     auth=authorize("approved_industry_user"),
 )
-def update_facility(request: HttpRequest, facility_id: UUID, payload: FacilityIn) -> Tuple[Literal[200], Facility]:
-    return 200, FacilityService.update_facility(get_current_user_guid(request), facility_id, payload)
+def update_facility(
+    request: HttpRequest, facility_id: UUID, payload: FacilityIn
+) -> tuple[Literal[200], Facility]:
+    return 200, FacilityService.update_facility(
+        get_current_user_guid(request), facility_id, payload
+    )

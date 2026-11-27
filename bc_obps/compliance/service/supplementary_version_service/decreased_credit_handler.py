@@ -1,19 +1,28 @@
 from typing import Optional
-from django.db import transaction
-from compliance.models import ComplianceEarnedCredit, ComplianceReport, ComplianceReportVersion
-from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
+
+from compliance.models import (
+    ComplianceEarnedCredit,
+    ComplianceReport,
+    ComplianceReportVersion,
+)
+from compliance.models.compliance_report_version_manual_handling import (
+    ComplianceReportVersionManualHandling,
+)
 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
-from reporting.models import ReportComplianceSummary
 from compliance.service.supplementary_version_service.constants import ONE_DECIMAL
 from compliance.service.supplementary_version_service.helpers import (
     get_previous_compliance_version_by_report_and_summary,
 )
+from django.db import transaction
+from reporting.models import ReportComplianceSummary
 
 
 # Concrete strategy for decreased credits
 class DecreasedCreditHandler:
     @staticmethod
-    def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
+    def can_handle(
+        new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary
+    ) -> bool:
         # Return True if credited emissions decreased from previous version
         previous_compliance_report_version = ComplianceReportVersion.objects.get(
             report_compliance_summary=previous_summary,
@@ -37,11 +46,14 @@ class DecreasedCreditHandler:
         new_summary: ReportComplianceSummary,
         previous_summary: ReportComplianceSummary,
         version_count: int,
-    ) -> Optional[ComplianceReportVersion]:
-
-        credited_emission_delta = int(new_summary.credited_emissions - previous_summary.credited_emissions)
-        previous_compliance_version = get_previous_compliance_version_by_report_and_summary(
-            compliance_report, previous_summary
+    ) -> ComplianceReportVersion | None:
+        credited_emission_delta = int(
+            new_summary.credited_emissions - previous_summary.credited_emissions
+        )
+        previous_compliance_version = (
+            get_previous_compliance_version_by_report_and_summary(
+                compliance_report, previous_summary
+            )
         )
         # Create a compliance_report_version record with the 'earned credits' status (status will change if credits not requested)
         compliance_report_version = ComplianceReportVersion.objects.create(
@@ -58,7 +70,10 @@ class DecreasedCreditHandler:
         )
 
         # Previously approved → flag manual handling, do not mutate/move prior credit
-        if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
+        if (
+            previous_earned_credit.issuance_status
+            == ComplianceEarnedCredit.IssuanceStatus.APPROVED
+        ):
             # Create manual-handling record for this supplementary report
             ComplianceReportVersionManualHandling.objects.create(
                 compliance_report_version=compliance_report_version,
@@ -69,21 +84,29 @@ class DecreasedCreditHandler:
             return compliance_report_version
 
         # if credits weren't requested, update the previous earned credit record
-        if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED:
-
+        if (
+            previous_earned_credit.issuance_status
+            == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+        ):
             previous_earned_credit.earned_credits_amount = (
                 previous_earned_credit.earned_credits_amount + credited_emission_delta
             )
             previous_earned_credit.save()
 
-            compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+            compliance_report_version.status = (
+                ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+            )
             compliance_report_version.save()
 
             return compliance_report_version
 
         # if credits were requested, create a new earned credit record and decline the old one
-        ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
-        previous_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.DECLINED
+        ComplianceEarnedCreditsService.create_earned_credits_record(
+            compliance_report_version
+        )
+        previous_earned_credit.issuance_status = (
+            ComplianceEarnedCredit.IssuanceStatus.DECLINED
+        )
         previous_earned_credit.supplementary_declined = True
         previous_earned_credit.save()
 

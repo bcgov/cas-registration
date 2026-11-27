@@ -1,10 +1,10 @@
 from common.enums import Schemas
 from common.models import BaseModel
-from django.db import models
-from simple_history.models import HistoricalRecords
-from registration.models.rls_configs.activity import Rls as ActivityRls
-from registration.enums.enums import RegistrationTableNames
 from common.models.triggers import immutable_slug_trigger
+from django.db import models
+from registration.enums.enums import RegistrationTableNames
+from registration.models.rls_configs.activity import Rls as ActivityRls
+from simple_history.models import HistoricalRecords
 
 
 class Activity(BaseModel):
@@ -31,7 +31,7 @@ class Activity(BaseModel):
         db_comment="The regulated name of an activity as it appears in Schedule A of the British Columbia Greenhouse Gas Emission Reporting Regulation https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleA",
     )
     weight = models.FloatField(
-        db_comment='A weighted float value used to order activities. This will be used on the frontend to determine the order in which activity pages appear in an emissions report'
+        db_comment="A weighted float value used to order activities. This will be used on the frontend to determine the order in which activity pages appear in an emissions report"
     )
     history = HistoricalRecords(
         table_name='erc_history"."activity_history',

@@ -1,12 +1,11 @@
 from typing import ClassVar
 
 from django.db.models import Count, Prefetch
-from reporting.service.report_product_service import ReportProductService
-
 from registration.models.operation import Operation
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_product import ReportProduct
 from reporting.models.report_version import ReportVersion
+from reporting.service.report_product_service import ReportProductService
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
 )
@@ -32,8 +31,16 @@ class RequiredFieldsProductionDataValidator(BaseRequiredFieldsValidator):
 
     REQUIRED_FIELDS: ClassVar[list[RequiredFieldConfig]] = [
         {"field": "product", "label": "Product", "field_type": "scalar"},
-        {"field": "annual_production", "label": "Annual production", "field_type": "scalar"},
-        {"field": "production_methodology", "label": "Production methodology", "field_type": "scalar"},
+        {
+            "field": "annual_production",
+            "label": "Annual production",
+            "field_type": "scalar",
+        },
+        {
+            "field": "production_methodology",
+            "label": "Production methodology",
+            "field_type": "scalar",
+        },
     ]
 
     @classmethod
@@ -66,7 +73,8 @@ class RequiredFieldsProductionDataValidator(BaseRequiredFieldsValidator):
             missing_fields.append("Jan-Mar production data")
 
         if (
-            report_product.production_methodology == ReportProduct.ProductionMethodologyChoices.OTHER
+            report_product.production_methodology
+            == ReportProduct.ProductionMethodologyChoices.OTHER
             and not report_product.production_methodology_description
         ):
             missing_fields.append("Production methodology description")
@@ -103,7 +111,6 @@ class RequiredFieldsProductionDataValidator(BaseRequiredFieldsValidator):
         report_version: ReportVersion,
         flow: ReportingFlow | None = None,
     ) -> dict[str, ReportValidationError]:
-
         errors: dict[str, ReportValidationError] = {}
         allowed_products = ReportProductService.get_allowed_products(report_version.id)
 
@@ -119,7 +126,9 @@ class RequiredFieldsProductionDataValidator(BaseRequiredFieldsValidator):
             .prefetch_related(
                 Prefetch(
                     "report_products",
-                    queryset=ReportProduct.objects.filter(report_version=report_version),
+                    queryset=ReportProduct.objects.filter(
+                        report_version=report_version
+                    ),
                     to_attr="prefetched_report_products",
                 )
             )

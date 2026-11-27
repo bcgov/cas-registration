@@ -4,17 +4,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('reporting', '0219_V5_24_1'),
+        ("reporting", "0219_V5_24_1"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='commentthread',
-            name='resolved',
+            model_name="commentthread",
+            name="resolved",
             field=models.BooleanField(
-                db_comment='Indicates whether the comment thread has been resolved', default=False
+                db_comment="Indicates whether the comment thread has been resolved",
+                default=False,
             ),
         ),
     ]

@@ -1,15 +1,18 @@
 from typing import Optional
+
 from compliance.models import ComplianceReport, ComplianceReportVersion
-from reporting.models import ReportComplianceSummary
 from compliance.service.supplementary_version_service.helpers import (
     get_previous_compliance_version_by_report_and_summary,
 )
+from reporting.models import ReportComplianceSummary
 
 
 # Concrete strategy for no significant change
 class NoChangeHandler:
     @staticmethod
-    def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
+    def can_handle(
+        new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary
+    ) -> bool:
         if (
             new_summary.excess_emissions == previous_summary.excess_emissions
             and new_summary.credited_emissions == previous_summary.credited_emissions
@@ -23,10 +26,12 @@ class NoChangeHandler:
         new_summary: ReportComplianceSummary,
         previous_summary: ReportComplianceSummary,
         version_count: int,
-    ) -> Optional[ComplianceReportVersion]:
+    ) -> ComplianceReportVersion | None:
         # Get the previous compliance report version
-        previous_compliance_version = get_previous_compliance_version_by_report_and_summary(
-            compliance_report, previous_summary
+        previous_compliance_version = (
+            get_previous_compliance_version_by_report_and_summary(
+                compliance_report, previous_summary
+            )
         )
 
         compliance_report_version = ComplianceReportVersion.objects.create(

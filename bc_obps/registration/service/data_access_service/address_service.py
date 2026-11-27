@@ -1,6 +1,7 @@
-from registration.models import Address
-from ninja.types import DictStrAny
 from typing import Optional
+
+from ninja.types import DictStrAny
+from registration.models import Address
 
 
 class AddressDataAccessService:
@@ -18,7 +19,7 @@ class AddressDataAccessService:
     def upsert_address_from_data(
         cls,
         address_data: DictStrAny,
-        address_id: Optional[int],
+        address_id: int | None,
     ) -> Address:
         address, _ = Address.objects.update_or_create(
             # A None id is the intentional "create" path; django-stubs 6.0 rejects None in lookups.

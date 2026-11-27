@@ -54,7 +54,6 @@ from .runtime import (
     schema,
 )
 
-
 __all__ = [
     "After",
     "AllChange",

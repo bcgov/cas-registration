@@ -2,17 +2,17 @@ import logging
 import traceback
 
 from django.conf import settings
-from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from rls.utils.manager import RlsManager
-from registration.models import Operation
-from django.db.migrations.loader import MigrationLoader
+from django.core.management.base import BaseCommand
 from django.db import connections
+from django.db.migrations.loader import MigrationLoader
+from registration.models import Operation
+from rls.utils.manager import RlsManager
 
 logger = logging.getLogger(__name__)
 
 
-def has_unapplied_migrations(connection_alias='default'):
+def has_unapplied_migrations(connection_alias="default"):
     # Initialize the MigrationLoader with the database connection
     loader = MigrationLoader(connections[connection_alias])
 
@@ -37,14 +37,14 @@ class Command(BaseCommand):
         environment = settings.ENVIRONMENT
 
         has_migrations = has_unapplied_migrations()
-        call_command('migrate')
+        call_command("migrate")
         if has_migrations:
-            print('Applying RLS Operations')
+            print("Applying RLS Operations")
             RlsManager.re_apply_rls()
         else:
-            print('Skipping RLS Operations')
+            print("Skipping RLS Operations")
 
-        if environment != 'prod':
+        if environment != "prod":
             self.load_env_specific_fixtures(environment)
 
     def _load_fixtures_with_triggers_disabled(self, fixture_commands):
@@ -52,7 +52,11 @@ class Command(BaseCommand):
         Disables pgtrigger triggers on the 'erc' schema, runs the given fixture
         loading commands, and guarantees triggers are re-enabled even if a command fails.
         """
-        self.stdout.write(self.style.NOTICE("Disabling pgtrigger triggers on 'erc' schema for fixture loading..."))
+        self.stdout.write(
+            self.style.NOTICE(
+                "Disabling pgtrigger triggers on 'erc' schema for fixture loading..."
+            )
+        )
         call_command("pgtrigger", "disable", "--schema", "erc")
         try:
             for command_name in fixture_commands:
@@ -60,26 +64,34 @@ class Command(BaseCommand):
                 call_command(command_name)
         except Exception as e:
             logger.error(
-                "Fixture loading failed during '%s'. Triggers will be re-enabled.\n" "Error: %s\n" "Traceback:\n%s",
+                "Fixture loading failed during '%s'. Triggers will be re-enabled.\n"
+                "Error: %s\n"
+                "Traceback:\n%s",
                 command_name,
                 e,
                 traceback.format_exc(),
             )
             raise
         finally:
-            self.stdout.write(self.style.NOTICE("Re-enabling pgtrigger triggers on 'erc' schema..."))
+            self.stdout.write(
+                self.style.NOTICE("Re-enabling pgtrigger triggers on 'erc' schema...")
+            )
             call_command("pgtrigger", "enable", "--schema", "erc")
-            self.stdout.write(self.style.SUCCESS("pgtrigger triggers re-enabled successfully."))
+            self.stdout.write(
+                self.style.SUCCESS("pgtrigger triggers re-enabled successfully.")
+            )
 
     def load_env_specific_fixtures(self, environment):
         if Operation.objects.exists():
-            self.stdout.write(self.style.WARNING("Skipping fixture load: Data already exists."))
+            self.stdout.write(
+                self.style.WARNING("Skipping fixture load: Data already exists.")
+            )
             return
 
-        if environment == 'local':
-            call_command('load_fixtures')
-            call_command('load_reporting_fixtures')
-        elif environment == 'test' or (environment == 'dev' and settings.CI != 'true'):
+        if environment == "local":
+            call_command("load_fixtures")
+            call_command("load_reporting_fixtures")
+        elif environment == "test" or (environment == "dev" and settings.CI != "true"):
             self._load_fixtures_with_triggers_disabled(
-                ['load_fixtures', 'load_reporting_fixtures', 'load_compliance_fixtures']
+                ["load_fixtures", "load_reporting_fixtures", "load_compliance_fixtures"]
             )

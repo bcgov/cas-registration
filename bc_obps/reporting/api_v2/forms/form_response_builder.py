@@ -1,12 +1,15 @@
-from dataclasses import dataclass
 import dataclasses
-from typing import Self
 import uuid
+from dataclasses import dataclass
+from typing import Self
+
 from reporting.api_v2.response_builder import ResponseBuilder
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
-from reporting.service.report_operation_opt_out_service import ReportOperationOptOutService
+from reporting.service.report_operation_opt_out_service import (
+    ReportOperationOptOutService,
+)
 
 """
     Basic implementation of a builder pattern to put together API
@@ -45,7 +48,9 @@ class FormResponseBuilder(ResponseBuilder):
     """
 
     def __init__(self, report_version_id: int):
-        report_version = ReportVersion.objects.select_related("report").get(pk=report_version_id)
+        report_version = ReportVersion.objects.select_related("report").get(
+            pk=report_version_id
+        )
         report_data = ReportData(
             reporting_year=report_version.report.reporting_year_id,
             report_version_id=report_version.id,
@@ -57,7 +62,9 @@ class FormResponseBuilder(ResponseBuilder):
         }
 
     def facility_data(self, facility_id: uuid.UUID) -> Self:
-        facility_report = FacilityReport.objects.get(report_version_id=self.report_version_id, facility_id=facility_id)
+        facility_report = FacilityReport.objects.get(
+            report_version_id=self.report_version_id, facility_id=facility_id
+        )
         facility_data = FacilityData(
             facility_id=facility_id,
             facility_type=facility_report.facility_type,
@@ -76,9 +83,13 @@ class FormResponseBuilder(ResponseBuilder):
         )
 
         operation_data = OperationData(
-            naics_code=report_operation.naics_code.naics_code if report_operation.naics_code else None,
+            naics_code=report_operation.naics_code.naics_code
+            if report_operation.naics_code
+            else None,
             operation_type=report_operation.operation_type,
-            is_operation_opted_out=ReportOperationOptOutService.is_operation_opted_out(report_operation.report_version),
+            is_operation_opted_out=ReportOperationOptOutService.is_operation_opted_out(
+                report_operation.report_version
+            ),
         )
 
         self.response["operation_data"] = dataclasses.asdict(operation_data)

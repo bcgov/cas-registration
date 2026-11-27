@@ -1,14 +1,15 @@
-from unittest.mock import patch, MagicMock
 import uuid
-from compliance.models.elicensing_client_operator import ElicensingClientOperator
-from compliance.service.elicensing.elicensing_operator_service import ElicensingOperatorService
-import requests
+from unittest.mock import MagicMock, patch
 
 import pytest
-
-from registration.models.operator import Operator
-from model_bakery.baker import make_recipe
+import requests
+from compliance.models.elicensing_client_operator import ElicensingClientOperator
+from compliance.service.elicensing.elicensing_operator_service import (
+    ElicensingOperatorService,
+)
 from django.core.exceptions import MultipleObjectsReturned
+from model_bakery.baker import make_recipe
+from registration.models.operator import Operator
 
 
 @pytest.fixture
@@ -73,14 +74,18 @@ def mock_operator_mailing_only():
 @pytest.fixture
 def mock_operator_get():
     """Mock Operator.objects.get"""
-    with patch('compliance.service.elicensing.elicensing_operator_service.Operator.objects.get') as mock:
+    with patch(
+        "compliance.service.elicensing.elicensing_operator_service.Operator.objects.get"
+    ) as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_api_client():
     """Mock elicensing_api_client"""
-    with patch('compliance.service.elicensing.elicensing_operator_service.elicensing_api_client') as mock:
+    with patch(
+        "compliance.service.elicensing.elicensing_operator_service.elicensing_api_client"
+    ) as mock:
         yield mock
 
 
@@ -95,7 +100,10 @@ class TestElicensingOperatorService:
         assert result.clientGUID is not None
         assert result.companyName == mock_operator.legal_name
         assert result.doingBusinessAs == mock_operator.trade_name
-        assert result.bcCompanyRegistrationNumber == mock_operator.bc_corporate_registry_number
+        assert (
+            result.bcCompanyRegistrationNumber
+            == mock_operator.bc_corporate_registry_number
+        )
 
         # Check address mapping
         assert result.addressLine1 == mock_operator.physical_address.street_address
@@ -104,19 +112,32 @@ class TestElicensingOperatorService:
         assert result.postalCode == mock_operator.physical_address.postal_code
         assert result.country == "Canada"
 
-    def test_map_operator_to_client_data_with_mailing_address(self, mock_operator_mailing_only):
+    def test_map_operator_to_client_data_with_mailing_address(
+        self, mock_operator_mailing_only
+    ):
         """Test mapping operator with only mailing address"""
-        result = ElicensingOperatorService._map_operator_to_client_data(mock_operator_mailing_only)
+        result = ElicensingOperatorService._map_operator_to_client_data(
+            mock_operator_mailing_only
+        )
 
         # Check mailing address is used
-        assert result.addressLine1 == mock_operator_mailing_only.mailing_address.street_address
+        assert (
+            result.addressLine1
+            == mock_operator_mailing_only.mailing_address.street_address
+        )
         assert result.city == mock_operator_mailing_only.mailing_address.municipality
-        assert result.stateProvince == mock_operator_mailing_only.mailing_address.province
-        assert result.postalCode == mock_operator_mailing_only.mailing_address.postal_code
+        assert (
+            result.stateProvince == mock_operator_mailing_only.mailing_address.province
+        )
+        assert (
+            result.postalCode == mock_operator_mailing_only.mailing_address.postal_code
+        )
 
     def test_map_operator_to_client_data_no_addresses(self, mock_operator_no_addresses):
         """Test mapping operator with no addresses uses placeholder values"""
-        result = ElicensingOperatorService._map_operator_to_client_data(mock_operator_no_addresses)
+        result = ElicensingOperatorService._map_operator_to_client_data(
+            mock_operator_no_addresses
+        )
 
         # Check placeholder values are used
         assert result.addressLine1 == "Unknown"
@@ -129,10 +150,14 @@ class TestElicensingOperatorService:
     def test_sync_client_with_elicensing_existing_client(self):
         """Test sync_client_with_elicensing when client already exists"""
         # Setup mocks
-        client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
+        client_operator = make_recipe(
+            "compliance.tests.utils.elicensing_client_operator"
+        )
 
         # Call the method
-        result = ElicensingOperatorService.sync_client_with_elicensing(client_operator.operator_id)
+        result = ElicensingOperatorService.sync_client_with_elicensing(
+            client_operator.operator_id
+        )
 
         # Assert that the existing link was returned
         assert result == client_operator
@@ -151,7 +176,7 @@ class TestElicensingOperatorService:
     def test_sync_client_with_elicensing_create_client_success(self, mock_api_client):
         """Test sync_client_with_elicensing successfully creates a new client"""
         # Setup mocks
-        operator = make_recipe('registration.tests.utils.operator')
+        operator = make_recipe("registration.tests.utils.operator")
 
         # Setup successful API call
         mock_response = MagicMock()
@@ -168,10 +193,12 @@ class TestElicensingOperatorService:
     def test_sync_client_with_elicensing_api_error(self, mock_api_client):
         """Test sync_client_with_elicensing handles API errors"""
 
-        operator = make_recipe('registration.tests.utils.operator')
+        operator = make_recipe("registration.tests.utils.operator")
 
         # Setup API error
-        mock_api_client.create_client.side_effect = requests.RequestException("API Error")
+        mock_api_client.create_client.side_effect = requests.RequestException(
+            "API Error"
+        )
 
         # Call the method and expect exception
         with pytest.raises(requests.RequestException):
@@ -181,9 +208,16 @@ class TestElicensingOperatorService:
     def test_sync_client_with_elicensing_multiple_records_error(self):
         """Test sync_client_with_elicensing handles multiple record errors"""
 
-        client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
-        make_recipe('compliance.tests.utils.elicensing_client_operator', operator_id=client_operator.operator_id)
+        client_operator = make_recipe(
+            "compliance.tests.utils.elicensing_client_operator"
+        )
+        make_recipe(
+            "compliance.tests.utils.elicensing_client_operator",
+            operator_id=client_operator.operator_id,
+        )
 
         # Call the method and expect exception
         with pytest.raises(MultipleObjectsReturned):
-            ElicensingOperatorService.sync_client_with_elicensing(client_operator.operator_id)
+            ElicensingOperatorService.sync_client_with_elicensing(
+                client_operator.operator_id
+            )

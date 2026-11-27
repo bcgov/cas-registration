@@ -1,19 +1,20 @@
-import pytest
 from decimal import Decimal
 from unittest.mock import patch
+
+import pytest
 from compliance.models import (
     ComplianceEarnedCredit,
     ComplianceObligation,
     ComplianceReportVersion,
 )
 from compliance.tests.integration.utils import (
-    ComplianceIntegrationTestBase,
+    CREATE_ADJUSTMENT,
     HANDLE_OBLIGATION_INTEGRATION,
-    SEND_OBLIGATION_EMAIL,
+    REFRESH_DATA,
     SEND_EARNED_CREDITS_EMAIL,
     SEND_NO_OBLIGATION_EMAIL,
-    REFRESH_DATA,
-    CREATE_ADJUSTMENT,
+    SEND_OBLIGATION_EMAIL,
+    ComplianceIntegrationTestBase,
 )
 
 # transaction=True so DecreasedObligationHandler's on_commit callbacks fire
@@ -21,7 +22,6 @@ pytestmark = pytest.mark.django_db(transaction=True)
 
 
 class TestVoidSupplementary(ComplianceIntegrationTestBase):
-
     REPORTING_YEAR = 2024
 
     # ------------------------------------------------------------------
@@ -35,7 +35,13 @@ class TestVoidSupplementary(ComplianceIntegrationTestBase):
     @patch(REFRESH_DATA)
     @patch(HANDLE_OBLIGATION_INTEGRATION)
     def test_full_decrease_no_payments_voids_invoice(
-        self, mock_elicensing, mock_refresh, _mock_obl_email, _mock_ec_email, _mock_no_obl_email, mock_adjustment
+        self,
+        mock_elicensing,
+        mock_refresh,
+        _mock_obl_email,
+        _mock_ec_email,
+        _mock_no_obl_email,
+        mock_adjustment,
     ):
         """Full decrease (200->0), single invoice, no payments.
 
@@ -59,7 +65,10 @@ class TestVoidSupplementary(ComplianceIntegrationTestBase):
             compliance_report=self.compliance_report,
             is_supplementary=True,
         )
-        assert new_crv.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+        assert (
+            new_crv.status
+            == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+        )
         assert new_crv.previous_version == self.initial_crv
 
         # Adjustment service called with correct amount
@@ -75,7 +84,10 @@ class TestVoidSupplementary(ComplianceIntegrationTestBase):
 
         # Previous CRV marked OBLIGATION_FULLY_MET
         self.initial_crv.refresh_from_db()
-        assert self.initial_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            self.initial_crv.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
 
         # No earned credits created
         assert ComplianceEarnedCredit.objects.count() == 0
@@ -91,7 +103,13 @@ class TestVoidSupplementary(ComplianceIntegrationTestBase):
     @patch(REFRESH_DATA)
     @patch(HANDLE_OBLIGATION_INTEGRATION)
     def test_full_decrease_multiple_invoices_voids_all(
-        self, mock_elicensing, mock_refresh, _mock_obl_email, _mock_ec_email, _mock_no_obl_email, mock_adjustment
+        self,
+        mock_elicensing,
+        mock_refresh,
+        _mock_obl_email,
+        _mock_ec_email,
+        _mock_no_obl_email,
+        mock_adjustment,
     ):
         """Full decrease (300->0), two invoices, no payments.
 
@@ -122,24 +140,36 @@ class TestVoidSupplementary(ComplianceIntegrationTestBase):
             compliance_report=self.compliance_report,
             is_supplementary=True,
         )
-        supp1_obligation = ComplianceObligation.objects.get(compliance_report_version=supp1_crv)
+        supp1_obligation = ComplianceObligation.objects.get(
+            compliance_report_version=supp1_crv
+        )
         assert supp1_obligation.elicensing_invoice is not None
 
         # CRV3: supplementary decreases to 0 -> DecreasedObligationHandler voids both
-        self._submit_supplementary_report(excess_emissions=Decimal("0"), previous_report_version=supp1_rv)
+        self._submit_supplementary_report(
+            excess_emissions=Decimal("0"), previous_report_version=supp1_rv
+        )
 
         final_crv = ComplianceReportVersion.objects.get(
             compliance_report=self.compliance_report,
             previous_version=supp1_crv,
         )
-        assert final_crv.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+        assert (
+            final_crv.status
+            == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+        )
 
         # Two adjustments: one for invoice2 (-$4,000), one for invoice1 (-$8,000)
         assert mock_adjustment.call_count == 2
         all_kwargs = [call.kwargs for call in mock_adjustment.call_args_list]
-        applied_by_version = {kw["target_compliance_report_version_id"]: kw["adjustment_total"] for kw in all_kwargs}
+        applied_by_version = {
+            kw["target_compliance_report_version_id"]: kw["adjustment_total"]
+            for kw in all_kwargs
+        }
         assert applied_by_version[supp1_crv.id] == -(Decimal("100") * self.charge_rate)
-        assert applied_by_version[self.initial_crv.id] == -(Decimal("200") * self.charge_rate)
+        assert applied_by_version[self.initial_crv.id] == -(
+            Decimal("200") * self.charge_rate
+        )
 
         # Both invoices voided
         supp1_obligation.elicensing_invoice.refresh_from_db()
@@ -150,10 +180,16 @@ class TestVoidSupplementary(ComplianceIntegrationTestBase):
 
         # Both previous CRVs marked OBLIGATION_FULLY_MET
         supp1_crv.refresh_from_db()
-        assert supp1_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            supp1_crv.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
 
         self.initial_crv.refresh_from_db()
-        assert self.initial_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            self.initial_crv.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
 
         # No earned credits created
         assert ComplianceEarnedCredit.objects.count() == 0
@@ -169,7 +205,13 @@ class TestVoidSupplementary(ComplianceIntegrationTestBase):
     @patch(REFRESH_DATA)
     @patch(HANDLE_OBLIGATION_INTEGRATION)
     def test_full_decrease_multiple_invoices_then_earned_credits(
-        self, mock_elicensing, mock_refresh, _mock_obl_email, _mock_ec_email, _mock_no_obl_email, mock_adjustment
+        self,
+        mock_elicensing,
+        mock_refresh,
+        _mock_obl_email,
+        _mock_ec_email,
+        _mock_no_obl_email,
+        mock_adjustment,
     ):
         """Full decrease voids two invoices, then a follow-up supplementary creates earned credits.
 
@@ -199,10 +241,14 @@ class TestVoidSupplementary(ComplianceIntegrationTestBase):
             compliance_report=self.compliance_report,
             is_supplementary=True,
         )
-        supp1_obligation = ComplianceObligation.objects.get(compliance_report_version=supp1_crv)
+        supp1_obligation = ComplianceObligation.objects.get(
+            compliance_report_version=supp1_crv
+        )
 
         # CRV3: void both invoices
-        supp2_rv = self._submit_supplementary_report(excess_emissions=Decimal("0"), previous_report_version=supp1_rv)
+        supp2_rv = self._submit_supplementary_report(
+            excess_emissions=Decimal("0"), previous_report_version=supp1_rv
+        )
         supp2_crv = ComplianceReportVersion.objects.get(
             compliance_report=self.compliance_report,
             previous_version=supp1_crv,
@@ -226,11 +272,19 @@ class TestVoidSupplementary(ComplianceIntegrationTestBase):
             compliance_report=self.compliance_report,
             previous_version=supp2_crv,
         )
-        assert earned_credits_crv.status == ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        assert (
+            earned_credits_crv.status
+            == ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
 
-        ec = ComplianceEarnedCredit.objects.get(compliance_report_version=earned_credits_crv)
+        ec = ComplianceEarnedCredit.objects.get(
+            compliance_report_version=earned_credits_crv
+        )
         assert ec.earned_credits_amount == 50
-        assert ec.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+        assert (
+            ec.issuance_status
+            == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+        )
 
         # Step 4 (earned credits) does not post any new adjustments
         assert mock_adjustment.call_count == 2  # only the 2 from CRV3
@@ -247,7 +301,13 @@ class TestVoidSupplementary(ComplianceIntegrationTestBase):
     @patch(REFRESH_DATA)
     @patch(HANDLE_OBLIGATION_INTEGRATION)
     def test_decrease_to_zero_with_credited_emissions_voids_invoice_and_creates_earned_credits(
-        self, mock_elicensing, mock_refresh, _mock_obl_email, _mock_ec_email, _mock_no_obl_email, mock_adjustment
+        self,
+        mock_elicensing,
+        mock_refresh,
+        _mock_obl_email,
+        _mock_ec_email,
+        _mock_no_obl_email,
+        mock_adjustment,
     ):
         """Single supplementary reduces excess to 0 and introduces credited emissions.
 
@@ -300,9 +360,15 @@ class TestVoidSupplementary(ComplianceIntegrationTestBase):
 
         # Previous CRV marked OBLIGATION_FULLY_MET
         self.initial_crv.refresh_from_db()
-        assert self.initial_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            self.initial_crv.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
 
         # Earned credits created on the same CRV (not a separate supplementary)
         ec = ComplianceEarnedCredit.objects.get(compliance_report_version=new_crv)
         assert ec.earned_credits_amount == 50
-        assert ec.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+        assert (
+            ec.issuance_status
+            == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+        )

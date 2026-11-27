@@ -121,13 +121,18 @@ class UpsertTriggerSql(collections.UserString):
     ):
         """Initialize the SQL and store it in the `.data` attribute."""
         self.kwargs = {
-            key: str(val) for key, val in locals().items() if key not in ("self", "hash") and val is not _unset
+            key: str(val)
+            for key, val in locals().items()
+            if key not in ("self", "hash") and val is not _unset
         }
         self.defaults = self.get_defaults(pgid)
         sql_args = {**self.defaults, **self.kwargs, **{"table": utils.quote(table)}}
 
         self.hash = (
-            hash or hashlib.sha1(self.get_template().format(**{**sql_args, **{"hash": ""}}).encode()).hexdigest()
+            hash
+            or hashlib.sha1(
+                self.get_template().format(**{**sql_args, **{"hash": ""}}).encode()
+            ).hexdigest()
         )
         self.data = self.get_template().format(**{**sql_args, **{"hash": self.hash}})
         self.pgid = pgid
@@ -137,7 +142,11 @@ class UpsertTriggerSql(collections.UserString):
         """
         Serialize the construction of this class so that it can be used in migrations.
         """
-        kwargs = {key: val for key, val in self.kwargs.items() if self.defaults.get(key, _unset) != val}
+        kwargs = {
+            key: val
+            for key, val in self.kwargs.items()
+            if self.defaults.get(key, _unset) != val
+        }
 
         path = f"{self.__class__.__module__}.{self.__class__.__name__}"
         return path, [], {**kwargs, **{"hash": self.hash}}
@@ -203,7 +212,11 @@ class Trigger:
         assert isinstance(sql, UpsertTriggerSql)
 
     def __eq__(self, other):
-        return self.__class__ == other.__class__ and self.name == other.name and self.sql == other.sql
+        return (
+            self.__class__ == other.__class__
+            and self.name == other.name
+            and self.sql == other.sql
+        )
 
     @property
     def install_sql(self):

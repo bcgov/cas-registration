@@ -1,7 +1,6 @@
 from unittest.mock import patch
 
 from model_bakery.baker import make_recipe
-
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
@@ -13,9 +12,7 @@ from reporting.tests.utils.report_access_validation import (
     assert_report_version_ownership_is_validated,
 )
 
-VALIDATION_SERVICE_PATH = (
-    "reporting.api_v2.validation.report_validation_data.ReportValidationService.validate_report_version"
-)
+VALIDATION_SERVICE_PATH = "reporting.api_v2.validation.report_validation_data.ReportValidationService.validate_report_version"
 
 
 class TestReportValidationV2Endpoints(CommonTestSetup):
@@ -25,9 +22,7 @@ class TestReportValidationV2Endpoints(CommonTestSetup):
             report__reporting_year__reporting_year=1922,
         )
 
-        self.endpoint_under_test = (
-            f"/api/reporting/v2/report-version/{self.report_version.id}/validation/validation-data"
-        )
+        self.endpoint_under_test = f"/api/reporting/v2/report-version/{self.report_version.id}/validation/validation-data"
 
         return super().setup_method()
 
@@ -37,7 +32,8 @@ class TestReportValidationV2Endpoints(CommonTestSetup):
             operator=self.report_version.report.operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator,
+            operations=[self.report_version.report.operation],
         )
 
         with patch(VALIDATION_SERVICE_PATH) as mock_validate:
@@ -58,7 +54,8 @@ class TestReportValidationV2Endpoints(CommonTestSetup):
             operator=self.report_version.report.operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator,
+            operations=[self.report_version.report.operation],
         )
 
         facility_id = "f486f2fb-62ed-438d-bb3e-0819b51e3aeb"

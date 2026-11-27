@@ -1,7 +1,8 @@
-from unittest.mock import call, patch, MagicMock
+from unittest.mock import MagicMock, call, patch
+
 from django.test import SimpleTestCase
-from reporting.models.report_emission import ReportEmission
 from model_bakery.baker import prepare
+from reporting.models.report_emission import ReportEmission
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_source_type import ReportSourceType
@@ -33,8 +34,12 @@ class TestReportActivityDataSerializers(SimpleTestCase):
         }
 
     @patch("reporting.models.report_emission.ReportEmission.report_methodology")
-    @patch("reporting.service.report_activity_serializers.ReportMethodologySerializer.serialize")
-    def test_report_emissions_serializer(self, mock_methodology_serializer: MagicMock, mock_reverse_manager: MagicMock):
+    @patch(
+        "reporting.service.report_activity_serializers.ReportMethodologySerializer.serialize"
+    )
+    def test_report_emissions_serializer(
+        self, mock_methodology_serializer: MagicMock, mock_reverse_manager: MagicMock
+    ):
         mock_methodology_serializer.return_value = "serialized!"
         report_emissions = [
             prepare(
@@ -84,8 +89,12 @@ class TestReportActivityDataSerializers(SimpleTestCase):
         ]
 
     @patch("reporting.models.report_fuel.ReportFuel.reportemission_records")
-    @patch("reporting.service.report_activity_serializers.ReportEmissionIterableSerializer.serialize")
-    def test_report_fuel_serializer(self, mock_emissions_serializer: MagicMock, mock_reverse_manager: MagicMock):
+    @patch(
+        "reporting.service.report_activity_serializers.ReportEmissionIterableSerializer.serialize"
+    )
+    def test_report_fuel_serializer(
+        self, mock_emissions_serializer: MagicMock, mock_reverse_manager: MagicMock
+    ):
         mock_emissions_serializer.return_value = "mock serialized!!"
         report_fuels = [
             prepare(
@@ -137,8 +146,12 @@ class TestReportActivityDataSerializers(SimpleTestCase):
 
     @patch("reporting.models.report_unit.ReportUnit.reportemission_records")
     @patch("reporting.models.report_unit.ReportUnit.reportfuel_records")
-    @patch("reporting.service.report_activity_serializers.ReportFuelIterableSerializer.serialize")
-    @patch("reporting.service.report_activity_serializers.ReportEmissionIterableSerializer.serialize")
+    @patch(
+        "reporting.service.report_activity_serializers.ReportFuelIterableSerializer.serialize"
+    )
+    @patch(
+        "reporting.service.report_activity_serializers.ReportEmissionIterableSerializer.serialize"
+    )
     def test_report_unit_serializer(
         self,
         mock_emissions_serializer: MagicMock,
@@ -187,10 +200,18 @@ class TestReportActivityDataSerializers(SimpleTestCase):
 
     @patch("reporting.models.report_source_type.ReportSourceType.reportunit_records")
     @patch("reporting.models.report_source_type.ReportSourceType.reportfuel_records")
-    @patch("reporting.models.report_source_type.ReportSourceType.reportemission_records")
-    @patch("reporting.service.report_activity_serializers.ReportUnitIterableSerializer.serialize")
-    @patch("reporting.service.report_activity_serializers.ReportFuelIterableSerializer.serialize")
-    @patch("reporting.service.report_activity_serializers.ReportEmissionIterableSerializer.serialize")
+    @patch(
+        "reporting.models.report_source_type.ReportSourceType.reportemission_records"
+    )
+    @patch(
+        "reporting.service.report_activity_serializers.ReportUnitIterableSerializer.serialize"
+    )
+    @patch(
+        "reporting.service.report_activity_serializers.ReportFuelIterableSerializer.serialize"
+    )
+    @patch(
+        "reporting.service.report_activity_serializers.ReportEmissionIterableSerializer.serialize"
+    )
     def test_report_source_type_serializer(
         self,
         mock_emissions_serializer: MagicMock,

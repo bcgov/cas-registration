@@ -1,11 +1,11 @@
 from django.db import transaction
-from django.db.models import Subquery, OuterRef, DecimalField, QuerySet
+from django.db.models import DecimalField, OuterRef, QuerySet, Subquery
 from registration.models import RegulatedProduct
 from reporting.models import (
-    ReportNewEntrant,
-    ReportNewEntrantProduction,
     EmissionCategory,
+    ReportNewEntrant,
     ReportNewEntrantEmission,
+    ReportNewEntrantProduction,
     ReportOperation,
 )
 from reporting.schema.report_new_entrant import ReportNewEntrantSchemaIn
@@ -26,14 +26,15 @@ class ReportNewEntrantService:
         data form of a report version.
         """
         return RegulatedProduct.objects.filter(
-            id__in=ReportOperation.objects.filter(report_version_id=report_version_id).values_list(
-                'regulated_products__id', flat=True
-            )
+            id__in=ReportOperation.objects.filter(
+                report_version_id=report_version_id
+            ).values_list("regulated_products__id", flat=True)
         ).annotate(
             production_amount=Subquery(
                 ReportNewEntrantProduction.objects.filter(
-                    product=OuterRef('pk'), report_new_entrant__report_version_id=report_version_id
-                ).values('production_amount'),
+                    product=OuterRef("pk"),
+                    report_new_entrant__report_version_id=report_version_id,
+                ).values("production_amount"),
                 output_field=DecimalField(),
             )
         )
@@ -47,8 +48,9 @@ class ReportNewEntrantService:
         return EmissionCategory.objects.annotate(
             emission=Subquery(
                 ReportNewEntrantEmission.objects.filter(
-                    emission_category=OuterRef('pk'), report_new_entrant__report_version_id=report_version_id
-                ).values('emission'),
+                    emission_category=OuterRef("pk"),
+                    report_new_entrant__report_version_id=report_version_id,
+                ).values("emission"),
                 output_field=DecimalField(),
             )
         )
@@ -77,8 +79,12 @@ class ReportNewEntrantService:
             },
         )
 
-        ReportNewEntrantEmission.objects.filter(report_new_entrant=report_new_entrant).delete()
-        ReportNewEntrantProduction.objects.filter(report_new_entrant=report_new_entrant).delete()
+        ReportNewEntrantEmission.objects.filter(
+            report_new_entrant=report_new_entrant
+        ).delete()
+        ReportNewEntrantProduction.objects.filter(
+            report_new_entrant=report_new_entrant
+        ).delete()
 
         emissions_to_create = [
             ReportNewEntrantEmission(

@@ -1,4 +1,5 @@
 from typing import List
+
 from model_bakery import baker
 from registration.models import (
     BusinessStructure,
@@ -17,7 +18,9 @@ from registration.utils import custom_reverse_lazy
 class TestUserOperatorIdEndpoint(CommonTestSetup):
     def remove_all_parent_operators(self):
         child_operator = operator_baker()
-        user_operator = baker.make(UserOperator, operator=child_operator, user=self.user)
+        user_operator = baker.make(
+            UserOperator, operator=child_operator, user=self.user
+        )
 
         parent_operator_1 = parent_operator_baker()
         parent_operator_1.child_operator_id = child_operator.id
@@ -43,7 +46,7 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
         )
         assert response.status_code == 200
 
-        parent_operators: List[ParentOperator] = child_operator.parent_operators.all()
+        parent_operators: list[ParentOperator] = child_operator.parent_operators.all()
 
         assert len(parent_operators) == 0  # archived records are not pulled
 
@@ -71,8 +74,11 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
 
         response = TestUtils.mock_get_with_auth_role(
             self,
-            'industry_user',
-            custom_reverse_lazy('get_user_operator_by_id', kwargs={'user_operator_id': random_user_operator.id}),
+            "industry_user",
+            custom_reverse_lazy(
+                "get_user_operator_by_id",
+                kwargs={"user_operator_id": random_user_operator.id},
+            ),
         )
         # returns 401 because the user_operator does not belong to the current user
         assert response.status_code == 403
@@ -83,8 +89,10 @@ class TestUserOperatorIdEndpoint(CommonTestSetup):
 
         response = TestUtils.mock_get_with_auth_role(
             self,
-            'cas_admin',
-            custom_reverse_lazy('get_user_operator_by_id', kwargs={'user_operator_id': user_operator.id}),
+            "cas_admin",
+            custom_reverse_lazy(
+                "get_user_operator_by_id", kwargs={"user_operator_id": user_operator.id}
+            ),
         )
         assert response.status_code == 200
 

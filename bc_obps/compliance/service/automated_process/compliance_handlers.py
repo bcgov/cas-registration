@@ -2,32 +2,41 @@ import logging
 from datetime import timedelta
 from decimal import Decimal
 from typing import Protocol
-from django.utils import timezone
-from compliance.models.elicensing_invoice import ElicensingInvoice
+
 from compliance.models.compliance_obligation import ComplianceObligation
-from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.models.compliance_penalty import CompliancePenalty
-from compliance.service.penalty_calculation_service import CalculatedPenaltyData, PenaltyCalculationService
+from compliance.models.compliance_report_version import ComplianceReportVersion
+from compliance.models.elicensing_invoice import ElicensingInvoice
 from compliance.service.compliance_obligation_service import ComplianceObligationService
+from compliance.service.penalty_calculation_service import (
+    CalculatedPenaltyData,
+    PenaltyCalculationService,
+)
 from django.db import transaction
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
-ZERO_DECIMAL = Decimal('0.00')
+ZERO_DECIMAL = Decimal("0.00")
 
 
 def _is_penalty_invoice(invoice: ElicensingInvoice) -> bool:
     """
     Check whether this invoice is itself a penalty's own invoice (as opposed to an obligation's invoice)
     """
-    return bool(hasattr(invoice, 'compliance_penalty') and getattr(invoice, 'compliance_penalty', None))
+    return bool(
+        hasattr(invoice, "compliance_penalty")
+        and getattr(invoice, "compliance_penalty", None)
+    )
 
 
 def _has_automatic_overdue_penalty(obligation: ComplianceObligation) -> bool:
     """
     Check whether an automatic overdue penalty has already been created for this obligation
     """
-    return obligation.compliance_penalties.filter(penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE).exists()
+    return obligation.compliance_penalties.filter(
+        penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
+    ).exists()
 
 
 class ComplianceUpdateHandler(Protocol):
@@ -54,7 +63,10 @@ class PenaltyPaidHandler(ComplianceUpdateHandler):
         if not penalty or not penalty.elicensing_invoice:
             return False
 
-        return penalty.status == CompliancePenalty.Status.NOT_PAID and invoice.outstanding_balance == ZERO_DECIMAL
+        return (
+            penalty.status == CompliancePenalty.Status.NOT_PAID
+            and invoice.outstanding_balance == ZERO_DECIMAL
+        )
 
     def handle(self, invoice: ElicensingInvoice) -> None:
         """Update obligation penalty_status to PAID if ALL penalty invoices are fully paid."""
@@ -66,21 +78,27 @@ class PenaltyPaidHandler(ComplianceUpdateHandler):
             # Check if all penalties for this obligation are paid
             all_penalties = obligation.compliance_penalties.all()
             all_penalties_paid = all(
-                penalty.elicensing_invoice and penalty.elicensing_invoice.outstanding_balance == ZERO_DECIMAL
+                penalty.elicensing_invoice
+                and penalty.elicensing_invoice.outstanding_balance == ZERO_DECIMAL
                 for penalty in all_penalties
             )
 
-            if all_penalties_paid and obligation.penalty_status != ComplianceObligation.PenaltyStatus.PAID:
+            if (
+                all_penalties_paid
+                and obligation.penalty_status != ComplianceObligation.PenaltyStatus.PAID
+            ):
                 ComplianceObligationService.update_penalty_status(
                     obligation.pk, ComplianceObligation.PenaltyStatus.PAID
                 )
-                logger.info(f"Updated penalty status to PAID for obligation {obligation.obligation_id}")
+                logger.info(
+                    f"Updated penalty status to PAID for obligation {obligation.obligation_id}"
+                )
 
             penalty = invoice.compliance_penalty
 
             # Mark the current penalty (for this invoice) as PAID
             penalty.status = CompliancePenalty.Status.PAID
-            penalty.save(update_fields=['status'])
+            penalty.save(update_fields=["status"])
 
             # Send email notification that the penalty has been paid
             retryable_send_notice_of_penalty_paid_email.execute(obligation.id)
@@ -97,7 +115,9 @@ class PenaltyAccruingHandler(ComplianceUpdateHandler):
             return False
 
         obligation = invoice.compliance_obligation
-        compliance_period = obligation.compliance_report_version.compliance_report.compliance_period
+        compliance_period = (
+            obligation.compliance_report_version.compliance_report.compliance_period
+        )
         compliance_deadline = compliance_period.compliance_deadline
 
         # Once the penalty has maxed out at 3x the obligation, it has been invoiced and is no longer
@@ -119,7 +139,9 @@ class PenaltyAccruingHandler(ComplianceUpdateHandler):
             ComplianceObligationService.update_penalty_status(
                 obligation.pk, ComplianceObligation.PenaltyStatus.ACCRUING
             )
-            logger.info(f"Updated penalty status to ACCRUING for obligation {obligation.obligation_id}")
+            logger.info(
+                f"Updated penalty status to ACCRUING for obligation {obligation.obligation_id}"
+            )
 
 
 class ObligationPaidHandler(ComplianceUpdateHandler):
@@ -146,8 +168,8 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         interest is still outstanding, and create penalties if the invoice is overdue.
         """
         from compliance.tasks import (
-            retryable_notice_of_obligation_met_email,
             retryable_create_penalty,
+            retryable_notice_of_obligation_met_email,
         )
 
         obligation = invoice.compliance_obligation
@@ -159,16 +181,25 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
             if interest_not_paid
             else ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
         )
-        compliance_report_version.save(update_fields=['status'])
+        compliance_report_version.save(update_fields=["status"])
         retryable_notice_of_obligation_met_email.execute(obligation.id)
-        logger.info(f"Updated compliance status for obligation {obligation.obligation_id}")
-        final_transaction_date = PenaltyCalculationService.determine_last_transaction_date(obligation)
+        logger.info(
+            f"Updated compliance status for obligation {obligation.obligation_id}"
+        )
+        final_transaction_date = (
+            PenaltyCalculationService.determine_last_transaction_date(obligation)
+        )
 
         # Determine if late submission penalty applies & when the automatic overdue penalty starts accruing
-        penalty_accrual_context = PenaltyCalculationService.get_penalty_accrual_context(obligation)
+        penalty_accrual_context = PenaltyCalculationService.get_penalty_accrual_context(
+            obligation
+        )
         effective_deadline = penalty_accrual_context.effective_deadline
 
-        if obligation.compliance_report_version.is_supplementary and penalty_accrual_context.has_late_submission:
+        if (
+            obligation.compliance_report_version.is_supplementary
+            and penalty_accrual_context.has_late_submission
+        ):
             # Create a late submission penalty if a supplementary obligation was submitted late
             retryable_create_penalty.execute(
                 obligation_id=obligation.id,
@@ -214,20 +245,24 @@ class MaxPenaltyHandler(ComplianceUpdateHandler):
         # Cheap checks first, so the penalty calculation below only runs for the obligations that
         # could plausibly have maxed out
         if (
-            obligation.compliance_report_version.status != ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+            obligation.compliance_report_version.status
+            != ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
             or obligation.penalty_status != ComplianceObligation.PenaltyStatus.ACCRUING
             or invoice.invoice_fee_balance <= ZERO_DECIMAL  # type: ignore[operator]
             or _has_automatic_overdue_penalty(obligation)
         ):
             return False
 
-        penalty_accrual_context = PenaltyCalculationService.get_penalty_accrual_context(obligation)
+        penalty_accrual_context = PenaltyCalculationService.get_penalty_accrual_context(
+            obligation
+        )
         if penalty_accrual_context.effective_deadline >= timezone.now().date():
             return False
 
         self._penalty_data = PenaltyCalculationService.calculate_penalty(
             obligation=obligation,
-            accrual_start_date=penalty_accrual_context.effective_deadline + timedelta(days=1),
+            accrual_start_date=penalty_accrual_context.effective_deadline
+            + timedelta(days=1),
         )
         return self._penalty_data.cap_reached_date is not None
 
@@ -237,7 +272,9 @@ class MaxPenaltyHandler(ComplianceUpdateHandler):
 
         obligation = invoice.compliance_obligation
         cap_reached_date = self._penalty_data.cap_reached_date  # type: ignore[union-attr]
-        effective_deadline = PenaltyCalculationService.get_penalty_accrual_context(obligation).effective_deadline
+        effective_deadline = PenaltyCalculationService.get_penalty_accrual_context(
+            obligation
+        ).effective_deadline
 
         retryable_create_penalty.execute(
             obligation_id=obligation.id,
@@ -270,8 +307,10 @@ class InterestPaidHandler(ComplianceUpdateHandler):
         """Update compliance status to OBLIGATION_FULLY_MET now that FAA interest is paid."""
         obligation = invoice.compliance_obligation
         compliance_report_version = obligation.compliance_report_version
-        compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
-        compliance_report_version.save(update_fields=['status'])
+        compliance_report_version.status = (
+            ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
+        compliance_report_version.save(update_fields=["status"])
         logger.info(
             f"FAA interest paid off; updated compliance status to fully met for obligation {obligation.obligation_id}"
         )

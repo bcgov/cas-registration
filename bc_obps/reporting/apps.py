@@ -1,7 +1,7 @@
-from django.conf import settings
-from django.db.models.signals import pre_migrate
 from django.apps import AppConfig
+from django.conf import settings
 from django.db import connection
+from django.db.models.signals import pre_migrate
 
 
 def create_erc_schemas(sender, app_config, **kwargs):
@@ -11,13 +11,11 @@ def create_erc_schemas(sender, app_config, **kwargs):
 
 
 class ReportingConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'reporting'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "reporting"
 
     def ready(self):
         pre_migrate.connect(create_erc_schemas, sender=self)
-        from .signals import consumers  # noqa: F401
-        from .signals import signals  # noqa: F401
 
-        if settings.ENVIRONMENT != 'prod':
-            from .signals import post_save_fixtures  # noqa: F401
+        if settings.ENVIRONMENT != "prod":
+            pass

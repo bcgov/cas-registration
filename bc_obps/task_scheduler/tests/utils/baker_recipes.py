@@ -1,6 +1,5 @@
 from model_bakery.recipe import Recipe
-from task_scheduler.models import ScheduledTask, RetryTask
-
+from task_scheduler.models import RetryTask, ScheduledTask
 
 scheduled_task = Recipe(
     ScheduledTask,

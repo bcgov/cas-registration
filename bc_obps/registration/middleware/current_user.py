@@ -1,9 +1,11 @@
 import json
 import logging
-from typing import Callable, Optional
+from collections.abc import Callable
+from typing import Optional
 from uuid import UUID
+
 from django.core.cache import cache
-from django.http import JsonResponse, HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from registration.constants import USER_CACHE_PREFIX
 from registration.models import User
 
@@ -23,9 +25,13 @@ class CurrentUserMiddleware:
                 setattr(request, "current_user", user)
             except ValueError as e:
                 logger.warning(f"Invalid Authorization header: {e}", exc_info=True)
-                return JsonResponse({"error": "Invalid Authorization header"}, status=400)
+                return JsonResponse(
+                    {"error": "Invalid Authorization header"}, status=400
+                )
             except Exception as e:
-                logger.error(f"Unexpected error in CurrentUserMiddleware: {e}", exc_info=True)
+                logger.error(
+                    f"Unexpected error in CurrentUserMiddleware: {e}", exc_info=True
+                )
 
         return self.get_response(request)
 
@@ -44,12 +50,12 @@ class CurrentUserMiddleware:
             raise ValueError(f"Failed to extract user GUID: {e}")
 
     @staticmethod
-    def get_or_cache_user(user_guid: UUID) -> Optional[User]:
+    def get_or_cache_user(user_guid: UUID) -> User | None:
         """
         Retrieves the full user object from the cache or database.
         """
         cache_key = f"{USER_CACHE_PREFIX}{user_guid}"
-        user: Optional[User] = cache.get(cache_key)
+        user: User | None = cache.get(cache_key)
 
         if not user:
             try:

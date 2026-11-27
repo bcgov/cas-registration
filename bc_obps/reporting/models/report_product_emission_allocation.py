@@ -1,11 +1,13 @@
 from django.db import models
-from reporting.models import report_version
-from reporting.models.triggers import immutable_report_version_trigger
 from registration.models.time_stamped_model import TimeStampedModel
+from reporting.models import report_version
 from reporting.models.emission_category import EmissionCategory
-from reporting.models.report_product import ReportProduct
-from reporting.models.rls_configs.report_product_emission_allocation import Rls as ReportProductEmissionAllocationRls
 from reporting.models.report_emission_allocation import ReportEmissionAllocation
+from reporting.models.report_product import ReportProduct
+from reporting.models.rls_configs.report_product_emission_allocation import (
+    Rls as ReportProductEmissionAllocationRls,
+)
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportProductEmissionAllocation(TimeStampedModel):
@@ -45,7 +47,9 @@ class ReportProductEmissionAllocation(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_product_emission_allocation'
-        db_table_comment = "A table to store the allocated amount of emissions for a given product"
+        db_table_comment = (
+            "A table to store the allocated amount of emissions for a given product"
+        )
         app_label = "reporting"
         constraints = [
             models.UniqueConstraint(

@@ -1,50 +1,57 @@
+from unittest.mock import AsyncMock, MagicMock, patch
+
 from model_bakery.baker import make_recipe
-from unittest.mock import patch, MagicMock, AsyncMock
+from registration.models.regulated_product import RegulatedProduct
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from registration.models.regulated_product import RegulatedProduct
 from reporting.service.report_emission_allocation_service import (
     ReportEmissionAllocationData,
     ReportFacilityEmissionsData,
     ReportProductEmissionAllocationData,
 )
-from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from reporting.tests.utils.report_access_validation import (
+    assert_report_version_ownership_is_validated,
+)
 
 
 class TestReportEmissionAllocationApi(CommonTestSetup):
     def setup_method(self):
-        report_version = make_recipe('reporting.tests.utils.report_version')
+        report_version = make_recipe("reporting.tests.utils.report_version")
         make_recipe(
             "reporting.tests.utils.report_operation",
             report_version=report_version,
             regulated_products=RegulatedProduct.objects.filter(id__in=[29, 1]),
         )
-        self.test_user_guid = make_recipe('registration.tests.utils.industry_operator_user').user_guid
-        self.facility_report = make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
+        self.test_user_guid = make_recipe(
+            "registration.tests.utils.industry_operator_user"
+        ).user_guid
+        self.facility_report = make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         self.report_version_id = self.facility_report.report_version.id
         self.facility_uuid = self.facility_report.facility.id
         self.mock_get_response = ReportEmissionAllocationData(
             **{
-                'report_product_emission_allocations': [
+                "report_product_emission_allocations": [
                     ReportFacilityEmissionsData(
                         **{
-                            'emission_category_name': 'Flaring emissions',
-                            'emission_category_id': 1,
-                            'category_type': 'basic',
-                            'emission_total': '0',
-                            'products': [
+                            "emission_category_name": "Flaring emissions",
+                            "emission_category_id": 1,
+                            "category_type": "basic",
+                            "emission_total": "0",
+                            "products": [
                                 ReportProductEmissionAllocationData(
                                     **{
-                                        'report_product_id': 1,
-                                        'product_name': 'Cement equivalent',
-                                        'allocated_quantity': 0,
+                                        "report_product_id": 1,
+                                        "product_name": "Cement equivalent",
+                                        "allocated_quantity": 0,
                                     }
                                 ),
                                 ReportProductEmissionAllocationData(
                                     **{
-                                        'report_product_id': 2,
-                                        'product_name': 'Gypsum wallboard',
-                                        'allocated_quantity': 0,
+                                        "report_product_id": 2,
+                                        "product_name": "Gypsum wallboard",
+                                        "allocated_quantity": 0,
                                     }
                                 ),
                             ],
@@ -52,47 +59,23 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                     ),
                     ReportFacilityEmissionsData(
                         **{
-                            'emission_category_name': 'Fugitive emissions',
-                            'emission_category_id': 2,
-                            'category_type': 'basic',
-                            'emission_total': '0',
-                            'products': [
+                            "emission_category_name": "Fugitive emissions",
+                            "emission_category_id": 2,
+                            "category_type": "basic",
+                            "emission_total": "0",
+                            "products": [
                                 ReportProductEmissionAllocationData(
                                     **{
-                                        'report_product_id': 1,
-                                        'product_name': 'Cement equivalent',
-                                        'allocated_quantity': 0,
+                                        "report_product_id": 1,
+                                        "product_name": "Cement equivalent",
+                                        "allocated_quantity": 0,
                                     }
                                 ),
                                 ReportProductEmissionAllocationData(
                                     **{
-                                        'report_product_id': 2,
-                                        'product_name': 'Gypsum wallboard',
-                                        'allocated_quantity': 0,
-                                    }
-                                ),
-                            ],
-                        }
-                    ),
-                    ReportFacilityEmissionsData(
-                        **{
-                            'emission_category_name': 'Industrial process emissions',
-                            'emission_category_id': 3,
-                            'category_type': 'basic',
-                            'emission_total': '0',
-                            'products': [
-                                ReportProductEmissionAllocationData(
-                                    **{
-                                        'report_product_id': 1,
-                                        'product_name': 'Cement equivalent',
-                                        'allocated_quantity': 0,
-                                    }
-                                ),
-                                ReportProductEmissionAllocationData(
-                                    **{
-                                        'report_product_id': 2,
-                                        'product_name': 'Gypsum wallboard',
-                                        'allocated_quantity': 0,
+                                        "report_product_id": 2,
+                                        "product_name": "Gypsum wallboard",
+                                        "allocated_quantity": 0,
                                     }
                                 ),
                             ],
@@ -100,47 +83,23 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                     ),
                     ReportFacilityEmissionsData(
                         **{
-                            'emission_category_name': 'On-site transportation emissions',
-                            'emission_category_id': 4,
-                            'category_type': 'basic',
-                            'emission_total': '0',
-                            'products': [
+                            "emission_category_name": "Industrial process emissions",
+                            "emission_category_id": 3,
+                            "category_type": "basic",
+                            "emission_total": "0",
+                            "products": [
                                 ReportProductEmissionAllocationData(
                                     **{
-                                        'report_product_id': 1,
-                                        'product_name': 'Cement equivalent',
-                                        'allocated_quantity': 0,
+                                        "report_product_id": 1,
+                                        "product_name": "Cement equivalent",
+                                        "allocated_quantity": 0,
                                     }
                                 ),
                                 ReportProductEmissionAllocationData(
                                     **{
-                                        'report_product_id': 2,
-                                        'product_name': 'Gypsum wallboard',
-                                        'allocated_quantity': 0,
-                                    }
-                                ),
-                            ],
-                        }
-                    ),
-                    ReportFacilityEmissionsData(
-                        **{
-                            'emission_category_name': 'Stationary fuel combustion emissions',
-                            'emission_category_id': 5,
-                            'category_type': 'basic',
-                            'emission_total': '500000.0000',
-                            'products': [
-                                ReportProductEmissionAllocationData(
-                                    **{
-                                        'report_product_id': 1,
-                                        'product_name': 'Cement equivalent',
-                                        'allocated_quantity': 100000.0000,
-                                    }
-                                ),
-                                ReportProductEmissionAllocationData(
-                                    **{
-                                        'report_product_id': 2,
-                                        'product_name': 'Gypsum wallboard',
-                                        'allocated_quantity': 400000.0000,
+                                        "report_product_id": 2,
+                                        "product_name": "Gypsum wallboard",
+                                        "allocated_quantity": 0,
                                     }
                                 ),
                             ],
@@ -148,47 +107,23 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                     ),
                     ReportFacilityEmissionsData(
                         **{
-                            'emission_category_name': 'Venting emissions — useful',
-                            'emission_category_id': 6,
-                            'category_type': 'basic',
-                            'emission_total': '0',
-                            'products': [
+                            "emission_category_name": "On-site transportation emissions",
+                            "emission_category_id": 4,
+                            "category_type": "basic",
+                            "emission_total": "0",
+                            "products": [
                                 ReportProductEmissionAllocationData(
                                     **{
-                                        'report_product_id': 1,
-                                        'product_name': 'Cement equivalent',
-                                        'allocated_quantity': 0,
+                                        "report_product_id": 1,
+                                        "product_name": "Cement equivalent",
+                                        "allocated_quantity": 0,
                                     }
                                 ),
                                 ReportProductEmissionAllocationData(
                                     **{
-                                        'report_product_id': 2,
-                                        'product_name': 'Gypsum wallboard',
-                                        'allocated_quantity': 0,
-                                    }
-                                ),
-                            ],
-                        }
-                    ),
-                    ReportFacilityEmissionsData(
-                        **{
-                            'emission_category_name': 'Venting emissions — non-useful',
-                            'emission_category_id': 7,
-                            'category_type': 'basic',
-                            'emission_total': '0',
-                            'products': [
-                                ReportProductEmissionAllocationData(
-                                    **{
-                                        'report_product_id': 1,
-                                        'product_name': 'Cement equivalent',
-                                        'allocated_quantity': 0,
-                                    }
-                                ),
-                                ReportProductEmissionAllocationData(
-                                    **{
-                                        'report_product_id': 2,
-                                        'product_name': 'Gypsum wallboard',
-                                        'allocated_quantity': 0,
+                                        "report_product_id": 2,
+                                        "product_name": "Gypsum wallboard",
+                                        "allocated_quantity": 0,
                                     }
                                 ),
                             ],
@@ -196,47 +131,23 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                     ),
                     ReportFacilityEmissionsData(
                         **{
-                            'emission_category_name': 'Emissions from waste',
-                            'emission_category_id': 8,
-                            'category_type': 'basic',
-                            'emission_total': '0',
-                            'products': [
+                            "emission_category_name": "Stationary fuel combustion emissions",
+                            "emission_category_id": 5,
+                            "category_type": "basic",
+                            "emission_total": "500000.0000",
+                            "products": [
                                 ReportProductEmissionAllocationData(
                                     **{
-                                        'report_product_id': 1,
-                                        'product_name': 'Cement equivalent',
-                                        'allocated_quantity': 0,
+                                        "report_product_id": 1,
+                                        "product_name": "Cement equivalent",
+                                        "allocated_quantity": 100000.0000,
                                     }
                                 ),
                                 ReportProductEmissionAllocationData(
                                     **{
-                                        'report_product_id': 2,
-                                        'product_name': 'Gypsum wallboard',
-                                        'allocated_quantity': 0,
-                                    }
-                                ),
-                            ],
-                        }
-                    ),
-                    ReportFacilityEmissionsData(
-                        **{
-                            'emission_category_name': 'Emissions from wastewater',
-                            'emission_category_id': 9,
-                            'category_type': 'basic',
-                            'emission_total': '0',
-                            'products': [
-                                ReportProductEmissionAllocationData(
-                                    **{
-                                        'report_product_id': 1,
-                                        'product_name': 'Cement equivalent',
-                                        'allocated_quantity': 0,
-                                    }
-                                ),
-                                ReportProductEmissionAllocationData(
-                                    **{
-                                        'report_product_id': 2,
-                                        'product_name': 'Gypsum wallboard',
-                                        'allocated_quantity': 0,
+                                        "report_product_id": 2,
+                                        "product_name": "Gypsum wallboard",
+                                        "allocated_quantity": 400000.0000,
                                     }
                                 ),
                             ],
@@ -244,47 +155,23 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                     ),
                     ReportFacilityEmissionsData(
                         **{
-                            'emission_category_name': 'CO2 emissions from excluded woody biomass',
-                            'emission_category_id': 10,
-                            'category_type': 'fuel_excluded',
-                            'emission_total': '0',
-                            'products': [
+                            "emission_category_name": "Venting emissions — useful",
+                            "emission_category_id": 6,
+                            "category_type": "basic",
+                            "emission_total": "0",
+                            "products": [
                                 ReportProductEmissionAllocationData(
                                     **{
-                                        'report_product_id': 1,
-                                        'product_name': 'Cement equivalent',
-                                        'allocated_quantity': 0,
+                                        "report_product_id": 1,
+                                        "product_name": "Cement equivalent",
+                                        "allocated_quantity": 0,
                                     }
                                 ),
                                 ReportProductEmissionAllocationData(
                                     **{
-                                        'report_product_id': 2,
-                                        'product_name': 'Gypsum wallboard',
-                                        'allocated_quantity': 0,
-                                    }
-                                ),
-                            ],
-                        }
-                    ),
-                    ReportFacilityEmissionsData(
-                        **{
-                            'emission_category_name': 'Other emissions from excluded biomass',
-                            'emission_category_id': 11,
-                            'category_type': 'fuel_excluded',
-                            'emission_total': '0',
-                            'products': [
-                                ReportProductEmissionAllocationData(
-                                    **{
-                                        'report_product_id': 1,
-                                        'product_name': 'Cement equivalent',
-                                        'allocated_quantity': 0,
-                                    }
-                                ),
-                                ReportProductEmissionAllocationData(
-                                    **{
-                                        'report_product_id': 2,
-                                        'product_name': 'Gypsum wallboard',
-                                        'allocated_quantity': 0,
+                                        "report_product_id": 2,
+                                        "product_name": "Gypsum wallboard",
+                                        "allocated_quantity": 0,
                                     }
                                 ),
                             ],
@@ -292,158 +179,377 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                     ),
                     ReportFacilityEmissionsData(
                         **{
-                            'emission_category_name': 'Emissions from excluded non-biomass',
-                            'emission_category_id': 12,
-                            'category_type': 'fuel_excluded',
-                            'emission_total': '0',
-                            'products': [
+                            "emission_category_name": "Venting emissions — non-useful",
+                            "emission_category_id": 7,
+                            "category_type": "basic",
+                            "emission_total": "0",
+                            "products": [
                                 ReportProductEmissionAllocationData(
                                     **{
-                                        'report_product_id': 1,
-                                        'product_name': 'Cement equivalent',
-                                        'allocated_quantity': 0,
+                                        "report_product_id": 1,
+                                        "product_name": "Cement equivalent",
+                                        "allocated_quantity": 0,
                                     }
                                 ),
                                 ReportProductEmissionAllocationData(
                                     **{
-                                        'report_product_id': 2,
-                                        'product_name': 'Gypsum wallboard',
-                                        'allocated_quantity': 0,
+                                        "report_product_id": 2,
+                                        "product_name": "Gypsum wallboard",
+                                        "allocated_quantity": 0,
+                                    }
+                                ),
+                            ],
+                        }
+                    ),
+                    ReportFacilityEmissionsData(
+                        **{
+                            "emission_category_name": "Emissions from waste",
+                            "emission_category_id": 8,
+                            "category_type": "basic",
+                            "emission_total": "0",
+                            "products": [
+                                ReportProductEmissionAllocationData(
+                                    **{
+                                        "report_product_id": 1,
+                                        "product_name": "Cement equivalent",
+                                        "allocated_quantity": 0,
+                                    }
+                                ),
+                                ReportProductEmissionAllocationData(
+                                    **{
+                                        "report_product_id": 2,
+                                        "product_name": "Gypsum wallboard",
+                                        "allocated_quantity": 0,
+                                    }
+                                ),
+                            ],
+                        }
+                    ),
+                    ReportFacilityEmissionsData(
+                        **{
+                            "emission_category_name": "Emissions from wastewater",
+                            "emission_category_id": 9,
+                            "category_type": "basic",
+                            "emission_total": "0",
+                            "products": [
+                                ReportProductEmissionAllocationData(
+                                    **{
+                                        "report_product_id": 1,
+                                        "product_name": "Cement equivalent",
+                                        "allocated_quantity": 0,
+                                    }
+                                ),
+                                ReportProductEmissionAllocationData(
+                                    **{
+                                        "report_product_id": 2,
+                                        "product_name": "Gypsum wallboard",
+                                        "allocated_quantity": 0,
+                                    }
+                                ),
+                            ],
+                        }
+                    ),
+                    ReportFacilityEmissionsData(
+                        **{
+                            "emission_category_name": "CO2 emissions from excluded woody biomass",
+                            "emission_category_id": 10,
+                            "category_type": "fuel_excluded",
+                            "emission_total": "0",
+                            "products": [
+                                ReportProductEmissionAllocationData(
+                                    **{
+                                        "report_product_id": 1,
+                                        "product_name": "Cement equivalent",
+                                        "allocated_quantity": 0,
+                                    }
+                                ),
+                                ReportProductEmissionAllocationData(
+                                    **{
+                                        "report_product_id": 2,
+                                        "product_name": "Gypsum wallboard",
+                                        "allocated_quantity": 0,
+                                    }
+                                ),
+                            ],
+                        }
+                    ),
+                    ReportFacilityEmissionsData(
+                        **{
+                            "emission_category_name": "Other emissions from excluded biomass",
+                            "emission_category_id": 11,
+                            "category_type": "fuel_excluded",
+                            "emission_total": "0",
+                            "products": [
+                                ReportProductEmissionAllocationData(
+                                    **{
+                                        "report_product_id": 1,
+                                        "product_name": "Cement equivalent",
+                                        "allocated_quantity": 0,
+                                    }
+                                ),
+                                ReportProductEmissionAllocationData(
+                                    **{
+                                        "report_product_id": 2,
+                                        "product_name": "Gypsum wallboard",
+                                        "allocated_quantity": 0,
+                                    }
+                                ),
+                            ],
+                        }
+                    ),
+                    ReportFacilityEmissionsData(
+                        **{
+                            "emission_category_name": "Emissions from excluded non-biomass",
+                            "emission_category_id": 12,
+                            "category_type": "fuel_excluded",
+                            "emission_total": "0",
+                            "products": [
+                                ReportProductEmissionAllocationData(
+                                    **{
+                                        "report_product_id": 1,
+                                        "product_name": "Cement equivalent",
+                                        "allocated_quantity": 0,
+                                    }
+                                ),
+                                ReportProductEmissionAllocationData(
+                                    **{
+                                        "report_product_id": 2,
+                                        "product_name": "Gypsum wallboard",
+                                        "allocated_quantity": 0,
                                     }
                                 ),
                             ],
                         }
                     ),
                 ],
-                'facility_total_emissions': '500000.0000',
-                'report_product_emission_allocation_totals': [
+                "facility_total_emissions": "500000.0000",
+                "report_product_emission_allocation_totals": [
                     ReportProductEmissionAllocationData(
                         **{
-                            'report_product_id': 1,
-                            'product_name': 'Cement equivalent',
-                            'allocated_quantity': 100000.0000,
+                            "report_product_id": 1,
+                            "product_name": "Cement equivalent",
+                            "allocated_quantity": 100000.0000,
                         }
                     ),
                     ReportProductEmissionAllocationData(
                         **{
-                            'report_product_id': 2,
-                            'product_name': 'Gypsum wallboard',
-                            'allocated_quantity': 400000.0000,
+                            "report_product_id": 2,
+                            "product_name": "Gypsum wallboard",
+                            "allocated_quantity": 400000.0000,
                         }
                     ),
                 ],
-                'allocation_methodology': 'Calculator',
-                'allocation_other_methodology_description': '',
-                'has_missing_products': True,
+                "allocation_methodology": "Calculator",
+                "allocation_other_methodology_description": "",
+                "has_missing_products": True,
             }
         )
         self.mock_post_payload = {
-            'allocation_methodology': 'Calculator',
-            'allocation_other_methodology_description': '',
-            'report_product_emission_allocations': [
+            "allocation_methodology": "Calculator",
+            "allocation_other_methodology_description": "",
+            "report_product_emission_allocations": [
                 {
-                    'emission_total': '0',
-                    'emission_category_id': 1,
-                    'products': [
-                        {'report_product_id': 1, 'product_name': 'Cement equivalent', 'allocated_quantity': 0},
-                        {'report_product_id': 2, 'product_name': 'Gypsum wallboard', 'allocated_quantity': 0},
+                    "emission_total": "0",
+                    "emission_category_id": 1,
+                    "products": [
+                        {
+                            "report_product_id": 1,
+                            "product_name": "Cement equivalent",
+                            "allocated_quantity": 0,
+                        },
+                        {
+                            "report_product_id": 2,
+                            "product_name": "Gypsum wallboard",
+                            "allocated_quantity": 0,
+                        },
                     ],
                 },
                 {
-                    'emission_total': '0',
-                    'emission_category_id': 2,
-                    'products': [
-                        {'report_product_id': 1, 'product_name': 'Cement equivalent', 'allocated_quantity': 0},
-                        {'report_product_id': 2, 'product_name': 'Gypsum wallboard', 'allocated_quantity': 0},
+                    "emission_total": "0",
+                    "emission_category_id": 2,
+                    "products": [
+                        {
+                            "report_product_id": 1,
+                            "product_name": "Cement equivalent",
+                            "allocated_quantity": 0,
+                        },
+                        {
+                            "report_product_id": 2,
+                            "product_name": "Gypsum wallboard",
+                            "allocated_quantity": 0,
+                        },
                     ],
                 },
                 {
-                    'emission_total': '0',
-                    'emission_category_id': 3,
-                    'products': [
-                        {'report_product_id': 1, 'product_name': 'Cement equivalent', 'allocated_quantity': 0},
-                        {'report_product_id': 2, 'product_name': 'Gypsum wallboard', 'allocated_quantity': 0},
+                    "emission_total": "0",
+                    "emission_category_id": 3,
+                    "products": [
+                        {
+                            "report_product_id": 1,
+                            "product_name": "Cement equivalent",
+                            "allocated_quantity": 0,
+                        },
+                        {
+                            "report_product_id": 2,
+                            "product_name": "Gypsum wallboard",
+                            "allocated_quantity": 0,
+                        },
                     ],
                 },
                 {
-                    'emission_total': '4321.0000',
-                    'emission_category_id': 4,
-                    'products': [
-                        {'report_product_id': 1, 'product_name': 'Cement equivalent', 'allocated_quantity': 4321},
-                        {'report_product_id': 2, 'product_name': 'Gypsum wallboard', 'allocated_quantity': 0},
+                    "emission_total": "4321.0000",
+                    "emission_category_id": 4,
+                    "products": [
+                        {
+                            "report_product_id": 1,
+                            "product_name": "Cement equivalent",
+                            "allocated_quantity": 4321,
+                        },
+                        {
+                            "report_product_id": 2,
+                            "product_name": "Gypsum wallboard",
+                            "allocated_quantity": 0,
+                        },
                     ],
                 },
                 {
-                    'emission_total': '12345.0000',
-                    'emission_category_id': 5,
-                    'products': [
-                        {'report_product_id': 1, 'product_name': 'Cement equivalent', 'allocated_quantity': 12345},
-                        {'report_product_id': 2, 'product_name': 'Gypsum wallboard', 'allocated_quantity': 0},
+                    "emission_total": "12345.0000",
+                    "emission_category_id": 5,
+                    "products": [
+                        {
+                            "report_product_id": 1,
+                            "product_name": "Cement equivalent",
+                            "allocated_quantity": 12345,
+                        },
+                        {
+                            "report_product_id": 2,
+                            "product_name": "Gypsum wallboard",
+                            "allocated_quantity": 0,
+                        },
                     ],
                 },
                 {
-                    'emission_total': '0',
-                    'emission_category_id': 6,
-                    'products': [
-                        {'report_product_id': 1, 'product_name': 'Cement equivalent', 'allocated_quantity': 0},
-                        {'report_product_id': 2, 'product_name': 'Gypsum wallboard', 'allocated_quantity': 0},
+                    "emission_total": "0",
+                    "emission_category_id": 6,
+                    "products": [
+                        {
+                            "report_product_id": 1,
+                            "product_name": "Cement equivalent",
+                            "allocated_quantity": 0,
+                        },
+                        {
+                            "report_product_id": 2,
+                            "product_name": "Gypsum wallboard",
+                            "allocated_quantity": 0,
+                        },
                     ],
                 },
                 {
-                    'emission_total': '0',
-                    'emission_category_id': 7,
-                    'products': [
-                        {'report_product_id': 1, 'product_name': 'Cement equivalent', 'allocated_quantity': 0},
-                        {'report_product_id': 2, 'product_name': 'Gypsum wallboard', 'allocated_quantity': 0},
+                    "emission_total": "0",
+                    "emission_category_id": 7,
+                    "products": [
+                        {
+                            "report_product_id": 1,
+                            "product_name": "Cement equivalent",
+                            "allocated_quantity": 0,
+                        },
+                        {
+                            "report_product_id": 2,
+                            "product_name": "Gypsum wallboard",
+                            "allocated_quantity": 0,
+                        },
                     ],
                 },
                 {
-                    'emission_total': '0',
-                    'emission_category_id': 8,
-                    'products': [
-                        {'report_product_id': 1, 'product_name': 'Cement equivalent', 'allocated_quantity': 0},
-                        {'report_product_id': 2, 'product_name': 'Gypsum wallboard', 'allocated_quantity': 0},
+                    "emission_total": "0",
+                    "emission_category_id": 8,
+                    "products": [
+                        {
+                            "report_product_id": 1,
+                            "product_name": "Cement equivalent",
+                            "allocated_quantity": 0,
+                        },
+                        {
+                            "report_product_id": 2,
+                            "product_name": "Gypsum wallboard",
+                            "allocated_quantity": 0,
+                        },
                     ],
                 },
                 {
-                    'emission_total': '0',
-                    'emission_category_id': 9,
-                    'products': [
-                        {'report_product_id': 1, 'product_name': 'Cement equivalent', 'allocated_quantity': 0},
-                        {'report_product_id': 2, 'product_name': 'Gypsum wallboard', 'allocated_quantity': 0},
+                    "emission_total": "0",
+                    "emission_category_id": 9,
+                    "products": [
+                        {
+                            "report_product_id": 1,
+                            "product_name": "Cement equivalent",
+                            "allocated_quantity": 0,
+                        },
+                        {
+                            "report_product_id": 2,
+                            "product_name": "Gypsum wallboard",
+                            "allocated_quantity": 0,
+                        },
                     ],
                 },
                 {
-                    'emission_total': '0',
-                    'emission_category_id': 10,
-                    'products': [
-                        {'report_product_id': 1, 'product_name': 'Cement equivalent', 'allocated_quantity': 0},
-                        {'report_product_id': 2, 'product_name': 'Gypsum wallboard', 'allocated_quantity': 0},
+                    "emission_total": "0",
+                    "emission_category_id": 10,
+                    "products": [
+                        {
+                            "report_product_id": 1,
+                            "product_name": "Cement equivalent",
+                            "allocated_quantity": 0,
+                        },
+                        {
+                            "report_product_id": 2,
+                            "product_name": "Gypsum wallboard",
+                            "allocated_quantity": 0,
+                        },
                     ],
                 },
                 {
-                    'emission_total': '12345.0000',
-                    'emission_category_id': 11,
-                    'products': [
-                        {'report_product_id': 1, 'product_name': 'Cement equivalent', 'allocated_quantity': 0},
-                        {'report_product_id': 2, 'product_name': 'Gypsum wallboard', 'allocated_quantity': 0},
+                    "emission_total": "12345.0000",
+                    "emission_category_id": 11,
+                    "products": [
+                        {
+                            "report_product_id": 1,
+                            "product_name": "Cement equivalent",
+                            "allocated_quantity": 0,
+                        },
+                        {
+                            "report_product_id": 2,
+                            "product_name": "Gypsum wallboard",
+                            "allocated_quantity": 0,
+                        },
                     ],
                 },
                 {
-                    'emission_total': '4321.0000',
-                    'emission_category_id': 12,
-                    'products': [
-                        {'report_product_id': 1, 'product_name': 'Cement equivalent', 'allocated_quantity': 0},
-                        {'report_product_id': 2, 'product_name': 'Gypsum wallboard', 'allocated_quantity': 0},
+                    "emission_total": "4321.0000",
+                    "emission_category_id": 12,
+                    "products": [
+                        {
+                            "report_product_id": 1,
+                            "product_name": "Cement equivalent",
+                            "allocated_quantity": 0,
+                        },
+                        {
+                            "report_product_id": 2,
+                            "product_name": "Gypsum wallboard",
+                            "allocated_quantity": 0,
+                        },
                     ],
                 },
             ],
         }
 
         super().setup_method()
-        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=report_version.report.operator, operations=[report_version.report.operation]
+            operator=report_version.report.operator,
+            operations=[report_version.report.operation],
         )
 
     @patch(
@@ -481,14 +587,21 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "get_emission_allocations",
-                kwargs={"version_id": self.report_version_id, "facility_id": self.facility_uuid},
+                kwargs={
+                    "version_id": self.report_version_id,
+                    "facility_id": self.facility_uuid,
+                },
             ),
         )
         # Assert: Verify response status code
-        assert response.status_code == 200, f"Expected status code 200, got {response.status_code}"
+        assert response.status_code == 200, (
+            f"Expected status code 200, got {response.status_code}"
+        )
 
         # Assert: Verify the service was called with correct parameters
-        mock_get_method.assert_called_once_with(self.report_version_id, self.facility_uuid)
+        mock_get_method.assert_called_once_with(
+            self.report_version_id, self.facility_uuid
+        )
 
     @patch(
         "reporting.service.report_emission_allocation_service.ReportEmissionAllocationService.save_emission_allocation_data",
@@ -523,11 +636,16 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
             self.mock_post_payload,
             custom_reverse_lazy(
                 "save_emission_allocation_data",
-                kwargs={"version_id": self.report_version_id, "facility_id": self.facility_uuid},
+                kwargs={
+                    "version_id": self.report_version_id,
+                    "facility_id": self.facility_uuid,
+                },
             ),
         )
         # Assert: Verify response status code
-        assert response.status_code == 200, f"Expected status code 200, got {response.status_code}"
+        assert response.status_code == 200, (
+            f"Expected status code 200, got {response.status_code}"
+        )
 
         # Assert: Verify the service was called with correct parameters
         mock_post_method.assert_called_once_with
@@ -539,7 +657,9 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
         )
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_emission_allocations", facility_id="uuid")
+        assert_report_version_ownership_is_validated(
+            "get_emission_allocations", facility_id="uuid"
+        )
         assert_report_version_ownership_is_validated(
             "save_emission_allocation_data",
             method="post",

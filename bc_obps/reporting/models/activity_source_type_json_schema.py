@@ -1,8 +1,10 @@
 from common.models import BaseModel
 from django.db import models
 from registration.models import Activity
-from reporting.models import SourceType, Configuration
-from reporting.models.rls_configs.activity_source_type_json_schema import Rls as ActivitySourceTypeJsonSchemaRls
+from reporting.models import Configuration, SourceType
+from reporting.models.rls_configs.activity_source_type_json_schema import (
+    Rls as ActivitySourceTypeJsonSchemaRls,
+)
 from reporting.models.triggers import no_overlapping_configuration_records_trigger
 
 

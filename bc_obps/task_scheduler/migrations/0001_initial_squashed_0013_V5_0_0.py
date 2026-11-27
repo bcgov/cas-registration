@@ -4,167 +4,274 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     replaces = [
-        ('task_scheduler', '0001_initial'),
-        ('task_scheduler', '0002_V4_0_0'),
-        ('task_scheduler', '0003_V4_0_1'),
-        ('task_scheduler', '0004_V4_1_0'),
-        ('task_scheduler', '0005_V4_2_0'),
-        ('task_scheduler', '0006_V4_3_0'),
-        ('task_scheduler', '0007_V4_4_0'),
-        ('task_scheduler', '0008_V4_5_0'),
-        ('task_scheduler', '0009_V4_6_0'),
-        ('task_scheduler', '0010_V4_6_1'),
-        ('task_scheduler', '0011_V4_7_0'),
-        ('task_scheduler', '0012_V4_7_1'),
-        ('task_scheduler', '0013_V5_0_0'),
+        ("task_scheduler", "0001_initial"),
+        ("task_scheduler", "0002_V4_0_0"),
+        ("task_scheduler", "0003_V4_0_1"),
+        ("task_scheduler", "0004_V4_1_0"),
+        ("task_scheduler", "0005_V4_2_0"),
+        ("task_scheduler", "0006_V4_3_0"),
+        ("task_scheduler", "0007_V4_4_0"),
+        ("task_scheduler", "0008_V4_5_0"),
+        ("task_scheduler", "0009_V4_6_0"),
+        ("task_scheduler", "0010_V4_6_1"),
+        ("task_scheduler", "0011_V4_7_0"),
+        ("task_scheduler", "0012_V4_7_1"),
+        ("task_scheduler", "0013_V5_0_0"),
     ]
 
     dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='RetryTask',
+            name="RetryTask",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('function_path', models.CharField(help_text='Full path to the function to execute', max_length=512)),
                 (
-                    'tag',
-                    models.CharField(blank=True, help_text='Tag for categorizing and filtering tasks', max_length=100),
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
                 ),
                 (
-                    'status',
+                    "function_path",
+                    models.CharField(
+                        help_text="Full path to the function to execute", max_length=512
+                    ),
+                ),
+                (
+                    "tag",
+                    models.CharField(
+                        blank=True,
+                        help_text="Tag for categorizing and filtering tasks",
+                        max_length=100,
+                    ),
+                ),
+                (
+                    "status",
                     models.CharField(
                         choices=[
-                            ('pending', 'Pending'),
-                            ('running', 'Running'),
-                            ('completed', 'Completed'),
-                            ('failed', 'Failed'),
-                            ('inactive', 'Inactive'),
+                            ("pending", "Pending"),
+                            ("running", "Running"),
+                            ("completed", "Completed"),
+                            ("failed", "Failed"),
+                            ("inactive", "Inactive"),
                         ],
-                        default='pending',
-                        help_text='Current status of the task',
+                        default="pending",
+                        help_text="Current status of the task",
                         max_length=20,
                     ),
                 ),
                 (
-                    'next_run_time',
-                    models.DateTimeField(blank=True, help_text='When this task should run next', null=True),
+                    "next_run_time",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="When this task should run next",
+                        null=True,
+                    ),
                 ),
                 (
-                    'last_run_time',
-                    models.DateTimeField(blank=True, help_text='When this task was last executed', null=True),
+                    "last_run_time",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="When this task was last executed",
+                        null=True,
+                    ),
                 ),
                 (
-                    'lock_acquired_at',
-                    models.DateTimeField(blank=True, help_text='When the lock was acquired', null=True),
+                    "lock_acquired_at",
+                    models.DateTimeField(
+                        blank=True, help_text="When the lock was acquired", null=True
+                    ),
                 ),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('error_history', models.JSONField(default=list, help_text='Last 5 error messages with timestamps')),
-                ('kwargs', models.JSONField(default=dict, help_text='Keyword arguments to pass to the function')),
-                ('max_retries', models.PositiveIntegerField(default=3, help_text='Maximum number of retry attempts')),
-                ('retry_count', models.PositiveIntegerField(default=0, help_text='Current retry attempt number')),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
                 (
-                    'retry_delay_minutes',
-                    models.PositiveIntegerField(default=5, help_text='Delay in minutes between retry attempts'),
+                    "error_history",
+                    models.JSONField(
+                        default=list, help_text="Last 5 error messages with timestamps"
+                    ),
+                ),
+                (
+                    "kwargs",
+                    models.JSONField(
+                        default=dict,
+                        help_text="Keyword arguments to pass to the function",
+                    ),
+                ),
+                (
+                    "max_retries",
+                    models.PositiveIntegerField(
+                        default=3, help_text="Maximum number of retry attempts"
+                    ),
+                ),
+                (
+                    "retry_count",
+                    models.PositiveIntegerField(
+                        default=0, help_text="Current retry attempt number"
+                    ),
+                ),
+                (
+                    "retry_delay_minutes",
+                    models.PositiveIntegerField(
+                        default=5, help_text="Delay in minutes between retry attempts"
+                    ),
                 ),
             ],
             options={
-                'db_table': 'common"."retry_task',
-                'db_table_comment': 'Retry tasks created when functions fail',
-                'indexes': [
-                    models.Index(fields=['status', 'next_run_time'], name='retry_task_status_006913_idx'),
-                    models.Index(fields=['tag', 'status'], name='retry_task_tag_233003_idx'),
+                "db_table": 'common"."retry_task',
+                "db_table_comment": "Retry tasks created when functions fail",
+                "indexes": [
+                    models.Index(
+                        fields=["status", "next_run_time"],
+                        name="retry_task_status_006913_idx",
+                    ),
+                    models.Index(
+                        fields=["tag", "status"], name="retry_task_tag_233003_idx"
+                    ),
                 ],
             },
         ),
         migrations.CreateModel(
-            name='ScheduledTask',
+            name="ScheduledTask",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('function_path', models.CharField(help_text='Full path to the function to execute', max_length=512)),
                 (
-                    'tag',
-                    models.CharField(blank=True, help_text='Tag for categorizing and filtering tasks', max_length=100),
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
                 ),
                 (
-                    'status',
+                    "function_path",
+                    models.CharField(
+                        help_text="Full path to the function to execute", max_length=512
+                    ),
+                ),
+                (
+                    "tag",
+                    models.CharField(
+                        blank=True,
+                        help_text="Tag for categorizing and filtering tasks",
+                        max_length=100,
+                    ),
+                ),
+                (
+                    "status",
                     models.CharField(
                         choices=[
-                            ('pending', 'Pending'),
-                            ('running', 'Running'),
-                            ('completed', 'Completed'),
-                            ('failed', 'Failed'),
-                            ('inactive', 'Inactive'),
+                            ("pending", "Pending"),
+                            ("running", "Running"),
+                            ("completed", "Completed"),
+                            ("failed", "Failed"),
+                            ("inactive", "Inactive"),
                         ],
-                        default='pending',
-                        help_text='Current status of the task',
+                        default="pending",
+                        help_text="Current status of the task",
                         max_length=20,
                     ),
                 ),
                 (
-                    'next_run_time',
-                    models.DateTimeField(blank=True, help_text='When this task should run next', null=True),
+                    "next_run_time",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="When this task should run next",
+                        null=True,
+                    ),
                 ),
                 (
-                    'last_run_time',
-                    models.DateTimeField(blank=True, help_text='When this task was last executed', null=True),
+                    "last_run_time",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="When this task was last executed",
+                        null=True,
+                    ),
                 ),
                 (
-                    'lock_acquired_at',
-                    models.DateTimeField(blank=True, help_text='When the lock was acquired', null=True),
+                    "lock_acquired_at",
+                    models.DateTimeField(
+                        blank=True, help_text="When the lock was acquired", null=True
+                    ),
                 ),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('error_history', models.JSONField(default=list, help_text='Last 5 error messages with timestamps')),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
                 (
-                    'schedule_type',
+                    "error_history",
+                    models.JSONField(
+                        default=list, help_text="Last 5 error messages with timestamps"
+                    ),
+                ),
+                (
+                    "schedule_type",
                     models.CharField(
                         choices=[
-                            ('minutes', 'Every X Minutes'),
-                            ('hourly', 'Every X Hours'),
-                            ('daily', 'Daily at Fixed Time'),
-                            ('weekly', 'Weekly on Specific Day'),
-                            ('monthly', 'Monthly on Specific Day'),
-                            ('yearly', 'Yearly on Specific Date'),
+                            ("minutes", "Every X Minutes"),
+                            ("hourly", "Every X Hours"),
+                            ("daily", "Daily at Fixed Time"),
+                            ("weekly", "Weekly on Specific Day"),
+                            ("monthly", "Monthly on Specific Day"),
+                            ("yearly", "Yearly on Specific Date"),
                         ],
-                        help_text='Type of schedule',
+                        help_text="Type of schedule",
                         max_length=20,
                     ),
                 ),
                 (
-                    'schedule_interval',
+                    "schedule_interval",
                     models.PositiveIntegerField(
-                        blank=True, help_text='Interval for MINUTES/HOURLY schedules', null=True
+                        blank=True,
+                        help_text="Interval for MINUTES/HOURLY schedules",
+                        null=True,
                     ),
                 ),
                 (
-                    'schedule_hour',
-                    models.PositiveIntegerField(blank=True, help_text='Hour (0-23) for fixed time', null=True),
+                    "schedule_hour",
+                    models.PositiveIntegerField(
+                        blank=True, help_text="Hour (0-23) for fixed time", null=True
+                    ),
                 ),
                 (
-                    'schedule_minute',
-                    models.PositiveIntegerField(blank=True, help_text='Minute (0-59) for fixed time', null=True),
+                    "schedule_minute",
+                    models.PositiveIntegerField(
+                        blank=True, help_text="Minute (0-59) for fixed time", null=True
+                    ),
                 ),
                 (
-                    'schedule_day_of_week',
-                    models.PositiveIntegerField(blank=True, help_text='Day of week (0=Monday, 6=Sunday)', null=True),
+                    "schedule_day_of_week",
+                    models.PositiveIntegerField(
+                        blank=True,
+                        help_text="Day of week (0=Monday, 6=Sunday)",
+                        null=True,
+                    ),
                 ),
                 (
-                    'schedule_day_of_month',
-                    models.PositiveIntegerField(blank=True, help_text='Day of month (1-31)', null=True),
+                    "schedule_day_of_month",
+                    models.PositiveIntegerField(
+                        blank=True, help_text="Day of month (1-31)", null=True
+                    ),
                 ),
                 (
-                    'schedule_month',
-                    models.PositiveIntegerField(blank=True, help_text='Month (1-12) for yearly schedules', null=True),
+                    "schedule_month",
+                    models.PositiveIntegerField(
+                        blank=True,
+                        help_text="Month (1-12) for yearly schedules",
+                        null=True,
+                    ),
                 ),
             ],
             options={
-                'db_table': 'common"."scheduled_task',
-                'db_table_comment': 'Scheduled tasks that run on a regular basis',
-                'indexes': [
-                    models.Index(fields=['status', 'next_run_time'], name='scheduled_t_status_bbd93c_idx'),
-                    models.Index(fields=['tag', 'status'], name='scheduled_t_tag_aef11c_idx'),
+                "db_table": 'common"."scheduled_task',
+                "db_table_comment": "Scheduled tasks that run on a regular basis",
+                "indexes": [
+                    models.Index(
+                        fields=["status", "next_run_time"],
+                        name="scheduled_t_status_bbd93c_idx",
+                    ),
+                    models.Index(
+                        fields=["tag", "status"], name="scheduled_t_tag_aef11c_idx"
+                    ),
                 ],
             },
         ),

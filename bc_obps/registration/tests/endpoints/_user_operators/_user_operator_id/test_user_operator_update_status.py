@@ -1,4 +1,5 @@
 from model_bakery import baker
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from registration.models import (
     Operator,
     User,
@@ -10,7 +11,6 @@ from registration.tests.utils.bakers import (
 )
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 
 
 class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
@@ -72,13 +72,18 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
 
     def test_cas_analyst_approves_access_request_with_existing_operator(self, mocker):
         approved_admin_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator', role=UserOperator.Roles.ADMIN, user=self.user
+            "registration.tests.utils.approved_user_operator",
+            role=UserOperator.Roles.ADMIN,
+            user=self.user,
         )
         pending_user_operator = baker.make_recipe(
-            'registration.tests.utils.user_operator', operator=approved_admin_user_operator.operator
+            "registration.tests.utils.user_operator",
+            operator=approved_admin_user_operator.operator,
         )
 
-        pending_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
+        pending_user_operator.user.business_guid = (
+            approved_admin_user_operator.user.business_guid
+        )
 
         mock_send_operator_access_request_email = mocker.patch(
             "registration.service.user_operator_service.send_operator_access_request_email"
@@ -115,22 +120,24 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
     def test_cas_director_approves_admin_access_request(self, mocker):
         # In this test we are testing the user operator status change and not the operator change,
         # so we have to mark the operator as status=APPROVED so we can bypass the below part and can get to the email sending part
-        operator = operator_baker({'status': Operator.Statuses.APPROVED})
+        operator = operator_baker({"status": Operator.Statuses.APPROVED})
         operator.refresh_from_db()
-        user_operator = user_operator_baker({'operator': operator, 'user': operator.created_by})
+        user_operator = user_operator_baker(
+            {"operator": operator, "user": operator.created_by}
+        )
         mock_send_operator_access_request_email = mocker.patch(
             "registration.service.user_operator_service.send_operator_access_request_email"
         )
         response_2 = TestUtils.mock_patch_with_auth_role(
             self,
-            'cas_director',
+            "cas_director",
             self.content_type,
             {
                 "role": UserOperator.Roles.ADMIN,
                 "status": UserOperator.Statuses.APPROVED,
             },
             custom_reverse_lazy(
-                'update_user_operator_status',
+                "update_user_operator_status",
                 kwargs={
                     "user_operator_id": user_operator.id,
                 },

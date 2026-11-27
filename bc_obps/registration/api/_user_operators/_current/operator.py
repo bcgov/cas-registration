@@ -1,14 +1,15 @@
-from common.permissions import authorize
-from registration.models.operator import Operator
-from registration.service.operator_service import OperatorService
-from registration.schema import OperatorIn, OperatorOut, Message
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from typing import Literal, Tuple
-from django.http import HttpRequest
+
 from common.api.utils import get_current_user_guid
+from common.permissions import authorize
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest
 from registration.api.router import router
-from registration.service.data_access_service.user_service import UserDataAccessService
 from registration.constants import USER_OPERATOR_TAGS
+from registration.models.operator import Operator
+from registration.schema import Message, OperatorIn, OperatorOut
+from registration.service.data_access_service.user_service import UserDataAccessService
+from registration.service.operator_service import OperatorService
 
 
 ## GET
@@ -21,8 +22,12 @@ from registration.constants import USER_OPERATOR_TAGS
     exclude_none=True,  # To exclude None values from the response (used for parent and partner arrays)
     auth=authorize("approved_industry_user"),
 )
-def get_current_operator_and_user_operator(request: HttpRequest) -> Tuple[Literal[200], Operator]:
-    operator = UserDataAccessService.get_operator_by_user(get_current_user_guid(request))
+def get_current_operator_and_user_operator(
+    request: HttpRequest,
+) -> tuple[Literal[200], Operator]:
+    operator = UserDataAccessService.get_operator_by_user(
+        get_current_user_guid(request)
+    )
     return 200, operator
 
 
@@ -39,5 +44,5 @@ def get_current_operator_and_user_operator(request: HttpRequest) -> Tuple[Litera
 def update_operator_and_user_operator(
     request: HttpRequest,
     payload: OperatorIn,
-) -> Tuple[Literal[200], Operator]:
+) -> tuple[Literal[200], Operator]:
     return 200, OperatorService.update_operator(get_current_user_guid(request), payload)

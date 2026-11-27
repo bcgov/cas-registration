@@ -1,5 +1,7 @@
 import logging
-from typing import Any, Callable, Dict
+from collections.abc import Callable
+from typing import Any, Dict
+
 from task_scheduler.models import RetryTask
 from task_scheduler.utils.parameters import extract_function_parameters
 from task_scheduler.utils.paths import get_function_path
@@ -9,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 def create_retry_task(
     function_path: str,
-    kwargs: Dict[str, Any],
+    kwargs: dict[str, Any],
     tag: str = "",
     max_retries: int = 3,
     retry_delay_minutes: int = 5,
@@ -18,11 +20,18 @@ def create_retry_task(
         function_path=function_path,
         kwargs=kwargs,
         tag=tag,
-        status__in=[RetryTask.TaskStatus.PENDING, RetryTask.TaskStatus.RUNNING, RetryTask.TaskStatus.FAILED],
+        status__in=[
+            RetryTask.TaskStatus.PENDING,
+            RetryTask.TaskStatus.RUNNING,
+            RetryTask.TaskStatus.FAILED,
+        ],
     ).first()
 
     if existing_task:
-        if existing_task.status == RetryTask.TaskStatus.FAILED and existing_task.can_retry:
+        if (
+            existing_task.status == RetryTask.TaskStatus.FAILED
+            and existing_task.can_retry
+        ):
             # Update existing failed task instead of creating duplicate
             existing_task.retry_count += 1
             existing_task.next_run_time = existing_task.calculate_next_run_time()
@@ -33,7 +42,9 @@ def create_retry_task(
             return existing_task
         else:
             # Task exists but can't be updated (completed, running, or exhausted retries)
-            logger.info(f"Retry task already exists for {function_path}, not creating duplicate")
+            logger.info(
+                f"Retry task already exists for {function_path}, not creating duplicate"
+            )
             return existing_task
 
     # Create new retry task only if none exists or existing one can't be updated
@@ -57,7 +68,13 @@ class RetryableFunction:
     Creates retry tasks on failure for later execution by the task scheduler.
     """
 
-    def __init__(self, func: Callable, tag: str = "", max_retries: int = 3, retry_delay_minutes: int = 5):
+    def __init__(
+        self,
+        func: Callable,
+        tag: str = "",
+        max_retries: int = 3,
+        retry_delay_minutes: int = 5,
+    ):
         self.func = func
         self.tag = tag
         self.max_retries = max_retries

@@ -1,7 +1,6 @@
 from typing import ClassVar
 
 from django.db.models import Count, Prefetch
-
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_version import ReportVersion
@@ -43,7 +42,8 @@ class RequiredFieldsAllocationOfEmissionsValidator(BaseRequiredFieldsValidator):
         missing_fields = collect_missing_fields(allocation_record, cls.REQUIRED_FIELDS)
 
         if (
-            allocation_record.allocation_methodology == ReportEmissionAllocation.AllocationMethodologyChoices.OTHER
+            allocation_record.allocation_methodology
+            == ReportEmissionAllocation.AllocationMethodologyChoices.OTHER
             and not allocation_record.allocation_other_methodology_description
         ):
             missing_fields.append("Allocation other methodology description")
@@ -80,7 +80,9 @@ class RequiredFieldsAllocationOfEmissionsValidator(BaseRequiredFieldsValidator):
                     report_version_id=report_version.id,
                     facility_id=facility_report.facility_id,
                     facility_name=facility_report.facility_name,
-                    missing_field_labels=[item["label"] for item in cls.REQUIRED_FIELDS],
+                    missing_field_labels=[
+                        item["label"] for item in cls.REQUIRED_FIELDS
+                    ],
                 )
                 continue
 

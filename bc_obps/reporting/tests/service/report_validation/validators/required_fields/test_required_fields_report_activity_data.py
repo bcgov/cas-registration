@@ -1,6 +1,5 @@
 import pytest
 from model_bakery import baker
-
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationErrorKey,
     Severity,

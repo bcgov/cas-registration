@@ -2,7 +2,9 @@ from common.models import BaseModel
 from django.db import models
 from registration.models import Activity
 from reporting.models import Configuration
-from reporting.models.rls_configs.activity_json_schema import Rls as ActivityJsonSchemaRls
+from reporting.models.rls_configs.activity_json_schema import (
+    Rls as ActivityJsonSchemaRls,
+)
 from reporting.models.triggers import no_overlapping_configuration_records_trigger
 
 
@@ -33,9 +35,7 @@ class ActivityJsonSchema(BaseModel):
     )
 
     class Meta:
-        db_table_comment = (
-            "Intersection table that assigns a json_schema as valid for a period of time given an activity"
-        )
+        db_table_comment = "Intersection table that assigns a json_schema as valid for a period of time given an activity"
         db_table = 'erc"."activity_json_schema'
         triggers = [
             no_overlapping_configuration_records_trigger(

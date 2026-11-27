@@ -1,10 +1,10 @@
+import pytest
+from model_bakery import baker
+from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.operation import Operation
 from registration.service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
-import pytest
-from model_bakery import baker
-from registration.constants import UNAUTHORIZED_MESSAGE
 
 pytestmark = pytest.mark.django_db
 
@@ -14,30 +14,32 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
     def test_unapproved_user_exception():
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(
-                baker.make_recipe('registration.tests.utils.industry_operator_user')
+                baker.make_recipe("registration.tests.utils.industry_operator_user")
             )
 
     @staticmethod
     def test_get_current_operations_for_industry_user():
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe(
+            "registration.tests.utils.approved_user_operator"
+        )
 
         # simulating a transferred operation - should not be returned
         baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
+            "registration.tests.utils.operation_designated_operator_timeline",
             end_date="2024-12-25 01:00:00-08",
             operator=approved_user_operator.operator,
         )
 
         # active, registered operations
         registered_operations = baker.make_recipe(
-            'registration.tests.utils.operation',
+            "registration.tests.utils.operation",
             operator=approved_user_operator.operator,
             status=Operation.Statuses.REGISTERED,
             _quantity=20,
         )
         for operation in registered_operations:
             baker.make_recipe(
-                'registration.tests.utils.operation_designated_operator_timeline',
+                "registration.tests.utils.operation_designated_operator_timeline",
                 operation=operation,
                 operator=approved_user_operator.operator,
                 end_date=None,
@@ -45,7 +47,7 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
 
         # someone else's operations - should not be returned
         baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
+            "registration.tests.utils.operation_designated_operator_timeline",
             _quantity=5,
         )
 
@@ -57,25 +59,27 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
 
     @staticmethod
     def test_get_current_and_previous_operations_for_industry_user():
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe(
+            "registration.tests.utils.approved_user_operator"
+        )
 
         # simulating a transferred operation - should be returned
         baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
+            "registration.tests.utils.operation_designated_operator_timeline",
             end_date="2024-12-25 01:00:00-08",
             operator=approved_user_operator.operator,
         )
 
         # active, registered operations
         registered_operations = baker.make_recipe(
-            'registration.tests.utils.operation',
+            "registration.tests.utils.operation",
             operator=approved_user_operator.operator,
             status=Operation.Statuses.REGISTERED,
             _quantity=20,
         )
         for operation in registered_operations:
             baker.make_recipe(
-                'registration.tests.utils.operation_designated_operator_timeline',
+                "registration.tests.utils.operation_designated_operator_timeline",
                 operation=operation,
                 operator=approved_user_operator.operator,
                 end_date=None,
@@ -83,7 +87,7 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
 
         # someone else's operations - should not be returned
         baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
+            "registration.tests.utils.operation_designated_operator_timeline",
             _quantity=5,
         )
 
@@ -97,9 +101,9 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
     def test_get_current_operations_for_internal_user():
         # non-registered operation - should be returned
         baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
+            "registration.tests.utils.operation_designated_operator_timeline",
             operation=baker.make_recipe(
-                'registration.tests.utils.operation',
+                "registration.tests.utils.operation",
                 status=Operation.Statuses.DRAFT,
             ),
             end_date=None,
@@ -107,9 +111,9 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
 
         # transferred operation - should not be returned, has an end date
         baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
+            "registration.tests.utils.operation_designated_operator_timeline",
             operation=baker.make_recipe(
-                'registration.tests.utils.operation',
+                "registration.tests.utils.operation",
                 status=Operation.Statuses.REGISTERED,
             ),
             end_date="2024-02-27 01:46:20.789146+00:00",
@@ -117,39 +121,45 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
 
         # active operations
         registered_operations = baker.make_recipe(
-            'registration.tests.utils.operation', status=Operation.Statuses.REGISTERED, _quantity=20
+            "registration.tests.utils.operation",
+            status=Operation.Statuses.REGISTERED,
+            _quantity=20,
         )
         for operation in registered_operations:
             baker.make_recipe(
-                'registration.tests.utils.operation_designated_operator_timeline',
+                "registration.tests.utils.operation_designated_operator_timeline",
                 operation=operation,
                 end_date=None,
             )
 
         timeline = OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(
-            baker.make_recipe('registration.tests.utils.cas_admin')
+            baker.make_recipe("registration.tests.utils.cas_admin")
         )
 
         assert timeline.count() == 21
 
     @staticmethod
     def test_get_previously_owned_operations_by_operator():
-
-        operator = baker.make_recipe('registration.tests.utils.operator')
+        operator = baker.make_recipe("registration.tests.utils.operator")
 
         # transferred operation
         xferred_operation = baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
-            operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
+            "registration.tests.utils.operation_designated_operator_timeline",
+            operation=baker.make_recipe(
+                "registration.tests.utils.operation",
+                status=Operation.Statuses.REGISTERED,
+            ),
             end_date="2024-02-27 01:46:20.789146+00:00",
             operator=operator,
         )
 
         # active operation - should not be returned
         baker.make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
+            "registration.tests.utils.operation_designated_operator_timeline",
             operation=baker.make_recipe(
-                'registration.tests.utils.operation', status=Operation.Statuses.REGISTERED, operator=operator
+                "registration.tests.utils.operation",
+                status=Operation.Statuses.REGISTERED,
+                operator=operator,
             ),
             end_date=None,
         )

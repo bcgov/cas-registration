@@ -1,5 +1,6 @@
 import logging
 from uuid import UUID
+
 from django.db import transaction
 from registration.models import Facility, FacilitySnapshot, Operation
 
@@ -38,7 +39,9 @@ class FacilitySnapshotService:
 
         # Get well authorization numbers
         well_auth_numbers = list(
-            facility.well_authorization_numbers.values_list('well_authorization_number', flat=True)
+            facility.well_authorization_numbers.values_list(
+                "well_authorization_number", flat=True
+            )
         )
 
         snapshot = FacilitySnapshot.objects.create(
@@ -61,5 +64,7 @@ class FacilitySnapshotService:
             updated_by_id=user_guid,
         )
 
-        logger.info(f"Created facility snapshot {snapshot.id} for facility {facility.id} and operation {operation.id}")
+        logger.info(
+            f"Created facility snapshot {snapshot.id} for facility {facility.id} and operation {operation.id}"
+        )
         return snapshot

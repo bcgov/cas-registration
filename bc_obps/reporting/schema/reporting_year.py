@@ -13,10 +13,10 @@ class ReportingYearOut(ModelSchema):
     class Meta:
         model = ReportingYear
         fields = [
-            'reporting_year',
-            'report_due_date',
-            'reporting_window_end',
-            'report_open_date',
+            "reporting_year",
+            "report_due_date",
+            "reporting_window_end",
+            "report_open_date",
         ]
 
     @staticmethod

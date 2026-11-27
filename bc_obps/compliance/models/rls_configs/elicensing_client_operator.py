@@ -1,6 +1,10 @@
 from compliance.enums import ComplianceTableNames
-from rls.enums import RlsRoles, RlsOperations
-from rls.utils.helpers import generate_report_policy_mapping_from_grants, generate_rls_grants, generate_rls_policies
+from rls.enums import RlsOperations, RlsRoles
+from rls.utils.helpers import (
+    generate_report_policy_mapping_from_grants,
+    generate_rls_grants,
+    generate_rls_policies,
+)
 
 
 class Rls:
@@ -21,14 +25,20 @@ class Rls:
         )
     """
     role_grants_mapping = {
-        RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
+        RlsRoles.INDUSTRY_USER: [
+            RlsOperations.SELECT,
+            RlsOperations.INSERT,
+            RlsOperations.UPDATE,
+        ],
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
 
-    grants = generate_rls_grants(role_grants_mapping, ComplianceTableNames.ELICENSING_CLIENT_OPERATOR)
+    grants = generate_rls_grants(
+        role_grants_mapping, ComplianceTableNames.ELICENSING_CLIENT_OPERATOR
+    )
     role_policy_mapping = generate_report_policy_mapping_from_grants(
         role_grants_mapping, using_statement, using_statement
     )

@@ -1,12 +1,13 @@
 import typing
+
 from common.models.scanned_file_storage_mixin import ScannedFileStorageMixin
 from django.db import models
 from django.db.models import CharField, FileField, ForeignKey
 from django.db.models.fields.files import FieldFile
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
-from reporting.models.triggers import immutable_report_version_trigger
 from reporting.models.rls_configs.report_attachment import Rls as ReportAttachmentRls
+from reporting.models.triggers import immutable_report_version_trigger
 
 FOLDER_NAME = "report_attachments/%Y/"
 
@@ -44,7 +45,9 @@ class ReportAttachment(TimeStampedModel, ScannedFileStorageMixin):
         return self.attachment
 
     class Meta(TimeStampedModel.Meta):
-        db_table_comment = "Table containing the file information for the report attachments"
+        db_table_comment = (
+            "Table containing the file information for the report attachments"
+        )
         db_table = 'erc"."report_attachment'
         app_label = "reporting"
         constraints = [

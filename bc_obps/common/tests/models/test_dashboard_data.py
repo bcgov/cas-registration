@@ -31,7 +31,9 @@ class DashboardDataModelTest(BaseTestCase):
         """
         Test that a DashboardData instance is created correctly.
         """
-        self.assertEqual(self.dashboard_data.name, "Test External Registration Operation Details")
+        self.assertEqual(
+            self.dashboard_data.name, "Test External Registration Operation Details"
+        )
         self.assertIsInstance(self.dashboard_data.data, dict)
         self.assertIn("dashboard", self.dashboard_data.data)
         self.assertIn("access_roles", self.dashboard_data.data)

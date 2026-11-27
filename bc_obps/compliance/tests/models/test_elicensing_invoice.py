@@ -1,15 +1,19 @@
 from decimal import Decimal
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from compliance.models.elicensing_invoice import ElicensingInvoice
+
 from common.tests.utils.helpers import BaseTestCase
-from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from compliance.models.elicensing_invoice import ElicensingInvoice
 from model_bakery.baker import make_recipe
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ElicensingInvoiceTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = make_recipe('compliance.tests.utils.elicensing_invoice')
+        cls.test_object = make_recipe("compliance.tests.utils.elicensing_invoice")
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
@@ -31,24 +35,31 @@ class ElicensingInvoiceTest(BaseTestCase):
 class TestElicensingInvoiceRls(BaseTestCase):
     def test_elicensing_invoice_rls_industry_user(self):
         # approved object
-        operator = make_recipe('registration.tests.utils.operator', id=1)
-        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator', operator=operator)
+        operator = make_recipe("registration.tests.utils.operator", id=1)
+        approved_user_operator = make_recipe(
+            "registration.tests.utils.approved_user_operator", operator=operator
+        )
         approved_client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator',
+            "compliance.tests.utils.elicensing_client_operator",
             operator=approved_user_operator.operator,
             client_object_id="1147483647",
         )
         approved_elicensing_invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', id=88, elicensing_client_operator=approved_client_operator
+            "compliance.tests.utils.elicensing_invoice",
+            id=88,
+            elicensing_client_operator=approved_client_operator,
         )
 
         # second object
-        random_operator = make_recipe('registration.tests.utils.operator', id=2)
+        random_operator = make_recipe("registration.tests.utils.operator", id=2)
         random_client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator', operator=random_operator, client_object_id="1147483647"
+            "compliance.tests.utils.elicensing_client_operator",
+            operator=random_operator,
+            client_object_id="1147483647",
         )
         random_elicensing_invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=random_client_operator
+            "compliance.tests.utils.elicensing_invoice",
+            elicensing_client_operator=random_client_operator,
         )
 
         assert ElicensingInvoice.objects.count() == 2
@@ -62,12 +73,12 @@ class TestElicensingInvoiceRls(BaseTestCase):
         def insert_function(cursor):
             ElicensingInvoice.objects.create(
                 elicensing_client_operator=approved_client_operator,
-                outstanding_balance=Decimal('888'),
-                invoice_fee_balance=Decimal('100.01'),
-                invoice_interest_balance=Decimal('0.00'),
+                outstanding_balance=Decimal("888"),
+                invoice_fee_balance=Decimal("100.01"),
+                invoice_interest_balance=Decimal("0.00"),
                 invoice_number="INV-0002",
-                due_date='2024-11-30',
-                last_refreshed='2024-10-01 00:00:00',
+                due_date="2024-11-30",
+                last_refreshed="2024-10-01 00:00:00",
                 is_void=False,
             )
 
@@ -90,7 +101,7 @@ class TestElicensingInvoiceRls(BaseTestCase):
                     SET invoice_fee_balance = %s
                     WHERE id = %s
                 """,
-                (Decimal('999'), approved_elicensing_invoice.id),
+                (Decimal("999"), approved_elicensing_invoice.id),
             )
             return cursor.rowcount
 
@@ -101,7 +112,7 @@ class TestElicensingInvoiceRls(BaseTestCase):
                     SET invoice_fee_balance = %s
                     WHERE id = %s
                 """,
-                (Decimal('999'), random_elicensing_invoice.id),
+                (Decimal("999"), random_elicensing_invoice.id),
             )
             return cursor.rowcount
 
@@ -117,11 +128,17 @@ class TestElicensingInvoiceRls(BaseTestCase):
         )
 
     def test_elicensing_invoice_rls_cas_users(self):
-        operator = make_recipe('registration.tests.utils.operator', id=3)
+        operator = make_recipe("registration.tests.utils.operator", id=3)
         client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator', operator=operator, client_object_id="1147488888"
+            "compliance.tests.utils.elicensing_client_operator",
+            operator=operator,
+            client_object_id="1147488888",
         )
-        make_recipe('compliance.tests.utils.elicensing_invoice', id=888, elicensing_client_operator=client_operator)
+        make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            id=888,
+            elicensing_client_operator=client_operator,
+        )
 
         def select_function(cursor):
             assert ElicensingInvoice.objects.count() == 1

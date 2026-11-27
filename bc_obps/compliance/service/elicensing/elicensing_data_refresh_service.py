@@ -1,26 +1,25 @@
+import logging
+from datetime import date, timedelta
+from decimal import Decimal
 from typing import List
 
+from common.utils import format_timestamp_en_ca
+from compliance.dataclass import LastRefreshMetaData, RefreshWrapperReturn
 from compliance.enums import ComplianceInvoiceTypes
-from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
-from compliance.service.elicensing.schema import Payment
-from django.db import transaction
 from compliance.models import (
+    ComplianceObligation,
+    CompliancePenalty,
+    ElicensingAdjustment,
     ElicensingClientOperator,
     ElicensingInvoice,
     ElicensingLineItem,
     ElicensingPayment,
-    ElicensingAdjustment,
-    ComplianceObligation,
-    CompliancePenalty,
 )
-from datetime import date, timedelta
-from decimal import Decimal
-from compliance.dataclass import LastRefreshMetaData, RefreshWrapperReturn
-import logging
-from pydantic import ValidationError
+from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
+from compliance.service.elicensing.schema import Payment
+from django.db import transaction
 from django.utils import timezone
-
-from common.utils import format_timestamp_en_ca
+from pydantic import ValidationError
 from rls.utils.manager import RlsManager
 
 logger = logging.getLogger(__name__)
@@ -62,9 +61,11 @@ class ElicensingDataRefreshService:
             ValidationError: If no related invoice is found for the given report version ID.
         """
         data_is_fresh = True
-        compliance_obligation: ComplianceObligation = ComplianceObligation.objects.select_related(
-            'elicensing_invoice'
-        ).get(compliance_report_version_id=compliance_report_version_id)
+        compliance_obligation: ComplianceObligation = (
+            ComplianceObligation.objects.select_related("elicensing_invoice").get(
+                compliance_report_version_id=compliance_report_version_id
+            )
+        )
 
         # Map invoice type to penalty type for filtering
         invoice_type_to_penalty_type = {
@@ -75,13 +76,18 @@ class ElicensingDataRefreshService:
         invoice = (
             compliance_obligation.elicensing_invoice
             if invoice_type == ComplianceInvoiceTypes.OBLIGATION
-            else CompliancePenalty.objects.select_related('elicensing_invoice')
-            .get(compliance_obligation=compliance_obligation, penalty_type=invoice_type_to_penalty_type[invoice_type])
+            else CompliancePenalty.objects.select_related("elicensing_invoice")
+            .get(
+                compliance_obligation=compliance_obligation,
+                penalty_type=invoice_type_to_penalty_type[invoice_type],
+            )
             .elicensing_invoice
         )
 
         if not invoice:
-            raise ValidationError(f"No related invoice found for report version ID: {compliance_report_version_id}")
+            raise ValidationError(
+                f"No related invoice found for report version ID: {compliance_report_version_id}"
+            )
         # Limit calls successive calls to refresh an invoice from the elicensing API to once per 15mins
         if (
             invoice.last_refreshed is not None
@@ -95,7 +101,7 @@ class ElicensingDataRefreshService:
                 invoice_number=invoice.invoice_number,
                 supplementary_compliance_report_version_id=supplementary_compliance_report_version_id,
             )
-        except Exception as e:  # noqa: E722
+        except Exception as e:
             logger.error(f"Failed to refresh data by invoice: {str(e)}")
             data_is_fresh = False
 
@@ -105,7 +111,10 @@ class ElicensingDataRefreshService:
     @classmethod
     @transaction.atomic
     def refresh_data_by_invoice(
-        cls, client_operator_id: int, invoice_number: str, supplementary_compliance_report_version_id: int | None = None
+        cls,
+        client_operator_id: int,
+        invoice_number: str,
+        supplementary_compliance_report_version_id: int | None = None,
     ) -> None:
         """
         Refresh BCIERS elicensing data by an invoice number. Refreshes the invoice data and all child data
@@ -116,22 +125,29 @@ class ElicensingDataRefreshService:
             supplementary_compliance_report_version_id: ID of the supplementary compliance report version that triggered this refresh
         """
         with RlsManager.bypass_rls():
-            client_operator = ElicensingClientOperator.objects.get(id=client_operator_id)
+            client_operator = ElicensingClientOperator.objects.get(
+                id=client_operator_id
+            )
             invoice_response = elicensing_api_client.query_invoice(
-                client_id=client_operator.client_object_id, invoice_number=invoice_number
+                client_id=client_operator.client_object_id,
+                invoice_number=invoice_number,
             )
             invoice_record, _ = ElicensingInvoice.objects.update_or_create(
                 elicensing_client_operator=client_operator,
                 invoice_number=invoice_response.invoiceNumber,
                 defaults={
-                    "due_date": date.fromisoformat(invoice_response.invoicePaymentDueDate),
-                    "outstanding_balance": Decimal(invoice_response.invoiceOutstandingBalance).quantize(
-                        Decimal("0.00")
+                    "due_date": date.fromisoformat(
+                        invoice_response.invoicePaymentDueDate
                     ),
-                    "invoice_fee_balance": Decimal(invoice_response.invoiceFeeBalance).quantize(Decimal("0.00")),
-                    "invoice_interest_balance": Decimal(invoice_response.invoiceInterestBalance).quantize(
-                        Decimal("0.00")
-                    ),
+                    "outstanding_balance": Decimal(
+                        invoice_response.invoiceOutstandingBalance
+                    ).quantize(Decimal("0.00")),
+                    "invoice_fee_balance": Decimal(
+                        invoice_response.invoiceFeeBalance
+                    ).quantize(Decimal("0.00")),
+                    "invoice_interest_balance": Decimal(
+                        invoice_response.invoiceInterestBalance
+                    ).quantize(Decimal("0.00")),
                     "last_refreshed": timezone.now(),
                 },
             )
@@ -141,7 +157,9 @@ class ElicensingDataRefreshService:
                 elif fee.feeType == "Interest":
                     fee_type = ElicensingLineItem.LineItemType.INTEREST
                 else:
-                    raise ValueError(f"Unknown fee type: {fee.feeType} for invoice {invoice_number}")
+                    raise ValueError(
+                        f"Unknown fee type: {fee.feeType} for invoice {invoice_number}"
+                    )
 
                 fee_record, _ = ElicensingLineItem.objects.update_or_create(
                     elicensing_invoice=invoice_record,
@@ -151,17 +169,25 @@ class ElicensingDataRefreshService:
                     defaults={
                         "fee_date": date.fromisoformat(fee.feeDate),
                         "description": fee.description,
-                        "base_amount": Decimal(fee.baseAmount).quantize(Decimal("0.00")),
+                        "base_amount": Decimal(fee.baseAmount).quantize(
+                            Decimal("0.00")
+                        ),
                     },
                 )
                 cls._process_fee_payments(fee_record, fee.payments)
-                cls._process_fee_adjustments(fee_record, fee.adjustments, supplementary_compliance_report_version_id)
+                cls._process_fee_adjustments(
+                    fee_record,
+                    fee.adjustments,
+                    supplementary_compliance_report_version_id,
+                )
 
     @classmethod
-    def _process_fee_payments(cls, fee_record: ElicensingLineItem, payments: List[Payment]) -> None:
+    def _process_fee_payments(
+        cls, fee_record: ElicensingLineItem, payments: list[Payment]
+    ) -> None:
         for payment in payments:
             # Quarantine incorrectly applied receipt number in elicensing. This is a temporary fix & should be removed during the work in ticket 468 when the more permanent fix for distributions is applied.
-            if payment.receiptNumber == 'R998167':
+            if payment.receiptNumber == "R998167":
                 continue
 
             """
@@ -173,9 +199,12 @@ class ElicensingDataRefreshService:
             applicable_distributions = [
                 d
                 for d in payment.distributions
-                if d.feeObjectId == fee_record.object_id and d.distributionType in ['Payment', 'Reversal']
+                if d.feeObjectId == fee_record.object_id
+                and d.distributionType in ["Payment", "Reversal"]
             ]
-            sum_distributed_amount = Decimal(sum(d.amount for d in applicable_distributions))
+            sum_distributed_amount = Decimal(
+                sum(d.amount for d in applicable_distributions)
+            )
 
             ElicensingPayment.objects.update_or_create(
                 elicensing_line_item=fee_record,
@@ -190,7 +219,10 @@ class ElicensingDataRefreshService:
 
     @classmethod
     def _process_fee_adjustments(
-        cls, fee_record: ElicensingLineItem, adjustments: list, supplementary_compliance_report_version_id: int | None
+        cls,
+        fee_record: ElicensingLineItem,
+        adjustments: list,
+        supplementary_compliance_report_version_id: int | None,
     ) -> None:
         for adjustment in adjustments:
             adjustment_defaults = {
@@ -227,7 +259,9 @@ class ElicensingDataRefreshService:
         last_refreshed = getattr(invoice, "last_refreshed", None)
 
         if last_refreshed:
-            last_refreshed_display = format_timestamp_en_ca(getattr(invoice, "last_refreshed", None))
+            last_refreshed_display = format_timestamp_en_ca(
+                getattr(invoice, "last_refreshed", None)
+            )
         else:
             last_refreshed_display = ""
 

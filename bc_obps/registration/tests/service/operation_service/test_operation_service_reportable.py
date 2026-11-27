@@ -1,6 +1,7 @@
-import pytest
+from unittest.mock import MagicMock, patch
 from uuid import uuid4
-from unittest.mock import patch, MagicMock
+
+import pytest
 from model_bakery import baker
 from registration.models import Operation
 from registration.service.operation_service import OperationService
@@ -18,12 +19,24 @@ class TestOperationServiceReportable:
             Operation.Purposes.REPORTING_OPERATION,
         ]
 
-        assert OperationService._get_registration_purposes_for_operation_type(Operation.Types.SFO) == expected_purposes
-        assert OperationService._get_registration_purposes_for_operation_type(Operation.Types.LFO) == expected_purposes
+        assert (
+            OperationService._get_registration_purposes_for_operation_type(
+                Operation.Types.SFO
+            )
+            == expected_purposes
+        )
+        assert (
+            OperationService._get_registration_purposes_for_operation_type(
+                Operation.Types.LFO
+            )
+            == expected_purposes
+        )
 
     @staticmethod
     def test_get_registration_purposes_for_operation_type_eio():
-        assert OperationService._get_registration_purposes_for_operation_type(Operation.Types.EIO) == [
+        assert OperationService._get_registration_purposes_for_operation_type(
+            Operation.Types.EIO
+        ) == [
             Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
         ]
 
@@ -53,8 +66,12 @@ class TestOperationServiceReportable:
         mock_get_purposes.assert_called_once_with(Operation.Types.SFO)
 
     @staticmethod
-    @patch("registration.service.data_access_service.user_service.UserDataAccessService.get_user_operator_by_user")
-    @patch("reporting.service.reporting_year_service.ReportingYearService.get_previous_reporting_years")
+    @patch(
+        "registration.service.data_access_service.user_service.UserDataAccessService.get_user_operator_by_user"
+    )
+    @patch(
+        "reporting.service.reporting_year_service.ReportingYearService.get_previous_reporting_years"
+    )
     def test_list_previous_reportable_operations(
         mock_get_previous_reporting_years: MagicMock,
         mock_get_user_operator: MagicMock,
@@ -83,7 +100,7 @@ class TestOperationServiceReportable:
             "registration.tests.utils.operation_designated_operator_timeline",
             operation=designated_op,
             operator=user_operator.operator,
-            start_date='2090-01-01',
+            start_date="2090-01-01",
             end_date=None,
         )
 
@@ -100,8 +117,8 @@ class TestOperationServiceReportable:
             "registration.tests.utils.operation_designated_operator_timeline",
             operation=op_with_report_2091,
             operator=user_operator.operator,
-            start_date='2090-01-01',
-            end_date='2099-01-01',
+            start_date="2090-01-01",
+            end_date="2099-01-01",
         )
 
         # Operation that is not designated to the operator via a timeline record, should not be included in the results
@@ -128,8 +145,15 @@ class TestOperationServiceReportable:
 
         assert len(results) == 3
         # Two results from the designated operation with no reports for the 2 reporting years
-        assert len([x for x in results if x.get("operation_name") == "Designated Op"]) == 2
+        assert (
+            len([x for x in results if x.get("operation_name") == "Designated Op"]) == 2
+        )
         # One result from the designated operation with a report for the 2091 reporting year
-        assert len([x for x in results if x.get("operation_name") == "Op With 2021 Report"]) == 1
+        assert (
+            len(
+                [x for x in results if x.get("operation_name") == "Op With 2021 Report"]
+            )
+            == 1
+        )
         # No results for operation that should be ignored
         assert len([x for x in results if x.get("operation_name") == "Ignored Op"]) == 0

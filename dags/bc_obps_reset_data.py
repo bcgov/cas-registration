@@ -38,7 +38,6 @@ DAG to reset the data in the BCIERS database to a freshly deployed state.
     tags=["bciers"],
 )
 def reset_data(cycle_backend: bool = True):
-
     @task
     def reset_attachment_storage_task():
         trigger_k8s_cronjob("reset-attachment-storage", BCIERS_NAMESPACE)
@@ -58,7 +57,9 @@ def reset_data(cycle_backend: bool = True):
         service_account_name=SERVICE_ACCOUNT_NAME,
         image=K8S_IMAGE,
         cmds=["bash", "-c"],
-        arguments=[f"kubectl rollout restart deployment/{BACKEND_DEPLOYMENT_NAME} -n {BCIERS_NAMESPACE}"],
+        arguments=[
+            f"kubectl rollout restart deployment/{BACKEND_DEPLOYMENT_NAME} -n {BCIERS_NAMESPACE}"
+        ],
         get_logs=True,
     )
 
@@ -98,7 +99,9 @@ def wait_for_backend_rollout():
         service_account_name=SERVICE_ACCOUNT_NAME,
         image=K8S_IMAGE,
         cmds=["bash", "-c"],
-        arguments=[f"kubectl rollout status deployment/{BACKEND_DEPLOYMENT_NAME} -n {BCIERS_NAMESPACE} --timeout=10m"],
+        arguments=[
+            f"kubectl rollout status deployment/{BACKEND_DEPLOYMENT_NAME} -n {BCIERS_NAMESPACE} --timeout=10m"
+        ],
         get_logs=True,
         wait_until_job_complete=True,
     )

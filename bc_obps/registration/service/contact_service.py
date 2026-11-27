@@ -1,29 +1,33 @@
-from typing import Optional
-from django.db.models import QuerySet
+from typing import Dict, Optional, Union, cast
 from uuid import UUID
+
 from common.exceptions import UserError
+from django.db import transaction
+from django.db.models import QuerySet
+from ninja import Query
+from ninja.types import DictStrAny
 from registration.constants import UNAUTHORIZED_MESSAGE
+from registration.models.business_role import BusinessRole
 from registration.models.contact import Contact
 from registration.schema import (
     ContactFilterSchema,
-    ContactWithPlacesAssigned,
-    PlacesAssigned,
     ContactIn,
+    ContactWithPlacesAssigned,
     OperationRepresentativeIn,
+    PlacesAssigned,
 )
-from registration.service.data_access_service.contact_service import ContactDataAccessService
+from registration.service.data_access_service.address_service import (
+    AddressDataAccessService,
+)
+from registration.service.data_access_service.contact_service import (
+    ContactDataAccessService,
+)
 from registration.service.data_access_service.user_service import UserDataAccessService
-from ninja import Query
-from ninja.types import DictStrAny
-from django.db import transaction
-from typing import cast, Union, Dict
-from registration.models.business_role import BusinessRole
-from registration.service.data_access_service.address_service import AddressDataAccessService
 
 
 class ContactService:
     @classmethod
-    def get_if_authorized(cls, user_guid: UUID, contact_id: int) -> Optional[Contact]:
+    def get_if_authorized(cls, user_guid: UUID, contact_id: int) -> Contact | None:
         user = UserDataAccessService.get_by_guid(user_guid)
         user_contacts = ContactDataAccessService.get_all_contacts_for_user(user)
         contact = user_contacts.filter(id=contact_id).first()
@@ -32,7 +36,7 @@ class ContactService:
         return contact
 
     @classmethod
-    def get_contact_id_for_user(cls, user_guid: UUID) -> Optional[int]:
+    def get_contact_id_for_user(cls, user_guid: UUID) -> int | None:
         user = UserDataAccessService.get_by_guid(user_guid)
         contact = ContactDataAccessService.get_contact_for_user(user)
         return contact.id if contact else None
@@ -41,16 +45,20 @@ class ContactService:
     def list_contacts(
         cls,
         user_guid: UUID,
-        sort_field: Optional[str],
-        sort_order: Optional[str],
+        sort_field: str | None,
+        sort_order: str | None,
         filters: ContactFilterSchema = Query(...),
     ) -> QuerySet[Contact]:
         user = UserDataAccessService.get_by_guid(user_guid)
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
-        base_qs = ContactDataAccessService.get_all_contacts_for_user(user).select_related("operator")
+        base_qs = ContactDataAccessService.get_all_contacts_for_user(
+            user
+        ).select_related("operator")
 
-        return filters.filter(base_qs).order_by(sort_by, f"{sort_direction}created_at", f"{sort_direction}id")
+        return filters.filter(base_qs).order_by(
+            sort_by, f"{sort_direction}created_at", f"{sort_direction}id"
+        )
 
     @classmethod
     def list_operation_representatives(
@@ -58,55 +66,79 @@ class ContactService:
         operation_id: UUID,
         user_guid: UUID,
     ) -> QuerySet[Contact]:
-        from registration.service.operation_service import OperationService  # to avoid circular imports
+        from registration.service.operation_service import (
+            OperationService,
+        )  # to avoid circular imports
 
-        operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
-        return operation.contacts.order_by('-created_at')
+        operation = OperationService.get_if_authorized(
+            user_guid, operation_id, ["id", "operator_id"]
+        )
+        return operation.contacts.order_by("-created_at")
 
     @classmethod
     @transaction.atomic()
-    def create_contact(cls, user_guid: UUID, payload: Union[ContactIn, OperationRepresentativeIn]) -> Contact:
+    def create_contact(
+        cls, user_guid: UUID, payload: ContactIn | OperationRepresentativeIn
+    ) -> Contact:
         contact_data: dict = payload.dict(include={*ContactIn.Meta.fields})
         # `business_role` is a mandatory field in the DB but we don't collect it from the user
         # so we set it to a default value here and we can change it later if needed
-        contact_data['business_role'] = BusinessRole.objects.get(role_name="Operation Representative")
-        operator_id = UserDataAccessService.get_user_operator_by_user(user_guid).operator.id
-        contact_data['operator_id'] = operator_id
-        cls._validate_contact_email(None, operator_id, contact_data['email'])
+        contact_data["business_role"] = BusinessRole.objects.get(
+            role_name="Operation Representative"
+        )
+        operator_id = UserDataAccessService.get_user_operator_by_user(
+            user_guid
+        ).operator.id
+        contact_data["operator_id"] = operator_id
+        cls._validate_contact_email(None, operator_id, contact_data["email"])
         contact: Contact
         contact = ContactDataAccessService.update_or_create(None, contact_data)
 
         # Create address
         address_data = payload.dict(
-            include={'street_address', 'municipality', 'province', 'postal_code'}, exclude_none=True
+            include={"street_address", "municipality", "province", "postal_code"},
+            exclude_none=True,
         )
 
         if address_data:
             address = AddressDataAccessService.create_address(address_data)
             contact.address = address
             # not calling `set_create_or_update` because we are updating the contact in the same transaction
-            contact.save(update_fields=['address_id'])
+            contact.save(update_fields=["address_id"])
         return contact
 
     @classmethod
     @transaction.atomic()
     def update_contact(
-        cls, user_guid: UUID, contact_id: int, payload: Union[ContactIn, OperationRepresentativeIn]
+        cls,
+        user_guid: UUID,
+        contact_id: int,
+        payload: ContactIn | OperationRepresentativeIn,
     ) -> Contact:
         # Make sure user has access to the contact
         if not ContactDataAccessService.user_has_access(user_guid, contact_id):
             raise Exception(UNAUTHORIZED_MESSAGE)
 
-        address_data = payload.dict(include={'street_address', 'municipality', 'province', 'postal_code'})
-        contact_data: Dict = payload.dict(
-            include=['first_name', 'last_name', 'email', 'phone_number', 'position_title']
+        address_data = payload.dict(
+            include={"street_address", "municipality", "province", "postal_code"}
+        )
+        contact_data: dict = payload.dict(
+            include=[
+                "first_name",
+                "last_name",
+                "email",
+                "phone_number",
+                "position_title",
+            ]
         )
         # Prevent updating contact if the contact is an 'Operation Representative' and required address fields are missing
         cls._validate_operation_representative_address(contact_id, address_data)
 
         # Prevent updating contact if the email is already in use by another contact associated with the same operator
-        operator_id = UserDataAccessService.get_user_operator_by_user(user_guid).operator.id
-        email: str = contact_data['email']
+        operator_id = UserDataAccessService.get_user_operator_by_user(
+            user_guid
+        ).operator.id
+        email: str = contact_data["email"]
         cls._validate_contact_email(contact_id, operator_id, email)
         # UPDATE CONTACT
 
@@ -114,20 +146,24 @@ class ContactService:
 
         # UPDATE ADDRESS
         if any(address_data.values()):  # if any address data is provided
-            address = AddressDataAccessService.upsert_address_from_data(address_data, contact.address_id)
+            address = AddressDataAccessService.upsert_address_from_data(
+                address_data, contact.address_id
+            )
             contact.address = address
-            contact.save(update_fields=['address_id'])
+            contact.save(update_fields=["address_id"])
         else:
             existing_contact_address = contact.address
             if existing_contact_address:
                 contact.address = None
-                contact.save(update_fields=['address'])
+                contact.save(update_fields=["address"])
                 # contact has an address and the payload has no address data, remove the address
                 existing_contact_address.delete()
         return contact
 
     @classmethod
-    def get_with_places_assigned(cls, user_guid: UUID, contact_id: int) -> Optional[ContactWithPlacesAssigned]:
+    def get_with_places_assigned(
+        cls, user_guid: UUID, contact_id: int
+    ) -> ContactWithPlacesAssigned | None:
         contact = cls.get_if_authorized(user_guid, contact_id)
         places_assigned = []
         if contact:
@@ -146,28 +182,38 @@ class ContactService:
         return None
 
     @classmethod
-    def raise_exception_if_contact_missing_address_information(cls, contact_id: int) -> None:
+    def raise_exception_if_contact_missing_address_information(
+        cls, contact_id: int
+    ) -> None:
         """This function checks that a contact has a complete address record (contact.address exists and all fields in the address model have a value). In general in the app, address is not mandatory, but in certain cases (e.g., when a contact is assigned to an operation as the Operation Representative), the business area requires the contact to have an address."""
         contact = ContactDataAccessService.get_by_id(contact_id)
         address = contact.address
         if not address or any(
-            not getattr(address, field, None) for field in ['street_address', 'municipality', 'province', 'postal_code']
+            not getattr(address, field, None)
+            for field in ["street_address", "municipality", "province", "postal_code"]
         ):
             raise UserError(
-                f'The contact {contact.first_name} {contact.last_name} is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here.'
+                f"The contact {contact.first_name} {contact.last_name} is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here."
             )
 
     @classmethod
-    def _validate_operation_representative_address(cls, contact_id: int, address_data: DictStrAny) -> None:
+    def _validate_operation_representative_address(
+        cls, contact_id: int, address_data: DictStrAny
+    ) -> None:
         """Raises an exception if the contact is an 'Operation Representative' and required address fields are missing."""
         contact = ContactDataAccessService.get_by_id(contact_id)
         if contact.business_role.role_name == "Operation Representative" and any(
-            not address_data.get(field) for field in ['street_address', 'municipality', 'province', 'postal_code']
+            not address_data.get(field)
+            for field in ["street_address", "municipality", "province", "postal_code"]
         ):
-            raise UserError("This contact is an 'Operation Representative' and must have all address-related fields.")
+            raise UserError(
+                "This contact is an 'Operation Representative' and must have all address-related fields."
+            )
 
     @classmethod
-    def _validate_contact_email(cls, contact_id: Optional[int], operator_id: UUID, email: str) -> None:
+    def _validate_contact_email(
+        cls, contact_id: int | None, operator_id: UUID, email: str
+    ) -> None:
         """Raises an exception if the contact email is already in use by another contact associated with the same operator.
         Slightly different error messages are raised depending on whether this is from an update or create.
         (contact_id is not None for update)

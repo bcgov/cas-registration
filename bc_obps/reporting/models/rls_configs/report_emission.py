@@ -1,9 +1,9 @@
 from reporting.enums.enums import ReportingTableNames
-from rls.enums import RlsRoles, RlsOperations
+from rls.enums import RlsOperations, RlsRoles
 from rls.utils.helpers import (
+    generate_m2m_rls,
     generate_report_policy_mapping_from_grants,
     generate_rls_grants,
-    generate_m2m_rls,
     generate_rls_policies,
 )
 from rls.utils.m2m import M2MPolicyStatements
@@ -12,7 +12,7 @@ from rls.utils.policy import RlsPolicy
 
 class Rls:
     enable_rls = True
-    schema = 'erc'
+    schema = "erc"
     table = ReportingTableNames.REPORT_EMISSION
     role_grants_mapping = {
         RlsRoles.INDUSTRY_USER: [

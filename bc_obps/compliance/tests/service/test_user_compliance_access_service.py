@@ -1,12 +1,12 @@
-import pytest
-from uuid import uuid4
 from unittest.mock import patch
-from model_bakery import baker
+from uuid import uuid4
 
+import pytest
 from compliance.service.user_compliance_access_service import (
     UserComplianceAccessService,
     UserStatusEnum,
 )
+from model_bakery import baker
 
 pytestmark = pytest.mark.django_db
 
@@ -20,8 +20,12 @@ DASHBOARD_SERVICE_PATH = f"{BASE_PATH}.ComplianceDashboardService"
 
 # Method paths to patch
 GET_OPERATOR_BY_USER_PATH = f"{USER_DATA_ACCESS_PATH}.get_operator_by_user"
-CHECK_COMPLIANCE_REPORTS_PATH = f"{OPERATOR_DATA_ACCESS_PATH}.check_operator_has_compliance_reports"
-GET_REPORT_VERSION_BY_ID_PATH = f"{DASHBOARD_SERVICE_PATH}.get_compliance_report_version_by_id"
+CHECK_COMPLIANCE_REPORTS_PATH = (
+    f"{OPERATOR_DATA_ACCESS_PATH}.check_operator_has_compliance_reports"
+)
+GET_REPORT_VERSION_BY_ID_PATH = (
+    f"{DASHBOARD_SERVICE_PATH}.get_compliance_report_version_by_id"
+)
 
 OPERATOR_GUID = uuid4()
 
@@ -34,7 +38,9 @@ def user_guid():
 @pytest.fixture
 def mock_user_data_access():
     with patch(GET_OPERATOR_BY_USER_PATH) as mock:
-        operator = baker.make_recipe("registration.tests.utils.operator", id=OPERATOR_GUID)
+        operator = baker.make_recipe(
+            "registration.tests.utils.operator", id=OPERATOR_GUID
+        )
         mock.return_value = operator
         yield mock
 
@@ -89,8 +95,12 @@ class TestUserComplianceAccessService:
         mock_operation_data_access.return_value = True
 
         # Build the CRV hierarchy owned by the operator
-        report = baker.make_recipe("compliance.tests.utils.report", operator_id=OPERATOR_GUID)
-        compliance_report = baker.make_recipe("compliance.tests.utils.compliance_report", report=report)
+        report = baker.make_recipe(
+            "compliance.tests.utils.report", operator_id=OPERATOR_GUID
+        )
+        compliance_report = baker.make_recipe(
+            "compliance.tests.utils.compliance_report", report=report
+        )
         baker.make_recipe(
             "compliance.tests.utils.compliance_report_version",
             id=123,

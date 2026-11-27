@@ -1,9 +1,9 @@
 from django.db import models
 from reporting.models import ActivitySourceTypeJsonSchema, ReportDataBaseModel
 from reporting.models.report_activity import ReportActivity
+from reporting.models.rls_configs.report_source_type import Rls as ReportSourceTypeRls
 from reporting.models.source_type import SourceType
 from reporting.models.triggers import immutable_report_version_trigger
-from reporting.models.rls_configs.report_source_type import Rls as ReportSourceTypeRls
 
 
 class ReportSourceType(ReportDataBaseModel):
@@ -27,7 +27,9 @@ class ReportSourceType(ReportDataBaseModel):
     )
 
     class Meta(ReportDataBaseModel.Meta):
-        db_table_comment = "A table to store the reported source type-specific data, in a JSON format"
+        db_table_comment = (
+            "A table to store the reported source type-specific data, in a JSON format"
+        )
         db_table = 'erc"."report_source_type'
         app_label = "reporting"
         constraints = [

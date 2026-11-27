@@ -1,11 +1,16 @@
 from django.test import TestCase
+
 from .base_program_configuration_test import BaseProgramConfigurationTest
 
 
-class NaturalGasNonCompressionNonProcessing2024Test(BaseProgramConfigurationTest, TestCase):
+class NaturalGasNonCompressionNonProcessing2024Test(
+    BaseProgramConfigurationTest, TestCase
+):
     @classmethod
     def setUpTestData(cls):
-        cls.activity_name = "Natural gas transmission (other than compression and processing)"
+        cls.activity_name = (
+            "Natural gas transmission (other than compression and processing)"
+        )
         cls.year = 2024
         cls.config_element_count = 91
         cls.config = {

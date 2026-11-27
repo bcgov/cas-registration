@@ -1,24 +1,29 @@
-from common.enums import Schemas
-from django.core.validators import RegexValidator
-from registration.enums.enums import RegistrationTableNames
-from registration.models.user import User
 import typing
+
+from common.enums import Schemas
 from common.models import BaseModel
+from django.core.validators import RegexValidator
 from django.db import models
-from registration.constants import BCGHG_ID_REGEX
-from simple_history.models import HistoricalRecords
 from django.utils import timezone
-from registration.models.rls_configs.bc_greenhouse_gas_id import Rls as BcGreenhouseGasIdRls
+from registration.constants import BCGHG_ID_REGEX
+from registration.enums.enums import RegistrationTableNames
+from registration.models.rls_configs.bc_greenhouse_gas_id import (
+    Rls as BcGreenhouseGasIdRls,
+)
+from registration.models.user import User
+from simple_history.models import HistoricalRecords
 
 
 class BcGreenhouseGasId(BaseModel):
-
     id = models.CharField(
         primary_key=True,
         max_length=255,
         db_comment="The BCGHG (BC Greenhouse Gas) ID assigned to an operation or facility. Primary key.",
         validators=[
-            RegexValidator(regex=BCGHG_ID_REGEX, message="BCGHG ID should be 11 digits, starting with 1 or 2.")
+            RegexValidator(
+                regex=BCGHG_ID_REGEX,
+                message="BCGHG ID should be 11 digits, starting with 1 or 2.",
+            )
         ],
     )
     issued_at = models.DateTimeField(
@@ -44,7 +49,9 @@ class BcGreenhouseGasId(BaseModel):
 
     class Meta:
         db_table_comment = "Table to store BCGHG (BC Greenhouse Gas) ID metadata. Once an operation or facility meets the criteria for an ID, then it is issued one."
-        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.BC_GREENHOUSE_GAS_ID.value}'
+        db_table = (
+            f'{Schemas.ERC.value}"."{RegistrationTableNames.BC_GREENHOUSE_GAS_ID.value}'
+        )
 
     Rls = BcGreenhouseGasIdRls
 

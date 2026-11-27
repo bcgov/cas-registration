@@ -1,14 +1,15 @@
-from unittest.mock import patch
-from django.test import SimpleTestCase, override_settings, Client
 from decimal import Decimal
-from registration.utils import custom_reverse_lazy
+from unittest.mock import patch
+
 from compliance.dataclass import BCCRUnit, ComplianceUnitsPageData, RefreshWrapperReturn
+from django.test import Client, SimpleTestCase, override_settings
+from registration.utils import custom_reverse_lazy
 
 # Constants
 VALID_ACCOUNT_ID = "123456789012345"
 VALID_COMPLIANCE_REPORT_VERSION_ID = 1
 APPLY_COMPLIANCE_UNITS_SERVICE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.get_apply_compliance_units_page_data"
-VALIDATE_PERMISSION_PATH = 'common.permissions.validate_all'
+VALIDATE_PERMISSION_PATH = "common.permissions.validate_all"
 APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.apply_compliance_units"
 COMPLIANCE_ADJUSTMENT_SERVICE_CREATE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment_for_current_version"
 CAN_APPLY_COMPLIANCE_UNITS_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.can_apply_compliance_units"
@@ -16,7 +17,9 @@ ELICENSING_DATA_REFRESH_WRAPPER_PATH = "compliance.service.bc_carbon_registry.ap
 
 
 @override_settings(MIDDLEWARE=[])  # Disable middleware to prevent database queries
-class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid database access
+class TestComplianceUnitsEndpoint(
+    SimpleTestCase
+):  # Use SimpleTestCase to avoid database access
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -26,7 +29,10 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
     def _get_endpoint_url(account_id, compliance_report_version_id):
         return custom_reverse_lazy(
             "get_apply_compliance_units_page_data",
-            kwargs={"account_id": account_id, "compliance_report_version_id": compliance_report_version_id},
+            kwargs={
+                "account_id": account_id,
+                "compliance_report_version_id": compliance_report_version_id,
+            },
         )
 
     @patch(APPLY_COMPLIANCE_UNITS_SERVICE_PATH)
@@ -54,7 +60,9 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         )
 
         # Act
-        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, VALID_COMPLIANCE_REPORT_VERSION_ID))
+        response = self.client.get(
+            self._get_endpoint_url(VALID_ACCOUNT_ID, VALID_COMPLIANCE_REPORT_VERSION_ID)
+        )
 
         # Assert
         assert response.status_code == 200
@@ -63,8 +71,12 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         assert response_data["bccr_compliance_account_id"] == VALID_ACCOUNT_ID
         assert Decimal(response_data["charge_rate"]) == Decimal("40.00")
         assert Decimal(response_data["outstanding_balance"]) == Decimal("30000.00")
-        assert Decimal(response_data["compliance_unit_cap_limit"]) == Decimal("15000.00")
-        assert Decimal(response_data["compliance_unit_cap_remaining"]) == Decimal("15000.00")
+        assert Decimal(response_data["compliance_unit_cap_limit"]) == Decimal(
+            "15000.00"
+        )
+        assert Decimal(response_data["compliance_unit_cap_remaining"]) == Decimal(
+            "15000.00"
+        )
         assert Decimal(response_data["max_credit_usage_percentage"]) == Decimal("0.50")
         assert len(response_data["bccr_units"]) == 1
         assert response_data["bccr_units"][0]["type"] == "Earned Credits"
@@ -81,10 +93,14 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
     def test_invalid_account_id_format(self, mock_permission):
         mock_permission.return_value = True
         # Act
-        response = self.client.get(self._get_endpoint_url("12345", VALID_COMPLIANCE_REPORT_VERSION_ID))
+        response = self.client.get(
+            self._get_endpoint_url("12345", VALID_COMPLIANCE_REPORT_VERSION_ID)
+        )
         # Assert
         assert response.status_code == 422
-        assert "Account Id: String should match pattern" in response.json().get("message")
+        assert "Account Id: String should match pattern" in response.json().get(
+            "message"
+        )
 
     @patch(APPLY_COMPLIANCE_UNITS_SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
@@ -101,7 +117,9 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
             bccr_units=[],
         )
         # Act
-        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, VALID_COMPLIANCE_REPORT_VERSION_ID))
+        response = self.client.get(
+            self._get_endpoint_url(VALID_ACCOUNT_ID, VALID_COMPLIANCE_REPORT_VERSION_ID)
+        )
         # Assert
         assert response.status_code == 200
         response_data = response.json()
@@ -129,7 +147,9 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         )
 
         # Act
-        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, VALID_COMPLIANCE_REPORT_VERSION_ID))
+        response = self.client.get(
+            self._get_endpoint_url(VALID_ACCOUNT_ID, VALID_COMPLIANCE_REPORT_VERSION_ID)
+        )
 
         # Assert
         assert response.status_code == 200
@@ -138,8 +158,12 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         assert response_data["bccr_compliance_account_id"] == VALID_ACCOUNT_ID
         assert Decimal(response_data["charge_rate"]) == Decimal("40.00")
         assert Decimal(response_data["outstanding_balance"]) == Decimal("24000.00")
-        assert Decimal(response_data["compliance_unit_cap_limit"]) == Decimal("12000.00")
-        assert Decimal(response_data["compliance_unit_cap_remaining"]) == Decimal("5000.00")
+        assert Decimal(response_data["compliance_unit_cap_limit"]) == Decimal(
+            "12000.00"
+        )
+        assert Decimal(response_data["compliance_unit_cap_remaining"]) == Decimal(
+            "5000.00"
+        )
         assert response_data["bccr_units"] == []
 
     @patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH)
@@ -160,7 +184,9 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         mock_apply_compliance_units.return_value = None
         mock_create_adjustment.return_value = None
         mock_can_apply_units.return_value = True
-        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=None)
+        mock_refresh_data.return_value = RefreshWrapperReturn(
+            data_is_fresh=True, invoice=None
+        )
 
         test_units = [
             {
@@ -190,7 +216,9 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
 
         # Act
         response = self.client.post(
-            self._get_endpoint_url(VALID_ACCOUNT_ID, VALID_COMPLIANCE_REPORT_VERSION_ID),
+            self._get_endpoint_url(
+                VALID_ACCOUNT_ID, VALID_COMPLIANCE_REPORT_VERSION_ID
+            ),
             data=payload,
             content_type="application/json",  # Important for Ninja to parse as JSON
         )
@@ -227,7 +255,9 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         mock_apply_compliance_units.return_value = None
         mock_create_adjustment.return_value = None
         mock_can_apply_units.return_value = True
-        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=None)
+        mock_refresh_data.return_value = RefreshWrapperReturn(
+            data_is_fresh=True, invoice=None
+        )
 
         test_units = [
             {
@@ -260,12 +290,16 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
             "bccr_holding_account_id": VALID_ACCOUNT_ID,
             "bccr_compliance_account_id": "987654321098765",
             "bccr_units": test_units,
-            "total_equivalent_value": str(Decimal("80.00")),  # Use string to match Ninja schema input
+            "total_equivalent_value": str(
+                Decimal("80.00")
+            ),  # Use string to match Ninja schema input
         }
 
         # Act
         response = self.client.post(
-            self._get_endpoint_url(VALID_ACCOUNT_ID, VALID_COMPLIANCE_REPORT_VERSION_ID),
+            self._get_endpoint_url(
+                VALID_ACCOUNT_ID, VALID_COMPLIANCE_REPORT_VERSION_ID
+            ),
             data=payload,
             content_type="application/json",
         )
@@ -282,7 +316,9 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
             compliance_report_version_id=VALID_COMPLIANCE_REPORT_VERSION_ID,
             payload={
                 **payload,
-                "total_equivalent_value": Decimal("80.00"),  # Match actual method input type
+                "total_equivalent_value": Decimal(
+                    "80.00"
+                ),  # Match actual method input type
             },
         )
         mock_can_apply_units.assert_called_once_with(VALID_COMPLIANCE_REPORT_VERSION_ID)
@@ -301,7 +337,9 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
 
         # Act
         response = self.client.post(
-            self._get_endpoint_url(invalid_account_id, VALID_COMPLIANCE_REPORT_VERSION_ID),
+            self._get_endpoint_url(
+                invalid_account_id, VALID_COMPLIANCE_REPORT_VERSION_ID
+            ),
             data=payload,
             content_type="application/json",
         )

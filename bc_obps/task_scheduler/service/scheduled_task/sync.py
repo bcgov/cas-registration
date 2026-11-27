@@ -1,5 +1,6 @@
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
+
 from task_scheduler.models import ScheduledTask
 
 logger = logging.getLogger(__name__)
@@ -7,30 +8,46 @@ logger = logging.getLogger(__name__)
 
 class ScheduledTaskSynchronizer:
     @classmethod
-    def sync_tasks(cls, discovered_tasks: Dict[str, Dict[str, Any]]) -> Dict[str, int]:
-        existing_tasks = {task.function_path: task for task in ScheduledTask.objects.all()}
-        created_count, updated_count = cls._process_discovered_tasks(discovered_tasks, existing_tasks)
-        deactivated_count = cls._deactivate_removed_tasks(discovered_tasks, existing_tasks)
+    def sync_tasks(cls, discovered_tasks: dict[str, dict[str, Any]]) -> dict[str, int]:
+        existing_tasks = {
+            task.function_path: task for task in ScheduledTask.objects.all()
+        }
+        created_count, updated_count = cls._process_discovered_tasks(
+            discovered_tasks, existing_tasks
+        )
+        deactivated_count = cls._deactivate_removed_tasks(
+            discovered_tasks, existing_tasks
+        )
 
-        return {'created': created_count, 'updated': updated_count, 'deactivated': deactivated_count}
+        return {
+            "created": created_count,
+            "updated": updated_count,
+            "deactivated": deactivated_count,
+        }
 
     @classmethod
     def _process_discovered_tasks(
-        cls, discovered_tasks: Dict[str, Dict[str, Any]], existing_tasks: Dict[str, ScheduledTask]
+        cls,
+        discovered_tasks: dict[str, dict[str, Any]],
+        existing_tasks: dict[str, ScheduledTask],
     ) -> tuple[int, int]:
         created_count = 0
         updated_count = 0
 
         for function_path, task_config in discovered_tasks.items():
             if function_path in existing_tasks:
-                updated_count += cls._handle_existing_task(existing_tasks[function_path], task_config)
+                updated_count += cls._handle_existing_task(
+                    existing_tasks[function_path], task_config
+                )
             else:
                 created_count += cls._create_new_task(function_path, task_config)
 
         return created_count, updated_count
 
     @classmethod
-    def _handle_existing_task(cls, task: ScheduledTask, task_config: Dict[str, Any]) -> int:
+    def _handle_existing_task(
+        cls, task: ScheduledTask, task_config: dict[str, Any]
+    ) -> int:
         updated = 0
         if cls._update_task_if_needed(task, task_config):
             updated = 1
@@ -39,19 +56,21 @@ class ScheduledTaskSynchronizer:
         return updated
 
     @classmethod
-    def _update_task_if_needed(cls, task: ScheduledTask, task_config: Dict[str, Any]) -> bool:
+    def _update_task_if_needed(
+        cls, task: ScheduledTask, task_config: dict[str, Any]
+    ) -> bool:
         updated = False
 
         # Check each field for changes
         fields_to_check = [
-            'schedule_type',
-            'schedule_interval',
-            'schedule_hour',
-            'schedule_minute',
-            'schedule_day_of_week',
-            'schedule_day_of_month',
-            'schedule_month',
-            'tag',
+            "schedule_type",
+            "schedule_interval",
+            "schedule_hour",
+            "schedule_minute",
+            "schedule_day_of_week",
+            "schedule_day_of_month",
+            "schedule_month",
+            "tag",
         ]
 
         for field in fields_to_check:
@@ -73,13 +92,13 @@ class ScheduledTaskSynchronizer:
     def _activate_task_if_needed(cls, task: ScheduledTask) -> None:
         if task.status == ScheduledTask.TaskStatus.INACTIVE:
             task.status = ScheduledTask.TaskStatus.PENDING
-            task.save(update_fields=['status'])
+            task.save(update_fields=["status"])
 
     @classmethod
-    def _create_new_task(cls, function_path: str, task_config: Dict[str, Any]) -> bool:
+    def _create_new_task(cls, function_path: str, task_config: dict[str, Any]) -> bool:
         try:
             # Extract schedule parameters
-            schedule_type = task_config.get('schedule_type')
+            schedule_type = task_config.get("schedule_type")
             if not schedule_type:
                 logger.warning(f"{function_path} missing schedule_type")
                 return False
@@ -88,13 +107,13 @@ class ScheduledTaskSynchronizer:
             task = ScheduledTask(
                 function_path=function_path,
                 schedule_type=schedule_type,
-                tag=task_config.get('tag', ''),
-                schedule_interval=task_config.get('schedule_interval'),
-                schedule_hour=task_config.get('schedule_hour'),
-                schedule_minute=task_config.get('schedule_minute'),
-                schedule_day_of_week=task_config.get('schedule_day_of_week'),
-                schedule_day_of_month=task_config.get('schedule_day_of_month'),
-                schedule_month=task_config.get('schedule_month'),
+                tag=task_config.get("tag", ""),
+                schedule_interval=task_config.get("schedule_interval"),
+                schedule_hour=task_config.get("schedule_hour"),
+                schedule_minute=task_config.get("schedule_minute"),
+                schedule_day_of_week=task_config.get("schedule_day_of_week"),
+                schedule_day_of_month=task_config.get("schedule_day_of_month"),
+                schedule_month=task_config.get("schedule_month"),
                 status=ScheduledTask.TaskStatus.PENDING,
             )
 
@@ -109,14 +128,19 @@ class ScheduledTaskSynchronizer:
 
     @classmethod
     def _deactivate_removed_tasks(
-        cls, discovered_tasks: Dict[str, Dict[str, Any]], existing_tasks: Dict[str, ScheduledTask]
+        cls,
+        discovered_tasks: dict[str, dict[str, Any]],
+        existing_tasks: dict[str, ScheduledTask],
     ) -> int:
         deactivated_count = 0
         discovered_paths = set(discovered_tasks.keys())
 
         for function_path, task in existing_tasks.items():
-            if function_path not in discovered_paths and task.status != ScheduledTask.TaskStatus.INACTIVE:
+            if (
+                function_path not in discovered_paths
+                and task.status != ScheduledTask.TaskStatus.INACTIVE
+            ):
                 task.status = ScheduledTask.TaskStatus.INACTIVE
-                task.save(update_fields=['status'])
+                task.save(update_fields=["status"])
                 deactivated_count += 1
         return deactivated_count

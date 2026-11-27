@@ -4,8 +4,8 @@ from registration.models import (
 )
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
-    BC_OBPS_REGULATED_OPERATION_FIXTURE,
     BC_GREENHOUSE_GAS_ID_FIXTURE,
+    BC_OBPS_REGULATED_OPERATION_FIXTURE,
     CONTACT_FIXTURE,
     DOCUMENT_FIXTURE,
     OPERATION_FIXTURE,
@@ -29,7 +29,9 @@ class WellAuthorizationNumberTest(BaseTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = WellAuthorizationNumber.objects.create(well_authorization_number=1)
+        cls.test_object = WellAuthorizationNumber.objects.create(
+            well_authorization_number=1
+        )
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("well_authorization_number", "well authorization number", None, None),

@@ -1,20 +1,24 @@
 from typing import Literal
 from uuid import UUID
+
 from common.api.utils.current_user_utils import get_current_user_guid
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest
+from reporting.api.permissions import (
+    approved_industry_user_report_version_composite_auth,
+)
+from reporting.constants import EMISSIONS_REPORT_TAGS
+from reporting.schema.generic import Message
 from reporting.schema.report_emission_allocation import (
     ReportEmissionAllocationSchemaOut,
     ReportEmissionAllocationsSchemaIn,
 )
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from django.http import HttpRequest
-from reporting.schema.generic import Message
-from .router import router
-from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.service.report_emission_allocation_service import (
     ReportEmissionAllocationData,
     ReportEmissionAllocationService,
 )
-from reporting.api.permissions import approved_industry_user_report_version_composite_auth
+
+from .router import router
 
 
 @router.get(
@@ -29,7 +33,9 @@ def get_emission_allocations(
     request: HttpRequest, version_id: int, facility_id: UUID
 ) -> tuple[Literal[200], ReportEmissionAllocationData]:
     # Delegate the responsibility to the service
-    response_data = ReportEmissionAllocationService.get_emission_allocation_data(version_id, facility_id)
+    response_data = ReportEmissionAllocationService.get_emission_allocation_data(
+        version_id, facility_id
+    )
     return 200, response_data
 
 
@@ -46,7 +52,6 @@ def save_emission_allocation_data(
     facility_id: UUID,
     payload: ReportEmissionAllocationsSchemaIn,
 ) -> Literal[200]:
-
     ReportEmissionAllocationService.save_emission_allocation_data(
         version_id,
         facility_id,

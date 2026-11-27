@@ -1,30 +1,36 @@
 import json
 from typing import Any
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from common.tests.utils.call_endpoint import call_endpoint
+from common.tests.utils.helpers import assert_error_response
 from django.http import HttpResponse
 from model_bakery import baker
-
 from registration.models.operation import Operation
 from registration.tests.utils.bakers import operation_baker, operator_baker
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from reporting.models import Report, ReportVersion
 from reporting.tests.utils.bakers import report_baker
-from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
-from common.tests.utils.helpers import assert_error_response
+from reporting.tests.utils.report_access_validation import (
+    assert_report_version_ownership_is_validated,
+)
 
 
 class TestReportsEndpoint(CommonTestSetup):
     endpoint_under_test = "/api/reporting/create-report"
 
     def send_authorized_post_request(
-        self, request_data: dict[str, Any], operation: Operation | None = None, url: str | None = None
+        self,
+        request_data: dict[str, Any],
+        operation: Operation | None = None,
+        url: str | None = None,
     ) -> HttpResponse:
         operator = operation.operator if operation else operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        TestUtils.generate_operation_operator_timeline(operator=operation.operator, operations=[operation])
+        TestUtils.generate_operation_operator_timeline(
+            operator=operation.operator, operations=[operation]
+        )
 
         # Use self.endpoint_under_test if no URL is provided
         if url is None:
@@ -77,9 +83,9 @@ class TestReportsEndpoint(CommonTestSetup):
 
     def test_creates_report_and_returns_http_created(self):
         user_operator = baker.make_recipe(
-            'registration.tests.utils.user_operator',
-            role='admin',
-            status='Approved',
+            "registration.tests.utils.user_operator",
+            role="admin",
+            status="Approved",
         )
         operation = operation_baker(operator_id=user_operator.operator_id)
 
@@ -97,16 +103,21 @@ class TestReportsEndpoint(CommonTestSetup):
         assert response.status_code == 201
         assert response.json() == ReportVersion.objects.first().id
 
-    @patch("reporting.service.report_service.ReportService.get_registration_purpose_by_version_id")
+    @patch(
+        "reporting.service.report_service.ReportService.get_registration_purpose_by_version_id"
+    )
     def test_get_registration_purpose_by_version_id_returns_expected_data(
         self, mock_get_registration_purpose: MagicMock
     ):
         report_version = baker.make_recipe("reporting.tests.utils.report_version")
         expected_data = {"registration_purpose": "Annual Emissions Report"}
         mock_get_registration_purpose.return_value = expected_data
-        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=report_version.report.operator, operations=[report_version.report.operation]
+            operator=report_version.report.operator,
+            operations=[report_version.report.operation],
         )
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -123,8 +134,12 @@ class TestReportsEndpoint(CommonTestSetup):
 
     def test_create_report_validates_operation_ownership(self):
         with (
-            patch("common.permissions.check_permission_for_role") as mock_check_permissions,
-            patch("reporting.api.permissions._validate_operation_ownership") as mock_validate_operation_ownership,
+            patch(
+                "common.permissions.check_permission_for_role"
+            ) as mock_check_permissions,
+            patch(
+                "reporting.api.permissions._validate_operation_ownership"
+            ) as mock_validate_operation_ownership,
         ):
             mock_check_permissions.return_value = True
 
@@ -134,13 +149,21 @@ class TestReportsEndpoint(CommonTestSetup):
             mock_validate_operation_ownership.assert_called_once()
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_report_operation_by_version_id")
+        assert_report_version_ownership_is_validated(
+            "get_report_operation_by_version_id"
+        )
         assert_report_version_ownership_is_validated("save_report")
-        assert_report_version_ownership_is_validated("change_report_version_type", "post")
+        assert_report_version_ownership_is_validated(
+            "change_report_version_type", "post"
+        )
         assert_report_version_ownership_is_validated("get_report_version")
 
-    @patch("reporting.service.report_version_service.ReportVersionService.delete_report_version")
-    def test_returns_data_as_provided_by_delete_report_version(self, mock_delete_report_version: MagicMock):
+    @patch(
+        "reporting.service.report_version_service.ReportVersionService.delete_report_version"
+    )
+    def test_returns_data_as_provided_by_delete_report_version(
+        self, mock_delete_report_version: MagicMock
+    ):
         # Arrange: Set up the expected value from the service
         expected_success = True
         mock_delete_report_version.return_value = expected_success
@@ -151,14 +174,19 @@ class TestReportsEndpoint(CommonTestSetup):
         version_id = report_version.id
 
         # Act: Make DELETE request to the endpoint
-        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=report_version.report.operator, operations=[report_version.report.operation]
+            operator=report_version.report.operator,
+            operations=[report_version.report.operation],
         )
         response = TestUtils.mock_delete_with_auth_role(
             self,
             "industry_user",
-            custom_reverse_lazy("delete_report_version", kwargs={"version_id": version_id}),
+            custom_reverse_lazy(
+                "delete_report_version", kwargs={"version_id": version_id}
+            ),
         )
 
         # Assert: Check the response status and data
@@ -170,17 +198,25 @@ class TestReportsEndpoint(CommonTestSetup):
 
     def test_create_report_version_validates_operation_ownership(self):
         with (
-            patch("common.permissions.check_permission_for_role") as mock_check_permissions,
-            patch("reporting.api.permissions._validate_report_ownership_in_url") as mock_validate_operation_ownership,
+            patch(
+                "common.permissions.check_permission_for_role"
+            ) as mock_check_permissions,
+            patch(
+                "reporting.api.permissions._validate_report_ownership_in_url"
+            ) as mock_validate_operation_ownership,
         ):
             mock_check_permissions.return_value = True
 
-            endpoint = custom_reverse_lazy("create_report_version", kwargs={'report_id': 1})
+            endpoint = custom_reverse_lazy(
+                "create_report_version", kwargs={"report_id": 1}
+            )
             call_endpoint(TestUtils.client, "post", endpoint, "industry_user")
 
             mock_validate_operation_ownership.assert_called_once()
 
-    @patch("reporting.service.report_version_service.ReportVersionService.create_report_version")
+    @patch(
+        "reporting.service.report_version_service.ReportVersionService.create_report_version"
+    )
     @patch("reporting.service.report_service.ReportService.get_report_by_id")
     def test_returns_data_as_provided_by_create_report_version(
         self,
@@ -189,14 +225,20 @@ class TestReportsEndpoint(CommonTestSetup):
     ):
         # Arrange: create user, operation, report, and report version
         user_operator = baker.make_recipe(
-            'registration.tests.utils.user_operator',
-            role='admin',
-            status='Approved',
+            "registration.tests.utils.user_operator",
+            role="admin",
+            status="Approved",
         )
         operation = operation_baker(operator_id=user_operator.operator_id)
         # Arrange: create report and report version
-        report = baker.make_recipe("reporting.tests.utils.report", operation=operation, operator=user_operator.operator)
-        report_version = baker.make_recipe("reporting.tests.utils.report_version", report=report)
+        report = baker.make_recipe(
+            "reporting.tests.utils.report",
+            operation=operation,
+            operator=user_operator.operator,
+        )
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report=report
+        )
 
         # Set up the expected responses from the service methods
         mock_get_report_by_id.return_value = report
@@ -207,7 +249,9 @@ class TestReportsEndpoint(CommonTestSetup):
         request_data = {
             "operation_id": str(operation.id),
         }
-        url = custom_reverse_lazy("create_report_version", kwargs={'report_id': report.id})
+        url = custom_reverse_lazy(
+            "create_report_version", kwargs={"report_id": report.id}
+        )
         response = self.send_authorized_post_request(request_data, operation, url)
 
         # Assert: Check the response status and data
@@ -218,7 +262,9 @@ class TestReportsEndpoint(CommonTestSetup):
         mock_get_report_by_id.assert_called_once_with(report.id)
         mock_create_report_version.assert_called_once_with(report)
 
-    @patch("reporting.service.report_service.ReportService.create_report_for_reporting_year")
+    @patch(
+        "reporting.service.report_service.ReportService.create_report_for_reporting_year"
+    )
     def test_create_report_for_reporting_year(
         self,
         mock_create_report_for_reporting_year: MagicMock,
@@ -254,4 +300,7 @@ class TestReportsEndpoint(CommonTestSetup):
         _, kwargs = mock_create_report_for_reporting_year.call_args
         assert kwargs["data"].operation_id == operation.id
         assert kwargs["data"].reporting_year == 2023
-        assert kwargs["data"].registration_purpose == Operation.Purposes.REPORTING_OPERATION
+        assert (
+            kwargs["data"].registration_purpose
+            == Operation.Purposes.REPORTING_OPERATION
+        )

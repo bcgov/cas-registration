@@ -1,18 +1,22 @@
-from typing import Literal, List
+from typing import List, Literal
 from uuid import UUID
+
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
+from reporting.api.permissions import (
+    approved_industry_user_report_version_composite_auth,
+)
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from .router import router
+
 from ..models import ReportNonAttributableEmissions
 from ..schema.report_non_attributable_emissions import (
-    ReportNonAttributableOut,
     ReportNonAttributableActivityOut,
+    ReportNonAttributableOut,
     ReportNonAttributableSchema,
 )
 from ..service.report_non_attributable_service import ReportNonAttributableService
-from reporting.api.permissions import approved_industry_user_report_version_composite_auth
+from .router import router
 
 
 @router.get(
@@ -33,7 +37,7 @@ def get_report_non_attributable_by_version_id(
 
 @router.post(
     "/report-version/{version_id}/facilities/{facility_id}/non-attributable",
-    response={201: List[ReportNonAttributableActivityOut], custom_codes_4xx: Message},
+    response={201: list[ReportNonAttributableActivityOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Handles updating or deleting non-attributable emissions data for a specified facility and report
     version. If `emissions_exceeded` is `false`, all existing non-attributable emissions data is deleted for the
@@ -42,8 +46,11 @@ def get_report_non_attributable_by_version_id(
     auth=approved_industry_user_report_version_composite_auth,
 )
 def save_report(
-    request: HttpRequest, version_id: int, facility_id: UUID, payload: ReportNonAttributableSchema
-) -> tuple[Literal[201], List[ReportNonAttributableEmissions]]:
+    request: HttpRequest,
+    version_id: int,
+    facility_id: UUID,
+    payload: ReportNonAttributableSchema,
+) -> tuple[Literal[201], list[ReportNonAttributableEmissions]]:
     saved_reports = []
 
     # If emissions_exceeded is false, delete existing data
@@ -51,8 +58,10 @@ def save_report(
         ReportNonAttributableService.delete_existing_reports(version_id, facility_id)
 
     else:
-        saved_reports = ReportNonAttributableService.save_report_non_attributable_emissions(
-            version_id, facility_id, payload.activities
+        saved_reports = (
+            ReportNonAttributableService.save_report_non_attributable_emissions(
+                version_id, facility_id, payload.activities
+            )
         )
 
     return 201, saved_reports

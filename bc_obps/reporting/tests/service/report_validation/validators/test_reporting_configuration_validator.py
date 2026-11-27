@@ -1,26 +1,33 @@
+import pytest
 from common.exceptions import InternalSystemError
 from model_bakery.baker import make, make_recipe, prepare_recipe
-import pytest
 from reporting.models.configuration_element import ConfigurationElement
 from reporting.service.report_validation.report_validation_tags import ValidationTags
-from reporting.service.report_validation.validators import reporting_configuration_validator
+from reporting.service.report_validation.validators import (
+    reporting_configuration_validator,
+)
 
 
 @pytest.mark.django_db
 class TestReportingConfigurationValidator:
-
     validator_under_test = reporting_configuration_validator
 
     def setup_method(self):
         self.report_version = make_recipe(
-            "reporting.tests.utils.report_version", report__reporting_year__reporting_year=2018
+            "reporting.tests.utils.report_version",
+            report__reporting_year__reporting_year=2018,
         )
         self.configuration = make_recipe(
-            "reporting.tests.utils.configuration", valid_from="2018-01-01", valid_to="2018-12-31"
+            "reporting.tests.utils.configuration",
+            valid_from="2018-01-01",
+            valid_to="2018-12-31",
         )
 
     def test_has_the_proper_configuration(self):
-        assert self.validator_under_test.TAGS == [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
+        assert self.validator_under_test.TAGS == [
+            ValidationTags.REPORT_VALIDATION,
+            ValidationTags.ON_SUBMIT,
+        ]
 
     def test_raises_if_no_configuration_element_present(self):
         report_methodology = make_recipe(
@@ -41,7 +48,9 @@ class TestReportingConfigurationValidator:
         )
 
         wrong_year_confguration = make_recipe(
-            "reporting.tests.utils.configuration", valid_from="2011-01-01", valid_to="2012-12-31"
+            "reporting.tests.utils.configuration",
+            valid_from="2011-01-01",
+            valid_to="2012-12-31",
         )
         make(
             ConfigurationElement,
@@ -97,7 +106,11 @@ class TestReportingConfigurationValidator:
             methodology=report_methodology.methodology,
             valid_from=self.configuration,
             valid_to=self.configuration,
-            reporting_fields=[prepare_recipe("reporting.tests.utils.reporting_field", slug="allowedField")],
+            reporting_fields=[
+                prepare_recipe(
+                    "reporting.tests.utils.reporting_field", slug="allowedField"
+                )
+            ],
         )
 
         with pytest.raises(
@@ -122,9 +135,16 @@ class TestReportingConfigurationValidator:
         )
 
         allowed_fields = [
-            prepare_recipe("reporting.tests.utils.reporting_field", slug="allowedField"),
-            prepare_recipe("reporting.tests.utils.reporting_field", slug="anotherAllowedReportingField"),
-            prepare_recipe("reporting.tests.utils.reporting_field", slug="unreportedField"),
+            prepare_recipe(
+                "reporting.tests.utils.reporting_field", slug="allowedField"
+            ),
+            prepare_recipe(
+                "reporting.tests.utils.reporting_field",
+                slug="anotherAllowedReportingField",
+            ),
+            prepare_recipe(
+                "reporting.tests.utils.reporting_field", slug="unreportedField"
+            ),
         ]
 
         make(

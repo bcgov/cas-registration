@@ -1,10 +1,13 @@
-from common.models import EmailNotificationTemplate
 from enum import Enum
+
+from common.models import EmailNotificationTemplate
 
 
 class EmailNotificationTemplateService:
     @classmethod
-    def get_template_by_name(cls, template_name: str | Enum) -> EmailNotificationTemplate:
+    def get_template_by_name(
+        cls, template_name: str | Enum
+    ) -> EmailNotificationTemplate:
         """
         Get an email notification template by its name.
 

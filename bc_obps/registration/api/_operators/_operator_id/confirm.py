@@ -1,13 +1,16 @@
 from typing import Literal, Tuple
 from uuid import UUID
+
 from common.permissions import authorize
-from django.http import HttpRequest
-from registration.constants import OPERATOR_TAGS
-from registration.schema import ConfirmSelectedOperatorOut, Message
-from registration.service.data_access_service.operator_service import OperatorDataAccessService
-from registration.api.router import router
-from registration.models import Operator
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest
+from registration.api.router import router
+from registration.constants import OPERATOR_TAGS
+from registration.models import Operator
+from registration.schema import ConfirmSelectedOperatorOut, Message
+from registration.service.data_access_service.operator_service import (
+    OperatorDataAccessService,
+)
 
 # We have to let unapproved users to reach this endpoint otherwise they can't see operator info when they select it
 
@@ -20,5 +23,7 @@ from common.service.error_service.custom_codes_4xx import custom_codes_4xx
     This endpoint is accessible to both approved and unapproved users, allowing them to view operator information when selected.""",
     auth=authorize("authorized_roles"),
 )
-def get_operator_confirm(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200], Operator]:
+def get_operator_confirm(
+    request: HttpRequest, operator_id: UUID
+) -> tuple[Literal[200], Operator]:
     return 200, OperatorDataAccessService.get_operator_by_id(operator_id)

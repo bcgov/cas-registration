@@ -28,7 +28,12 @@ class ParentOperatorModelTest(BaseTestCase):
             ("legal_name", "legal name", 1000, None),
             ("trade_name", "trade name", 1000, None),
             ("cra_business_number", "cra business number", None, None),
-            ("bc_corporate_registry_number", "bc corporate registry number", None, None),
+            (
+                "bc_corporate_registry_number",
+                "bc corporate registry number",
+                None,
+                None,
+            ),
             ("business_structure", "business structure", None, None),
             ("website", "website", 200, None),
             ("physical_address", "physical address", None, None),

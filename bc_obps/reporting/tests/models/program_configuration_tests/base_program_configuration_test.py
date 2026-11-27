@@ -113,7 +113,11 @@ class BaseProgramConfigurationTest:
 
         assert len(config_elements) == self.config_element_count
         assert len(config_elements) == sum(
-            [len(config[source_type][gas]) for source_type in config.keys() for gas in config[source_type].keys()]
+            [
+                len(config[source_type][gas])
+                for source_type in config.keys()
+                for gas in config[source_type].keys()
+            ]
         )
 
     def test_activity_schemas_and_source_type_schemas_exist(self):

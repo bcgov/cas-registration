@@ -1,9 +1,9 @@
 from common.enums import Schemas
 from common.models import BaseModel
 from django.db import models
-from simple_history.models import HistoricalRecords
 from registration.enums.enums import RegistrationTableNames
 from registration.models.rls_configs.document_type import Rls as DocumentTypeRls
+from simple_history.models import HistoricalRecords
 
 
 class DocumentType(BaseModel):

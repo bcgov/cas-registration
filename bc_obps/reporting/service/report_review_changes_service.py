@@ -1,19 +1,20 @@
-from typing import Any, Dict, List, Optional, Tuple, TypedDict
-from deepdiff import DeepDiff
 import logging
 import re
 from collections import namedtuple
+from typing import Any, Dict, List, Optional, Tuple, TypedDict
+
+from deepdiff import DeepDiff
 
 logger = logging.getLogger(__name__)
 
-ChangeItem = namedtuple('ChangeItem', ['path', 'old_value', 'new_value', 'change_type'])
+ChangeItem = namedtuple("ChangeItem", ["path", "old_value", "new_value", "change_type"])
 
 
 class ReplaceIndexConfig(TypedDict):
     regex: re.Pattern[str]
-    index_groups: List[int]
+    index_groups: list[int]
     root: str
-    subkeys: List[str]
+    subkeys: list[str]
     name_key: str
     suffix_group: int
     format: str
@@ -37,69 +38,85 @@ class ReportReviewChangesService:
     - Human-readable diff change outputs
     """
 
-    CONFIGS: List[ReplaceIndexConfig] = [
+    CONFIGS: list[ReplaceIndexConfig] = [
         {
-            'regex': re.compile(r"root\['report_new_entrant'\]\[(\d+)\]\['productions'\]\[(\d+)\](.*)"),
-            'index_groups': [1, 2],
-            'root': 'report_new_entrant',
-            'subkeys': ['productions'],
-            'name_key': 'product',
-            'format': "root['report_new_entrant'][{entrant_idx}]['productions']['{name}']{suffix}",
-            'suffix_group': 3,
+            "regex": re.compile(
+                r"root\['report_new_entrant'\]\[(\d+)\]\['productions'\]\[(\d+)\](.*)"
+            ),
+            "index_groups": [1, 2],
+            "root": "report_new_entrant",
+            "subkeys": ["productions"],
+            "name_key": "product",
+            "format": "root['report_new_entrant'][{entrant_idx}]['productions']['{name}']{suffix}",
+            "suffix_group": 3,
         },
         {
-            'regex': re.compile(r"root\['report_new_entrant'\]\[(\d+)\]\['report_new_entrant_emission'\]\[(\d+)\](.*)"),
-            'index_groups': [1, 2],
-            'root': 'report_new_entrant',
-            'subkeys': ['report_new_entrant_emission'],
-            'name_key': 'emission_category',
-            'format': "root['report_new_entrant'][{entrant_idx}]['report_new_entrant_emission']['{name}']{suffix}",
-            'suffix_group': 3,
+            "regex": re.compile(
+                r"root\['report_new_entrant'\]\[(\d+)\]\['report_new_entrant_emission'\]\[(\d+)\](.*)"
+            ),
+            "index_groups": [1, 2],
+            "root": "report_new_entrant",
+            "subkeys": ["report_new_entrant_emission"],
+            "name_key": "emission_category",
+            "format": "root['report_new_entrant'][{entrant_idx}]['report_new_entrant_emission']['{name}']{suffix}",
+            "suffix_group": 3,
         },
         {
-            'regex': re.compile(
+            "regex": re.compile(
                 r"root\['facility_reports'\]\['([^']+)'\]\['report_emission_allocation'\]\['report_product_emission_allocations'\]\[(\d+)\]\['products'\]\[(\d+)\](.*)"
             ),
-            'index_groups': [2, 3],  # allocation index, product index
-            'root': 'facility_reports',
-            'subkeys': ['report_emission_allocation', 'report_product_emission_allocations'],
-            'name_key': 'product_name',
-            'format': (
+            "index_groups": [2, 3],  # allocation index, product index
+            "root": "facility_reports",
+            "subkeys": [
+                "report_emission_allocation",
+                "report_product_emission_allocations",
+            ],
+            "name_key": "product_name",
+            "format": (
                 "root['facility_reports']['{facility}']"
                 "['report_emission_allocation']['report_product_emission_allocations']['{category_name}']"
                 "['products']['{product_name}']{suffix}"
             ),
-            'suffix_group': 4,
+            "suffix_group": 4,
         },
         {
-            'regex': re.compile(
+            "regex": re.compile(
                 r"root\['facility_reports'\]\['([^']+)'\]\['report_emission_allocation'\]\['report_product_emission_allocations'\]\[(\d+)\](.*)"
             ),
-            'index_groups': [2],  # allocation index only
-            'root': 'facility_reports',
-            'subkeys': ['report_emission_allocation', 'report_product_emission_allocations'],
-            'name_key': 'emission_category_name',
-            'format': (
+            "index_groups": [2],  # allocation index only
+            "root": "facility_reports",
+            "subkeys": [
+                "report_emission_allocation",
+                "report_product_emission_allocations",
+            ],
+            "name_key": "emission_category_name",
+            "format": (
                 "root['facility_reports']['{facility}']"
                 "['report_emission_allocation']['report_product_emission_allocations']['{category_name}']{suffix}"
             ),
-            'suffix_group': 3,
+            "suffix_group": 3,
         },
     ]
 
     COMPLIANCE_CONFIG: ComplianceConfig = {
-        'regex': re.compile(r"root\['report_compliance_summary'\]\['products'\]\[(\d+)\](.*)"),
-        'index_group': 1,
-        'name_key': 'name',
-        'format': "root['report_compliance_summary']['products']['{name}']{suffix}",
-        'suffix_group': 2,
+        "regex": re.compile(
+            r"root\['report_compliance_summary'\]\['products'\]\[(\d+)\](.*)"
+        ),
+        "index_group": 1,
+        "name_key": "name",
+        "format": "root['report_compliance_summary']['products']['{name}']{suffix}",
+        "suffix_group": 2,
     }
 
     @staticmethod
     def _replace_emission_category(val: Any) -> Any:
-        if isinstance(val, dict) and 'emission_category_id' in val and 'emission_category_name' in val:
+        if (
+            isinstance(val, dict)
+            and "emission_category_id" in val
+            and "emission_category_name" in val
+        ):
             val = val.copy()
-            val['emission_category_id'] = val['emission_category_name']
+            val["emission_category_id"] = val["emission_category_name"]
         return val
 
     @staticmethod
@@ -110,7 +127,9 @@ class ReportReviewChangesService:
         return obj
 
     @staticmethod
-    def _get_item_by_indexes(serialized_data: dict, root: str, subkeys: List[str], idxs: List[int]) -> Optional[dict]:
+    def _get_item_by_indexes(
+        serialized_data: dict, root: str, subkeys: list[str], idxs: list[int]
+    ) -> dict | None:
         """
         Safely get nested dict item by indexes.
         Returns None if any index or key is missing or final item is not a dict.
@@ -141,7 +160,9 @@ class ReportReviewChangesService:
         return None
 
     @classmethod
-    def _parse_deepdiff_items(cls, diff: DeepDiff, prev: dict, curr: dict) -> List[ChangeItem]:
+    def _parse_deepdiff_items(
+        cls, diff: DeepDiff, prev: dict, curr: dict
+    ) -> list[ChangeItem]:
         results = []
         for change_type, items in diff.items():
             if isinstance(items, dict):
@@ -150,71 +171,93 @@ class ReportReviewChangesService:
                 items = [(path, None) for path in items]
 
             for path, change_data in items:
-                old_val, new_val, ct = cls._extract_diff_values(path, change_data, prev, curr, change_type)
+                old_val, new_val, ct = cls._extract_diff_values(
+                    path, change_data, prev, curr, change_type
+                )
                 results.append(ChangeItem(path, old_val, new_val, ct))
 
         return results
 
     @staticmethod
-    def _extract_diff_values(path: str, change: Any, old_data: dict, new_data: dict, typ: str) -> Tuple[Any, Any, str]:
+    def _extract_diff_values(
+        path: str, change: Any, old_data: dict, new_data: dict, typ: str
+    ) -> tuple[Any, Any, str]:
         """
         Extract old and new values for a DeepDiff change depending on type.
         Returns a tuple: (old_value, new_value, change_type)
         """
-        old_val, new_val, change_type = None, None, 'modified'
+        old_val, new_val, change_type = None, None, "modified"
 
-        if typ == 'values_changed':
-            old_val = getattr(change, 'old_value', None) or change.get('old_value')
-            new_val = getattr(change, 'new_value', None) or change.get('new_value')
-            change_type = 'modified'
-        elif typ in ['dictionary_item_added', 'iterable_item_added'] or typ.endswith('added'):
-            new_val = change or ReportReviewChangesService.get_value_by_path(new_data, path)
-            change_type = 'added'
-        elif typ in ['dictionary_item_removed', 'iterable_item_removed'] or typ.endswith('removed'):
-            old_val = change or ReportReviewChangesService.get_value_by_path(old_data, path)
-            change_type = 'removed'
-        elif typ == 'type_changes':
-            old_val = getattr(change, 'old_value', None) or change.get('old_value')
-            new_val = getattr(change, 'new_value', None) or change.get('new_value')
-            change_type = 'modified'
+        if typ == "values_changed":
+            old_val = getattr(change, "old_value", None) or change.get("old_value")
+            new_val = getattr(change, "new_value", None) or change.get("new_value")
+            change_type = "modified"
+        elif typ in ["dictionary_item_added", "iterable_item_added"] or typ.endswith(
+            "added"
+        ):
+            new_val = change or ReportReviewChangesService.get_value_by_path(
+                new_data, path
+            )
+            change_type = "added"
+        elif typ in [
+            "dictionary_item_removed",
+            "iterable_item_removed",
+        ] or typ.endswith("removed"):
+            old_val = change or ReportReviewChangesService.get_value_by_path(
+                old_data, path
+            )
+            change_type = "removed"
+        elif typ == "type_changes":
+            old_val = getattr(change, "old_value", None) or change.get("old_value")
+            new_val = getattr(change, "new_value", None) or change.get("new_value")
+            change_type = "modified"
 
         return old_val, new_val, change_type
 
     @staticmethod
-    def _replace_index_with_name(path: str, serialized_data: dict, config: ReplaceIndexConfig) -> str:
-        match = config['regex'].match(path)
+    def _replace_index_with_name(
+        path: str, serialized_data: dict, config: ReplaceIndexConfig
+    ) -> str:
+        match = config["regex"].match(path)
         if not match or not serialized_data:
             return path
 
-        idxs = [int(match.group(i)) for i in config['index_groups']]
-        suffix = match.group(config['suffix_group'])
+        idxs = [int(match.group(i)) for i in config["index_groups"]]
+        suffix = match.group(config["suffix_group"])
 
-        if "facility_reports" in config['root']:
+        if "facility_reports" in config["root"]:
             facility_name = match.group(1)
-            allocations = serialized_data['facility_reports'][facility_name]['report_emission_allocation'][
-                'report_product_emission_allocations'
-            ]
+            allocations = serialized_data["facility_reports"][facility_name][
+                "report_emission_allocation"
+            ]["report_product_emission_allocations"]
             allocation = allocations[idxs[0]]
-            category_name = allocation['emission_category_name'] or allocation['emission_category_id']
+            category_name = (
+                allocation["emission_category_name"]
+                or allocation["emission_category_id"]
+            )
 
             # Build format parameters
             format_params = {
-                'facility': facility_name,
-                'category_name': category_name,
-                'suffix': suffix,
+                "facility": facility_name,
+                "category_name": category_name,
+                "suffix": suffix,
             }
 
             # Add product name if this is allocation + product (2 indexes)
             if len(idxs) == 2:
-                format_params['product_name'] = allocation['products'][idxs[1]]['product_name']
+                format_params["product_name"] = allocation["products"][idxs[1]][
+                    "product_name"
+                ]
 
-            return config['format'].format(**format_params)
+            return config["format"].format(**format_params)
 
-        item = ReportReviewChangesService._get_item_by_indexes(serialized_data, config['root'], config['subkeys'], idxs)
+        item = ReportReviewChangesService._get_item_by_indexes(
+            serialized_data, config["root"], config["subkeys"], idxs
+        )
         if item is None:
             return path
-        name = item[config['name_key']]
-        return config['format'].format(
+        name = item[config["name_key"]]
+        return config["format"].format(
             entrant_idx=idxs[0],
             name=name,
             suffix=suffix,
@@ -222,21 +265,30 @@ class ReportReviewChangesService:
 
     @classmethod
     def _replace_compliance_product_index(cls, path: str, serialized_data: dict) -> str:
-        match = cls.COMPLIANCE_CONFIG['regex'].match(path)
+        match = cls.COMPLIANCE_CONFIG["regex"].match(path)
         if match and serialized_data:
-            idx = int(match.group(cls.COMPLIANCE_CONFIG['index_group']))
-            suffix = match.group(cls.COMPLIANCE_CONFIG['suffix_group'])
-            products = serialized_data.get('report_compliance_summary', {}).get('products', [])
+            idx = int(match.group(cls.COMPLIANCE_CONFIG["index_group"]))
+            suffix = match.group(cls.COMPLIANCE_CONFIG["suffix_group"])
+            products = serialized_data.get("report_compliance_summary", {}).get(
+                "products", []
+            )
             if idx < len(products):
-                name = products[idx].get(cls.COMPLIANCE_CONFIG['name_key'])
+                name = products[idx].get(cls.COMPLIANCE_CONFIG["name_key"])
                 if isinstance(name, str):  # <-- type-safe check
-                    return cls.COMPLIANCE_CONFIG['format'].format(name=name, suffix=suffix)
+                    return cls.COMPLIANCE_CONFIG["format"].format(
+                        name=name, suffix=suffix
+                    )
         return path
 
     @classmethod
     def process_change(
-        cls, path: str, old_val: Any, new_val: Any, change_type: str, serialized_data: Optional[dict] = None
-    ) -> Dict[str, Any]:
+        cls,
+        path: str,
+        old_val: Any,
+        new_val: Any,
+        change_type: str,
+        serialized_data: dict | None = None,
+    ) -> dict[str, Any]:
         serialized_data = serialized_data or {}
         # Try existing configs
         field = path
@@ -251,16 +303,21 @@ class ReportReviewChangesService:
         # replace top-level facility UUID with name if available
         if field.startswith("root['facility_reports']"):
             # Normalize facilities first
-            facilities = serialized_data.get('facility_reports', {})
+            facilities = serialized_data.get("facility_reports", {})
             if isinstance(facilities, list):
-                facilities = {str(f.get("facility") or f.get("facility_name")): f for f in facilities}
+                facilities = {
+                    str(f.get("facility") or f.get("facility_name")): f
+                    for f in facilities
+                }
 
             match = re.match(r"root\['facility_reports'\]\['([^']+)'\]", field)
             if match:
                 fac_uuid = match.group(1)
                 fac_data = facilities.get(fac_uuid)
-                if fac_data and 'facility_name' in fac_data:
-                    field = field.replace(f"['{fac_uuid}']", f"['{fac_data['facility_name']}']")
+                if fac_data and "facility_name" in fac_data:
+                    field = field.replace(
+                        f"['{fac_uuid}']", f"['{fac_data['facility_name']}']"
+                    )
 
         old_val = cls._replace_emission_category(old_val)
         new_val = cls._replace_emission_category(new_val)
@@ -273,32 +330,36 @@ class ReportReviewChangesService:
         }
 
     @staticmethod
-    def _normalize_facilities(facilities: Any) -> Dict[str, dict]:
+    def _normalize_facilities(facilities: Any) -> dict[str, dict]:
         """Normalize facility_reports value (list or dict) into a dict keyed by identifier (uuid or name)."""
         if isinstance(facilities, list):
-            return {str(f.get('facility') or f.get('facility_name')): f for f in facilities if isinstance(f, dict)}
+            return {
+                str(f.get("facility") or f.get("facility_name")): f
+                for f in facilities
+                if isinstance(f, dict)
+            }
         if isinstance(facilities, dict):
             return facilities
         return {}
 
     @staticmethod
-    def _build_uuid_map(facilities: Dict[str, dict]) -> Dict[str, str]:
+    def _build_uuid_map(facilities: dict[str, dict]) -> dict[str, str]:
         """Return a mapping of facility UUID -> facility key (name or key used in dict)."""
-        uuid_map: Dict[str, str] = {}
+        uuid_map: dict[str, str] = {}
         for key, fac in facilities.items():
             if isinstance(fac, dict):
-                fac_uuid = fac.get('facility')
+                fac_uuid = fac.get("facility")
                 if fac_uuid:
                     uuid_map[str(fac_uuid)] = key
         return uuid_map
 
     @classmethod
     def _detect_renames(
-        cls, prev_facilities: Dict[str, dict], curr_facilities: Dict[str, dict]
-    ) -> List[Dict[str, Any]]:
+        cls, prev_facilities: dict[str, dict], curr_facilities: dict[str, dict]
+    ) -> list[dict[str, Any]]:
         """Detect facility renames (same uuid, different keys). Mutates prev_facilities to map to new keys for later diffs.
         Returns list of rename change dicts."""
-        changes: List[Dict[str, Any]] = []
+        changes: list[dict[str, Any]] = []
         prev_uuid_map = cls._build_uuid_map(prev_facilities)
         curr_uuid_map = cls._build_uuid_map(curr_facilities)
 
@@ -312,7 +373,7 @@ class ReportReviewChangesService:
                         "field": f"root['facility_reports']['{curr_key}']['facility_name']",
                         "old_value": prev_key,
                         "new_value": curr_key,
-                        "change_type": 'modified',
+                        "change_type": "modified",
                     }
                 )
                 # Ensure further comparisons run under the new key
@@ -323,8 +384,10 @@ class ReportReviewChangesService:
         return changes
 
     @classmethod
-    def get_report_version_diff_changes(cls, previous: dict, current: dict) -> List[Dict[str, Any]]:
-        changes: List[Dict[str, Any]] = []
+    def get_report_version_diff_changes(
+        cls, previous: dict, current: dict
+    ) -> list[dict[str, Any]]:
+        changes: list[dict[str, Any]] = []
 
         previous = previous or {}
         current = current or {}
@@ -343,28 +406,38 @@ class ReportReviewChangesService:
             )
 
         # --- Facility name changes / added / removed ---
-        prev_facilities = cls._normalize_facilities(previous.get('facility_reports', []))
-        curr_facilities = cls._normalize_facilities(current.get('facility_reports', []))
+        prev_facilities = cls._normalize_facilities(
+            previous.get("facility_reports", [])
+        )
+        curr_facilities = cls._normalize_facilities(current.get("facility_reports", []))
 
         # Detect renames first (mutates prev_facilities so we don't later mark as added/removed)
         changes.extend(cls._detect_renames(prev_facilities, curr_facilities))
 
         # Detect removed and added facilities
-        changes.extend(cls._detect_removed_and_added_facilities(prev_facilities, curr_facilities))
+        changes.extend(
+            cls._detect_removed_and_added_facilities(prev_facilities, curr_facilities)
+        )
 
         # Detect modified facilities
-        changes.extend(cls._detect_modified_facilities(prev_facilities, curr_facilities, current))
+        changes.extend(
+            cls._detect_modified_facilities(prev_facilities, curr_facilities, current)
+        )
 
         # --- Compliance products added/removed/modified ---
         prev_products = {
-            p.get('name'): p
-            for p in (previous.get('report_compliance_summary') or {}).get('products', [])
-            if p.get('name')
+            p.get("name"): p
+            for p in (previous.get("report_compliance_summary") or {}).get(
+                "products", []
+            )
+            if p.get("name")
         }
         curr_products = {
-            p.get('name'): p
-            for p in (current.get('report_compliance_summary') or {}).get('products', [])
-            if p.get('name')
+            p.get("name"): p
+            for p in (current.get("report_compliance_summary") or {}).get(
+                "products", []
+            )
+            if p.get("name")
         }
 
         # Removed products
@@ -390,16 +463,29 @@ class ReportReviewChangesService:
             )
 
         # Modified products
-        changes.extend(cls.detect_modified_products(prev_products, curr_products, current))
+        changes.extend(
+            cls.detect_modified_products(prev_products, curr_products, current)
+        )
 
         # --- Top-level diff excluding facility_reports (products handled separately) ---
-        diff = DeepDiff(previous, current, ignore_order=True, exclude_regex_paths=[r".*?facility_reports.*"])
+        diff = DeepDiff(
+            previous,
+            current,
+            ignore_order=True,
+            exclude_regex_paths=[r".*?facility_reports.*"],
+        )
         for item in cls._parse_deepdiff_items(diff, previous, current):
             # Skip products, already handled
             if item.path.startswith("root['report_compliance_summary']['products']"):
                 continue
             changes.append(
-                cls.process_change(item.path, item.old_value, item.new_value, item.change_type, serialized_data=current)
+                cls.process_change(
+                    item.path,
+                    item.old_value,
+                    item.new_value,
+                    item.change_type,
+                    serialized_data=current,
+                )
             )
 
         return changes
@@ -407,10 +493,10 @@ class ReportReviewChangesService:
     # --- Facility helper methods ---
     @staticmethod
     def _detect_removed_and_added_facilities(
-        prev_facilities: Dict[str, dict], curr_facilities: Dict[str, dict]
-    ) -> List[Dict[str, Any]]:
+        prev_facilities: dict[str, dict], curr_facilities: dict[str, dict]
+    ) -> list[dict[str, Any]]:
         """Detect removed facilities. Returns list of removed facility change dicts."""
-        changes: List[Dict[str, Any]] = []
+        changes: list[dict[str, Any]] = []
 
         for fac_name, prev_fac in list(prev_facilities.items()):
             if fac_name not in curr_facilities:
@@ -438,21 +524,37 @@ class ReportReviewChangesService:
 
     @classmethod
     def _detect_modified_facilities(
-        cls, prev_facilities: Dict[str, dict], curr_facilities: Dict[str, dict], current: dict
-    ) -> List[Dict[str, Any]]:
+        cls,
+        prev_facilities: dict[str, dict],
+        curr_facilities: dict[str, dict],
+        current: dict,
+    ) -> list[dict[str, Any]]:
         """Detect modified facilities. Returns list of modified facility change dicts."""
-        changes: List[Dict[str, Any]] = []
+        changes: list[dict[str, Any]] = []
 
         for fac_name, curr_fac in curr_facilities.items():
             if fac_name in prev_facilities:
                 prev_fac = prev_facilities[fac_name]
-                diff = DeepDiff(prev_fac, curr_fac, ignore_order=True, exclude_regex_paths=[r".*?id'\]$"])
+                diff = DeepDiff(
+                    prev_fac,
+                    curr_fac,
+                    ignore_order=True,
+                    exclude_regex_paths=[r".*?id'\]$"],
+                )
                 for item in cls._parse_deepdiff_items(diff, prev_fac, curr_fac):
-                    normalized_path = item.path[4:] if item.path.startswith('root') else item.path
-                    full_path = f"root['facility_reports']['{fac_name}']{normalized_path}"
+                    normalized_path = (
+                        item.path[4:] if item.path.startswith("root") else item.path
+                    )
+                    full_path = (
+                        f"root['facility_reports']['{fac_name}']{normalized_path}"
+                    )
                     changes.append(
                         cls.process_change(
-                            full_path, item.old_value, item.new_value, item.change_type, serialized_data=current
+                            full_path,
+                            item.old_value,
+                            item.new_value,
+                            item.change_type,
+                            serialized_data=current,
                         )
                     )
 
@@ -461,10 +563,13 @@ class ReportReviewChangesService:
     # --- Product helper methods ---
     @classmethod
     def detect_modified_products(
-        cls, prev_products: Dict[str, dict], curr_products: Dict[str, dict], current: dict
-    ) -> List[Dict[str, Any]]:
+        cls,
+        prev_products: dict[str, dict],
+        curr_products: dict[str, dict],
+        current: dict,
+    ) -> list[dict[str, Any]]:
         """Detect modified products. Returns list of modified product change dicts."""
-        changes: List[Dict[str, Any]] = []
+        changes: list[dict[str, Any]] = []
 
         for name in prev_products.keys() & curr_products.keys():
             prev_p = prev_products[name]
@@ -474,7 +579,13 @@ class ReportReviewChangesService:
                 # Keep the product name as key in path
                 field = f"root['report_compliance_summary']['products']['{name}']{item.path[4:]}"
                 changes.append(
-                    cls.process_change(field, item.old_value, item.new_value, item.change_type, serialized_data=current)
+                    cls.process_change(
+                        field,
+                        item.old_value,
+                        item.new_value,
+                        item.change_type,
+                        serialized_data=current,
+                    )
                 )
 
         return changes

@@ -1,11 +1,12 @@
-from typing import Optional
 from decimal import Decimal
+from typing import Optional
+
 from django.db import transaction
-from reporting.service.emission_category_service import EmissionCategoryService
-from reporting.models.report_verification import ReportVerification
-from reporting.models import ReportVersion
 from registration.models import Operation
+from reporting.models import ReportVersion
+from reporting.models.report_verification import ReportVerification
 from reporting.schema.report_verification import ReportVerificationIn
+from reporting.service.emission_category_service import EmissionCategoryService
 from reporting.service.report_service import ReportService
 
 
@@ -13,7 +14,7 @@ class ReportVerificationService:
     @staticmethod
     def get_report_verification_by_version_id(
         report_version_id: int,
-    ) -> Optional[ReportVerification]:
+    ) -> ReportVerification | None:
         """
         Retrieve a ReportVerification instance for a given report version ID.
 
@@ -23,11 +24,15 @@ class ReportVerificationService:
         Returns:
             ReportVerification instance
         """
-        return ReportVerification.objects.filter(report_version__id=report_version_id).first()
+        return ReportVerification.objects.filter(
+            report_version__id=report_version_id
+        ).first()
 
     @staticmethod
     @transaction.atomic
-    def save_report_verification(version_id: int, data: ReportVerificationIn) -> ReportVerification:
+    def save_report_verification(
+        version_id: int, data: ReportVerificationIn
+    ) -> ReportVerification:
         """
         Save or update a ReportVerification instance.
 
@@ -70,17 +75,25 @@ class ReportVerificationService:
         }
         EMISSION_THRESHOLD = Decimal("25000")
 
-        purpose = ReportService.get_registration_purpose_by_version_id(report_version_id).get(
-            "registration_purpose", {}
-        )
+        purpose = ReportService.get_registration_purpose_by_version_id(
+            report_version_id
+        ).get("registration_purpose", {})
         show_page = required = False
 
-        if purpose in REGULATED_PURPOSES or purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+        if (
+            purpose in REGULATED_PURPOSES
+            or purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        ):
             show_page = True
             required = purpose in REGULATED_PURPOSES
         elif purpose == Operation.Purposes.REPORTING_OPERATION:
-            totals = EmissionCategoryService.get_all_category_totals_by_version(report_version_id)
-            if totals.get("attributable_for_threshold", Decimal("0")) >= EMISSION_THRESHOLD:
+            totals = EmissionCategoryService.get_all_category_totals_by_version(
+                report_version_id
+            )
+            if (
+                totals.get("attributable_for_threshold", Decimal("0"))
+                >= EMISSION_THRESHOLD
+            ):
                 show_page = required = True
 
         return {"show_verification_page": show_page, "verification_required": required}

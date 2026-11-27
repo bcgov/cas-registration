@@ -1,18 +1,31 @@
 from dataclasses import asdict
-from typing import Dict, List, Optional, Any
+from decimal import Decimal
+from typing import Any, Dict, List, Optional
+
 from common.exceptions import UserError
-from compliance.dataclass import ComplianceUnitsPageData, BCCRUnit, TransferComplianceUnitsPayload, MixedUnit
+from compliance.dataclass import (
+    BCCRUnit,
+    ComplianceUnitsPageData,
+    MixedUnit,
+    TransferComplianceUnitsPayload,
+)
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_report_version import ComplianceReportVersion
-from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
-from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
-from compliance.service.compliance_report_version_service import ComplianceReportVersionService
-from compliance.service.compliance_obligation_service import ComplianceObligationService
-from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
-from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
-
-from decimal import Decimal
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
+from compliance.service.bc_carbon_registry.account_service import (
+    BCCarbonRegistryAccountService,
+)
+from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
+from compliance.service.compliance_charge_rate_service import (
+    ComplianceChargeRateService,
+)
+from compliance.service.compliance_obligation_service import ComplianceObligationService
+from compliance.service.compliance_report_version_service import (
+    ComplianceReportVersionService,
+)
+from compliance.service.elicensing.elicensing_data_refresh_service import (
+    ElicensingDataRefreshService,
+)
 from django.db.models import Sum
 
 bccr_account_service = BCCarbonRegistryAccountService()
@@ -45,7 +58,9 @@ class ApplyComplianceUnitsService:
 
     @classmethod
     def _calculate_apply_units_cap(
-        cls, compliance_report_version_id: int, pending_supplementary_adjustment: Decimal = Decimal("0")
+        cls,
+        compliance_report_version_id: int,
+        pending_supplementary_adjustment: Decimal = Decimal("0"),
     ) -> Decimal:
         """
         Retrieves the obligation for the given compliance report version ID and calculates the maximum
@@ -61,9 +76,13 @@ class ApplyComplianceUnitsService:
         Raises:
             UserError: If the obligation is missing or the fee_amount_dollars is not available.
         """
-        obligation = ComplianceObligationService.get_obligation_for_report_version(compliance_report_version_id)
+        obligation = ComplianceObligationService.get_obligation_for_report_version(
+            compliance_report_version_id
+        )
         if not obligation or not obligation.fee_amount_dollars:
-            raise UserError("Unable to calculate unit cap: missing obligation or fee amount.")
+            raise UserError(
+                "Unable to calculate unit cap: missing obligation or fee amount."
+            )
         total_supplementary_report_adjustments = (
             cls._get_total_adjustments_for_report_version_by_reason(
                 compliance_report_version_id=compliance_report_version_id,
@@ -71,28 +90,41 @@ class ApplyComplianceUnitsService:
             )
             + pending_supplementary_adjustment
         )
-        crv = ComplianceReportVersion.objects.select_related('compliance_report__compliance_period').get(
-            id=compliance_report_version_id
+        crv = ComplianceReportVersion.objects.select_related(
+            "compliance_report__compliance_period"
+        ).get(id=compliance_report_version_id)
+        max_credit_usage_percentage = (
+            crv.compliance_report.compliance_period.max_credit_usage_percentage
         )
-        max_credit_usage_percentage = crv.compliance_report.compliance_period.max_credit_usage_percentage
-        return (obligation.fee_amount_dollars + total_supplementary_report_adjustments) * max_credit_usage_percentage
+        return (
+            obligation.fee_amount_dollars + total_supplementary_report_adjustments
+        ) * max_credit_usage_percentage
 
     @classmethod
-    def _compute_compliance_unit_caps(cls, compliance_report_version_id: int) -> tuple[Decimal, Decimal]:
+    def _compute_compliance_unit_caps(
+        cls, compliance_report_version_id: int
+    ) -> tuple[Decimal, Decimal]:
         """
         Returns (compliance_unit_cap_limit, compliance_unit_cap_remaining).
         """
-        obligation_data = ComplianceObligationService.get_obligation_data_by_report_version(
-            compliance_report_version_id
+        obligation_data = (
+            ComplianceObligationService.get_obligation_data_by_report_version(
+                compliance_report_version_id
+            )
         )
 
         if not obligation_data or obligation_data.fee_amount_dollars is None:
             return Decimal("0"), Decimal("0")
 
-        compliance_unit_cap_limit = cls._calculate_apply_units_cap(compliance_report_version_id)
+        compliance_unit_cap_limit = cls._calculate_apply_units_cap(
+            compliance_report_version_id
+        )
 
-        total_compliance_unit_adjustments = cls._get_total_adjustments_for_report_version_by_reason(
-            compliance_report_version_id=compliance_report_version_id, reason='Compliance Units Applied'
+        total_compliance_unit_adjustments = (
+            cls._get_total_adjustments_for_report_version_by_reason(
+                compliance_report_version_id=compliance_report_version_id,
+                reason="Compliance Units Applied",
+            )
         )
 
         if (
@@ -101,16 +133,22 @@ class ApplyComplianceUnitsService:
             ).report_compliance_summary.report_version_id
             == 1096
         ):
-            outstanding_balance = max(Decimal("0"), obligation_data.equivalent_value or Decimal("0"))
+            outstanding_balance = max(
+                Decimal("0"), obligation_data.equivalent_value or Decimal("0")
+            )
             return outstanding_balance, outstanding_balance
 
-        compliance_unit_cap_remaining = max(Decimal("0"), compliance_unit_cap_limit + total_compliance_unit_adjustments)
+        compliance_unit_cap_remaining = max(
+            Decimal("0"), compliance_unit_cap_limit + total_compliance_unit_adjustments
+        )
 
         return compliance_unit_cap_limit, compliance_unit_cap_remaining
 
     @classmethod
     def is_credit_usage_over_cap(
-        cls, compliance_report_version_id: int, pending_supplementary_adjustment: Decimal = Decimal("0")
+        cls,
+        compliance_report_version_id: int,
+        pending_supplementary_adjustment: Decimal = Decimal("0"),
     ) -> bool:
         """
         Returns True if the compliance units already applied to this report version now exceed the
@@ -127,15 +165,22 @@ class ApplyComplianceUnitsService:
             DoesNotExist: If the compliance obligation does not exist.
             UserError: If the obligation the fee_amount_dollars is not available.
         """
-        obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
+        obligation = ComplianceObligation.objects.get(
+            compliance_report_version_id=compliance_report_version_id
+        )
 
         if not obligation.fee_amount_dollars:
             raise UserError("Unable to calculate unit cap: missing fee amount.")
 
-        cap_limit = cls._calculate_apply_units_cap(compliance_report_version_id, pending_supplementary_adjustment)
+        cap_limit = cls._calculate_apply_units_cap(
+            compliance_report_version_id, pending_supplementary_adjustment
+        )
         # Negative value (applications reduce the balance)
-        total_compliance_unit_adjustments = cls._get_total_adjustments_for_report_version_by_reason(
-            compliance_report_version_id=compliance_report_version_id, reason='Compliance Units Applied'
+        total_compliance_unit_adjustments = (
+            cls._get_total_adjustments_for_report_version_by_reason(
+                compliance_report_version_id=compliance_report_version_id,
+                reason="Compliance Units Applied",
+            )
         )
         return (cap_limit + total_compliance_unit_adjustments) < Decimal("0")
 
@@ -160,7 +205,9 @@ class ApplyComplianceUnitsService:
             return True
 
         # Get cap limit and remaining (handles missing obligation or fee internally).
-        cap_limit, cap_remaining = cls._compute_compliance_unit_caps(compliance_report_version_id)
+        cap_limit, cap_remaining = cls._compute_compliance_unit_caps(
+            compliance_report_version_id
+        )
 
         if cap_limit <= 0:
             return False  # no original fee or fee was zero
@@ -168,8 +215,10 @@ class ApplyComplianceUnitsService:
             return False  # cap already exhausted
 
         # Verify obligation and outstanding-equivalent value exist and are positive.
-        obligation_data = ComplianceObligationService.get_obligation_data_by_report_version(
-            compliance_report_version_id
+        obligation_data = (
+            ComplianceObligationService.get_obligation_data_by_report_version(
+                compliance_report_version_id
+            )
         )
         if not obligation_data:
             return False
@@ -181,7 +230,9 @@ class ApplyComplianceUnitsService:
         return True
 
     @classmethod
-    def _validate_quantity_limits(cls, payload: Dict[str, Any], compliance_report_version_id: int) -> None:
+    def _validate_quantity_limits(
+        cls, payload: dict[str, Any], compliance_report_version_id: int
+    ) -> None:
         """
         Validates two things:
         1. That the total equivalent value in the payload does not exceed the remaining cap
@@ -197,7 +248,9 @@ class ApplyComplianceUnitsService:
             UserError: If any of the validations fail.
         """
         # Compute cap limit and remaining (accounts for prior applied adjustments).
-        _, compliance_unit_cap_remaining = cls._compute_compliance_unit_caps(compliance_report_version_id)
+        _, compliance_unit_cap_remaining = cls._compute_compliance_unit_caps(
+            compliance_report_version_id
+        )
 
         total_equivalent_value = Decimal(payload.get("total_equivalent_value", "0"))
 
@@ -218,7 +271,9 @@ class ApplyComplianceUnitsService:
                 )
 
     @classmethod
-    def _format_bccr_units_for_grid_display(cls, bccr_units: List[Optional[Dict[str, Any]]]) -> List[BCCRUnit]:
+    def _format_bccr_units_for_grid_display(
+        cls, bccr_units: list[dict[str, Any] | None]
+    ) -> list[BCCRUnit]:
         """
         Unified function to format BCCR units for different use cases.
 
@@ -269,7 +324,9 @@ class ApplyComplianceUnitsService:
         Returns:
             ComplianceUnitsPageData: Data for the Apply Compliance Units page.
         """
-        holding_account_details = bccr_account_service.get_account_details(account_id=account_id)
+        holding_account_details = bccr_account_service.get_account_details(
+            account_id=account_id
+        )
         # If no holding account details are found, exit early with None values
         if not holding_account_details:
             raise UserError("Account not found in BCCR")
@@ -282,8 +339,10 @@ class ApplyComplianceUnitsService:
         )
 
         # Get compliance report data for subsequent operations
-        compliance_report_version = ComplianceReportVersionService.get_compliance_report_version(
-            compliance_report_version_id
+        compliance_report_version = (
+            ComplianceReportVersionService.get_compliance_report_version(
+                compliance_report_version_id
+            )
         )
         compliance_report = compliance_report_version.compliance_report
 
@@ -294,25 +353,34 @@ class ApplyComplianceUnitsService:
         )
         compliance_period_year = compliance_report.compliance_period.start_date.year
         bccr_units = bccr_account_service.client.list_all_units(
-            account_id=account_id, vintage_year=compliance_period_year, limit=100, fetch_all_pages=True
+            account_id=account_id,
+            vintage_year=compliance_period_year,
+            limit=100,
+            fetch_all_pages=True,
         )
 
-        obligation_data = ComplianceObligationService.get_obligation_data_by_report_version(
-            compliance_report_version_id
+        obligation_data = (
+            ComplianceObligationService.get_obligation_data_by_report_version(
+                compliance_report_version_id
+            )
         )
         outstanding_balance = obligation_data.equivalent_value
 
         # Compute compiance unit cap limit and remaining cap
-        compliance_unit_cap_limit, compliance_unit_cap_remaining = cls._compute_compliance_unit_caps(
-            compliance_report_version_id
+        compliance_unit_cap_limit, compliance_unit_cap_remaining = (
+            cls._compute_compliance_unit_caps(compliance_report_version_id)
         )
 
         return ComplianceUnitsPageData(
             bccr_trading_name=bccr_compliance_account.master_account_name,
             bccr_compliance_account_id=bccr_compliance_account.entity_id,
-            charge_rate=ComplianceChargeRateService.get_rate_for_year(compliance_report.report.reporting_year),
+            charge_rate=ComplianceChargeRateService.get_rate_for_year(
+                compliance_report.report.reporting_year
+            ),
             outstanding_balance=outstanding_balance,
-            bccr_units=cls._format_bccr_units_for_grid_display(bccr_units.get("entities", [])),
+            bccr_units=cls._format_bccr_units_for_grid_display(
+                bccr_units.get("entities", [])
+            ),
             compliance_unit_cap_limit=compliance_unit_cap_limit,
             compliance_unit_cap_remaining=compliance_unit_cap_remaining,
             max_credit_usage_percentage=compliance_report.compliance_period.max_credit_usage_percentage,
@@ -320,7 +388,7 @@ class ApplyComplianceUnitsService:
 
     @classmethod
     def apply_compliance_units(
-        cls, account_id: str, compliance_report_version_id: int, payload: Dict[str, Any]
+        cls, account_id: str, compliance_report_version_id: int, payload: dict[str, Any]
     ) -> None:
         """
         Transfers eligible BCCR units from a holding account to a compliance account and records an adjustment.
@@ -348,14 +416,18 @@ class ApplyComplianceUnitsService:
             )
             is False
         ):
-            raise UserError("The provided holding account does not own the compliance sub-account for this operation.")
+            raise UserError(
+                "The provided holding account does not own the compliance sub-account for this operation."
+            )
 
         # Check we are working with fresh elicensing data
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id
         )
         if not refresh_result.data_is_fresh:
-            raise UserError("Unable to proceed: E-Licensing data is not up to date. Please try again later.")
+            raise UserError(
+                "Unable to proceed: E-Licensing data is not up to date. Please try again later."
+            )
 
         # Check overall eligibility for applying compliance units.
         if not cls.can_apply_compliance_units(compliance_report_version_id):
@@ -377,11 +449,14 @@ class ApplyComplianceUnitsService:
                     id=unit["id"],
                 )
                 for unit in payload["bccr_units"]
-                if unit.get("quantity_to_be_applied") and unit["quantity_to_be_applied"] > 0
+                if unit.get("quantity_to_be_applied")
+                and unit["quantity_to_be_applied"] > 0
             ],
         )
 
-        response = bccr_account_service.client.transfer_compliance_units(asdict(transfer_compliance_units_payload))
+        response = bccr_account_service.client.transfer_compliance_units(
+            asdict(transfer_compliance_units_payload)
+        )
         if response.get("success"):
             ComplianceAdjustmentService.create_adjustment_for_current_version(
                 compliance_report_version_id=compliance_report_version_id,
@@ -389,7 +464,9 @@ class ApplyComplianceUnitsService:
             )
 
     @classmethod
-    def get_applied_compliance_units_data(cls, compliance_report_version_id: int) -> List[BCCRUnit]:
+    def get_applied_compliance_units_data(
+        cls, compliance_report_version_id: int
+    ) -> list[BCCRUnit]:
         """
         Retrieves applied compliance units for a compliance report version.
 
@@ -402,10 +479,14 @@ class ApplyComplianceUnitsService:
         Returns:
             List of BCCRUnit objects for grid display
         """
-        compliance_report_version = ComplianceReportVersionService.get_compliance_report_version(
-            compliance_report_version_id
+        compliance_report_version = (
+            ComplianceReportVersionService.get_compliance_report_version(
+                compliance_report_version_id
+            )
         )
-        bccr_subaccount_id = compliance_report_version.compliance_report.bccr_subaccount_id
+        bccr_subaccount_id = (
+            compliance_report_version.compliance_report.bccr_subaccount_id
+        )
 
         if not bccr_subaccount_id:
             return []
@@ -418,7 +499,9 @@ class ApplyComplianceUnitsService:
             account_type="sub_account",
             fetch_all_pages=True,
         )
-        formatted_units = cls._format_bccr_units_for_grid_display(applied_units.get("entities", []))
+        formatted_units = cls._format_bccr_units_for_grid_display(
+            applied_units.get("entities", [])
+        )
 
         # Calculate equivalent_value for each unit based on charge rate
         charge_rate = ComplianceChargeRateService.get_rate_for_year(
@@ -429,7 +512,9 @@ class ApplyComplianceUnitsService:
             if unit.quantity_applied:
                 # Convert quantity_applied to Decimal for calculation
                 quantity_applied = Decimal(str(unit.quantity_applied))
-                equivalent_value_decimal = (quantity_applied * charge_rate).quantize(Decimal('0.01'))
+                equivalent_value_decimal = (quantity_applied * charge_rate).quantize(
+                    Decimal("0.01")
+                )
                 unit.equivalent_value = str(equivalent_value_decimal)
 
         return formatted_units

@@ -1,10 +1,13 @@
+from unittest.mock import AsyncMock, MagicMock, patch
+
 from model_bakery import baker
-from unittest.mock import patch, MagicMock, AsyncMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from reporting.schema.report_verification import ReportVerificationIn
 from reporting.models.report_verification import ReportVerification
-from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from reporting.schema.report_verification import ReportVerificationIn
+from reporting.tests.utils.report_access_validation import (
+    assert_report_version_ownership_is_validated,
+)
 
 
 class TestReportVerificationApi(CommonTestSetup):
@@ -20,9 +23,12 @@ class TestReportVerificationApi(CommonTestSetup):
 
         # Call parent setup and authorize user
         super().setup_method()
-        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator,
+            operations=[self.report_version.report.operation],
         )
 
     """Tests for the get_report_verification_by_version_id endpoint."""
@@ -55,15 +61,29 @@ class TestReportVerificationApi(CommonTestSetup):
 
         # Assert: Validate the response structure and data
         response_json = response.json()
-        assert response_json["verification_body_name"] == self.report_verification.verification_body_name
+        assert (
+            response_json["verification_body_name"]
+            == self.report_verification.verification_body_name
+        )
         assert response_json["accredited_by"] == self.report_verification.accredited_by
-        assert response_json["scope_of_verification"] == self.report_verification.scope_of_verification
-        assert response_json["threats_to_independence"] == self.report_verification.threats_to_independence
-        assert response_json["verification_conclusion"] == self.report_verification.verification_conclusion
+        assert (
+            response_json["scope_of_verification"]
+            == self.report_verification.scope_of_verification
+        )
+        assert (
+            response_json["threats_to_independence"]
+            == self.report_verification.threats_to_independence
+        )
+        assert (
+            response_json["verification_conclusion"]
+            == self.report_verification.verification_conclusion
+        )
 
     """Tests for the save_report_verification endpoint."""
 
-    @patch("reporting.service.report_verification_service.ReportVerificationService.save_report_verification")
+    @patch(
+        "reporting.service.report_verification_service.ReportVerificationService.save_report_verification"
+    )
     def test_returns_data_as_provided_by_the_service(
         self,
         mock_save_report_verification: MagicMock | AsyncMock,
@@ -109,17 +129,27 @@ class TestReportVerificationApi(CommonTestSetup):
         assert response.status_code == 200
 
         # Assert: Verify the service was called with correct arguments
-        mock_save_report_verification.assert_called_once_with(self.report_version.id, payload)
+        mock_save_report_verification.assert_called_once_with(
+            self.report_version.id, payload
+        )
 
         # Assert: Validate the response structure and data
         response_json = response.json()
         assert response_json["verification_body_name"] == payload.verification_body_name
         assert response_json["accredited_by"] == payload.accredited_by
         assert response_json["scope_of_verification"] == payload.scope_of_verification
-        assert response_json["threats_to_independence"] == payload.threats_to_independence
-        assert response_json["verification_conclusion"] == payload.verification_conclusion
+        assert (
+            response_json["threats_to_independence"] == payload.threats_to_independence
+        )
+        assert (
+            response_json["verification_conclusion"] == payload.verification_conclusion
+        )
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_report_verification_by_version_id")
+        assert_report_version_ownership_is_validated(
+            "get_report_verification_by_version_id"
+        )
         assert_report_version_ownership_is_validated("get_report_verification_status")
-        assert_report_version_ownership_is_validated("save_report_verification", method="post")
+        assert_report_version_ownership_is_validated(
+            "save_report_verification", method="post"
+        )

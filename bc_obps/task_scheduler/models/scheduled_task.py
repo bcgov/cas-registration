@@ -1,10 +1,13 @@
-from datetime import datetime, timedelta, time
-from typing import Callable, Dict, Optional
+from collections.abc import Callable
+from datetime import datetime, time, timedelta
+from typing import Dict, Optional
 from zoneinfo import ZoneInfo
+
 from django.db import models
 from django.utils import timezone as django_timezone
-from .task import Task
 from task_scheduler.config.settings import TASK_SCHEDULER_CONFIG
+
+from .task import Task
 
 
 class ScheduledTask(Task):
@@ -18,31 +21,43 @@ class ScheduledTask(Task):
         MONTHLY = "monthly", "Monthly on Specific Day"
         YEARLY = "yearly", "Yearly on Specific Date"
 
-    schedule_type = models.CharField(max_length=20, choices=ScheduleType.choices, help_text="Type of schedule")
+    schedule_type = models.CharField(
+        max_length=20, choices=ScheduleType.choices, help_text="Type of schedule"
+    )
     schedule_interval = models.PositiveIntegerField(
         null=True, blank=True, help_text="Interval for MINUTES/HOURLY schedules"
     )
-    schedule_hour = models.PositiveIntegerField(null=True, blank=True, help_text="Hour (0-23) for fixed time")
-    schedule_minute = models.PositiveIntegerField(null=True, blank=True, help_text="Minute (0-59) for fixed time")
+    schedule_hour = models.PositiveIntegerField(
+        null=True, blank=True, help_text="Hour (0-23) for fixed time"
+    )
+    schedule_minute = models.PositiveIntegerField(
+        null=True, blank=True, help_text="Minute (0-59) for fixed time"
+    )
     schedule_day_of_week = models.PositiveIntegerField(
         null=True, blank=True, help_text="Day of week (0=Monday, 6=Sunday)"
     )
-    schedule_day_of_month = models.PositiveIntegerField(null=True, blank=True, help_text="Day of month (1-31)")
-    schedule_month = models.PositiveIntegerField(null=True, blank=True, help_text="Month (1-12) for yearly schedules")
+    schedule_day_of_month = models.PositiveIntegerField(
+        null=True, blank=True, help_text="Day of month (1-31)"
+    )
+    schedule_month = models.PositiveIntegerField(
+        null=True, blank=True, help_text="Month (1-12) for yearly schedules"
+    )
 
     class Meta:
         db_table = 'common"."scheduled_task'
         db_table_comment = "Scheduled tasks that run on a regular basis"
         indexes = [
-            models.Index(fields=['status', 'next_run_time']),
-            models.Index(fields=['tag', 'status']),
+            models.Index(fields=["status", "next_run_time"]),
+            models.Index(fields=["tag", "status"]),
         ]
 
     def __str__(self) -> str:
         status_display = dict(self.TaskStatus.choices)[self.status]
         return f"{self.function_path} ({self.schedule_type}) - {status_display}"
 
-    def calculate_next_run_time(self, force_recalculate: bool = False, **kwargs: object) -> Optional[datetime]:
+    def calculate_next_run_time(
+        self, force_recalculate: bool = False, **kwargs: object
+    ) -> datetime | None:
         if not self.schedule_type:
             return None
 
@@ -55,9 +70,9 @@ class ScheduledTask(Task):
 
         return self._calculate_fresh_time()
 
-    def _calculate_fresh_time(self) -> Optional[datetime]:
+    def _calculate_fresh_time(self) -> datetime | None:
         now: datetime = django_timezone.now()
-        schedule_calculators: Dict[str, Callable[[datetime], Optional[datetime]]] = {
+        schedule_calculators: dict[str, Callable[[datetime], datetime | None]] = {
             self.ScheduleType.MINUTES: self._calculate_minutes_schedule,
             self.ScheduleType.HOURLY: self._calculate_hourly_schedule,
             self.ScheduleType.DAILY: self._calculate_daily_schedule,
@@ -70,19 +85,19 @@ class ScheduledTask(Task):
             return calculator(now)
         return None
 
-    def _calculate_minutes_schedule(self, now: datetime) -> Optional[datetime]:
+    def _calculate_minutes_schedule(self, now: datetime) -> datetime | None:
         if not self.schedule_interval:
             return None
         return now + timedelta(minutes=self.schedule_interval)
 
-    def _calculate_hourly_schedule(self, now: datetime) -> Optional[datetime]:
+    def _calculate_hourly_schedule(self, now: datetime) -> datetime | None:
         if not self.schedule_interval:
             return None
         return now + timedelta(hours=self.schedule_interval)
 
     @staticmethod
     def _get_task_timezone() -> ZoneInfo:
-        task_timezone = TASK_SCHEDULER_CONFIG.get('timezone', 'America/Vancouver')
+        task_timezone = TASK_SCHEDULER_CONFIG.get("timezone", "America/Vancouver")
         return ZoneInfo(task_timezone)
 
     def _create_scheduled_time_in_timezone(
@@ -113,7 +128,9 @@ class ScheduledTask(Task):
         naive_scheduled = datetime.combine(target_date, target_time)
 
         # Use Django's make_aware to properly create timezone-aware datetime
-        task_local_scheduled = django_timezone.make_aware(naive_scheduled, timezone=task_tz)
+        task_local_scheduled = django_timezone.make_aware(
+            naive_scheduled, timezone=task_tz
+        )
 
         return task_local_scheduled
 
@@ -123,9 +140,9 @@ class ScheduledTask(Task):
         hour: int,
         minute: int,
         day_offset: int = 0,
-        month: Optional[int] = None,
-        year: Optional[int] = None,
-        day: Optional[int] = None,
+        month: int | None = None,
+        year: int | None = None,
+        day: int | None = None,
     ) -> datetime:
         """Create a fixed time schedule with optional date components.
 
@@ -150,7 +167,9 @@ class ScheduledTask(Task):
             target_date += timedelta(days=day_offset)
 
         # Create the scheduled time
-        task_local_scheduled = self._create_scheduled_time_in_timezone(now, hour, minute, day_offset)
+        task_local_scheduled = self._create_scheduled_time_in_timezone(
+            now, hour, minute, day_offset
+        )
 
         # Apply date component overrides if specified
         if day is not None:
@@ -164,7 +183,10 @@ class ScheduledTask(Task):
         return task_local_scheduled.astimezone(ZoneInfo("UTC"))
 
     def _advance_to_next_period_if_past(
-        self, scheduled_time: datetime, now: datetime, advance_func: Callable[[datetime], datetime]
+        self,
+        scheduled_time: datetime,
+        now: datetime,
+        advance_func: Callable[[datetime], datetime],
     ) -> datetime:
         """Advance scheduled time to next period if it's in the past.
 
@@ -185,12 +207,14 @@ class ScheduledTask(Task):
 
         return task_local_scheduled.astimezone(ZoneInfo("UTC"))
 
-    def _calculate_daily_schedule(self, now: datetime) -> Optional[datetime]:
+    def _calculate_daily_schedule(self, now: datetime) -> datetime | None:
         if self.schedule_hour is None or self.schedule_minute is None:
             return None
 
         # Create scheduled time for today
-        task_local_scheduled = self._create_scheduled_time_in_timezone(now, self.schedule_hour, self.schedule_minute)
+        task_local_scheduled = self._create_scheduled_time_in_timezone(
+            now, self.schedule_hour, self.schedule_minute
+        )
 
         # If the time has already passed today, schedule for tomorrow
         if task_local_scheduled <= now.astimezone(self._get_task_timezone()):
@@ -201,8 +225,12 @@ class ScheduledTask(Task):
         # Convert back to UTC for storage
         return task_local_scheduled.astimezone(ZoneInfo("UTC"))
 
-    def _calculate_weekly_schedule(self, now: datetime) -> Optional[datetime]:
-        if self.schedule_day_of_week is None or self.schedule_hour is None or self.schedule_minute is None:
+    def _calculate_weekly_schedule(self, now: datetime) -> datetime | None:
+        if (
+            self.schedule_day_of_week is None
+            or self.schedule_hour is None
+            or self.schedule_minute is None
+        ):
             return None
 
         task_tz = self._get_task_timezone()
@@ -220,8 +248,12 @@ class ScheduledTask(Task):
         # Convert back to UTC for storage
         return task_local_scheduled.astimezone(ZoneInfo("UTC"))
 
-    def _calculate_monthly_schedule(self, now: datetime) -> Optional[datetime]:
-        if self.schedule_day_of_month is None or self.schedule_hour is None or self.schedule_minute is None:
+    def _calculate_monthly_schedule(self, now: datetime) -> datetime | None:
+        if (
+            self.schedule_day_of_month is None
+            or self.schedule_hour is None
+            or self.schedule_minute is None
+        ):
             return None
 
         def advance_month(scheduled_time: datetime) -> datetime:
@@ -256,7 +288,7 @@ class ScheduledTask(Task):
         # Advance to next month if time has passed
         return self._advance_to_next_period_if_past(scheduled_time, now, advance_month)
 
-    def _calculate_yearly_schedule(self, now: datetime) -> Optional[datetime]:
+    def _calculate_yearly_schedule(self, now: datetime) -> datetime | None:
         if (
             self.schedule_month is None
             or self.schedule_day_of_month is None

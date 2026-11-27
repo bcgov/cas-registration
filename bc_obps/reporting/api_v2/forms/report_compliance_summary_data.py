@@ -1,7 +1,12 @@
+from typing import List, Literal, Tuple
+
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
 from ninja import Schema
-from typing import List, Literal, Tuple
-from reporting.api.permissions import approved_industry_user_report_version_composite_auth
+from reporting.api.permissions import (
+    approved_industry_user_report_version_composite_auth,
+)
+from reporting.api_v2.forms.form_response_builder import FormResponseBuilder
 from reporting.api_v2.forms.form_schema import ReportingFormSchema
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.compliance_data import (
@@ -11,9 +16,8 @@ from reporting.schema.compliance_data import (
     ReportProductComplianceSummarySchema,
 )
 from reporting.schema.generic import Message
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from reporting.api_v2.forms.form_response_builder import FormResponseBuilder
 from reporting.service.compliance_service.compliance_service import ComplianceService
+
 from ..router import router
 
 
@@ -25,10 +29,12 @@ class ComplianceDataSchemaSerialized(Schema):
     excess_emissions: float
     credited_emissions: float
     regulatory_values: RegulatoryValuesSchema
-    products: List[ReportProductComplianceSummarySchema]
+    products: list[ReportProductComplianceSummarySchema]
     production_period: Literal["annual", "apr_dec", "jan_mar"]
     is_new_entrant: bool
-    emissions_attributable_for_compliance_totals: EmissionsAttributableForComplianceTotalsSchema
+    emissions_attributable_for_compliance_totals: (
+        EmissionsAttributableForComplianceTotalsSchema
+    )
 
 
 @router.get(
@@ -45,7 +51,7 @@ class ComplianceDataSchemaSerialized(Schema):
 def get_compliance_summary_form_data(
     request: HttpRequest,
     version_id: int,
-) -> Tuple[Literal[200], dict]:
+) -> tuple[Literal[200], dict]:
     # Get compliance dataclass
     compliance_data = ComplianceService.get_calculated_compliance_data(
         version_id, include_emissions_attributable_for_compliance_totals=True

@@ -1,15 +1,18 @@
-from common.tests.utils.helpers import BaseTestCase
 import pytest
+from common.lib import pgtrigger
+from common.tests.utils.helpers import BaseTestCase
 from django.core.exceptions import ValidationError
+from model_bakery.baker import make, make_recipe
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models.report_product import ReportProduct
-from model_bakery.baker import make_recipe, make
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
 from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsTestSetup
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from common.lib import pgtrigger
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ReportProductModelTest(BaseTestCase):
@@ -115,16 +118,19 @@ class ReportProductModelTest(BaseTestCase):
 
     def test_cant_save_a_report_product_with_missing_apr_dec_data_for_2024(self):
         facility_report_2024 = make_recipe(
-            "reporting.tests.utils.facility_report", report_version__report__reporting_year_id=2024
+            "reporting.tests.utils.facility_report",
+            report_version__report__reporting_year_id=2024,
         )
         facility_report = make_recipe(
-            "reporting.tests.utils.facility_report", report_version__report__reporting_year__reporting_year=2023
+            "reporting.tests.utils.facility_report",
+            report_version__report__reporting_year__reporting_year=2023,
         )
 
         product = make_recipe("registration.tests.utils.regulated_product")
 
         with pytest.raises(
-            ValidationError, match='Apr-Dec production data needs to be reported for reporting year 2024.'
+            ValidationError,
+            match="Apr-Dec production data needs to be reported for reporting year 2024.",
         ):
             make(
                 ReportProduct,
@@ -156,27 +162,28 @@ class ReportProductModelTest(BaseTestCase):
 
 
 class ReportProductRlsTest(BaseTestCase):
-
     def test_report_product_rls_industry_user(self):
         # Common Test Setup
-        t = ReportRlsTestSetup(parent_object='facility_report')
+        t = ReportRlsTestSetup(parent_object="facility_report")
 
         # ReportProduct Setup
         # Inside access bounds
         with pgtrigger.ignore("reporting.ReportProduct:immutable_report_version"):
             report_product_2010_submitted = make_recipe(
-                'reporting.tests.utils.report_product',
+                "reporting.tests.utils.report_product",
                 report_version=t.report_version_2010_submitted,
             )
         report_product_2010_draft = make_recipe(
-            'reporting.tests.utils.report_product', report_version=t.report_version_2010_draft
+            "reporting.tests.utils.report_product",
+            report_version=t.report_version_2010_draft,
         )
         # Outside access bounds
         report_product_2013_draft = make_recipe(
-            'reporting.tests.utils.report_product', report_version=t.report_version_2013_draft
+            "reporting.tests.utils.report_product",
+            report_version=t.report_version_2013_draft,
         )
 
-        test_product = make_recipe('registration.tests.utils.regulated_product')
+        test_product = make_recipe("registration.tests.utils.regulated_product")
 
         def select_function(cursor):
             ReportProduct.objects.get(id=report_product_2010_submitted.id)

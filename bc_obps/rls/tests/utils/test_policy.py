@@ -1,15 +1,15 @@
 from unittest import TestCase
 from unittest.mock import patch
+
 from registration.enums.enums import RegistrationTableNames
 from registration.models.operation import Operation
-from rls.enums import RlsRoles, RlsOperations
+from rls.enums import RlsOperations, RlsRoles
 from rls.utils.policy import RlsPolicy
 
 
 class TestRlsPolicy(TestCase):
-    @patch('django.db.connection.cursor')
+    @patch("django.db.connection.cursor")
     def test_apply_policy(self, mock_cursor):
-
         policy = RlsPolicy(
             role=RlsRoles.INDUSTRY_USER,
             policy_name="test_policy",
@@ -25,7 +25,7 @@ class TestRlsPolicy(TestCase):
 
         mock_cursor.execute.assert_called_once_with(expected_query)
 
-    @patch('django.db.connection.cursor')
+    @patch("django.db.connection.cursor")
     def test_apply_policy_failure(self, mock_cursor):
         mock_cursor.execute.side_effect = Exception("SQL error")
         policy = RlsPolicy(
@@ -42,9 +42,8 @@ class TestRlsPolicy(TestCase):
 
         self.assertIn("Failed to apply policy", str(context.exception))
 
-    @patch('django.db.connection.cursor')
+    @patch("django.db.connection.cursor")
     def test_drop_policy(self, mock_cursor):
-
         policy = RlsPolicy(
             role=RlsRoles.INDUSTRY_USER,
             policy_name="test_policy",
@@ -56,11 +55,11 @@ class TestRlsPolicy(TestCase):
 
         policy.drop_policy(mock_cursor)
 
-        expected_query = 'DROP POLICY IF EXISTS test_policy ON erc.operation  '
+        expected_query = "DROP POLICY IF EXISTS test_policy ON erc.operation  "
 
         mock_cursor.execute.assert_called_once_with(expected_query)
 
-    @patch('django.db.connection.cursor')
+    @patch("django.db.connection.cursor")
     def test_drop_policy_failure(self, mock_cursor):
         mock_cursor.execute.side_effect = Exception("SQL error")
         policy = RlsPolicy(

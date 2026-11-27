@@ -1,6 +1,6 @@
-from typing import Optional, List, Literal
 from dataclasses import dataclass, field
 from decimal import Decimal
+from typing import List, Literal, Optional
 
 
 @dataclass
@@ -10,26 +10,26 @@ class ClientResponse:
     clientObjectId: str
     clientGUID: str
     companyName: str
-    lastName: Optional[str] = None
-    doingBusinessAs: Optional[str] = None
-    firstName: Optional[str] = None
-    middleName: Optional[str] = None
-    title: Optional[str] = None
-    businessPhone: Optional[str] = None
-    homeNumber: Optional[str] = None
-    cellularNumber: Optional[str] = None
-    faxNumber: Optional[str] = None
-    businessPhoneExt: Optional[str] = None
-    bcCompanyRegistrationNumber: Optional[str] = None
-    bcCompanySocietyNumber: Optional[str] = None
-    email: Optional[str] = None
-    dateOfBirth: Optional[str] = None
+    lastName: str | None = None
+    doingBusinessAs: str | None = None
+    firstName: str | None = None
+    middleName: str | None = None
+    title: str | None = None
+    businessPhone: str | None = None
+    homeNumber: str | None = None
+    cellularNumber: str | None = None
+    faxNumber: str | None = None
+    businessPhoneExt: str | None = None
+    bcCompanyRegistrationNumber: str | None = None
+    bcCompanySocietyNumber: str | None = None
+    email: str | None = None
+    dateOfBirth: str | None = None
     addressLine1: str = ""
-    addressLine2: Optional[str] = None
+    addressLine2: str | None = None
     city: str = ""
     stateProvince: str = ""
     postalCode: str = ""
-    country: Optional[str] = None
+    country: str | None = None
 
 
 @dataclass
@@ -52,25 +52,27 @@ class ClientCreationRequest:
     clientGUID: str
     businessAreaCode: str
     businessPhone: str
-    lastName: Optional[str] = None
-    doingBusinessAs: Optional[str] = None
-    firstName: Optional[str] = None
-    middleName: Optional[str] = None
-    title: Optional[str] = None
-    homeNumber: Optional[str] = None
-    cellularNumber: Optional[str] = None
-    faxNumber: Optional[str] = None
-    businessPhoneExt: Optional[str] = None
-    bcCompanyRegistrationNumber: Optional[str] = None
-    bcCompanySocietyNumber: Optional[str] = None
-    email: Optional[str] = None
-    dateOfBirth: Optional[str] = None
-    addressLine2: Optional[str] = None
-    country: Optional[str] = None
+    lastName: str | None = None
+    doingBusinessAs: str | None = None
+    firstName: str | None = None
+    middleName: str | None = None
+    title: str | None = None
+    homeNumber: str | None = None
+    cellularNumber: str | None = None
+    faxNumber: str | None = None
+    businessPhoneExt: str | None = None
+    bcCompanyRegistrationNumber: str | None = None
+    bcCompanySocietyNumber: str | None = None
+    email: str | None = None
+    dateOfBirth: str | None = None
+    addressLine2: str | None = None
+    country: str | None = None
 
 
 # Valid fee profile group names in eLicensing
-FeeProfileGroupName = Literal["OBPS Compliance Obligation", "OBPS Administrative Penalty"]
+FeeProfileGroupName = Literal[
+    "OBPS Compliance Obligation", "OBPS Administrative Penalty"
+]
 
 
 @dataclass
@@ -79,7 +81,9 @@ class FeeCreationItem:
 
     businessAreaCode: str
     feeGUID: str
-    feeProfileGroupName: FeeProfileGroupName  # Must be one of the valid profile group names
+    feeProfileGroupName: (
+        FeeProfileGroupName  # Must be one of the valid profile group names
+    )
     feeDescription: str  # Mandatory field
     feeAmount: Decimal
     feeDate: str  # Format: YYYY-MM-DD
@@ -89,7 +93,7 @@ class FeeCreationItem:
 class FeeCreationRequest:
     """Type definition for the fee creation request to eLicensing API"""
 
-    fees: List[FeeCreationItem]
+    fees: list[FeeCreationItem]
 
 
 @dataclass
@@ -98,12 +102,12 @@ class FeeItem:
 
     feeGUID: str
     feeObjectId: str
-    businessAreaCode: Optional[str] = None
-    feeProfileGroupName: Optional[str] = None
-    feeDescription: Optional[str] = None
-    feeAmount: Optional[Decimal] = None
-    feeDate: Optional[str] = None
-    feeType: Optional[str] = None
+    businessAreaCode: str | None = None
+    feeProfileGroupName: str | None = None
+    feeDescription: str | None = None
+    feeAmount: Decimal | None = None
+    feeDate: str | None = None
+    feeType: str | None = None
 
 
 @dataclass
@@ -112,7 +116,7 @@ class FeeResponse:
 
     clientObjectId: str
     clientGUID: str
-    fees: List[FeeItem]
+    fees: list[FeeItem]
 
 
 @dataclass
@@ -127,7 +131,7 @@ class InvoiceResponse:
 class InvoiceCreationRequest:
     paymentDueDate: str
     businessAreaCode: str
-    fees: List[str]
+    fees: list[str]
 
 
 @dataclass
@@ -139,11 +143,11 @@ class PaymentDistribution:
     reason: str
     amount: Decimal
     taxAmount: Decimal
-    distributionType: Optional[str] = None
-    reversedDistributionObjectId: Optional[str] = None
-    invoiceNumber: Optional[str] = None
-    reversedAmount: Optional[Decimal] = None
-    feeObjectId: Optional[str] = None
+    distributionType: str | None = None
+    reversedDistributionObjectId: str | None = None
+    invoiceNumber: str | None = None
+    reversedAmount: Decimal | None = None
+    feeObjectId: str | None = None
 
 
 @dataclass
@@ -156,11 +160,11 @@ class Payment:
     method: str
     cashHandlingArea: str
     referenceNumber: str
-    onlineOrderNumber: Optional[str] = None
-    onlineTransactionId: Optional[str] = None
-    onlineApprovalCode: Optional[str] = None
-    distributions: List[PaymentDistribution] = field(default_factory=list)
-    adjustmentAmount: Optional[Decimal] = None
+    onlineOrderNumber: str | None = None
+    onlineTransactionId: str | None = None
+    onlineApprovalCode: str | None = None
+    distributions: list[PaymentDistribution] = field(default_factory=list)
+    adjustmentAmount: Decimal | None = None
 
 
 @dataclass
@@ -171,9 +175,9 @@ class FeeAdjustment:
     date: str
     reason: str
     type: str
-    adjustmentGUID: Optional[str] = None
-    taxAmounts: Optional[Decimal] = None
-    comment: Optional[str] = None
+    adjustmentGUID: str | None = None
+    taxAmounts: Decimal | None = None
+    comment: str | None = None
 
 
 @dataclass
@@ -191,8 +195,8 @@ class InvoiceFee:
     paymentTotal: Decimal
     invoiceNumber: str
     feeType: Literal["Regular", "Interest"]
-    payments: List[Payment] = field(default_factory=list)
-    adjustments: List[FeeAdjustment] = field(default_factory=list)
+    payments: list[Payment] = field(default_factory=list)
+    adjustments: list[FeeAdjustment] = field(default_factory=list)
 
 
 @dataclass
@@ -204,7 +208,7 @@ class InvoiceQueryResponse:
     invoiceOutstandingBalance: Decimal
     invoiceFeeBalance: Decimal
     invoiceInterestBalance: Decimal
-    fees: List[InvoiceFee]
+    fees: list[InvoiceFee]
 
 
 @dataclass
@@ -220,4 +224,4 @@ class InterestRateResponse:
     """Interest rate response from eLicensing API"""
 
     daysPerYear: Decimal
-    periods: List[InterestRatePeriod]
+    periods: list[InterestRatePeriod]

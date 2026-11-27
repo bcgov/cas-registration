@@ -1,15 +1,23 @@
 from dataclasses import asdict
-from ninja.types import DictStrAny
-from compliance.api.router import router
 from typing import Dict, Literal, Tuple
-from django.http import HttpRequest
-from compliance.schema.apply_compliance_units import ApplyComplianceUnitsIn, ApplyComplianceUnitsOut
-from compliance.service.bc_carbon_registry.apply_compliance_units_service import ApplyComplianceUnitsService
-from compliance.service.bc_carbon_registry.schema import FifteenDigitString
+
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.schema.generic import Message
+from compliance.api.permissions import (
+    approved_industry_user_compliance_report_version_composite_auth,
+)
+from compliance.api.router import router
 from compliance.constants import COMPLIANCE
-from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth
+from compliance.schema.apply_compliance_units import (
+    ApplyComplianceUnitsIn,
+    ApplyComplianceUnitsOut,
+)
+from compliance.service.bc_carbon_registry.apply_compliance_units_service import (
+    ApplyComplianceUnitsService,
+)
+from compliance.service.bc_carbon_registry.schema import FifteenDigitString
+from django.http import HttpRequest
+from ninja.types import DictStrAny
+from registration.schema.generic import Message
 
 
 @router.get(
@@ -20,10 +28,15 @@ from compliance.api.permissions import approved_industry_user_compliance_report_
     auth=approved_industry_user_compliance_report_version_composite_auth,
 )
 def get_apply_compliance_units_page_data(
-    request: HttpRequest, account_id: FifteenDigitString, compliance_report_version_id: int
-) -> Tuple[Literal[200], ApplyComplianceUnitsOut]:
-    apply_compliance_units_page_data = ApplyComplianceUnitsService.get_apply_compliance_units_page_data(
-        account_id=account_id, compliance_report_version_id=compliance_report_version_id
+    request: HttpRequest,
+    account_id: FifteenDigitString,
+    compliance_report_version_id: int,
+) -> tuple[Literal[200], ApplyComplianceUnitsOut]:
+    apply_compliance_units_page_data = (
+        ApplyComplianceUnitsService.get_apply_compliance_units_page_data(
+            account_id=account_id,
+            compliance_report_version_id=compliance_report_version_id,
+        )
     )
 
     response = ApplyComplianceUnitsOut(**asdict(apply_compliance_units_page_data))
@@ -33,7 +46,7 @@ def get_apply_compliance_units_page_data(
 
 @router.post(
     "/bccr/accounts/{account_id}/compliance-report-versions/{compliance_report_version_id}/compliance-units",
-    response={200: Dict[str, bool], custom_codes_4xx: Message},
+    response={200: dict[str, bool], custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="""
     Apply compliance units to a BCCR compliance account.
@@ -48,7 +61,7 @@ def apply_compliance_units(
     account_id: FifteenDigitString,
     compliance_report_version_id: int,
     payload: ApplyComplianceUnitsIn,
-) -> Tuple[Literal[200], DictStrAny]:
+) -> tuple[Literal[200], DictStrAny]:
     # Apply the units
     ApplyComplianceUnitsService.apply_compliance_units(
         account_id=account_id,
@@ -57,7 +70,9 @@ def apply_compliance_units(
     )
 
     # Determine if the user can still apply more units
-    can_apply_compliance_units = ApplyComplianceUnitsService.can_apply_compliance_units(compliance_report_version_id)
+    can_apply_compliance_units = ApplyComplianceUnitsService.can_apply_compliance_units(
+        compliance_report_version_id
+    )
 
     # Return flags in response
     return 200, {

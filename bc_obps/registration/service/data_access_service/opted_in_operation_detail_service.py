@@ -1,7 +1,7 @@
 from common.lib.dataclasses import asdict
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
-from registration.utils import update_model_instance
 from registration.service.data_types.operation_service import OptedInOperationDetailData
+from registration.utils import update_model_instance
 
 
 class OptedInOperationDataAccessService:
@@ -14,7 +14,9 @@ class OptedInOperationDataAccessService:
         """
         Updates an existing OptedInOperationDetail instance.
         """
-        opted_in_operation_detail = OptedInOperationDetail.objects.get(id=opted_in_operation_detail_id)
+        opted_in_operation_detail = OptedInOperationDetail.objects.get(
+            id=opted_in_operation_detail_id
+        )
         update_dict = asdict(opted_in_operation_detail_data)
 
         updated_opted_in_operation_detail_instance = update_model_instance(
@@ -33,7 +35,9 @@ class OptedInOperationDataAccessService:
         Updates the final reporting year of an OptedInOperationDetail instance (for opted-in operations that are opting out).
         If final_reporting_year is None, clears the field.
         """
-        opted_in_operation_detail = OptedInOperationDetail.objects.get(id=opted_in_operation_detail_id)
+        opted_in_operation_detail = OptedInOperationDetail.objects.get(
+            id=opted_in_operation_detail_id
+        )
         opted_in_operation_detail.final_reporting_year_id = final_reporting_year
         opted_in_operation_detail.save()
         return opted_in_operation_detail

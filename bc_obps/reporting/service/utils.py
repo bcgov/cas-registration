@@ -1,9 +1,12 @@
 from datetime import date, datetime
 from decimal import Decimal
 
-from reporting.models.report_version import ReportVersion
-from reporting.service.constants import REPORT_VERSION_DEFAULT_DAY, REPORT_VERSION_DEFAULT_MONTH
 from reporting.models.configuration import Configuration
+from reporting.models.report_version import ReportVersion
+from reporting.service.constants import (
+    REPORT_VERSION_DEFAULT_DAY,
+    REPORT_VERSION_DEFAULT_MONTH,
+)
 
 
 def exclude_keys(dict: dict, exclude_keys: list[str]) -> dict:
@@ -23,10 +26,12 @@ def retrieve_ids(data: dict | list[dict]) -> list:
         return [data[key].get("id") for key in data if data[key].get("id") is not None]
 
     # Assumes a list of dicts containing the ID
-    return [element.get('id') for element in data if element.get("id") is not None]
+    return [element.get("id") for element in data if element.get("id") is not None]
 
 
-def round_using_appropriate_strategy(value: Decimal | float, use_legacy_rounding: bool = False) -> Decimal:
+def round_using_appropriate_strategy(
+    value: Decimal | float, use_legacy_rounding: bool = False
+) -> Decimal:
     """
     Rounds a value using the appropriate strategy based on the use_legacy_rounding flag.
     For legacy rounding: Uses banker's rounding (ROUND_HALF_EVEN) to maintain compatibility with existing reports.
@@ -43,4 +48,8 @@ def round_using_appropriate_strategy(value: Decimal | float, use_legacy_rounding
 
 def get_report_valid_date_from_version_id(report_version_id: int) -> date:
     report_version = ReportVersion.objects.get(id=report_version_id)
-    return date(report_version.report.reporting_year_id, REPORT_VERSION_DEFAULT_MONTH, REPORT_VERSION_DEFAULT_DAY)
+    return date(
+        report_version.report.reporting_year_id,
+        REPORT_VERSION_DEFAULT_MONTH,
+        REPORT_VERSION_DEFAULT_DAY,
+    )

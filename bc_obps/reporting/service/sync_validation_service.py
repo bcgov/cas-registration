@@ -1,8 +1,9 @@
-from uuid import UUID
 from typing import Optional, Tuple
+from uuid import UUID
+
+from registration.models import Facility, Operation
 from reporting.models import ReportVersion
 from reporting.service.reporting_year_service import ReportingYearService
-from registration.models import Facility, Operation
 
 
 class SyncValidationService:
@@ -11,7 +12,9 @@ class SyncValidationService:
     """
 
     @classmethod
-    def _validate_sync_conditions(cls, version_id: int) -> Tuple[bool, Optional[ReportVersion]]:
+    def _validate_sync_conditions(
+        cls, version_id: int
+    ) -> tuple[bool, ReportVersion | None]:
         """
         Internal helper to validate sync conditions and return the report version.
 
@@ -22,7 +25,7 @@ class SyncValidationService:
             Tuple of (is_allowed: bool, report_version: Optional[ReportVersion])
         """
         report_version = ReportVersion.objects.select_related(
-            'report__operation', 'report__operator', 'report__reporting_year'
+            "report__operation", "report__operator", "report__reporting_year"
         ).get(id=version_id)
 
         # Check if report is for current reporting year
@@ -86,7 +89,7 @@ class SyncValidationService:
 
         # Only check facility transfer for Linear Facility Operations (LFO)
         if report_operation.type == Operation.Types.LFO:
-            facility = Facility.objects.select_related('operation').get(id=facility_id)
+            facility = Facility.objects.select_related("operation").get(id=facility_id)
             current_facility_operation = facility.operation
 
             # Check if facility is still owned by the same operation

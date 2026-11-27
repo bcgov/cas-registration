@@ -1,12 +1,15 @@
 from typing import Optional
 from uuid import UUID
+
 from django.core.files import File
 from registration.models import Document, DocumentType
 
 
 class DocumentDataAccessService:
     @classmethod
-    def get_operation_document_by_type(cls, operation_id: UUID, document_type: str) -> Document | None:
+    def get_operation_document_by_type(
+        cls, operation_id: UUID, document_type: str
+    ) -> Document | None:
         try:
             document = Document.objects.get(
                 operation_id=operation_id,
@@ -20,7 +23,7 @@ class DocumentDataAccessService:
     def create_document(
         cls,
         user_guid: UUID,
-        file_data: Optional[File],
+        file_data: File | None,
         document_type_name: str,
         operation_id: UUID,
     ) -> Document:

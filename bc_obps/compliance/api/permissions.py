@@ -1,5 +1,6 @@
 import logging
-from typing import Callable
+from collections.abc import Callable
+
 from common.permissions import authorize, compose_auth
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from django.http import HttpRequest
@@ -16,7 +17,9 @@ def is_access_granted(user_operator: UserOperator | None) -> bool:
     )
 
 
-def _validate_version_ownership_in_url(request: HttpRequest, version_id_param: str) -> bool:
+def _validate_version_ownership_in_url(
+    request: HttpRequest, version_id_param: str
+) -> bool:
     if not request.resolver_match:
         logger.warning("No resolver_match attribute found on request.")
         return False
@@ -26,7 +29,9 @@ def _validate_version_ownership_in_url(request: HttpRequest, version_id_param: s
         logger.warning("No compliance_report_version_id found in request.")
         return False
 
-    compliance_report_version = ComplianceReportVersion.objects.filter(pk=compliance_report_version_id).first()
+    compliance_report_version = ComplianceReportVersion.objects.filter(
+        pk=compliance_report_version_id
+    ).first()
     if not compliance_report_version:
         logger.warning("No report version found.")
         return False
@@ -54,11 +59,17 @@ def check_compliance_version_ownership_in_url(
     return validate_func
 
 
-approved_industry_user_compliance_report_version_composite_auth: Callable[[HttpRequest], bool] = compose_auth(
-    authorize("approved_industry_user"), check_compliance_version_ownership_in_url("compliance_report_version_id")
+approved_industry_user_compliance_report_version_composite_auth: Callable[
+    [HttpRequest], bool
+] = compose_auth(
+    authorize("approved_industry_user"),
+    check_compliance_version_ownership_in_url("compliance_report_version_id"),
 )
-approved_authorized_roles_compliance_report_version_composite_auth: Callable[[HttpRequest], bool] = compose_auth(
-    authorize("approved_authorized_roles"), check_compliance_version_ownership_in_url("compliance_report_version_id")
+approved_authorized_roles_compliance_report_version_composite_auth: Callable[
+    [HttpRequest], bool
+] = compose_auth(
+    authorize("approved_authorized_roles"),
+    check_compliance_version_ownership_in_url("compliance_report_version_id"),
 )
 approved_industry_user_cas_director_cas_analyst_compliance_report_version_composite_auth: Callable[
     [HttpRequest], bool

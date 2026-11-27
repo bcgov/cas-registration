@@ -1,15 +1,20 @@
-from typing import Dict, Any
+from typing import Any, Dict
+
 from common.exceptions import UserError
-from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
 from compliance.models.compliance_report_version import ComplianceReportVersion
-from registration.models import Operation, Facility
+from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import (
+    BCCarbonRegistryAPIClient,
+)
+from registration.models import Facility, Operation
 
 
 class BCCarbonRegistryProjectService:
     def __init__(self) -> None:
         self.client = BCCarbonRegistryAPIClient()
 
-    def create_project(self, account_id: str, compliance_report_version: ComplianceReportVersion) -> Dict:
+    def create_project(
+        self, account_id: str, compliance_report_version: ComplianceReportVersion
+    ) -> dict:
         """
         Creates a project in the BC Carbon Registry (BCCR) for a compliance report version.
 
@@ -27,14 +32,20 @@ class BCCarbonRegistryProjectService:
         operation = compliance_report.report.operation
         operation_type = operation.type
 
-        address_related_fields: Dict[str, Any] = {}
+        address_related_fields: dict[str, Any] = {}
         if operation_type == Operation.Types.SFO:
-
             # SFO operations have a single facility
             facility: Facility = Facility.objects.get(operation=operation)
 
-            if not all([facility.latitude_of_largest_emissions, facility.longitude_of_largest_emissions]):
-                raise UserError("Facility must have latitude and longitude for SFO operations.")
+            if not all(
+                [
+                    facility.latitude_of_largest_emissions,
+                    facility.longitude_of_largest_emissions,
+                ]
+            ):
+                raise UserError(
+                    "Facility must have latitude and longitude for SFO operations."
+                )
             address_related_fields = {
                 "latitude": str(facility.latitude_of_largest_emissions),
                 "longitude": str(facility.longitude_of_largest_emissions),
@@ -45,8 +56,16 @@ class BCCarbonRegistryProjectService:
 
             # Two below assertions are to make mypy happy, but we are sure that mailing_address is not None
             if not mailing_address:
-                raise UserError("Operator must have a mailing address for LFO operations.")
-            if not all([mailing_address.street_address, mailing_address.municipality, mailing_address.postal_code]):
+                raise UserError(
+                    "Operator must have a mailing address for LFO operations."
+                )
+            if not all(
+                [
+                    mailing_address.street_address,
+                    mailing_address.municipality,
+                    mailing_address.postal_code,
+                ]
+            ):
                 raise UserError(
                     "Mailing address must have street address, municipality, and postal code for LFO operations."
                 )
@@ -58,12 +77,12 @@ class BCCarbonRegistryProjectService:
             }
 
         if not address_related_fields:
-            raise UserError("Operation type must be SFO or LFO to create a project in BCCR.")
+            raise UserError(
+                "Operation type must be SFO or LFO to create a project in BCCR."
+            )
 
         # NOTE: Populating the operation name using the report operation name to make testing easier.
-        operation_name = (
-            compliance_report_version.report_compliance_summary.report_version.report_operation.operation_name
-        )
+        operation_name = compliance_report_version.report_compliance_summary.report_version.report_operation.operation_name
         compliance_period_end_date_year = compliance_period.end_date.year
         # Hardcoded value based on the Business Area decision
         project_description = f"The B.C. OBPS, established under the Greenhouse Gas Industrial Reporting and Control Act (GGIRCA), is a carbon pricing system that incentivizes emission reductions through performance-based targets. The Director under GGIRCA issued earned credits to {operation_name} because their verified emissions were below their emission limit in {compliance_period_end_date_year} B.C. Output Based Pricing System (OBPS)."
@@ -75,7 +94,9 @@ class BCCarbonRegistryProjectService:
             "mixedUnitList": [
                 {
                     **address_related_fields,
-                    "period_start_date": compliance_period.start_date.strftime("%Y-%m-%d"),
+                    "period_start_date": compliance_period.start_date.strftime(
+                        "%Y-%m-%d"
+                    ),
                     "period_end_date": compliance_period.end_date.strftime("%Y-%m-%d"),
                 }
             ],

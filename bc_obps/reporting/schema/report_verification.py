@@ -1,6 +1,6 @@
 from typing import Optional
-from ninja import ModelSchema
 
+from ninja import ModelSchema
 from reporting.models import ReportVerification
 
 
@@ -9,20 +9,20 @@ class ReportVerificationBase(ModelSchema):
     Base schema for shared fields in ReportVerification schemas
     """
 
-    verification_body_name: Optional[str] = None
-    accredited_by: Optional[str] = None
-    scope_of_verification: Optional[str] = None
-    threats_to_independence: Optional[bool] = None
-    verification_conclusion: Optional[str] = None
+    verification_body_name: str | None = None
+    accredited_by: str | None = None
+    scope_of_verification: str | None = None
+    threats_to_independence: bool | None = None
+    verification_conclusion: str | None = None
 
     class Meta:
         model = ReportVerification
         fields = [
-            'verification_body_name',
-            'accredited_by',
-            'scope_of_verification',
-            'threats_to_independence',
-            'verification_conclusion',
+            "verification_body_name",
+            "accredited_by",
+            "scope_of_verification",
+            "threats_to_independence",
+            "verification_conclusion",
         ]
 
 
@@ -41,4 +41,4 @@ class ReportVerificationOut(ReportVerificationBase):
     """
 
     class Meta(ReportVerificationBase.Meta):
-        fields = ReportVerificationBase.Meta.fields + ['report_version']
+        fields = ReportVerificationBase.Meta.fields + ["report_version"]

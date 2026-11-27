@@ -1,7 +1,6 @@
 import pytest
-from model_bakery.baker import make_recipe
-
 from common.tests.utils.helpers import assert_error_response
+from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.models import Comment
 
@@ -11,10 +10,14 @@ class TestUpdateCommentsV2Endpoint(CommonTestSetup):
         super().setup_method()
         self.report_version = make_recipe("reporting.tests.utils.report_version")
         self.thread = make_recipe(
-            "reporting.tests.utils.comment_thread", report_version_id=self.report_version.id, facility_id=None
+            "reporting.tests.utils.comment_thread",
+            report_version_id=self.report_version.id,
+            facility_id=None,
         )
         self.comment = make_recipe(
-            "reporting.tests.utils.comment", comment_thread_id=self.thread.id, report_version_id=self.report_version.id
+            "reporting.tests.utils.comment",
+            comment_thread_id=self.thread.id,
+            report_version_id=self.report_version.id,
         )
         self.endpoint_under_test = f"/api/reporting/v2/report-version/{self.report_version.id}/threads/{self.thread.id}/comments/{self.comment.id}"
         self.payload = {"comment": "This is an updated comment"}
@@ -61,7 +64,9 @@ class TestUpdateCommentsV2Endpoint(CommonTestSetup):
             self, role, self.content_type, self.payload, self.endpoint_under_test
         )
 
-        assert_error_response(response, 403, "Permission denied.", error_key="permission_denied")
+        assert_error_response(
+            response, 403, "Permission denied.", error_key="permission_denied"
+        )
         self.comment.refresh_from_db()
         assert self.comment.comment == original_content
 
@@ -81,6 +86,8 @@ class TestUpdateCommentsV2Endpoint(CommonTestSetup):
     def test_update_nonexistent_comment_returns_not_found(self, role):
         endpoint = f"/api/reporting/v2/report-version/{self.report_version.id}/threads/{self.thread.id}/comments/0"
 
-        response = TestUtils.mock_patch_with_auth_role(self, role, self.content_type, self.payload, endpoint)
+        response = TestUtils.mock_patch_with_auth_role(
+            self, role, self.content_type, self.payload, endpoint
+        )
 
         assert_error_response(response, 404, "Not Found")

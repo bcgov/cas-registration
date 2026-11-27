@@ -1,12 +1,13 @@
+from unittest.mock import patch
+from urllib.parse import urlencode
+
+from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
+from compliance.models import ComplianceReportVersion
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from unittest.mock import patch
-from urllib.parse import urlencode
-from compliance.models import ComplianceReportVersion
-from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 from reporting.models.reporting_year import ReportingYear
-from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 
 
 class TestComplianceReportVersionsEndpoint(CommonTestSetup):
@@ -23,8 +24,7 @@ class TestComplianceReportVersionsEndpoint(CommonTestSetup):
         "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_report_versions_for_dashboard"
     )
     def test_crv_endpoint_industry_user(self, mock_get_versions):
-
-        operator = make_recipe('registration.tests.utils.operator')
+        operator = make_recipe("registration.tests.utils.operator")
         test_data1 = ComplianceTestHelper.build_test_data()
         test_data2 = ComplianceTestHelper.build_test_data()
         test_data1.operation.operator = operator
@@ -38,14 +38,19 @@ class TestComplianceReportVersionsEndpoint(CommonTestSetup):
 
         # Return a queryset, not a list
         mock_get_versions.return_value = ComplianceReportVersion.objects.filter(
-            pk__in=[test_data1.compliance_report_version.pk, test_data2.compliance_report_version.pk]
+            pk__in=[
+                test_data1.compliance_report_version.pk,
+                test_data2.compliance_report_version.pk,
+            ]
         )
 
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         TestUtils.generate_operation_operator_timeline(
             operator=operator, operations=[test_data1.operation, test_data2.operation]
         )
-        resp = TestUtils.mock_get_with_auth_role(self, "industry_user", self._url(paginate_result=False))
+        resp = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", self._url(paginate_result=False)
+        )
         assert resp.status_code == 200
         data = resp.json()
         assert set(data.keys()) == {"count", "items"}
@@ -67,7 +72,9 @@ class TestComplianceReportVersionsEndpoint(CommonTestSetup):
             versions.append(v)
 
         # Return a queryset
-        mock_get_versions.return_value = ComplianceReportVersion.objects.filter(pk__in=[v.pk for v in versions])
+        mock_get_versions.return_value = ComplianceReportVersion.objects.filter(
+            pk__in=[v.pk for v in versions]
+        )
 
         # Page 1
         resp1 = TestUtils.mock_get_with_auth_role(
@@ -82,7 +89,9 @@ class TestComplianceReportVersionsEndpoint(CommonTestSetup):
 
         # Page 2, same sort
         resp2 = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", self._url(page=2, sort_field="operation_name", sort_order="asc")
+            self,
+            "cas_admin",
+            self._url(page=2, sort_field="operation_name", sort_order="asc"),
         )
         assert resp2.status_code == 200
         d2 = resp2.json()

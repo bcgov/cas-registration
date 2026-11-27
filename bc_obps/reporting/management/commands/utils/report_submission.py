@@ -1,5 +1,6 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from uuid import UUID
+
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_sign_off_service import (
     ReportSignOffAcknowledgements,
@@ -7,16 +8,16 @@ from reporting.service.report_sign_off_service import (
 )
 from reporting.service.report_submission_service import ReportSubmissionService
 
-from .report_verification import create_report_verification
-from .report_attachments import create_report_verification_statement_attachment
-from .report_person_responsible import create_report_person_responsible
 from .report_activity_data import prepare_activity_data_for_submission
 from .report_additional_data import create_report_additional_data
+from .report_attachments import create_report_verification_statement_attachment
 from .report_emission_allocation import prepare_emission_allocation_for_submission
 from .report_facility_report import mark_facility_reports_complete
+from .report_person_responsible import create_report_person_responsible
 from .report_production_data import prepare_production_data_for_submission
+from .report_verification import create_report_verification
 
-FIXED_SNAPSHOT_TIMESTAMP = datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+FIXED_SNAPSHOT_TIMESTAMP = datetime(2025, 1, 1, 12, 0, 0, tzinfo=UTC)
 
 
 def prepare_and_submit_report(report_version: ReportVersion, submitting_user: UUID):
@@ -38,7 +39,6 @@ def prepare_and_submit_report(report_version: ReportVersion, submitting_user: UU
 
 
 def submit_report_from_fixture(report_version: ReportVersion, submitting_user: UUID):
-
     prepare_and_submit_report(report_version, submitting_user)
 
 
@@ -67,4 +67,6 @@ def _submit(report_version: ReportVersion, submitting_user: UUID):
         "reporting.ReportVersion:immutable_report_version",
         "reporting.ReportVersion:set_updated_audit_columns",
     ):
-        ReportVersion.objects.filter(id=submitted.id).update(updated_at=FIXED_SNAPSHOT_TIMESTAMP)
+        ReportVersion.objects.filter(id=submitted.id).update(
+            updated_at=FIXED_SNAPSHOT_TIMESTAMP
+        )

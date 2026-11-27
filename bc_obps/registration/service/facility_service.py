@@ -1,27 +1,31 @@
 from typing import Optional
-from django.db.models import QuerySet
 from uuid import UUID
+
 from common.exceptions import UserError
+from django.db import transaction
+from django.db.models import QuerySet
+from django.utils import timezone
+from registration.constants import UNAUTHORIZED_MESSAGE
+from registration.models import Address, Facility, User, WellAuthorizationNumber
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
+from registration.models.operation import Operation
+from registration.schema import FacilityIn
+from registration.service.data_access_service.address_service import (
+    AddressDataAccessService,
+)
 from registration.service.data_access_service.facility_designated_operation_timeline_service import (
     FacilityDesignatedOperationTimelineDataAccessService,
 )
+from registration.service.data_access_service.facility_service import (
+    FacilityDataAccessService,
+)
+from registration.service.data_access_service.operation_service import (
+    OperationDataAccessService,
+)
 from registration.service.data_access_service.user_service import UserDataAccessService
-from registration.service.data_access_service.facility_service import FacilityDataAccessService
-from registration.models import Facility
-from registration.schema import FacilityIn
 from registration.service.data_access_service.well_authorization_number_service import (
     WellAuthorizationNumberDataAccessService,
 )
-from registration.service.data_access_service.operation_service import OperationDataAccessService
-from registration.constants import UNAUTHORIZED_MESSAGE
-from registration.service.data_access_service.address_service import AddressDataAccessService
-from registration.models.operation import Operation
-from registration.models import User
-from registration.models import WellAuthorizationNumber
-from django.db import transaction
-from django.utils import timezone
-from registration.models import Address
 
 
 class FacilityService:
@@ -68,13 +72,13 @@ class FacilityService:
         # Prepare a dictionary of facility data by including specified fields from the payload
         return payload.dict(
             include={
-                'name',
-                'type',
-                'is_current_year',
-                'starting_date',
-                'latitude_of_largest_emissions',
-                'longitude_of_largest_emissions',
-                'operation_id',
+                "name",
+                "type",
+                "is_current_year",
+                "starting_date",
+                "latitude_of_largest_emissions",
+                "longitude_of_largest_emissions",
+                "operation_id",
             }
         )
 
@@ -82,17 +86,20 @@ class FacilityService:
     def build_address(cls, payload: FacilityIn, exclude_none: bool = True) -> dict:
         """Helper function to create an address model from payload data."""
         address_data = payload.dict(
-            include={'street_address', 'municipality', 'province', 'postal_code'}, exclude_none=exclude_none
+            include={"street_address", "municipality", "province", "postal_code"},
+            exclude_none=exclude_none,
         )
         return address_data
 
     @classmethod
-    def create_address(cls, address_data: dict) -> Optional[Address]:
+    def create_address(cls, address_data: dict) -> Address | None:
         """Helper function to create an address model from payload data."""
         return AddressDataAccessService.create_address(address_data)
 
     @classmethod
-    def handle_well_authorization_numbers(cls, user_guid: UUID, payload: FacilityIn, facility: Facility) -> None:
+    def handle_well_authorization_numbers(
+        cls, user_guid: UUID, payload: FacilityIn, facility: Facility
+    ) -> None:
         """
         Helper function to process and set well authorization numbers for a facility.
 
@@ -110,7 +117,9 @@ class FacilityService:
         """
         # Extract existing well authorization numbers from the facility
         existing_numbers_set = set(
-            facility.well_authorization_numbers.values_list('well_authorization_number', flat=True)
+            facility.well_authorization_numbers.values_list(
+                "well_authorization_number", flat=True
+            )
         )
         # Must convert each value in payload.well_authorization_numbers to an integer, as the database expects integers but the payload is a list of strings
         new_numbers = [int(number) for number in payload.well_authorization_numbers]
@@ -131,7 +140,9 @@ class FacilityService:
         if numbers_to_add:
             for number in numbers_to_add:
                 facility.well_authorization_numbers.add(
-                    WellAuthorizationNumberDataAccessService.create_well_authorization_number(user_guid, number)
+                    WellAuthorizationNumberDataAccessService.create_well_authorization_number(
+                        user_guid, number
+                    )
                 )
 
         # Numbers to remove
@@ -139,8 +150,10 @@ class FacilityService:
 
         # Archive old numbers
         if numbers_to_remove:
-            numbers_to_archive: QuerySet[WellAuthorizationNumber] = existing_numbers_queryset.filter(
-                well_authorization_number__in=numbers_to_remove
+            numbers_to_archive: QuerySet[WellAuthorizationNumber] = (
+                existing_numbers_queryset.filter(
+                    well_authorization_number__in=numbers_to_remove
+                )
             )
             for n in numbers_to_archive:
                 n.set_archive(user_guid)
@@ -166,11 +179,15 @@ class FacilityService:
 
     @classmethod
     @transaction.atomic()
-    def create_facility_with_designated_operation(cls, user_guid: UUID, payload: FacilityIn) -> Facility:
+    def create_facility_with_designated_operation(
+        cls, user_guid: UUID, payload: FacilityIn
+    ) -> Facility:
         """Create a facility with designated operation details."""
         from registration.service.operation_service import OperationService
 
-        operation = OperationService.get_if_authorized(user_guid, payload.operation_id, ['id', 'operator_id'])
+        operation = OperationService.get_if_authorized(
+            user_guid, payload.operation_id, ["id", "operator_id"]
+        )
 
         # Validate that SFO and EIO can only have one facility
         if operation.facilities.count() > 0 and operation.type != Operation.Types.LFO:
@@ -181,11 +198,16 @@ class FacilityService:
         facility_data = cls.prepare_facility_data(payload)
         address_data = cls.build_address(payload)
         if address_data:
-            facility_data['address'] = cls.create_address(address_data)
+            facility_data["address"] = cls.create_address(address_data)
 
         facility = FacilityDataAccessService.create_facility(user_guid, facility_data)
         FacilityDesignatedOperationTimelineDataAccessService.create_facility_designated_operation_timeline(
-            user_guid, {'facility': facility, 'operation': operation, 'start_date': timezone.now()}
+            user_guid,
+            {
+                "facility": facility,
+                "operation": operation,
+                "start_date": timezone.now(),
+            },
         )
 
         cls.handle_well_authorization_numbers(user_guid, payload, facility)
@@ -197,7 +219,9 @@ class FacilityService:
 
     @classmethod
     @transaction.atomic()
-    def update_facility(cls, user_guid: UUID, facility_id: UUID, payload: FacilityIn) -> Facility:
+    def update_facility(
+        cls, user_guid: UUID, facility_id: UUID, payload: FacilityIn
+    ) -> Facility:
         """
         Checks user access and, if authorized, updates a facility with new data.
 
@@ -224,14 +248,16 @@ class FacilityService:
         # Update the address associated with the facility, if provided
         address_data = cls.build_address(payload, False)
         if any(address_data.values()):  # if any address data is provided
-            address = AddressDataAccessService.upsert_address_from_data(address_data, facility.address_id)
+            address = AddressDataAccessService.upsert_address_from_data(
+                address_data, facility.address_id
+            )
             facility.address = address
-            facility.save(update_fields=['address_id'])
+            facility.save(update_fields=["address_id"])
         else:
             existing_address = facility.address
             if existing_address:
                 facility.address = None
-                facility.save(update_fields=['address'])
+                facility.save(update_fields=["address"])
                 # facility has an address and the payload has no address data, remove the address
                 existing_address.delete()
 
@@ -248,27 +274,37 @@ class FacilityService:
 
     @classmethod
     @transaction.atomic()
-    def create_facilities_with_designated_operations(cls, user_guid: UUID, payload: list[FacilityIn]) -> list[Facility]:
+    def create_facilities_with_designated_operations(
+        cls, user_guid: UUID, payload: list[FacilityIn]
+    ) -> list[Facility]:
         facilities = []
         for facility_data in payload:
-            facilities.append(cls.create_facility_with_designated_operation(user_guid, facility_data))
+            facilities.append(
+                cls.create_facility_with_designated_operation(user_guid, facility_data)
+            )
         return facilities
 
     @classmethod
-    def generate_bcghg_id(cls, user_guid: UUID, facility_id: UUID, bcghg_id: str | None = None) -> BcGreenhouseGasId:
+    def generate_bcghg_id(
+        cls, user_guid: UUID, facility_id: UUID, bcghg_id: str | None = None
+    ) -> BcGreenhouseGasId:
         facility = FacilityService.get_if_director(user_guid, facility_id)
 
         if bcghg_id:
             bcghg_id_record, _ = BcGreenhouseGasId.objects.get_or_create(
-                id=bcghg_id, defaults={'issued_by_id': user_guid, 'comments': 'bcghg id manually set to facility'}
+                id=bcghg_id,
+                defaults={
+                    "issued_by_id": user_guid,
+                    "comments": "bcghg id manually set to facility",
+                },
             )
             facility.bcghg_id = bcghg_id_record
         else:
             facility.generate_unique_bcghg_id(user_guid=user_guid)
 
-        facility.save(update_fields=['bcghg_id'])
+        facility.save(update_fields=["bcghg_id"])
         if facility.bcghg_id is None:
-            raise Exception('Failed to create a BCGHG ID for the facility.')
+            raise Exception("Failed to create a BCGHG ID for the facility.")
 
         return facility.bcghg_id
 
@@ -277,11 +313,13 @@ class FacilityService:
         facility = FacilityService.get_if_director(user_guid, facility_id)
 
         facility.bcghg_id = None
-        facility.save(update_fields=['bcghg_id'])
+        facility.save(update_fields=["bcghg_id"])
 
     @classmethod
     @transaction.atomic()
-    def update_operation_for_facility(cls, user_guid: UUID, facility: Facility, operation_id: UUID) -> Facility:
+    def update_operation_for_facility(
+        cls, user_guid: UUID, facility: Facility, operation_id: UUID
+    ) -> Facility:
         """
         Update the operation for the facility
         At the time of implementation, this is only used for transferring facilities between operations and,

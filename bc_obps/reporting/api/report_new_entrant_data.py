@@ -1,14 +1,18 @@
 from typing import Literal, Tuple
 
-from django.http import HttpRequest
-
-from reporting.schema.generic import Message
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from .router import router
-from ..schema.report_new_entrant import ReportNewEntrantDataOut, ReportNewEntrantSchemaIn
+from django.http import HttpRequest
+from reporting.api.permissions import (
+    approved_industry_user_report_version_composite_auth,
+)
+from reporting.schema.generic import Message
 
+from ..schema.report_new_entrant import (
+    ReportNewEntrantDataOut,
+    ReportNewEntrantSchemaIn,
+)
 from ..service.report_new_entrant_service import ReportNewEntrantService
-from reporting.api.permissions import approved_industry_user_report_version_composite_auth
+from .router import router
 
 
 @router.get(
@@ -18,13 +22,22 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
     exclude_none=True,
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_new_entrant_data(request: HttpRequest, version_id: int) -> Tuple[int, dict]:
+def get_new_entrant_data(request: HttpRequest, version_id: int) -> tuple[int, dict]:
+    report_new_entrant = ReportNewEntrantService.get_new_entrant_data(
+        report_version_id=version_id
+    )
+    emission_category_data = ReportNewEntrantService.get_emissions_data(
+        report_version_id=version_id
+    )
+    production_data = ReportNewEntrantService.get_products_data(
+        report_version_id=version_id
+    )
 
-    report_new_entrant = ReportNewEntrantService.get_new_entrant_data(report_version_id=version_id)
-    emission_category_data = ReportNewEntrantService.get_emissions_data(report_version_id=version_id)
-    production_data = ReportNewEntrantService.get_products_data(report_version_id=version_id)
-
-    naics_code_data = report_new_entrant.report_version.report.operation.naics_code if report_new_entrant else None
+    naics_code_data = (
+        report_new_entrant.report_version.report.operation.naics_code
+        if report_new_entrant
+        else None
+    )
     naics_code = naics_code_data.naics_code if naics_code_data else None
 
     return 200, {

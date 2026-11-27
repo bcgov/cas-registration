@@ -1,5 +1,6 @@
 from decimal import Decimal
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 from django.test import TestCase
 from model_bakery.baker import make_recipe
 from registration.models.regulated_product import RegulatedProduct
@@ -17,7 +18,6 @@ from reporting.service.compliance_service.emission_allocation import (
 
 
 class TestEmissionAllocation(TestCase):
-
     def test_get_allocated_emissions_by_report_product_emission_category(self):
         ## SETUP ##
         emission_allocation = make_recipe(
@@ -51,18 +51,36 @@ class TestEmissionAllocation(TestCase):
         )
 
         ## TESTS ##
-        allocated_to_flaring_for_test = get_allocated_emissions_by_report_product_emission_category(
-            allocation_1.report_version_id, allocation_1.report_product.product_id, [1]
+        allocated_to_flaring_for_test = (
+            get_allocated_emissions_by_report_product_emission_category(
+                allocation_1.report_version_id,
+                allocation_1.report_product.product_id,
+                [1],
+            )
         )
-        allocated_to_industrial_for_test = get_allocated_emissions_by_report_product_emission_category(
-            allocation_3.report_version_id, allocation_3.report_product.product_id, [3]
+        allocated_to_industrial_for_test = (
+            get_allocated_emissions_by_report_product_emission_category(
+                allocation_3.report_version_id,
+                allocation_3.report_product.product_id,
+                [3],
+            )
         )
-        allocated_to_excluded_non_biomass_for_test = get_allocated_emissions_by_report_product_emission_category(
-            allocation_4.report_version_id, allocation_4.report_product.product_id, [12]
+        allocated_to_excluded_non_biomass_for_test = (
+            get_allocated_emissions_by_report_product_emission_category(
+                allocation_4.report_version_id,
+                allocation_4.report_product.product_id,
+                [12],
+            )
         )
-        assert allocated_to_flaring_for_test == allocation_1.allocated_quantity + allocation_2.allocated_quantity
+        assert (
+            allocated_to_flaring_for_test
+            == allocation_1.allocated_quantity + allocation_2.allocated_quantity
+        )
         assert allocated_to_industrial_for_test == allocation_3.allocated_quantity
-        assert allocated_to_excluded_non_biomass_for_test == allocation_4.allocated_quantity
+        assert (
+            allocated_to_excluded_non_biomass_for_test
+            == allocation_4.allocated_quantity
+        )
 
     @patch(
         "reporting.service.compliance_service.emission_allocation.get_allocated_emissions_by_report_product_emission_category"
@@ -71,7 +89,9 @@ class TestEmissionAllocation(TestCase):
         self, mock_get_allocated_emissions: MagicMock
     ):
         get_reporting_only_allocated(1234, 5678)
-        mock_get_allocated_emissions.assert_called_once_with(1234, 5678, [10, 11, 12, 2, 7])
+        mock_get_allocated_emissions.assert_called_once_with(
+            1234, 5678, [10, 11, 12, 2, 7]
+        )
 
     def test_get_reporting_only_allocated(self):
         ## SETUP ##
@@ -115,7 +135,10 @@ class TestEmissionAllocation(TestCase):
         reporting_only_for_test = get_reporting_only_allocated(
             allocation_1.report_version, allocation_1.report_product.product_id
         )
-        assert reporting_only_for_test == allocation_2.allocated_quantity + allocation_4.allocated_quantity
+        assert (
+            reporting_only_for_test
+            == allocation_2.allocated_quantity + allocation_4.allocated_quantity
+        )
 
         fog_product_id = RegulatedProduct.objects.get(
             name="Fat, oil and grease collection, refining and storage",
@@ -130,16 +153,23 @@ class TestEmissionAllocation(TestCase):
             emission_category=EmissionCategory.objects.get(pk=1),
             allocated_quantity=Decimal("12.0"),
         )
-        ReportProduct.objects.filter(pk=fog_product_allocation.report_product_id).update(product_id=fog_product_id)
+        ReportProduct.objects.filter(
+            pk=fog_product_allocation.report_product_id
+        ).update(product_id=fog_product_id)
 
         # Correctly aggregates reporting-only emissions when there is a fog product
         # (doesn't take it into account at the product level)
         reporting_only_with_fog_for_test = get_reporting_only_allocated(
             allocation_1.report_version, allocation_1.report_product.product_id
         )
-        assert reporting_only_with_fog_for_test == allocation_2.allocated_quantity + allocation_4.allocated_quantity
+        assert (
+            reporting_only_with_fog_for_test
+            == allocation_2.allocated_quantity + allocation_4.allocated_quantity
+        )
 
-        refineries_line_tracing_id = RegulatedProduct.objects.get(name="Refineries line tracing", is_regulated=False).id
+        refineries_line_tracing_id = RegulatedProduct.objects.get(
+            name="Refineries line tracing", is_regulated=False
+        ).id
 
         # Add another unregulated product
         unregulated_product_allocation = make_recipe(
@@ -149,9 +179,9 @@ class TestEmissionAllocation(TestCase):
             emission_category=EmissionCategory.objects.get(pk=1),
             allocated_quantity=Decimal("12.0"),
         )
-        ReportProduct.objects.filter(pk=unregulated_product_allocation.report_product_id).update(
-            product_id=refineries_line_tracing_id
-        )
+        ReportProduct.objects.filter(
+            pk=unregulated_product_allocation.report_product_id
+        ).update(product_id=refineries_line_tracing_id)
 
         # Correctly aggregates reporting-only emissions when there are multiple unregulated products
         # (doesn't take them into account at the product level)
@@ -167,12 +197,14 @@ class TestEmissionAllocation(TestCase):
     def test_get_from_funny_category_only_counts_the_non_overlapping_ones(self):
         report_version = make_recipe("reporting.tests.utils.report_version")
         # Regulated emission
-        make_recipe(
-            "reporting.tests.utils.report_emission",
-            report_version=report_version,
-            emission_categories={EmissionCategory.objects.get(pk=1)},
-            json_data={"equivalentEmission": 1000.0001},
-        ),
+        (
+            make_recipe(
+                "reporting.tests.utils.report_emission",
+                report_version=report_version,
+                emission_categories={EmissionCategory.objects.get(pk=1)},
+                json_data={"equivalentEmission": 1000.0001},
+            ),
+        )
 
         # Funny emission to not double-count (fuel-excluded category 10)
         make_recipe(
@@ -212,17 +244,25 @@ class TestEmissionAllocation(TestCase):
         make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=report_version,
-            emission_categories={EmissionCategory.objects.get(pk=1), EmissionCategory.objects.get(pk=13)},
+            emission_categories={
+                EmissionCategory.objects.get(pk=1),
+                EmissionCategory.objects.get(pk=13),
+            },
             json_data={"equivalentEmission": 3000.0003},
         )
         make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=report_version,
-            emission_categories={EmissionCategory.objects.get(pk=4), EmissionCategory.objects.get(pk=13)},
+            emission_categories={
+                EmissionCategory.objects.get(pk=4),
+                EmissionCategory.objects.get(pk=13),
+            },
             json_data={"equivalentEmission": 3},
         )
 
-        allocated_emissions_to_unregulated_products = get_emissions_from_only_funny_category_13(report_version.id)
+        allocated_emissions_to_unregulated_products = (
+            get_emissions_from_only_funny_category_13(report_version.id)
+        )
         # 3000.0003 + 3 + 500.0005 + 700.0007
         assert allocated_emissions_to_unregulated_products == Decimal("4203.0015")
 
@@ -233,7 +273,7 @@ class TestEmissionAllocation(TestCase):
         make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
             emission_category=EmissionCategory.objects.get(pk=7),
-            allocated_quantity=Decimal('10'),
+            allocated_quantity=Decimal("10"),
             report_product__product=RegulatedProduct.objects.get(
                 name="Fat, oil and grease collection, refining and storage"
             ),
@@ -245,7 +285,7 @@ class TestEmissionAllocation(TestCase):
         make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
             emission_category=EmissionCategory.objects.get(pk=1),
-            allocated_quantity=Decimal('20'),
+            allocated_quantity=Decimal("20"),
             report_product__product=RegulatedProduct.objects.get(
                 name="Fat, oil and grease collection, refining and storage"
             ),
@@ -255,7 +295,7 @@ class TestEmissionAllocation(TestCase):
         make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
             emission_category=EmissionCategory.objects.get(pk=6),
-            allocated_quantity=Decimal('2'),
+            allocated_quantity=Decimal("2"),
             report_product__product=RegulatedProduct.objects.get(
                 name="Fat, oil and grease collection, refining and storage"
             ),
@@ -268,8 +308,12 @@ class TestEmissionAllocation(TestCase):
 
     def test_get_allocated_to_unregulated_products(self):
         report_version = make_recipe("reporting.tests.utils.report_version")
-        refineries_line_tracing = RegulatedProduct.objects.get(name="Refineries line tracing", is_regulated=False)
-        fog = RegulatedProduct.objects.get(name="Fat, oil and grease collection, refining and storage")
+        refineries_line_tracing = RegulatedProduct.objects.get(
+            name="Refineries line tracing", is_regulated=False
+        )
+        fog = RegulatedProduct.objects.get(
+            name="Fat, oil and grease collection, refining and storage"
+        )
 
         def allocate(product, category_id, quantity, version=report_version):
             return make_recipe(
@@ -282,10 +326,15 @@ class TestEmissionAllocation(TestCase):
             )
 
         # No allocations
-        assert get_allocated_to_unregulated_products(report_version.id) == UnregulatedProductsAllocation()
+        assert (
+            get_allocated_to_unregulated_products(report_version.id)
+            == UnregulatedProductsAllocation()
+        )
 
         # Allocations to a regulated product are ignored
-        allocate(RegulatedProduct.objects.filter(is_regulated=True).first(), 1, "1000.0001")
+        allocate(
+            RegulatedProduct.objects.filter(is_regulated=True).first(), 1, "1000.0001"
+        )
         # Basic category allocations to unregulated products are counted as entered
         allocate(refineries_line_tracing, 1, "100.0001")
         allocate(refineries_line_tracing, 2, "20.0002")
@@ -296,7 +345,12 @@ class TestEmissionAllocation(TestCase):
         allocate(fog, 7, "10")
         allocate(fog, 2, "1.5")
         # Allocations on another report version are ignored
-        allocate(refineries_line_tracing, 1, "999", version=make_recipe("reporting.tests.utils.report_version"))
+        allocate(
+            refineries_line_tracing,
+            1,
+            "999",
+            version=make_recipe("reporting.tests.utils.report_version"),
+        )
 
         unregulated = get_allocated_to_unregulated_products(report_version.id)
         # One row per unregulated product, ordered by product name

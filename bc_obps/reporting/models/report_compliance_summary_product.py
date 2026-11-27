@@ -1,8 +1,10 @@
 from django.db import models
 from registration.models import RegulatedProduct
-from reporting.models import ReportVersion, ReportComplianceSummary
-from reporting.models.rls_configs.report_compliance_summary_product import Rls as ReportComplianceSummaryProductRls
 from registration.models.time_stamped_model import TimeStampedModel
+from reporting.models import ReportComplianceSummary, ReportVersion
+from reporting.models.rls_configs.report_compliance_summary_product import (
+    Rls as ReportComplianceSummaryProductRls,
+)
 from reporting.models.triggers import immutable_report_version_trigger
 
 
@@ -75,9 +77,7 @@ class ReportComplianceSummaryProduct(TimeStampedModel):
     )
 
     class Meta:
-        db_table_comment = (
-            "This table contains the compliance summary data for each product calculated for a regulated operation."
-        )
+        db_table_comment = "This table contains the compliance summary data for each product calculated for a regulated operation."
         db_table = 'erc"."report_compliance_summary_product'
         triggers = [
             *TimeStampedModel.Meta.triggers,

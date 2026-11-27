@@ -1,18 +1,26 @@
-import pytest
-from model_bakery import baker
 from unittest.mock import patch
+
+import pytest
 from common.exceptions import UserError
-from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
-from compliance.dataclass import BCCRAccountResponseDetails, BCCRComplianceAccountResponseDetails
-from registration.models.operation import Operation
+from compliance.dataclass import (
+    BCCRAccountResponseDetails,
+    BCCRComplianceAccountResponseDetails,
+)
+from compliance.service.bc_carbon_registry.account_service import (
+    BCCarbonRegistryAccountService,
+)
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
+from model_bakery import baker
+from registration.models.operation import Operation
 
 pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
 def mock_api_client():
-    with patch('compliance.service.bc_carbon_registry.account_service.BCCarbonRegistryAPIClient') as mock:
+    with patch(
+        "compliance.service.bc_carbon_registry.account_service.BCCarbonRegistryAPIClient"
+    ) as mock:
         yield mock
 
 
@@ -26,10 +34,14 @@ def service():
 def compliance_report_instance():
     operation = baker.make_recipe(
         "registration.tests.utils.operation",
-        bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id"),
+        bc_obps_regulated_operation=baker.make_recipe(
+            "registration.tests.utils.boro_id"
+        ),
         status=Operation.Statuses.REGISTERED,
     )
-    compliance_report = baker.make_recipe("compliance.tests.utils.compliance_report", report__operation=operation)
+    compliance_report = baker.make_recipe(
+        "compliance.tests.utils.compliance_report", report__operation=operation
+    )
     return compliance_report
 
 
@@ -79,14 +91,18 @@ class TestBCCarbonRegistryAccountService:
         result = service.get_account_details("123")
 
         # Assert - should use default account_type_id (None, which defaults to 11 in client)
-        mock_api_client.get_account_details.assert_called_once_with(account_id="123", account_type_id=None)
+        mock_api_client.get_account_details.assert_called_once_with(
+            account_id="123", account_type_id=None
+        )
         assert isinstance(result, BCCRAccountResponseDetails)
         assert result.entity_id == "123"
         assert result.organization_classification_id == "456"
         assert result.type_of_account_holder == "Corporation"
         assert result.trading_name == "Test Corp"
 
-    def test_get_account_details_with_null_type_of_account_holder(self, service, mock_api_client):
+    def test_get_account_details_with_null_type_of_account_holder(
+        self, service, mock_api_client
+    ):
         # Arrange - Test the schema change where type_of_account_holder can be null
         service.client = mock_api_client
         mock_api_client.get_account_details.return_value = {
@@ -104,7 +120,9 @@ class TestBCCarbonRegistryAccountService:
         result = service.get_account_details("123")
 
         # Assert - should use default account_type_id (None, which defaults to 11 in client)
-        mock_api_client.get_account_details.assert_called_once_with(account_id="123", account_type_id=None)
+        mock_api_client.get_account_details.assert_called_once_with(
+            account_id="123", account_type_id=None
+        )
         assert isinstance(result, BCCRAccountResponseDetails)
         assert result.entity_id == "123"
         assert result.organization_classification_id == "456"
@@ -120,10 +138,14 @@ class TestBCCarbonRegistryAccountService:
         result = service.get_account_details("123")
 
         # Assert
-        mock_api_client.get_account_details.assert_called_once_with(account_id="123", account_type_id=None)
+        mock_api_client.get_account_details.assert_called_once_with(
+            account_id="123", account_type_id=None
+        )
         assert result is None
 
-    def test_get_account_details_with_explicit_account_type_id(self, service, mock_api_client):
+    def test_get_account_details_with_explicit_account_type_id(
+        self, service, mock_api_client
+    ):
         # Arrange
         service.client = mock_api_client
         mock_api_client.get_account_details.return_value = {
@@ -141,11 +163,15 @@ class TestBCCarbonRegistryAccountService:
         result = service.get_account_details("123", account_type_id=14)
 
         # Assert - should pass the explicit account_type_id
-        mock_api_client.get_account_details.assert_called_once_with(account_id="123", account_type_id=14)
+        mock_api_client.get_account_details.assert_called_once_with(
+            account_id="123", account_type_id=14
+        )
         assert isinstance(result, BCCRAccountResponseDetails)
         assert result.entity_id == "123"
 
-    def test_get_account_details_raises_error_on_wrong_account_type(self, service, mock_api_client):
+    def test_get_account_details_raises_error_on_wrong_account_type(
+        self, service, mock_api_client
+    ):
         # Arrange
         from common.exceptions import UserError
 
@@ -155,7 +181,10 @@ class TestBCCarbonRegistryAccountService:
         )
 
         # Act & Assert
-        with pytest.raises(UserError, match="Account exists but does not match the required account type"):
+        with pytest.raises(
+            UserError,
+            match="Account exists but does not match the required account type",
+        ):
             service.get_account_details("123")
 
     def test_get_type_of_organization_mapping(self, service):
@@ -166,12 +195,16 @@ class TestBCCarbonRegistryAccountService:
         assert service._get_type_of_organization("Invalid") is None
         assert service._get_type_of_organization(None) is None
 
-    def test_create_compliance_account(self, service, mock_api_client, compliance_report_instance):
+    def test_create_compliance_account(
+        self, service, mock_api_client, compliance_report_instance
+    ):
         # Arrange
         service.client = mock_api_client
         test_data = ComplianceTestHelper.build_test_data()
 
-        mock_api_client.create_sub_account.return_value = {"entity": {"id": "789", "parent_name": "Parent Corp"}}
+        mock_api_client.create_sub_account.return_value = {
+            "entity": {"id": "789", "parent_name": "Parent Corp"}
+        }
 
         # Act
         result = service.create_compliance_account(
@@ -222,7 +255,9 @@ class TestBCCarbonRegistryAccountService:
         assert result.master_account_name == "Test Corp"
         mock_api_client.create_sub_account.assert_not_called()
 
-    def test_validate_holding_account_ownership_with_existing_subaccount_valid(self, service, mock_api_client):
+    def test_validate_holding_account_ownership_with_existing_subaccount_valid(
+        self, service, mock_api_client
+    ):
         # Arrange
         service.client = mock_api_client
         test_data = ComplianceTestHelper.build_test_data()
@@ -248,10 +283,13 @@ class TestBCCarbonRegistryAccountService:
         # Assert
         assert result is True
         mock_api_client.get_account_details.assert_called_once_with(
-            account_id="987654321012345", account_type_id=mock_api_client.COMPLIANCE_ACCOUNT_TYPE_ID
+            account_id="987654321012345",
+            account_type_id=mock_api_client.COMPLIANCE_ACCOUNT_TYPE_ID,
         )
 
-    def test_validate_holding_account_ownership_with_existing_subaccount_invalid(self, service, mock_api_client):
+    def test_validate_holding_account_ownership_with_existing_subaccount_invalid(
+        self, service, mock_api_client
+    ):
         # Arrange
         service.client = mock_api_client
         test_data = ComplianceTestHelper.build_test_data()
@@ -270,7 +308,8 @@ class TestBCCarbonRegistryAccountService:
 
         # Act & Assert
         with pytest.raises(
-            UserError, match="The provided holding account does not own the compliance sub-account for this operation."
+            UserError,
+            match="The provided holding account does not own the compliance sub-account for this operation.",
         ):
             service.validate_holding_account_ownership(
                 holding_account_id="123456789012345",
@@ -278,10 +317,13 @@ class TestBCCarbonRegistryAccountService:
             )
 
         mock_api_client.get_account_details.assert_called_once_with(
-            account_id="987654321012345", account_type_id=mock_api_client.COMPLIANCE_ACCOUNT_TYPE_ID
+            account_id="987654321012345",
+            account_type_id=mock_api_client.COMPLIANCE_ACCOUNT_TYPE_ID,
         )
 
-    def test_validate_holding_account_ownership_no_existing_subaccount_valid(self, service, mock_api_client):
+    def test_validate_holding_account_ownership_no_existing_subaccount_valid(
+        self, service, mock_api_client
+    ):
         # Arrange
         service.client = mock_api_client
         test_data = ComplianceTestHelper.build_test_data()
@@ -320,7 +362,9 @@ class TestBCCarbonRegistryAccountService:
         assert result is True
         mock_api_client.get_compliance_account.assert_called_once()
 
-    def test_validate_holding_account_ownership_no_existing_subaccount_invalid(self, service, mock_api_client):
+    def test_validate_holding_account_ownership_no_existing_subaccount_invalid(
+        self, service, mock_api_client
+    ):
         # Arrange
         service.client = mock_api_client
         test_data = ComplianceTestHelper.build_test_data()
@@ -352,7 +396,9 @@ class TestBCCarbonRegistryAccountService:
         assert result is False
         mock_api_client.get_compliance_account.assert_called_once()
 
-    def test_validate_holding_account_ownership_holding_account_not_found(self, service, mock_api_client):
+    def test_validate_holding_account_ownership_holding_account_not_found(
+        self, service, mock_api_client
+    ):
         # Arrange
         service.client = mock_api_client
         test_data = ComplianceTestHelper.build_test_data()
@@ -386,7 +432,9 @@ class TestBCCarbonRegistryAccountService:
             trading_name="Test Corp",
         )
         mock_api_client.get_compliance_account.return_value = {"entities": []}
-        mock_api_client.create_sub_account.return_value = {"entity": {"id": "789", "parent_name": "Parent Corp"}}
+        mock_api_client.create_sub_account.return_value = {
+            "entity": {"id": "789", "parent_name": "Parent Corp"}
+        }
         # Act
         result = service.get_or_create_compliance_account(
             holding_account_details=holding_account,

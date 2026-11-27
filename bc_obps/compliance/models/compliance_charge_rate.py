@@ -1,6 +1,7 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.reporting_year import ReportingYear
+
 from .rls_configs.compliance_charge_rate import Rls as ComplianceChargeRateRls
 
 
@@ -13,7 +14,7 @@ class ComplianceChargeRate(TimeStampedModel):
     reporting_year = models.OneToOneField(
         ReportingYear,
         on_delete=models.PROTECT,
-        related_name='compliance_charge_rate',
+        related_name="compliance_charge_rate",
         db_comment="The associated reporting year for this compliance charge rate. References erc.reporting_year",
     )
     rate = models.DecimalField(
@@ -26,6 +27,6 @@ class ComplianceChargeRate(TimeStampedModel):
         app_label = "compliance"
         db_table_comment = "A table to store compliance charge rates by reporting year"
         db_table = 'erc"."compliance_charge_rate'
-        ordering = ['reporting_year']
+        ordering = ["reporting_year"]
 
     Rls = ComplianceChargeRateRls

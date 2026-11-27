@@ -1,18 +1,17 @@
 from model_bakery import baker
-
-from registration.models import TransferEvent, Operator, Operation
+from registration.models import Operation, Operator, TransferEvent
 from registration.tests.constants import (
-    TIMESTAMP_COMMON_FIELDS,
     ADDRESS_FIXTURE,
-    BC_OBPS_REGULATED_OPERATION_FIXTURE,
     BC_GREENHOUSE_GAS_ID_FIXTURE,
-    OPERATOR_FIXTURE,
-    USER_FIXTURE,
-    OPERATION_FIXTURE,
+    BC_OBPS_REGULATED_OPERATION_FIXTURE,
     CONTACT_FIXTURE,
-    WELL_AUTHORIZATION_NUMBER_FIXTURE,
     FACILITY_FIXTURE,
+    OPERATION_FIXTURE,
+    OPERATOR_FIXTURE,
+    TIMESTAMP_COMMON_FIELDS,
     TRANSFER_EVENT_FIXTURE,
+    USER_FIXTURE,
+    WELL_AUTHORIZATION_NUMBER_FIXTURE,
 )
 from registration.tests.models.event.event_base_model_mixin import EventBaseModelMixin
 
@@ -47,10 +46,18 @@ class TransferEventModelTest(EventBaseModelMixin):
             ("from_operation", "from operation", None, None),
             ("to_operation", "to operation", None, None),
         ]
-        cls.from_operator: Operator = baker.make_recipe('registration.tests.utils.operator')
-        cls.to_operator: Operator = baker.make_recipe('registration.tests.utils.operator')
-        cls.from_operation: Operation = baker.make_recipe('registration.tests.utils.operation')
-        cls.to_operation: Operation = baker.make_recipe('registration.tests.utils.operation')
+        cls.from_operator: Operator = baker.make_recipe(
+            "registration.tests.utils.operator"
+        )
+        cls.to_operator: Operator = baker.make_recipe(
+            "registration.tests.utils.operator"
+        )
+        cls.from_operation: Operation = baker.make_recipe(
+            "registration.tests.utils.operation"
+        )
+        cls.to_operation: Operation = baker.make_recipe(
+            "registration.tests.utils.operation"
+        )
         super().setUpTestData()
 
     def test_event_with_operation_only(self):

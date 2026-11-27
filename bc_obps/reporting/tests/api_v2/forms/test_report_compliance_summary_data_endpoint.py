@@ -1,23 +1,22 @@
 from decimal import Decimal
 from unittest.mock import patch
-from pytest import approx
 
 from model_bakery.baker import make_recipe
-
+from pytest import approx
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from reporting.tests.utils.report_access_validation import (
-    assert_report_version_ownership_is_validated,
-)
 from reporting.schema.compliance_data import ComplianceSummaryDataSchemaOut
 from reporting.service.compliance_service.compliance_service import (
     ComplianceData,
-    ReportProductComplianceData,
     RegulatoryValues,
+    ReportProductComplianceData,
 )
 from reporting.service.compliance_service.emissions_attributable_for_compliance_totals import (
     EmissionsAttributableForComplianceTotals,
 )
 from reporting.service.compliance_service.parameters import ProductionPeriod
+from reporting.tests.utils.report_access_validation import (
+    assert_report_version_ownership_is_validated,
+)
 
 
 class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
@@ -39,20 +38,23 @@ class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
             naics_code=self.naics_code,
         )
 
-        self.endpoint_under_test = (
-            f"/api/reporting/v2/report-version/{self.report_version.id}/forms/compliance-summary-data"
-        )
+        self.endpoint_under_test = f"/api/reporting/v2/report-version/{self.report_version.id}/forms/compliance-summary-data"
 
         super().setup_method()
 
-    @patch("reporting.api_v2.forms.report_compliance_summary_data.ComplianceService.get_calculated_compliance_data")
-    def test_authorized_user_can_get_compliance_summary(self, mock_get_calculated_compliance_data):
+    @patch(
+        "reporting.api_v2.forms.report_compliance_summary_data.ComplianceService.get_calculated_compliance_data"
+    )
+    def test_authorized_user_can_get_compliance_summary(
+        self, mock_get_calculated_compliance_data
+    ):
         TestUtils.authorize_current_user_as_operator_user(
             self,
             operator=self.report_version.report.operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator,
+            operations=[self.report_version.report.operation],
         )
 
         mock_product = ReportProductComplianceData(
@@ -118,8 +120,14 @@ class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
             "reporting_year": 2222,
         }
 
-        assert body["operation_data"]["naics_code"] == self.report_operation.naics_code.naics_code
-        assert body["operation_data"]["operation_type"] == self.report_operation.operation_type
+        assert (
+            body["operation_data"]["naics_code"]
+            == self.report_operation.naics_code.naics_code
+        )
+        assert (
+            body["operation_data"]["operation_type"]
+            == self.report_operation.operation_type
+        )
         assert "is_operation_opted_out" in body["operation_data"]
 
         payload = body["payload"]
@@ -144,7 +152,8 @@ class TestComplianceSummaryFormV2Endpoints(CommonTestSetup):
             "annual_emissions_attributable_for_compliance"
         ] == approx(90.0)
         mock_get_calculated_compliance_data.assert_called_once_with(
-            self.report_version.id, include_emissions_attributable_for_compliance_totals=True
+            self.report_version.id,
+            include_emissions_attributable_for_compliance_totals=True,
         )
 
     def test_validates_report_version_id(self):

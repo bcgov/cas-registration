@@ -1,13 +1,15 @@
 from common.models import BaseModel
-from django.db import models
-from registration.models import NaicsCode
 from django.contrib.postgres.constraints import ExclusionConstraint
 from django.contrib.postgres.fields import (
     DateTimeRangeField,
     RangeBoundary,
     RangeOperators,
 )
-from reporting.models.rls_configs.naics_regulatory_value import Rls as NaicsRegulatoryValueRls
+from django.db import models
+from registration.models import NaicsCode
+from reporting.models.rls_configs.naics_regulatory_value import (
+    Rls as NaicsRegulatoryValueRls,
+)
 
 
 class TsTzRange(models.Func):
@@ -25,20 +27,24 @@ class NaicsRegulatoryValue(BaseModel):
         db_comment="The naics_code record that is associated with the regulatory values in this record. Foreign key to erc.naics_code table",
     )
     reduction_factor = models.DecimalField(
-        db_comment='The Province developed distinct reduction factors for products in the B.C. OBPS with disproportionately higher industrial process emissions than those produced in other sectors. https://www2.gov.bc.ca/assets/gov/environment/climate-change/action/carbon-tax/obps-technical-backgrounder.pdf',
+        db_comment="The Province developed distinct reduction factors for products in the B.C. OBPS with disproportionately higher industrial process emissions than those produced in other sectors. https://www2.gov.bc.ca/assets/gov/environment/climate-change/action/carbon-tax/obps-technical-backgrounder.pdf",
         decimal_places=4,
         max_digits=5,
     )
     tightening_rate = models.DecimalField(
-        db_comment='Tightening rates are planned, yearly, gradual increases to BC OBPS stringency. https://www2.gov.bc.ca/assets/gov/environment/climate-change/action/carbon-tax/obps-technical-backgrounder.pdf',
+        db_comment="Tightening rates are planned, yearly, gradual increases to BC OBPS stringency. https://www2.gov.bc.ca/assets/gov/environment/climate-change/action/carbon-tax/obps-technical-backgrounder.pdf",
         decimal_places=4,
         max_digits=5,
     )
     valid_from = models.DateField(
-        blank=True, null=True, db_comment="Date from which the regulatory values are applicable"
+        blank=True,
+        null=True,
+        db_comment="Date from which the regulatory values are applicable",
     )
     valid_to = models.DateField(
-        blank=True, null=True, db_comment="Date until which the regulatory values are applicable"
+        blank=True,
+        null=True,
+        db_comment="Date until which the regulatory values are applicable",
     )
 
     class Meta:
@@ -48,7 +54,10 @@ class NaicsRegulatoryValue(BaseModel):
             ExclusionConstraint(
                 name="exclude_overlapping_naics_regulatory_values_records_by_date_range",
                 expressions=[
-                    (TsTzRange("valid_from", "valid_to", RangeBoundary()), RangeOperators.OVERLAPS),
+                    (
+                        TsTzRange("valid_from", "valid_to", RangeBoundary()),
+                        RangeOperators.OVERLAPS,
+                    ),
                     ("naics_code", RangeOperators.EQUAL),
                 ],
             ),

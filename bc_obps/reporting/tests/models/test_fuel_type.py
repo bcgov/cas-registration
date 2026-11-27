@@ -1,6 +1,6 @@
 from common.tests.utils.helpers import BaseTestCase
-from reporting.models import FuelType
 from django.test import TestCase
+from reporting.models import FuelType
 
 
 class TestInitialData(TestCase):
@@ -74,15 +74,27 @@ class TestInitialData(TestCase):
                 "Wood Waste",
             ]
         )
-        existing_fuel_types = sorted(list(FuelType.objects.values_list("name", flat=True)))
+        existing_fuel_types = sorted(
+            list(FuelType.objects.values_list("name", flat=True))
+        )
 
         self.assertEqual(len(existing_fuel_types), len(expected_fuel_types))
         self.assertEqual(existing_fuel_types, expected_fuel_types)
-        woody_biomass_count = FuelType.objects.filter(classification='Woody Biomass').count()
-        exempted_biomass_count = FuelType.objects.filter(classification='Other Exempted Biomass').count()
-        exempted_non_biomass_count = FuelType.objects.filter(classification='Exempted Non-biomass').count()
-        non_biomass_count = FuelType.objects.filter(classification='Non-biomass').count()
-        non_exempted_biomass_count = FuelType.objects.filter(classification='Non-exempted Biomass').count()
+        woody_biomass_count = FuelType.objects.filter(
+            classification="Woody Biomass"
+        ).count()
+        exempted_biomass_count = FuelType.objects.filter(
+            classification="Other Exempted Biomass"
+        ).count()
+        exempted_non_biomass_count = FuelType.objects.filter(
+            classification="Exempted Non-biomass"
+        ).count()
+        non_biomass_count = FuelType.objects.filter(
+            classification="Non-biomass"
+        ).count()
+        non_exempted_biomass_count = FuelType.objects.filter(
+            classification="Non-exempted Biomass"
+        ).count()
         self.assertEqual(woody_biomass_count, 9)
         self.assertEqual(exempted_biomass_count, 9)
         self.assertEqual(exempted_non_biomass_count, 13)
@@ -102,7 +114,7 @@ class FuelTypeModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_object = FuelType.objects.create(
-            name="testFuelType", classification='Woody Biomass', unit="kilolitres"
+            name="testFuelType", classification="Woody Biomass", unit="kilolitres"
         )
         cls.field_data = [
             ("id", "ID", None, None),
@@ -110,7 +122,17 @@ class FuelTypeModelTest(BaseTestCase):
             ("unit", "unit", 1000, None),
             ("classification", "classification", 1000, None),
             ("reportfuel_records", "report fuel", None, 0),
-            ("expected_value_range_fuel_amount", "expected value range fuel amount", None, 0),
-            ("expected_value_range_methodology_field", "expected value range methodology field", None, 0),
+            (
+                "expected_value_range_fuel_amount",
+                "expected value range fuel amount",
+                None,
+                0,
+            ),
+            (
+                "expected_value_range_methodology_field",
+                "expected value range methodology field",
+                None,
+                0,
+            ),
             ("description", "description", None, None),
         ]

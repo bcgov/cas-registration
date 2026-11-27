@@ -1,7 +1,8 @@
-from django.db import models
-from reporting.models.report_compliance_summary import ReportComplianceSummary
-from registration.models.time_stamped_model import TimeStampedModel
 from compliance.models.compliance_report import ComplianceReport
+from django.db import models
+from registration.models.time_stamped_model import TimeStampedModel
+from reporting.models.report_compliance_summary import ReportComplianceSummary
+
 from .rls_configs.compliance_report_version import Rls as ComplianceReportVersionRls
 
 
@@ -58,7 +59,7 @@ class ComplianceReportVersion(TimeStampedModel):
     )
 
     previous_version = models.ForeignKey(
-        'self',
+        "self",
         on_delete=models.PROTECT,
         null=True,
         blank=True,

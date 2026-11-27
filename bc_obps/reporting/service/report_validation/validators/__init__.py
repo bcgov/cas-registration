@@ -9,25 +9,24 @@ from . import (
     report_data_by_fuel_type_validator,
     report_emission_allocation_other_excluded_category,
     report_emission_allocation_validator,
+    report_fuel_has_amount,
+    report_regulated_product_presence,
     reporting_configuration_validator,
     supplementary_report_attachments_confirmation,
     supplementary_report_version_change,
-    report_regulated_product_presence,
-    report_fuel_has_amount,
 )
-
 from .required_fields import (
+    required_fields_report_activity_data,
+    required_fields_report_additional_data,
+    required_fields_report_electricity_import_data,
+    required_fields_report_emission_allocation,
+    required_fields_report_new_entrant_information,
+    required_fields_report_non_attributable_emissions,
     required_fields_report_operation_information,
     required_fields_report_person_responsible,
-    required_fields_report_activity_data,
+    required_fields_report_production_data,
     required_fields_report_review_facilities,
     required_fields_report_review_facility_information,
-    required_fields_report_non_attributable_emissions,
-    required_fields_report_production_data,
-    required_fields_report_emission_allocation,
-    required_fields_report_additional_data,
-    required_fields_report_new_entrant_information,
-    required_fields_report_electricity_import_data,
 )
 
 __all__ = [

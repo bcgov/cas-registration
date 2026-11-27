@@ -1,7 +1,9 @@
 import pytest
 from common.models import EmailNotificationTemplate
+from common.service.data_access_service.email_template_service import (
+    EmailNotificationTemplateService,
+)
 from common.tests.email_snapshots.template_test_contexts import TEMPLATE_CONTEXTS
-from common.service.data_access_service.email_template_service import EmailNotificationTemplateService
 
 
 def _render_ches_template(body: str, context: dict) -> str:
@@ -29,14 +31,18 @@ class TestEmailTemplateSnapshots:
 
     @pytest.mark.parametrize("template_name", TEMPLATE_CONTEXTS.keys())
     def test_template_body_snapshot(self, template_name, snapshot):
-        template_instance = EmailNotificationTemplateService.get_template_by_name(template_name)
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            template_name
+        )
         context = TEMPLATE_CONTEXTS[template_name]
         rendered_body = _render_ches_template(template_instance.body, context)
         assert rendered_body == snapshot
 
     @pytest.mark.parametrize("template_name", TEMPLATE_CONTEXTS.keys())
     def test_template_subject_snapshot(self, template_name, snapshot):
-        template_instance = EmailNotificationTemplateService.get_template_by_name(template_name)
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            template_name
+        )
         assert template_instance.subject == snapshot
 
     def test_all_templates_are_covered(self):
@@ -45,7 +51,9 @@ class TestEmailTemplateSnapshots:
         in TEMPLATE_CONTEXTS. If a new template is added via migration
         but not registered here, this test fails.
         """
-        all_db_templates = set(EmailNotificationTemplate.objects.values_list("name", flat=True))
+        all_db_templates = set(
+            EmailNotificationTemplate.objects.values_list("name", flat=True)
+        )
         all_registered_templates = set(TEMPLATE_CONTEXTS.keys())
         missing = all_db_templates - all_registered_templates
         assert not missing, (
@@ -59,7 +67,9 @@ class TestEmailTemplateSnapshots:
         Ensures TEMPLATE_CONTEXTS doesn't reference templates that
         no longer exist in the database (e.g., after a template is removed).
         """
-        all_db_templates = set(EmailNotificationTemplate.objects.values_list("name", flat=True))
+        all_db_templates = set(
+            EmailNotificationTemplate.objects.values_list("name", flat=True)
+        )
         all_registered_templates = set(TEMPLATE_CONTEXTS.keys())
         stale = all_registered_templates - all_db_templates
         assert not stale, (

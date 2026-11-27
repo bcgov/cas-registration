@@ -1,11 +1,14 @@
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
+
+from model_bakery import baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from model_bakery import baker
 
 
 class TestOperatorIdConfirmEndpoint(CommonTestSetup):
-    @patch("registration.service.data_access_service.operator_service.OperatorDataAccessService.get_operator_by_id")
+    @patch(
+        "registration.service.data_access_service.operator_service.OperatorDataAccessService.get_operator_by_id"
+    )
     def test_returns_data_as_provided_by_the_service(
         self,
         mock_get_operator_confirm: MagicMock | AsyncMock,
@@ -14,12 +17,14 @@ class TestOperatorIdConfirmEndpoint(CommonTestSetup):
         Testing that the API endpoint fetches the operator for the given ID.
         """
 
-        operator = baker.make_recipe('registration.tests.utils.operator')
+        operator = baker.make_recipe("registration.tests.utils.operator")
         mock_get_operator_confirm.return_value = operator
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            custom_reverse_lazy("get_operator_confirm", kwargs={"operator_id": operator.id}),
+            custom_reverse_lazy(
+                "get_operator_confirm", kwargs={"operator_id": operator.id}
+            ),
         )
 
         # Assert: Verify the response status
@@ -29,5 +34,11 @@ class TestOperatorIdConfirmEndpoint(CommonTestSetup):
         mock_get_operator_confirm.assert_called_once_with(operator.id)
 
         # Assert: Validate the response structure and data
-        expected_keys = ["id", "legal_name", "trade_name", "cra_business_number", "street_address"]
+        expected_keys = [
+            "id",
+            "legal_name",
+            "trade_name",
+            "cra_business_number",
+            "street_address",
+        ]
         assert sorted(response.json().keys()) == sorted(expected_keys)

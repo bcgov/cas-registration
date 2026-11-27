@@ -1,10 +1,10 @@
-from django.db import models
 from common.enums import Schemas
-from registration.enums.enums import RegistrationTableNames
-from registration.models import TimeStampedModel, Facility, Operation
-from simple_history.models import HistoricalRecords
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from registration.enums.enums import RegistrationTableNames
+from registration.models import Facility, Operation, TimeStampedModel
 from registration.models.rls_configs.facility_snapshot import Rls as FacilitySnapshotRls
+from simple_history.models import HistoricalRecords
 
 
 class FacilitySnapshot(TimeStampedModel):
@@ -36,7 +36,9 @@ class FacilitySnapshot(TimeStampedModel):
         db_comment="The facility's starting date is within the current year or preceding year at snapshot time",
     )
     starting_date = models.DateTimeField(
-        blank=True, null=True, db_comment="The date of the facility starting operations at snapshot time"
+        blank=True,
+        null=True,
+        db_comment="The date of the facility starting operations at snapshot time",
     )
     type = models.CharField(
         max_length=100,
@@ -79,7 +81,7 @@ class FacilitySnapshot(TimeStampedModel):
         null=True,
     )
     latitude_of_largest_emissions = models.DecimalField(
-        db_comment='The latitude of the largest point of emissions at snapshot time',
+        db_comment="The latitude of the largest point of emissions at snapshot time",
         decimal_places=6,
         max_digits=8,
         null=True,
@@ -87,7 +89,7 @@ class FacilitySnapshot(TimeStampedModel):
         validators=[MinValueValidator(-90), MaxValueValidator(90)],
     )
     longitude_of_largest_emissions = models.DecimalField(
-        db_comment='The longitude of the largest point of emissions at snapshot time',
+        db_comment="The longitude of the largest point of emissions at snapshot time",
         decimal_places=6,
         max_digits=9,
         null=True,
@@ -111,12 +113,14 @@ class FacilitySnapshot(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "Snapshots of facility data at the time of transfer. This allows old operators to view facility information as it existed when they owned the facility, even after changes are made by new operators."
-        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.FACILITY_SNAPSHOT.value}'
+        db_table = (
+            f'{Schemas.ERC.value}"."{RegistrationTableNames.FACILITY_SNAPSHOT.value}'
+        )
         verbose_name_plural = "Facility Snapshots"
         indexes = [
-            models.Index(fields=['facility', 'operation']),
-            models.Index(fields=['operation']),
-            models.Index(fields=['snapshot_timestamp']),
+            models.Index(fields=["facility", "operation"]),
+            models.Index(fields=["operation"]),
+            models.Index(fields=["snapshot_timestamp"]),
         ]
 
     Rls = FacilitySnapshotRls

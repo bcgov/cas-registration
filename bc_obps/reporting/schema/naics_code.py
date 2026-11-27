@@ -1,5 +1,4 @@
 from ninja import ModelSchema
-
 from registration.models import NaicsCode
 
 

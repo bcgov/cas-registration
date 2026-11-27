@@ -1,16 +1,20 @@
 from decimal import Decimal
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from compliance.models.elicensing_payment import ElicensingPayment
+
 from common.tests.utils.helpers import BaseTestCase
-from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from compliance.models.elicensing_payment import ElicensingPayment
 from model_bakery.baker import make_recipe
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ElicensingPaymentTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_object = make_recipe(
-            'compliance.tests.utils.elicensing_payment',
+            "compliance.tests.utils.elicensing_payment",
         )
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
@@ -28,34 +32,47 @@ class ElicensingPaymentTest(BaseTestCase):
 class TestElicensingPaymentRls(BaseTestCase):
     def test_elicensing_payment_rls_industry_user(self):
         # approved object
-        operator = make_recipe('registration.tests.utils.operator', id=1)
-        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator', operator=operator)
+        operator = make_recipe("registration.tests.utils.operator", id=1)
+        approved_user_operator = make_recipe(
+            "registration.tests.utils.approved_user_operator", operator=operator
+        )
         approved_client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator',
+            "compliance.tests.utils.elicensing_client_operator",
             operator=approved_user_operator.operator,
             client_object_id="1147483647",
         )
         approved_invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=approved_client_operator
+            "compliance.tests.utils.elicensing_invoice",
+            elicensing_client_operator=approved_client_operator,
         )
         approved_line_item = make_recipe(
-            'compliance.tests.utils.elicensing_line_item', elicensing_invoice=approved_invoice
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=approved_invoice,
         )
         approved_elicensing_payment = make_recipe(
-            'compliance.tests.utils.elicensing_payment', id=88, elicensing_line_item=approved_line_item
+            "compliance.tests.utils.elicensing_payment",
+            id=88,
+            elicensing_line_item=approved_line_item,
         )
 
         # second object
-        random_operator = make_recipe('registration.tests.utils.operator', id=2)
+        random_operator = make_recipe("registration.tests.utils.operator", id=2)
         random_client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator', operator=random_operator, client_object_id="1147483647"
+            "compliance.tests.utils.elicensing_client_operator",
+            operator=random_operator,
+            client_object_id="1147483647",
         )
         random_invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=random_client_operator
+            "compliance.tests.utils.elicensing_invoice",
+            elicensing_client_operator=random_client_operator,
         )
-        random_line_item = make_recipe('compliance.tests.utils.elicensing_line_item', elicensing_invoice=random_invoice)
+        random_line_item = make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=random_invoice,
+        )
         random_elicensing_payment = make_recipe(
-            'compliance.tests.utils.elicensing_payment', elicensing_line_item=random_line_item
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=random_line_item,
         )
 
         assert ElicensingPayment.objects.count() == 2
@@ -68,7 +85,9 @@ class TestElicensingPaymentRls(BaseTestCase):
 
         def insert_function(cursor):
             ElicensingPayment.objects.create(
-                elicensing_line_item=approved_line_item, payment_object_id=888888, amount=888
+                elicensing_line_item=approved_line_item,
+                payment_object_id=888888,
+                amount=888,
             )
 
         def forbidden_insert_function(cursor):
@@ -90,7 +109,7 @@ class TestElicensingPaymentRls(BaseTestCase):
                     SET amount = %s
                     WHERE id = %s
                 """,
-                (Decimal('999'), approved_elicensing_payment.id),
+                (Decimal("999"), approved_elicensing_payment.id),
             )
             return cursor.rowcount
 
@@ -101,7 +120,7 @@ class TestElicensingPaymentRls(BaseTestCase):
                     SET amount = %s
                     WHERE id = %s
                 """,
-                (Decimal('999'), random_elicensing_payment.id),
+                (Decimal("999"), random_elicensing_payment.id),
             )
             return cursor.rowcount
 
@@ -117,13 +136,24 @@ class TestElicensingPaymentRls(BaseTestCase):
         )
 
     def test_elicensing_payment_rls_cas_users(self):
-        operator = make_recipe('registration.tests.utils.operator', id=3)
+        operator = make_recipe("registration.tests.utils.operator", id=3)
         client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator', operator=operator, client_object_id="1147488888"
+            "compliance.tests.utils.elicensing_client_operator",
+            operator=operator,
+            client_object_id="1147488888",
         )
-        invoice = make_recipe('compliance.tests.utils.elicensing_invoice', elicensing_client_operator=client_operator)
-        line_item = make_recipe('compliance.tests.utils.elicensing_line_item', elicensing_invoice=invoice)
-        make_recipe('compliance.tests.utils.elicensing_payment', id=888, elicensing_line_item=line_item)
+        invoice = make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            elicensing_client_operator=client_operator,
+        )
+        line_item = make_recipe(
+            "compliance.tests.utils.elicensing_line_item", elicensing_invoice=invoice
+        )
+        make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            id=888,
+            elicensing_line_item=line_item,
+        )
 
         def select_function(cursor):
             assert ElicensingPayment.objects.count() == 1

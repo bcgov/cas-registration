@@ -2,7 +2,9 @@ import pytest
 from model_bakery import baker
 from reporting.models import ReportNonAttributableEmissions
 from reporting.schema.report_non_attributable_emissions import ReportNonAttributableIn
-from reporting.service.report_non_attributable_service import ReportNonAttributableService
+from reporting.service.report_non_attributable_service import (
+    ReportNonAttributableService,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -20,14 +22,18 @@ class TestReportNonAttributableService:
         self.test_data = [
             {
                 "id": 1,
-                "emission_category": baker.make_recipe("reporting.tests.utils.emission_category"),
+                "emission_category": baker.make_recipe(
+                    "reporting.tests.utils.emission_category"
+                ),
                 "gas_type": [baker.make_recipe("reporting.tests.utils.gas_type")],
                 "activity": "Test Activity 1",
                 "source_type": "Test Source 1",
             },
             {
                 "id": 2,
-                "emission_category": baker.make_recipe("reporting.tests.utils.emission_category"),
+                "emission_category": baker.make_recipe(
+                    "reporting.tests.utils.emission_category"
+                ),
                 "gas_type": [baker.make_recipe("reporting.tests.utils.gas_type")],
                 "activity": "Test Activity 2",
                 "source_type": "Test Source 2",
@@ -68,14 +74,18 @@ class TestReportNonAttributableService:
                 activity="Test Activity 3",
                 source_type="Test Source 3",
                 emission_category=self.test_data[0]["emission_category"].category_name,
-                gas_type=[gas.chemical_formula for gas in self.test_data[0]["gas_type"]],
+                gas_type=[
+                    gas.chemical_formula for gas in self.test_data[0]["gas_type"]
+                ],
             ),
             ReportNonAttributableIn(
                 id=2,
                 activity="Test Activity 4",
                 source_type="Test Source 4",
                 emission_category=self.test_data[1]["emission_category"].category_name,
-                gas_type=[gas.chemical_formula for gas in self.test_data[1]["gas_type"]],
+                gas_type=[
+                    gas.chemical_formula for gas in self.test_data[1]["gas_type"]
+                ],
             ),
         ]
 
@@ -100,7 +110,11 @@ class TestReportNonAttributableService:
         report_to_delete.gas_type.set(self.test_data[0]["gas_type"])
 
         # Call the service to delete reports
-        ReportNonAttributableService.delete_existing_reports(self.report_version_id, self.facility_id)
+        ReportNonAttributableService.delete_existing_reports(
+            self.report_version_id, self.facility_id
+        )
 
         # Ensure the report is deleted
-        assert not ReportNonAttributableEmissions.objects.filter(id=report_to_delete.id).exists()
+        assert not ReportNonAttributableEmissions.objects.filter(
+            id=report_to_delete.id
+        ).exists()

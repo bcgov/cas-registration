@@ -1,12 +1,11 @@
 import pytest
 from model_bakery import baker
 from registration.models import (
-    WellAuthorizationNumber,
     BcGreenhouseGasId,
     Operation,
+    WellAuthorizationNumber,
 )
 from registration.service.facility_snapshot_service import FacilitySnapshotService
-
 
 pytestmark = pytest.mark.django_db
 
@@ -16,27 +15,27 @@ class TestCreateFacilitySnapshot:
     def test_create_facility_snapshot_copies_fields():
         """Ensure FacilitySnapshotService.create_facility_snapshot copies expected fields."""
         # Create director and operation with REGISTERED status
-        director = baker.make_recipe('registration.tests.utils.cas_director')
+        director = baker.make_recipe("registration.tests.utils.cas_director")
         operation = baker.make_recipe(
-            'registration.tests.utils.operation',
+            "registration.tests.utils.operation",
             status=Operation.Statuses.REGISTERED,
         )
 
         # Create BCGHG ID following test_facility_service pattern
         bcghg = BcGreenhouseGasId.objects.create(
-            id='11234567890',
+            id="11234567890",
             issued_by_id=director.user_guid,
-            comments='test',
+            comments="test",
         )
 
         # Create facility using recipe with all fields
         facility = baker.make_recipe(
-            'registration.tests.utils.facility',
+            "registration.tests.utils.facility",
             operation=operation,
             bcghg_id=bcghg,
-            name='Test Facility',
+            name="Test Facility",
             is_current_year=True,
-            type='Single Facility',
+            type="Single Facility",
             swrs_facility_id=99,
             latitude_of_largest_emissions=48.123456,
             longitude_of_largest_emissions=-123.123456,
@@ -48,10 +47,12 @@ class TestCreateFacilitySnapshot:
         facility.well_authorization_numbers.set([wan1, wan2])
 
         # Create a user for audit fields
-        user = baker.make_recipe('registration.tests.utils.industry_operator_user')
+        user = baker.make_recipe("registration.tests.utils.industry_operator_user")
 
         # Call the service
-        snapshot = FacilitySnapshotService.create_facility_snapshot(user.user_guid, facility, operation)
+        snapshot = FacilitySnapshotService.create_facility_snapshot(
+            user.user_guid, facility, operation
+        )
 
         # Refresh from DB and assert values copied
         snapshot.refresh_from_db()
@@ -71,8 +72,12 @@ class TestCreateFacilitySnapshot:
         assert snapshot.swrs_facility_id == facility.swrs_facility_id
         assert snapshot.bcghg_id == str(bcghg.id)
 
-        assert float(snapshot.latitude_of_largest_emissions) == float(facility.latitude_of_largest_emissions)
-        assert float(snapshot.longitude_of_largest_emissions) == float(facility.longitude_of_largest_emissions)
+        assert float(snapshot.latitude_of_largest_emissions) == float(
+            facility.latitude_of_largest_emissions
+        )
+        assert float(snapshot.longitude_of_largest_emissions) == float(
+            facility.longitude_of_largest_emissions
+        )
 
         assert sorted(snapshot.well_authorization_numbers) == sorted(
             [

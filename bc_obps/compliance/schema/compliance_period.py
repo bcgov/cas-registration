@@ -9,4 +9,10 @@ class CompliancePeriodOut(ModelSchema):
 
     class Meta:
         model = CompliancePeriod
-        fields = ['start_date', 'end_date', 'compliance_deadline', 'invoice_generation_date', 'reporting_year']
+        fields = [
+            "start_date",
+            "end_date",
+            "compliance_deadline",
+            "invoice_generation_date",
+            "reporting_year",
+        ]

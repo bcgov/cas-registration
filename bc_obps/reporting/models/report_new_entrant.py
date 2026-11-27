@@ -1,8 +1,8 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
-from reporting.models.triggers import immutable_report_version_trigger
 from reporting.models.rls_configs.report_new_entrant import Rls as ReportNewEntrantRls
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportNewEntrant(TimeStampedModel):
@@ -28,7 +28,9 @@ class ReportNewEntrant(TimeStampedModel):
     class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_new_entrant'
         app_label = "reporting"
-        db_table_comment = "Table storing new entrant emissions data for the reporting system"
+        db_table_comment = (
+            "Table storing new entrant emissions data for the reporting system"
+        )
         triggers = [
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger(),

@@ -1,13 +1,11 @@
 from decimal import Decimal
-from compliance.models import ComplianceObligation
 from unittest.mock import patch
 
+from common.tests.utils.helpers import assert_error_response
+from compliance.models import ComplianceObligation, ElicensingPayment
 from model_bakery.baker import make_recipe
-
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from compliance.models import ElicensingPayment
-from common.tests.utils.helpers import assert_error_response
 
 
 class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
@@ -29,7 +27,7 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
         }
 
         # Mock authorization
-        operator = make_recipe('registration.tests.utils.operator')
+        operator = make_recipe("registration.tests.utils.operator")
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         # Act
         compliance_report_version = make_recipe(
@@ -38,7 +36,8 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
             compliance_report__report__operation__operator=operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=operator, operations=[compliance_report_version.compliance_report.report.operation]
+            operator=operator,
+            operations=[compliance_report_version.compliance_report.report.operation],
         )
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -71,7 +70,8 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
             self,
             "industry_user",
             custom_reverse_lazy(
-                "get_penalty_by_compliance_report_version_id", kwargs={"compliance_report_version_id": 123}
+                "get_penalty_by_compliance_report_version_id",
+                kwargs={"compliance_report_version_id": 123},
             ),
         )
 
@@ -107,7 +107,8 @@ class TestLateSubmissionPenaltyByComplianceReportVersionEndpoint(CommonTestSetup
             compliance_report__report__operation__operator=operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=operator, operations=[compliance_report_version.compliance_report.report.operation]
+            operator=operator,
+            operations=[compliance_report_version.compliance_report.report.operation],
         )
         response = TestUtils.mock_get_with_auth_role(
             self,

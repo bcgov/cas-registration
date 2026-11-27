@@ -1,10 +1,14 @@
 import inspect
 import json
-from typing import Any, Callable, Dict, Tuple
+from collections.abc import Callable
+from typing import Any, Dict, Tuple
+
 from django.core.serializers.json import DjangoJSONEncoder
 
 
-def extract_function_parameters(args: Tuple[Any, ...], kwargs: Dict[str, Any], func: Callable) -> Dict[str, Any]:
+def extract_function_parameters(
+    args: tuple[Any, ...], kwargs: dict[str, Any], func: Callable
+) -> dict[str, Any]:
     """
     Extract and serialize function parameters for retry task creation.
     Only works with standalone functions, not class methods.
@@ -21,7 +25,9 @@ def extract_function_parameters(args: Tuple[Any, ...], kwargs: Dict[str, Any], f
 
     # Process explicit keyword arguments
     for key, value in kwargs.items():
-        serialized_params[str(key)] = json.loads(json.dumps(value, cls=DjangoJSONEncoder))
+        serialized_params[str(key)] = json.loads(
+            json.dumps(value, cls=DjangoJSONEncoder)
+        )
 
     # Process positional arguments for standalone functions
     sig = inspect.signature(func)
@@ -31,6 +37,8 @@ def extract_function_parameters(args: Tuple[Any, ...], kwargs: Dict[str, Any], f
     for i, arg in enumerate(args):
         if i < len(param_names):
             param_name = param_names[i]
-            serialized_params[param_name] = json.loads(json.dumps(arg, cls=DjangoJSONEncoder))
+            serialized_params[param_name] = json.loads(
+                json.dumps(arg, cls=DjangoJSONEncoder)
+            )
 
     return serialized_params

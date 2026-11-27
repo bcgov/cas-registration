@@ -1,6 +1,7 @@
+import logging
 from dataclasses import dataclass
 from decimal import Decimal
-import logging
+
 from registration.models.activity import Activity
 from reporting.models.report_activity import ReportActivity
 from reporting.models.report_operation import ReportOperation
@@ -20,15 +21,19 @@ class BiogenicEmissionsSplit:
     lime_recovered_by_kiln_ratio: Decimal
 
     def __post_init__(self) -> None:
-        if not self.chemical_pulp_ratio + self.lime_recovered_by_kiln_ratio == Decimal('1'):
+        if not self.chemical_pulp_ratio + self.lime_recovered_by_kiln_ratio == Decimal(
+            "1"
+        ):
             raise ValueError("The biogenic emissions split reported must total to 1.")
 
 
-def retrieve_pulp_and_paper_biogenic_emissions_split_default(report_version: ReportVersion) -> BiogenicEmissionsSplit:
-
+def retrieve_pulp_and_paper_biogenic_emissions_split_default(
+    report_version: ReportVersion,
+) -> BiogenicEmissionsSplit:
     try:
         report_activity = ReportActivity.objects.get(
-            report_version=report_version, activity=Activity.objects.get(slug='pulp_and_paper')
+            report_version=report_version,
+            activity=Activity.objects.get(slug="pulp_and_paper"),
         )
     except ReportActivity.DoesNotExist:
         raise ReportActivity.DoesNotExist(
@@ -36,22 +41,31 @@ def retrieve_pulp_and_paper_biogenic_emissions_split_default(report_version: Rep
         )
 
     try:
-        if not report_activity.json_data["biogenicIndustrialProcessEmissions"]["doesUtilizeLimeRecoveryKiln"]:
+        if not report_activity.json_data["biogenicIndustrialProcessEmissions"][
+            "doesUtilizeLimeRecoveryKiln"
+        ]:
             raise ValueError(
                 """Under NAICS code 322112 and with either 'chemical pulp' or 'lime recovered by kiln' products,
                 biogenic industrial process emission details must be reported."""
             )
 
-        split_data = report_activity.json_data["biogenicIndustrialProcessEmissions"]["biogenicEmissionsSplit"]
+        split_data = report_activity.json_data["biogenicIndustrialProcessEmissions"][
+            "biogenicEmissionsSplit"
+        ]
         chemical_pulp_percentage = Decimal(str(split_data["chemicalPulpPercentage"]))
-        lime_recovered_by_kiln_percentage = Decimal(str(split_data["limeRecoveredByKilnPercentage"]))
+        lime_recovered_by_kiln_percentage = Decimal(
+            str(split_data["limeRecoveredByKilnPercentage"])
+        )
 
     except KeyError as e:
         # Issues with the format of the data
-        raise KeyError(f"Biogenic industrial process emissions data: key error at {str(e)}")
+        raise KeyError(
+            f"Biogenic industrial process emissions data: key error at {str(e)}"
+        )
 
     return BiogenicEmissionsSplit(
-        chemical_pulp_percentage / Decimal(100.0), lime_recovered_by_kiln_percentage / Decimal(100.0)
+        chemical_pulp_percentage / Decimal(100.0),
+        lime_recovered_by_kiln_percentage / Decimal(100.0),
     )
 
 
@@ -60,19 +74,22 @@ def retrieve_pulp_and_paper_biogenic_emissions_split_2024() -> BiogenicEmissions
     In 2024, the 'Lime recovered by kiln' product wasn't reported, and the split wasn't on the ReportActivity form.
     We allocate all the emissions overlap to the 'Chemical pulp' product, which was the behaviour before that product was added.
     """
-    return BiogenicEmissionsSplit(Decimal('1'), Decimal('0'))
+    return BiogenicEmissionsSplit(Decimal("1"), Decimal("0"))
 
 
-def retrieve_pulp_and_paper_biogenic_emissions_split(report_version: ReportVersion) -> BiogenicEmissionsSplit:
+def retrieve_pulp_and_paper_biogenic_emissions_split(
+    report_version: ReportVersion,
+) -> BiogenicEmissionsSplit:
     match report_version.report.reporting_year_id:
         case 2024:
             return retrieve_pulp_and_paper_biogenic_emissions_split_2024()
         case _:
-            return retrieve_pulp_and_paper_biogenic_emissions_split_default(report_version)
+            return retrieve_pulp_and_paper_biogenic_emissions_split_default(
+                report_version
+            )
 
 
 def compute_industrial_process_emissions(rp: ReportProduct) -> Decimal:
-
     industrial_process = get_allocated_emissions_by_report_product_emission_category(
         rp.report_version_id, rp.product_id, [3]
     )  # ID=3 is Industrial Emissions category
@@ -82,28 +99,32 @@ def compute_industrial_process_emissions(rp: ReportProduct) -> Decimal:
     # the industrial_process emission total attributed to the product "Pulp and paper: chemical pulp".
     ro = ReportOperation.objects.get(report_version_id=rp.report_version_id)
     if not ro.naics_code:
-        raise ValueError(f"No NAICS code associated with report version {rp.report_version_id}")
+        raise ValueError(
+            f"No NAICS code associated with report version {rp.report_version_id}"
+        )
     if ro.naics_code.naics_code.startswith("322112") and rp.product.name in [
         "Pulp and paper: chemical pulp",
         "Pulp and paper: lime recovered by kiln",
     ]:
-        biogenic_emissions_split = retrieve_pulp_and_paper_biogenic_emissions_split(rp.report_version)
-        overlapping_industrial_process_emissions = (
-            EmissionCategoryService.get_industrial_process_excluded_biomass_overlap_by_report_version(
-                rp.report_version.id
-            )
+        biogenic_emissions_split = retrieve_pulp_and_paper_biogenic_emissions_split(
+            rp.report_version
+        )
+        overlapping_industrial_process_emissions = EmissionCategoryService.get_industrial_process_excluded_biomass_overlap_by_report_version(
+            rp.report_version.id
         )
 
         if rp.product.name == "Pulp and paper: chemical pulp":
             return (
                 industrial_process
-                - overlapping_industrial_process_emissions * biogenic_emissions_split.chemical_pulp_ratio
+                - overlapping_industrial_process_emissions
+                * biogenic_emissions_split.chemical_pulp_ratio
             )
 
         if rp.product.name == "Pulp and paper: lime recovered by kiln":
             return (
                 industrial_process
-                - overlapping_industrial_process_emissions * biogenic_emissions_split.lime_recovered_by_kiln_ratio
+                - overlapping_industrial_process_emissions
+                * biogenic_emissions_split.lime_recovered_by_kiln_ratio
             )
 
     return industrial_process

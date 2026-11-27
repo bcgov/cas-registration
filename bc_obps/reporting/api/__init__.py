@@ -1,42 +1,60 @@
-# ruff: noqa: F401
-from .router import router
-from .reports import start_report
-from .reports import create_report_for_reporting_year
-from .build_form_schema import build_form_schema
-from .reporting_dashboard import get_dashboard_operations_list
 from .activity_data import get_initial_activity_data
-from .facility_report import get_facility_report_form_data
-from .facility_report import get_facility_report_by_version_id
-from .facility_report import save_facility_report_list
+from .build_form_schema import build_form_schema
+from .facility_report import (
+    get_facility_report_by_version_id,
+    get_facility_report_form_data,
+    save_facility_report_list,
+)
 from .fuel import get_fuel_data
-from .report_person_responsible import get_report_person_responsible_by_version_id
-from .report_person_responsible import save_report_contact
-from .reports import get_registration_purpose_by_version_id
-from .reports import get_report_version
-from .reports import delete_report_version
-from .reports import create_report_version
 from .gas_type import get_gas_type
-from .report_emission_summary import get_emission_category, get_operation_emission_summary_totals
 from .production_data import save_production_data
-from .report_new_entrant_data import save_new_entrant_data
-from .report_new_entrant_data import get_new_entrant_data
-from .report_non_attributable_emissions import save_report
-from .report_activity import save_report_activity_data, load_report_activity_data
+from .report_activity import load_report_activity_data, save_report_activity_data
+from .report_additional_data import (
+    get_report_additional_data_by_version_id,
+    save_report_additional_data,
+)
+from .report_attachments import get_report_attachments, save_report_attachments
+from .report_electricity_import_data import (
+    get_electricity_import_data,
+    save_electricity_import_data,
+)
+from .report_emission_allocations import (
+    get_emission_allocations,
+    save_emission_allocation_data,
+)
+from .report_emission_summary import (
+    get_emission_category,
+    get_operation_emission_summary_totals,
+)
 from .report_facilities import get_report_facility_list_by_version_id
+from .report_final_review import get_report_final_review_data
+from .report_new_entrant_data import get_new_entrant_data, save_new_entrant_data
+from .report_non_attributable_emissions import save_report
+from .report_operation import get_report_operation_data, get_update_report
+from .report_person_responsible import (
+    get_report_person_responsible_by_version_id,
+    save_report_contact,
+)
+from .report_review_changes import get_report_version_diff_data
+from .report_review_facilties import get_selected_facilities
+from .report_supplementary_version import (
+    create_report_supplementary_version,
+    is_supplementary_report_version,
+)
 from .report_verification import (
     get_report_verification_by_version_id,
     get_report_verification_status,
     save_report_verification,
 )
-from .report_attachments import save_report_attachments, get_report_attachments
-from .report_emission_allocations import get_emission_allocations, save_emission_allocation_data
+from .reporting_dashboard import get_dashboard_operations_list
+from .reports import (
+    create_report_for_reporting_year,
+    create_report_version,
+    delete_report_version,
+    get_registration_purpose_by_version_id,
+    get_report_version,
+    save_report_version,
+    start_report,
+)
+from .router import router
 from .submit import submit_report_version
-from .report_review_facilties import get_selected_facilities
-from .report_additional_data import get_report_additional_data_by_version_id
-from .report_additional_data import save_report_additional_data
-from .report_supplementary_version import create_report_supplementary_version, is_supplementary_report_version
-from .reports import save_report_version
-from .report_electricity_import_data import save_electricity_import_data, get_electricity_import_data
-from .report_operation import get_update_report, get_report_operation_data
-from .report_final_review import get_report_final_review_data
-from .report_review_changes import get_report_version_diff_data

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from reporting.models import ReportVersion, ReportAdditionalData
+from reporting.models import ReportAdditionalData, ReportVersion
 from reporting.schema.report_additional_data import (
     ReportAdditionalDataIn,
 )
@@ -10,11 +10,15 @@ class ReportAdditionalDataService:
     @staticmethod
     def get_report_report_additional_data(
         report_version_id: int,
-    ) -> Optional[ReportAdditionalData]:
-        return ReportAdditionalData.objects.filter(report_version__id=report_version_id).first()
+    ) -> ReportAdditionalData | None:
+        return ReportAdditionalData.objects.filter(
+            report_version__id=report_version_id
+        ).first()
 
     @staticmethod
-    def save_report_additional_data(version_id: int, data: ReportAdditionalDataIn) -> ReportAdditionalData:
+    def save_report_additional_data(
+        version_id: int, data: ReportAdditionalDataIn
+    ) -> ReportAdditionalData:
         report_version = ReportVersion.objects.get(pk=version_id)
         report_additional_data, created = ReportAdditionalData.objects.update_or_create(
             report_version=report_version,

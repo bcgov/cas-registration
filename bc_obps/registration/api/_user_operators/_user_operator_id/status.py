@@ -1,13 +1,18 @@
 from typing import Literal, Tuple
-from common.permissions import authorize
-from django.http import HttpRequest
 from uuid import UUID
-from registration.constants import USER_OPERATOR_TAGS
+
 from common.api.utils import get_current_user_guid
-from registration.schema import UserOperatorStatusUpdate, UserOperatorStatusUpdateOut, Message
-from registration.models import UserOperator
+from common.permissions import authorize
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest
 from registration.api.router import router
+from registration.constants import USER_OPERATOR_TAGS
+from registration.models import UserOperator
+from registration.schema import (
+    Message,
+    UserOperatorStatusUpdate,
+    UserOperatorStatusUpdateOut,
+)
 from registration.service.user_operator_service import UserOperatorService
 
 
@@ -22,7 +27,7 @@ from registration.service.user_operator_service import UserOperatorService
 )
 def update_user_operator_status(
     request: HttpRequest, user_operator_id: UUID, payload: UserOperatorStatusUpdate
-) -> Tuple[Literal[200], UserOperator]:
+) -> tuple[Literal[200], UserOperator]:
     return 200, UserOperatorService.update_status_and_create_contact(
         user_operator_id, payload, get_current_user_guid(request)
     )

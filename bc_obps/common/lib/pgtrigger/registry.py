@@ -1,5 +1,6 @@
 import collections
-from typing import TYPE_CHECKING, Callable, List, Tuple
+from collections.abc import Callable
+from typing import TYPE_CHECKING, List, Tuple
 
 from . import features
 
@@ -26,12 +27,17 @@ class _Registry(collections.UserDict):
         """
         Return the registry keys by db_table, name
         """
-        return {(model._meta.db_table, trigger.name): trigger for model, trigger in self.values()}
+        return {
+            (model._meta.db_table, trigger.name): trigger
+            for model, trigger in self.values()
+        }
 
     def __getitem__(self, key):
         assert isinstance(key, str)
         if len(key.split(":")) == 1:
-            raise ValueError('Trigger URI must be in the format of "app_label.model_name:trigger_name"')
+            raise ValueError(
+                'Trigger URI must be in the format of "app_label.model_name:trigger_name"'
+            )
         elif key not in _registry:
             raise KeyError(f'URI "{key}" not found in pgtrigger registry')
 
@@ -64,12 +70,14 @@ class _Registry(collections.UserDict):
         # triggers in Meta already, meaning the trigger may already exist. If so, ignore it
         if features.migrations():  # pragma: no branch
             if trigger not in getattr(model._meta, "triggers", []):
-                model._meta.triggers = list(getattr(model._meta, "triggers", [])) + [trigger]
-
-            if trigger not in model._meta.original_attrs.get("triggers", []):
-                model._meta.original_attrs["triggers"] = list(model._meta.original_attrs.get("triggers", [])) + [
+                model._meta.triggers = list(getattr(model._meta, "triggers", [])) + [
                     trigger
                 ]
+
+            if trigger not in model._meta.original_attrs.get("triggers", []):
+                model._meta.original_attrs["triggers"] = list(
+                    model._meta.original_attrs.get("triggers", [])
+                ) + [trigger]
 
         return super().__setitem__(key, value)
 
@@ -110,7 +118,7 @@ def delete(uri: str) -> None:
     del _registry[uri]
 
 
-def registered(*uris: str) -> List[Tuple["Model", "Trigger"]]:
+def registered(*uris: str) -> list[tuple["Model", "Trigger"]]:
     """
     Get registered trigger objects.
 

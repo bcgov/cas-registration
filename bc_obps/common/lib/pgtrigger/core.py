@@ -18,7 +18,7 @@ from django.db.utils import ProgrammingError
 from . import compiler, features, registry, utils
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
 if utils.psycopg_maj_version == 2:
     import psycopg2.extensions
@@ -76,7 +76,10 @@ class Referencing:
 
     def __init__(self, *, old=None, new=None):
         if not old and not new:
-            raise ValueError('Must provide either "old" and/or "new" to the referencing' " construct of a trigger")
+            raise ValueError(
+                'Must provide either "old" and/or "new" to the referencing'
+                " construct of a trigger"
+            )
 
         self.old = old
         self.new = new
@@ -226,7 +229,9 @@ class _OldNewQuery(Query):
         elif filter_expr[0].startswith("new__"):
             alias = "NEW"
         else:  # pragma: no cover
-            raise ValueError("Filter expression on trigger.Q object must reference old__ or new__")
+            raise ValueError(
+                "Filter expression on trigger.Q object must reference old__ or new__"
+            )
 
         filter_expr = (filter_expr[0][5:], filter_expr[1])
         node, _ = super().build_filter(filter_expr, *args, **kwargs)
@@ -349,15 +354,15 @@ class _Change(Condition):
     See child classes for more documentation on arguments.
     """
 
-    fields: Union[List[str], None] = None
-    exclude: Union[List[str], None] = None
+    fields: list[str] | None = None
+    exclude: list[str] | None = None
     exclude_auto: bool = False
 
     def __init__(
         self,
         *fields: str,
-        exclude: Union[List[str], None] = None,
-        exclude_auto: Union[bool, None] = None,
+        exclude: list[str] | None = None,
+        exclude_auto: bool | None = None,
         all: bool = False,
         comparison: str = "df",
     ):
@@ -398,7 +403,10 @@ class _Change(Condition):
             reduce_op = operator.and_ if self.all else operator.or_
             q = functools.reduce(
                 reduce_op,
-                [Q(**{f"old__{field}__{self.comparison}": F(f"new__{field}")}) for field in fields],
+                [
+                    Q(**{f"old__{field}__{self.comparison}": F(f"new__{field}")})
+                    for field in fields
+                ],
             )
             expr = q.resolve(model)
 
@@ -411,8 +419,8 @@ class AnyChange(_Change):
     def __init__(
         self,
         *fields: str,
-        exclude: Union[List[str], None] = None,
-        exclude_auto: Union[bool, None] = None,
+        exclude: list[str] | None = None,
+        exclude_auto: bool | None = None,
     ):
         """
         If any supplied fields change, trigger the condition.
@@ -438,8 +446,8 @@ class AnyDontChange(_Change):
     def __init__(
         self,
         *fields: str,
-        exclude: Union[List[str], None] = None,
-        exclude_auto: Union[bool, None] = None,
+        exclude: list[str] | None = None,
+        exclude_auto: bool | None = None,
     ):
         """
         If any supplied fields don't change, trigger the condition.
@@ -465,8 +473,8 @@ class AllChange(_Change):
     def __init__(
         self,
         *fields: str,
-        exclude: Union[List[str], None] = None,
-        exclude_auto: Union[bool, None] = None,
+        exclude: list[str] | None = None,
+        exclude_auto: bool | None = None,
     ):
         """
         If all supplied fields change, trigger the condition.
@@ -492,8 +500,8 @@ class AllDontChange(_Change):
     def __init__(
         self,
         *fields: str,
-        exclude: Union[List[str], None] = None,
-        exclude_auto: Union[bool, None] = None,
+        exclude: list[str] | None = None,
+        exclude_auto: bool | None = None,
     ):
         """
         If all supplied fields don't change, trigger the condition.
@@ -536,7 +544,9 @@ class Func:
             The rendered SQL.
         """
         fields = utils.AttrDict({field.name: field for field in model._meta.fields})
-        columns = utils.AttrDict({field.name: field.column for field in model._meta.fields})
+        columns = utils.AttrDict(
+            {field.name: field.column for field in model._meta.fields}
+        )
         return self.func.format(meta=model._meta, fields=fields, columns=columns)
 
 
@@ -582,7 +592,7 @@ class Trigger:
         condition: Condition | None = None,
         referencing: Referencing | None = None,
         func: Func | str | None = None,
-        declare: List[Tuple[str, str]] | None = None,
+        declare: list[tuple[str, str]] | None = None,
         timing: Timing | None = None,
     ) -> None:
         self.name = name or self.name
@@ -611,10 +621,14 @@ class Trigger:
             raise ValueError('Row-level triggers cannot have a "referencing" attribute')
 
         if self.timing and self.level != Row:
-            raise ValueError('Deferrable triggers must have "level" attribute as "pgtrigger.Row"')
+            raise ValueError(
+                'Deferrable triggers must have "level" attribute as "pgtrigger.Row"'
+            )
 
         if self.timing and self.when != After:
-            raise ValueError('Deferrable triggers must have "when" attribute as "pgtrigger.After"')
+            raise ValueError(
+                'Deferrable triggers must have "when" attribute as "pgtrigger.After"'
+            )
 
         if not self.name:
             raise ValueError('Trigger must have "name" attribute')
@@ -631,7 +645,9 @@ class Trigger:
             ValueError: If the name is invalid
         """
         if len(self.name) > MAX_NAME_LENGTH:
-            raise ValueError(f'Trigger name "{self.name}" > {MAX_NAME_LENGTH} characters.')
+            raise ValueError(
+                f'Trigger name "{self.name}" > {MAX_NAME_LENGTH} characters.'
+            )
 
         if not re.match(r"^[a-zA-Z0-9-_]+$", self.name):
             raise ValueError(
@@ -673,7 +689,7 @@ class Trigger:
         """
         return self.condition
 
-    def get_declare(self, model: models.Model) -> List[Tuple[str, str]]:
+    def get_declare(self, model: models.Model) -> list[tuple[str, str]]:
         """
         Gets the DECLARE part of the trigger function if any variables
         are used.
@@ -687,7 +703,7 @@ class Trigger:
         """
         return self.declare or []
 
-    def get_func(self, model: models.Model) -> Union[str, Func]:
+    def get_func(self, model: models.Model) -> str | Func:
         """
         Returns the trigger function that comes between the BEGIN and END
         clause.
@@ -744,7 +760,9 @@ class Trigger:
         """
         declare = self.get_declare(model)
         if declare:
-            rendered_declare = "DECLARE " + " ".join(f"{var_name} {var_type};" for var_name, var_type in declare)
+            rendered_declare = "DECLARE " + " ".join(
+                f"{var_name} {var_type};" for var_name, var_type in declare
+            )
         else:
             rendered_declare = ""
 
@@ -809,7 +827,7 @@ class Trigger:
             ),
         )
 
-    def allow_migrate(self, model: models.Model, database: Union[str, None] = None) -> bool:
+    def allow_migrate(self, model: models.Model, database: str | None = None) -> bool:
         """True if the trigger for this model can be migrated.
 
         Defaults to using the router's allow_migrate.
@@ -837,13 +855,15 @@ class Trigger:
         Returns:
             The formatted SQL
         """
-        return " ".join(line.strip() for line in sql.split("\n") if line.strip()).strip()
+        return " ".join(
+            line.strip() for line in sql.split("\n") if line.strip()
+        ).strip()
 
     def exec_sql(
         self,
         sql: str,
         model: models.Model,
-        database: Union[str, None] = None,
+        database: str | None = None,
         fetchall: bool = False,
     ) -> Any:
         """Conditionally execute SQL if migrations are allowed.
@@ -861,8 +881,8 @@ class Trigger:
             return utils.exec_sql(str(sql), database=database, fetchall=fetchall)
 
     def get_installation_status(
-        self, model: models.Model, database: Union[str, None] = None
-    ) -> Tuple[str, Union[bool, None]]:
+        self, model: models.Model, database: str | None = None
+    ) -> tuple[str, bool | None]:
         """Returns the installation status of a trigger.
 
         The return type is (status, enabled), where status is one of:
@@ -893,7 +913,9 @@ class Trigger:
         """
         try:
             with transaction.atomic(using=database):
-                results = self.exec_sql(trigger_exists_sql, model, database=database, fetchall=True)
+                results = self.exec_sql(
+                    trigger_exists_sql, model, database=database, fetchall=True
+                )
         except ProgrammingError:  # pragma: no cover
             # When the table doesn't exist yet, possibly because migrations
             # haven't been executed, a ProgrammingError will happen because
@@ -932,7 +954,7 @@ class Trigger:
 
         return _cleanup_on_exit(lambda: self.register(*models))
 
-    def install(self, model: models.Model, database: Union[str, None] = None):
+    def install(self, model: models.Model, database: str | None = None):
         """Installs the trigger for a model.
 
         Args:
@@ -944,7 +966,7 @@ class Trigger:
             self.exec_sql(install_sql, model, database=database)
         return _cleanup_on_exit(lambda: self.uninstall(model, database=database))
 
-    def uninstall(self, model: models.Model, database: Union[str, None] = None):
+    def uninstall(self, model: models.Model, database: str | None = None):
         """Uninstalls the trigger for a model.
 
         Args:
@@ -953,9 +975,11 @@ class Trigger:
         """
         uninstall_sql = self.compile(model).uninstall_sql
         self.exec_sql(uninstall_sql, model, database=database)
-        return _cleanup_on_exit(lambda: self.install(model, database=database))  # pragma: no branch
+        return _cleanup_on_exit(
+            lambda: self.install(model, database=database)
+        )  # pragma: no branch
 
-    def enable(self, model: models.Model, database: Union[str, None] = None):
+    def enable(self, model: models.Model, database: str | None = None):
         """Enables the trigger for a model.
 
         Args:
@@ -964,9 +988,11 @@ class Trigger:
         """
         enable_sql = self.compile(model).enable_sql
         self.exec_sql(enable_sql, model, database=database)
-        return _cleanup_on_exit(lambda: self.disable(model, database=database))  # pragma: no branch
+        return _cleanup_on_exit(
+            lambda: self.disable(model, database=database)
+        )  # pragma: no branch
 
-    def disable(self, model: models.Model, database: Union[str, None] = None):
+    def disable(self, model: models.Model, database: str | None = None):
         """Disables the trigger for a model.
 
         Args:
@@ -975,4 +1001,6 @@ class Trigger:
         """
         disable_sql = self.compile(model).disable_sql
         self.exec_sql(disable_sql, model, database=database)
-        return _cleanup_on_exit(lambda: self.enable(model, database=database))  # pragma: no branch
+        return _cleanup_on_exit(
+            lambda: self.enable(model, database=database)
+        )  # pragma: no branch

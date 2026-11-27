@@ -1,22 +1,39 @@
-from model_bakery.baker import make_recipe
-from compliance.models.compliance_report_version import ComplianceReportVersion
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from common.tests.utils.helpers import BaseTestCase
+from compliance.models.compliance_report_version import ComplianceReportVersion
+from compliance.tests.utils.compliance_rls_test_infrastructure import (
+    ComplianceReportRlsTestSetup,
+)
+from model_bakery.baker import make_recipe
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
-from compliance.tests.utils.compliance_rls_test_infrastructure import ComplianceReportRlsTestSetup
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ComplianceReportVersionTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = make_recipe('compliance.tests.utils.compliance_report_version')
+        cls.test_object = make_recipe(
+            "compliance.tests.utils.compliance_report_version"
+        )
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
             ("compliance_report", "compliance report", None, None),
             ("report_compliance_summary", "report compliance summary", None, None),
-            ("excess_emissions_delta_from_previous", "excess emissions delta from previous", None, None),
-            ("credited_emissions_delta_from_previous", "credited emissions delta from previous", None, None),
+            (
+                "excess_emissions_delta_from_previous",
+                "excess emissions delta from previous",
+                None,
+                None,
+            ),
+            (
+                "credited_emissions_delta_from_previous",
+                "credited emissions delta from previous",
+                None,
+                None,
+            ),
             ("status", "status", None, None),
             ("compliance_earned_credit", "compliance earned credit", None, None),
             ("obligation", "compliance obligation", None, None),
@@ -24,7 +41,12 @@ class ComplianceReportVersionTest(BaseTestCase):
             ("elicensing_adjustments", "elicensing adjustment", None, None),
             ("previous_version", "previous version", None, None),
             ("subsequent_versions", "compliance report version", None, None),
-            ("manual_handling_record", "compliance report version manual handling", None, None),
+            (
+                "manual_handling_record",
+                "compliance report version manual handling",
+                None,
+                None,
+            ),
         ]
 
 
@@ -33,7 +55,8 @@ class TestComplianceReportVersionRls(BaseTestCase):
     def test_compliance_report_version_rls_industry_user(self):
         t = ComplianceReportRlsTestSetup()
         mock_compliance_report_summary = make_recipe(
-            'reporting.tests.utils.report_compliance_summary', report_version=t.report_version_2010
+            "reporting.tests.utils.report_compliance_summary",
+            report_version=t.report_version_2010,
         )
         assert ComplianceReportVersion.objects.count() == 2
 

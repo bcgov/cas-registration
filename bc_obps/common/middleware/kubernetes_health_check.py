@@ -1,11 +1,12 @@
 import logging
-from typing import Callable
-from django.http import HttpResponse, HttpResponseServerError, HttpRequest
+from collections.abc import Callable
+
+from django.http import HttpRequest, HttpResponse, HttpResponseServerError
 
 logger = logging.getLogger("liveness")
 
 
-class KubernetesHealthCheckMiddleware(object):
+class KubernetesHealthCheckMiddleware:
     def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]):
         self.get_response = get_response
         # One-time configuration and initialization.
@@ -53,7 +54,9 @@ class KubernetesHealthCheckMiddleware(object):
                 if isinstance(cache, BaseMemcachedCache):
                     stats = cache._cache.get_stats()  # type: ignore[attr-defined]
                     if len(stats) != len(cache._servers):  # type: ignore[attr-defined]
-                        return HttpResponseServerError("cache: cannot connect to cache.")
+                        return HttpResponseServerError(
+                            "cache: cannot connect to cache."
+                        )
         except Exception as e:
             logger.exception(e)
             return HttpResponseServerError("cache: cannot connect to cache.")

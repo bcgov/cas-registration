@@ -1,7 +1,7 @@
 import pytest
-from reporting.models.report_product import ReportProduct
 from model_bakery import baker
 from registration.models import Operation
+from reporting.models.report_product import ReportProduct
 from reporting.service.report_operation_service import ReportOperationService
 
 pytestmark = pytest.mark.django_db
@@ -10,12 +10,18 @@ pytestmark = pytest.mark.django_db
 class TestReportOperationService:
     def setup_method(self):
         self.operator = baker.make_recipe("registration.tests.utils.operator")
-        self.operation = baker.make_recipe("registration.tests.utils.operation", operator=self.operator)
-        self.reporting_year = baker.make_recipe("reporting.tests.utils.reporting_year", reporting_year=2029)
+        self.operation = baker.make_recipe(
+            "registration.tests.utils.operation", operator=self.operator
+        )
+        self.reporting_year = baker.make_recipe(
+            "reporting.tests.utils.reporting_year", reporting_year=2029
+        )
         self.report_version = baker.make_recipe(
             "reporting.tests.utils.report_version",
             report=baker.make_recipe(
-                "reporting.tests.utils.report", operation=self.operation, reporting_year=self.reporting_year
+                "reporting.tests.utils.report",
+                operation=self.operation,
+                reporting_year=self.reporting_year,
             ),
             report_type="Annual Report",
             status="Draft",
@@ -31,7 +37,9 @@ class TestReportOperationService:
             selected_for_report=True,
         )
         self.activity = baker.make_recipe("registration.tests.utils.activity")
-        self.regulated_product = baker.make_recipe("registration.tests.utils.regulated_product")
+        self.regulated_product = baker.make_recipe(
+            "registration.tests.utils.regulated_product"
+        )
         self.facility_report = baker.make_recipe(
             "reporting.tests.utils.facility_report", report_version=self.report_version
         )
@@ -41,19 +49,35 @@ class TestReportOperationService:
         [
             (
                 Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
-                {"show_regulated_products": False, "show_boro_id": False, "show_activities": False},
+                {
+                    "show_regulated_products": False,
+                    "show_boro_id": False,
+                    "show_activities": False,
+                },
             ),
             (
                 Operation.Purposes.REPORTING_OPERATION,
-                {"show_regulated_products": False, "show_boro_id": False, "show_activities": True},
+                {
+                    "show_regulated_products": False,
+                    "show_boro_id": False,
+                    "show_activities": True,
+                },
             ),
             (
                 Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
-                {"show_regulated_products": False, "show_boro_id": True, "show_activities": False},
+                {
+                    "show_regulated_products": False,
+                    "show_boro_id": True,
+                    "show_activities": False,
+                },
             ),
             (
                 Operation.Purposes.OBPS_REGULATED_OPERATION,
-                {"show_regulated_products": True, "show_boro_id": True, "show_activities": True},
+                {
+                    "show_regulated_products": True,
+                    "show_boro_id": True,
+                    "show_activities": True,
+                },
             ),
         ],
     )
@@ -61,14 +85,21 @@ class TestReportOperationService:
         self.report_operation.registration_purpose = purpose
         self.report_operation.save()
 
-        result = ReportOperationService.get_report_operation_data_by_version_id(self.report_version.id)
+        result = ReportOperationService.get_report_operation_data_by_version_id(
+            self.report_version.id
+        )
 
-        assert result["show_regulated_products"] is expected_flags["show_regulated_products"]
+        assert (
+            result["show_regulated_products"]
+            is expected_flags["show_regulated_products"]
+        )
         assert result["show_boro_id"] is expected_flags["show_boro_id"]
         assert result["show_activities"] is expected_flags["show_activities"]
 
     def test_get_report_operation_data_by_version_id(self):
-        result = ReportOperationService.get_report_operation_data_by_version_id(self.report_version.id)
+        result = ReportOperationService.get_report_operation_data_by_version_id(
+            self.report_version.id
+        )
         assert result["report_operation"]["id"] == self.report_operation.id
         assert result["facility_id"] is not None
         assert any(act["id"] == self.activity.id for act in result["all_activities"])
@@ -81,9 +112,14 @@ class TestReportOperationService:
         assert "is_sync_allowed" in result
         assert isinstance(result["is_sync_allowed"], bool)
         assert result["reported_product_ids"] == []
-        assert result["reporting_year"] == self.report_version.report.reporting_year.reporting_year
+        assert (
+            result["reporting_year"]
+            == self.report_version.report.reporting_year.reporting_year
+        )
 
-    def test_get_report_operation_data_by_version_id_shows_valid_regulated_products(self):
+    def test_get_report_operation_data_by_version_id_shows_valid_regulated_products(
+        self,
+    ):
         valid_product = baker.make_recipe(
             "registration.tests.utils.regulated_product",
         )
@@ -92,13 +128,17 @@ class TestReportOperationService:
             valid_from=f"{self.reporting_year.reporting_year + 5}-01-01",
         )
 
-        result = ReportOperationService.get_report_operation_data_by_version_id(self.report_version.id)
+        result = ReportOperationService.get_report_operation_data_by_version_id(
+            self.report_version.id
+        )
 
         assert valid_product in result["all_regulated_products"]
         assert expired_product not in result["all_regulated_products"]
 
     def test_get_report_operation_data_by_version_id_returns_reported_product_ids(self):
-        unregulated_product = baker.make_recipe("registration.tests.utils.regulated_product", is_regulated=False)
+        unregulated_product = baker.make_recipe(
+            "registration.tests.utils.regulated_product", is_regulated=False
+        )
         second_facility_report = baker.make_recipe(
             "reporting.tests.utils.facility_report", report_version=self.report_version
         )
@@ -117,7 +157,9 @@ class TestReportOperationService:
             product=unregulated_product,
         )
 
-        result = ReportOperationService.get_report_operation_data_by_version_id(self.report_version.id)
+        result = ReportOperationService.get_report_operation_data_by_version_id(
+            self.report_version.id
+        )
 
         assert result["reported_product_ids"] == [self.regulated_product.id]
 
@@ -130,19 +172,33 @@ class TestReportOperationService:
 
         self.report_operation.refresh_from_db()
         assert self.report_operation.operation_name == "New Operation Name"
-        assert self.report_operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
+        assert (
+            self.report_operation.registration_purpose
+            == Operation.Purposes.REPORTING_OPERATION
+        )
         assert self.report_operation.naics_code == self.operation.naics_code
 
-    def test_update_report_operation_syncs_representatives_from_all_operator_contacts(self):
+    def test_update_report_operation_syncs_representatives_from_all_operator_contacts(
+        self,
+    ):
         operator = self.report_version.report.operator
         assigned_contact = baker.make_recipe(
-            "registration.tests.utils.contact", operator=operator, first_name="Assigned", last_name="Rep"
+            "registration.tests.utils.contact",
+            operator=operator,
+            first_name="Assigned",
+            last_name="Rep",
         )
         unassigned_contact = baker.make_recipe(
-            "registration.tests.utils.contact", operator=operator, first_name="Unassigned", last_name="Contact"
+            "registration.tests.utils.contact",
+            operator=operator,
+            first_name="Unassigned",
+            last_name="Contact",
         )
         previously_selected_contact = baker.make_recipe(
-            "registration.tests.utils.contact", operator=operator, first_name="Previously", last_name="Selected"
+            "registration.tests.utils.contact",
+            operator=operator,
+            first_name="Previously",
+            last_name="Selected",
         )
         baker.make_recipe(
             "registration.tests.utils.contact",
@@ -173,15 +229,19 @@ class TestReportOperationService:
         # Representatives are returned sorted by name, regardless of creation order
         names = [
             rep.representative_name
-            for rep in ReportOperationService.get_report_operation_by_version_id(self.report_version.id)[
-                "report_operation_representatives"
-            ]
+            for rep in ReportOperationService.get_report_operation_by_version_id(
+                self.report_version.id
+            )["report_operation_representatives"]
         ]
         assert names == ["Assigned Rep", "Previously Selected", "Unassigned Contact"]
 
-    def test_update_report_service_creates_empty_report_products_for_unregulated_products(self):
+    def test_update_report_service_creates_empty_report_products_for_unregulated_products(
+        self,
+    ):
         """Validate that calling the sync method creates empty report products for unregulated products"""
-        unregulated_product = baker.make_recipe("registration.tests.utils.regulated_product", is_regulated=False)
+        unregulated_product = baker.make_recipe(
+            "registration.tests.utils.regulated_product", is_regulated=False
+        )
         self.report_operation.regulated_products.add(unregulated_product)
 
         assert not ReportProduct.objects.filter(
@@ -190,13 +250,17 @@ class TestReportOperationService:
 
         ReportOperationService.update_report_operation(self.report_version.id)
 
-        assert ReportProduct.objects.filter(report_version=self.report_version, product=unregulated_product).exists()
+        assert ReportProduct.objects.filter(
+            report_version=self.report_version, product=unregulated_product
+        ).exists()
 
     def test_get_report_operation_by_version_id(self):
         self.report_operation.naics_code = self.operation.naics_code
         self.report_operation.save()
 
-        result = ReportOperationService.get_report_operation_by_version_id(self.report_version.id)
+        result = ReportOperationService.get_report_operation_by_version_id(
+            self.report_version.id
+        )
 
         assert result["id"] == self.report_operation.id
         assert result["operation_id"] == self.operation.id

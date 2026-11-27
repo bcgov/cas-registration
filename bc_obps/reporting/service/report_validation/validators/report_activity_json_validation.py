@@ -1,17 +1,18 @@
 import json
 import logging
 from typing import Any
+
 import jsonschema
 from registration.models.activity import Activity
 from reporting.models.report_version import ReportVersion
 from reporting.models.source_type import SourceType
+from reporting.service.form_builder_service import FormBuilderService
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
     ReportValidationError,
     ReportValidationErrorKey,
     Severity,
 )
-from reporting.service.form_builder_service import FormBuilderService
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 
 logger = logging.getLogger(__name__)
@@ -19,7 +20,9 @@ logger = logging.getLogger(__name__)
 TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 
 
-def enable_jsonschema_draft_2020_validation(schema: Any, validate_unevaluated_properties: bool = True) -> None:
+def enable_jsonschema_draft_2020_validation(
+    schema: Any, validate_unevaluated_properties: bool = True
+) -> None:
     """
     RJSF uses draft-07 and doesn't support the `unevaluatedProperties` keyword.
     This method replaces the `dependencies` keyword with `dependentSchemas` and adds
@@ -29,11 +32,15 @@ def enable_jsonschema_draft_2020_validation(schema: Any, validate_unevaluated_pr
 
     if isinstance(schema, list):
         for item in schema:
-            enable_jsonschema_draft_2020_validation(item, validate_unevaluated_properties)
+            enable_jsonschema_draft_2020_validation(
+                item, validate_unevaluated_properties
+            )
 
     if isinstance(schema, dict):
         for key in schema:
-            enable_jsonschema_draft_2020_validation(schema[key], validate_unevaluated_properties)
+            enable_jsonschema_draft_2020_validation(
+                schema[key], validate_unevaluated_properties
+            )
         # Schemas with complex schema dependencies recommended to not set this due to validation failure
         # https://rjsf-team.github.io/react-jsonschema-form/docs/advanced-customization/internals/#json-schema-supporting-status
         if validate_unevaluated_properties:
@@ -53,9 +60,11 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
 
             source_type_json_keys = [source_type for source_type in data["sourceTypes"]]
             source_type_ids = list(
-                SourceType.objects.filter(json_key__in=source_type_json_keys).values_list("id", flat=True)
+                SourceType.objects.filter(
+                    json_key__in=source_type_json_keys
+                ).values_list("id", flat=True)
             )
-            alumina_activity = Activity.objects.get(slug='aluminum_production')
+            alumina_activity = Activity.objects.get(slug="aluminum_production")
 
             activity_schema = json.loads(
                 FormBuilderService.build_form_schema(
@@ -74,19 +83,19 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
             try:
                 validator.validate(data)
             except jsonschema.ValidationError as e:
-                errors[f"facility_{facility_report.facility_id}_{report_raw_activity.activity.slug}"] = (
-                    ReportValidationError(
-                        severity=Severity.ERROR,
-                        message=f"Validation error: {e.message} at: {' > '.join(str(elt) for elt in e.path)}",
-                        key=ReportValidationErrorKey.REPORT_ACTIVITY_JSON_VALIDATION,
-                        context=ErrorContext(
-                            report_version_id=report_version.id,
-                            facility_id=facility_report.facility_id,
-                            facility_name=facility_report.facility.name,
-                            activity_id=report_raw_activity.activity_id,
-                            activity_name=report_raw_activity.activity.name,
-                        ),
-                    )
+                errors[
+                    f"facility_{facility_report.facility_id}_{report_raw_activity.activity.slug}"
+                ] = ReportValidationError(
+                    severity=Severity.ERROR,
+                    message=f"Validation error: {e.message} at: {' > '.join(str(elt) for elt in e.path)}",
+                    key=ReportValidationErrorKey.REPORT_ACTIVITY_JSON_VALIDATION,
+                    context=ErrorContext(
+                        report_version_id=report_version.id,
+                        facility_id=facility_report.facility_id,
+                        facility_name=facility_report.facility.name,
+                        activity_id=report_raw_activity.activity_id,
+                        activity_name=report_raw_activity.activity.name,
+                    ),
                 )
 
     return errors

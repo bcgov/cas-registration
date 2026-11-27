@@ -13,7 +13,9 @@ TAGS = [ValidationTags.ON_SUBMIT]
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    report_attachments: QuerySet[ReportAttachment] = report_version.report_attachments.all()
+    report_attachments: QuerySet[ReportAttachment] = (
+        report_version.report_attachments.all()
+    )
 
     errors = {}
 

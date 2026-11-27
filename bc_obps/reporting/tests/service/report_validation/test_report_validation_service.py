@@ -2,13 +2,14 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from model_bakery.baker import make_recipe
-
 from reporting.service.report_validation.report_validation_service import (
     ReportValidationService,
 )
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 
-REPORT_VALIDATION_SERVICE_PATH = "reporting.service.report_validation.report_validation_service"
+REPORT_VALIDATION_SERVICE_PATH = (
+    "reporting.service.report_validation.report_validation_service"
+)
 RESOLVE_FLOW_PATH = f"{REPORT_VALIDATION_SERVICE_PATH}.resolve_flow"
 
 

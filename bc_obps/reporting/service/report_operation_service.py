@@ -1,22 +1,22 @@
 from datetime import date
+
 from django.db import transaction
 from django.db.models.functions import Lower
-
 from django.forms import model_to_dict
-
 from registration.models.contact import Contact
-from reporting.utils import CONTACT_HAS_COMPLETE_ADDRESS
 from registration.models.operation import Operation
+from registration.service.activity_service import ActivityService
+from registration.service.data_access_service.regulated_product_service import (
+    RegulatedProductDataAccessService,
+)
 from reporting.models import ReportOperationRepresentative, ReportVersion
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
-from reporting.service.report_product_service import ReportProductService
-from registration.service.activity_service import ActivityService
-from registration.service.data_access_service.regulated_product_service import RegulatedProductDataAccessService
 from reporting.service.facility_report_service import FacilityReportService
-
+from reporting.service.report_product_service import ReportProductService
 from reporting.service.reporting_year_service import ReportingYearService
 from reporting.service.sync_validation_service import SyncValidationService
+from reporting.utils import CONTACT_HAS_COMPLETE_ADDRESS
 
 
 class ReportOperationService:
@@ -24,12 +24,18 @@ class ReportOperationService:
     def get_report_operation_data_by_version_id(cls, version_id: int) -> dict:
         report_operation = cls.get_report_operation_by_version_id(version_id)
         all_activities = ActivityService.get_all_activities()
-        reporting_year = ReportingYearService.get_reporting_year_by_version_id(version_id)
-        regulated_products = RegulatedProductDataAccessService.get_valid_regulated_products(
-            date(reporting_year.reporting_year, 1, 1)
+        reporting_year = ReportingYearService.get_reporting_year_by_version_id(
+            version_id
+        )
+        regulated_products = (
+            RegulatedProductDataAccessService.get_valid_regulated_products(
+                date(reporting_year.reporting_year, 1, 1)
+            )
         )
         purpose = report_operation["registration_purpose"]
-        facility_id = FacilityReportService.get_facility_report_by_version_id(version_id)
+        facility_id = FacilityReportService.get_facility_report_by_version_id(
+            version_id
+        )
         is_sync_allowed = SyncValidationService.is_sync_allowed(version_id)
         reported_product_ids = list(
             ReportProductService.get_reported_products(version_id)
@@ -42,7 +48,9 @@ class ReportOperationService:
             "facility_id": facility_id,
             "all_activities": all_activities,
             "all_regulated_products": regulated_products,
-            "all_representatives": report_operation.get("report_operation_representatives", []),
+            "all_representatives": report_operation.get(
+                "report_operation_representatives", []
+            ),
             "report_type": report_operation.get("operation_report_type"),
             "show_regulated_products": purpose
             not in [
@@ -76,18 +84,28 @@ class ReportOperationService:
         operation = report_operation.report_version.report.operation
         operator = report_operation.report_version.report.operator
         report_operation.operation_name = operation.name
-        report_operation.operation_bcghgid = operation.bcghg_id.id if operation.bcghg_id else None
-        report_operation.bc_obps_regulated_operation_id = (
-            operation.bc_obps_regulated_operation.id if operation.bc_obps_regulated_operation else ""
+        report_operation.operation_bcghgid = (
+            operation.bcghg_id.id if operation.bcghg_id else None
         )
-        report_operation.registration_purpose = operation.registration_purpose if operation.registration_purpose else ""
+        report_operation.bc_obps_regulated_operation_id = (
+            operation.bc_obps_regulated_operation.id
+            if operation.bc_obps_regulated_operation
+            else ""
+        )
+        report_operation.registration_purpose = (
+            operation.registration_purpose if operation.registration_purpose else ""
+        )
         report_operation.naics_code = operation.naics_code
         report_operation.operator_legal_name = operator.legal_name
         report_operation.operator_trade_name = operator.trade_name
 
-        existing_representatives = ReportOperationRepresentative.objects.filter(report_version__id=version_id)
+        existing_representatives = ReportOperationRepresentative.objects.filter(
+            report_version__id=version_id
+        )
         existing_names = {rep.representative_name for rep in existing_representatives}
-        contacts = Contact.objects.filter(CONTACT_HAS_COMPLETE_ADDRESS, operator=operator)
+        contacts = Contact.objects.filter(
+            CONTACT_HAS_COMPLETE_ADDRESS, operator=operator
+        )
         contact_names = {contact.get_full_name() for contact in contacts}
         operation_contact_ids = set(operation.contacts.values_list("id", flat=True))
 
@@ -103,13 +121,19 @@ class ReportOperationService:
         ReportOperationRepresentative.objects.bulk_create(new_representatives)
 
         # Remove outdated representatives
-        existing_representatives.filter(representative_name__in=(existing_names - contact_names)).delete()
+        existing_representatives.filter(
+            representative_name__in=(existing_names - contact_names)
+        ).delete()
 
         report_operation.save()
 
         # Update empty records for unregulated products for all facility reports associated with this report version
-        facility_report_ids = FacilityReport.objects.filter(report_version__id=version_id).values_list("id", flat=True)
-        ReportProductService.update_empty_records_for_unregulated_products(version_id, facility_report_ids)
+        facility_report_ids = FacilityReport.objects.filter(
+            report_version__id=version_id
+        ).values_list("id", flat=True)
+        ReportProductService.update_empty_records_for_unregulated_products(
+            version_id, facility_report_ids
+        )
 
         return cls.get_report_operation_data_by_version_id(version_id)
 
@@ -126,13 +150,17 @@ class ReportOperationService:
         report_operation_data = model_to_dict(report_operation)
 
         naics = report_operation.naics_code
-        report_operation_data["naics_code"] = f"{naics.naics_code} - {naics.naics_description}" if naics else None
+        report_operation_data["naics_code"] = (
+            f"{naics.naics_code} - {naics.naics_description}" if naics else None
+        )
 
         return {
             **report_operation_data,
             "report_operation_representatives": report_operation_representatives,
             "operation_representative_name": [
-                rep.id for rep in report_operation_representatives if rep.selected_for_report
+                rep.id
+                for rep in report_operation_representatives
+                if rep.selected_for_report
             ],
             "operation_report_type": report_version.report_type,
             "operation_report_status": report_version.status,

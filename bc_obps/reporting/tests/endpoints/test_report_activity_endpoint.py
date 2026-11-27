@@ -1,11 +1,13 @@
 import json
 from types import SimpleNamespace
-from unittest.mock import ANY, patch, MagicMock
-from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from model_bakery.baker import make_recipe
+from unittest.mock import ANY, MagicMock, patch
 
+from model_bakery.baker import make_recipe
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from reporting.tests.utils.report_access_validation import (
+    assert_report_version_ownership_is_validated,
+)
 
 
 class TestReportActivityEndpoint(CommonTestSetup):
@@ -17,10 +19,10 @@ class TestReportActivityEndpoint(CommonTestSetup):
 
         # Create basic test data
         self.facility_report = make_recipe(
-            'reporting.tests.utils.facility_report',
+            "reporting.tests.utils.facility_report",
             report_version__report__reporting_year_id=2025,
         )
-        self.activity = make_recipe('reporting.tests.utils.activity')
+        self.activity = make_recipe("reporting.tests.utils.activity")
 
         # Create endpoint
         self.endpoint = custom_reverse_lazy(
@@ -41,9 +43,12 @@ class TestReportActivityEndpoint(CommonTestSetup):
     def _make_request(self, role, authorize_operator=True):
         """Helper method to make a request with given role"""
         if authorize_operator:
-            TestUtils.authorize_current_user_as_operator_user(self, operator=self.operator)
+            TestUtils.authorize_current_user_as_operator_user(
+                self, operator=self.operator
+            )
             TestUtils.generate_operation_operator_timeline(
-                operator=self.operator, operations=[self.facility_report.report_version.report.operation]
+                operator=self.operator,
+                operations=[self.facility_report.report_version.report.operation],
             )
 
         return TestUtils.mock_post_with_auth_role(
@@ -56,8 +61,12 @@ class TestReportActivityEndpoint(CommonTestSetup):
 
     # SERVICE OUTPUT
     @patch("reporting.api.report_activity.load_report_activity_data")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save")
-    def test_post_saves_then_calls_the_load_function(self, mock_service_save: MagicMock, mock_load_endpoint: MagicMock):
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save"
+    )
+    def test_post_saves_then_calls_the_load_function(
+        self, mock_service_save: MagicMock, mock_load_endpoint: MagicMock
+    ):
         """Test that the endpoint returns the service's output correctly"""
         # Arrange
         mock_service_save.return_value = SimpleNamespace(id=12345)
@@ -70,17 +79,23 @@ class TestReportActivityEndpoint(CommonTestSetup):
 
         mock_service_save.assert_called_once_with({"test_data": "1"})
         mock_load_endpoint.assert_called_once_with(
-            ANY, self.facility_report.report_version.id, self.facility_report.facility.id, self.activity.id
+            ANY,
+            self.facility_report.report_version.id,
+            self.facility_report.facility.id,
+            self.activity.id,
         )
 
         assert response.status_code == 200
-        assert response.json() == {'loaded_saved_data': True}
+        assert response.json() == {"loaded_saved_data": True}
 
-    @patch("reporting.service.report_activity_load_service.ReportActivityLoadService.load")
-    def test_get_returns_the_serialized_value_from_the_serializer(self, mock_service: MagicMock):
-
-        facility_report = make_recipe('reporting.tests.utils.facility_report')
-        activity = make_recipe('reporting.tests.utils.activity')
+    @patch(
+        "reporting.service.report_activity_load_service.ReportActivityLoadService.load"
+    )
+    def test_get_returns_the_serialized_value_from_the_serializer(
+        self, mock_service: MagicMock
+    ):
+        facility_report = make_recipe("reporting.tests.utils.facility_report")
+        activity = make_recipe("reporting.tests.utils.activity")
 
         endpoint_under_test = (
             f"/api/reporting/report-version/{facility_report.report_version.id}"
@@ -88,7 +103,9 @@ class TestReportActivityEndpoint(CommonTestSetup):
             + f"/activity/{activity.id}/report-activity"
         )
 
-        TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=facility_report.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
             operator=facility_report.report_version.report.operator,
             operations=[facility_report.report_version.report.operation],
@@ -96,14 +113,15 @@ class TestReportActivityEndpoint(CommonTestSetup):
 
         mock_service.return_value = {"serialized!": True}
 
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint_under_test)
+        response = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", endpoint_under_test
+        )
 
         assert response.json() == {"serialized!": True}
         assert response.status_code == 200
         mock_service.assert_called_once()
 
     def test_sets_and_returns_json_data_from_the_db(self):
-
         report_version = make_recipe("reporting.tests.utils.report_version")
 
         # let's get cooking
@@ -123,10 +141,14 @@ class TestReportActivityEndpoint(CommonTestSetup):
             report_fuel__report_unit__report_version=report_version,
             report_fuel__report_unit__json_data={"unit_prop": "unit!"},
             report_fuel__report_unit__report_source_type__report_version=report_version,
-            report_fuel__report_unit__report_source_type__json_data={"source_type_prop": "source type!"},
+            report_fuel__report_unit__report_source_type__json_data={
+                "source_type_prop": "source type!"
+            },
             report_fuel__report_unit__report_source_type__source_type__json_key="testfueltypekey",
             report_fuel__report_unit__report_source_type__report_activity__report_version=report_version,
-            report_fuel__report_unit__report_source_type__report_activity__json_data={"activity_prop": "activity!"},
+            report_fuel__report_unit__report_source_type__report_activity__json_data={
+                "activity_prop": "activity!"
+            },
             report_fuel__report_unit__report_source_type__report_activity__facility_report__report_version=report_version,
         )
 
@@ -147,7 +169,9 @@ class TestReportActivityEndpoint(CommonTestSetup):
             ],
         )
 
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint_under_test)
+        response = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", endpoint_under_test
+        )
 
         assert response.json() == {
             "activity_prop": "activity!",
@@ -191,7 +215,9 @@ class TestReportActivityEndpoint(CommonTestSetup):
         }
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("load_report_activity_data", facility_id="uuid", activity_id=0)
+        assert_report_version_ownership_is_validated(
+            "load_report_activity_data", facility_id="uuid", activity_id=0
+        )
         assert_report_version_ownership_is_validated(
             "save_report_activity_data",
             method="post",

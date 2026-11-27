@@ -16,10 +16,16 @@ class TestRegulatedProductsEndpoint(CommonTestSetup):
 
     def test_get_only_valid_products(self):
         RegulatedProduct.objects.create(
-            name="Valid Product", is_regulated=True, valid_from="2023-01-01", valid_to="2099-01-01"
+            name="Valid Product",
+            is_regulated=True,
+            valid_from="2023-01-01",
+            valid_to="2099-01-01",
         )
         RegulatedProduct.objects.create(
-            name="Invalid Product", is_regulated=True, valid_from="2050-01-01", valid_to="2099-01-01"
+            name="Invalid Product",
+            is_regulated=True,
+            valid_from="2050-01-01",
+            valid_to="2099-01-01",
         )
         response = TestUtils.mock_get_with_auth_role(
             self, "industry_user", custom_reverse_lazy("list_regulated_products")

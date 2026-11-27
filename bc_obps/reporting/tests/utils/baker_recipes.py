@@ -1,69 +1,68 @@
 from datetime import date, timedelta
 from typing import Any
+
 from django.utils import timezone
 from model_bakery import baker
-from reporting.models.naics_regulatory_override import NaicsRegulatoryOverride
-from reporting.models.naics_regulatory_value import NaicsRegulatoryValue
-from reporting.models.report_attachment import ReportAttachment
-from reporting.models.report_methodology import ReportMethodology
-from reporting.models.report_person_responsible import ReportPersonResponsible
-from reporting.models.report_product_emission_allocation import (
-    ReportProductEmissionAllocation,
-)
-
+from model_bakery.recipe import Recipe, foreign_key, seq
 from registration.models import NaicsCode
 from registration.models.activity import Activity
+from registration.tests.utils.baker_recipes import (
+    facility,
+    operation,
+    operator,
+    regulated_product,
+)
 from reporting.models import (
+    Comment,
+    CommentThread,
+    ReportAdditionalData,
+    ReportComplianceSummary,
+    ReportComplianceSummaryProduct,
+    ReportElectricityImportData,
     ReportNewEntrant,
     ReportNewEntrantEmission,
     ReportNewEntrantProduction,
     ReportOperationRepresentative,
-    ReportElectricityImportData,
-    CommentThread,
-    Comment,
 )
-from reporting.models import ReportAdditionalData
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import (
     ActivitySourceTypeJsonSchema,
 )
 from reporting.models.configuration import Configuration
+from reporting.models.emission_category import EmissionCategory
+from reporting.models.emission_category_mapping import EmissionCategoryMapping
+from reporting.models.facility_report import FacilityReport
 from reporting.models.fuel_type import FuelType
 from reporting.models.gas_type import GasType
 from reporting.models.methodology import Methodology
+from reporting.models.naics_regulatory_override import NaicsRegulatoryOverride
+from reporting.models.naics_regulatory_value import NaicsRegulatoryValue
+from reporting.models.report import Report
 from reporting.models.report_activity import ReportActivity
-from reporting.models.report_operation import ReportOperation
-from reporting.models.report_product import ReportProduct
+from reporting.models.report_attachment import ReportAttachment
+from reporting.models.report_attachment_confirmation import ReportAttachmentConfirmation
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_fuel import ReportFuel
-from reporting.models.report_raw_activity_data import ReportRawActivityData
-from reporting.models.report_source_type import ReportSourceType
-from reporting.models.report_unit import ReportUnit
-from reporting.models.reporting_field import ReportingField
-from reporting.models.reporting_year import ReportingYear
-from reporting.models.report import Report
-from reporting.models.report_version import ReportVersion
-from reporting.models.facility_report import FacilityReport
-from reporting.models.report_verification import ReportVerification
-
-
-from registration.tests.utils.baker_recipes import (
-    operation,
-    operator,
-    facility,
-    regulated_product,
-)
-from model_bakery.recipe import Recipe, foreign_key, seq
-from reporting.models.source_type import SourceType
-from reporting.models.emission_category import EmissionCategory
-from reporting.models.emission_category_mapping import EmissionCategoryMapping
+from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_non_attributable_emissions import (
     ReportNonAttributableEmissions,
 )
-from reporting.models import ReportComplianceSummary, ReportComplianceSummaryProduct
+from reporting.models.report_operation import ReportOperation
+from reporting.models.report_person_responsible import ReportPersonResponsible
+from reporting.models.report_product import ReportProduct
+from reporting.models.report_product_emission_allocation import (
+    ReportProductEmissionAllocation,
+)
+from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.models.report_sign_off import ReportSignOff
-from reporting.models.report_attachment_confirmation import ReportAttachmentConfirmation
+from reporting.models.report_source_type import ReportSourceType
+from reporting.models.report_unit import ReportUnit
+from reporting.models.report_verification import ReportVerification
+from reporting.models.report_version import ReportVersion
+from reporting.models.reporting_field import ReportingField
+from reporting.models.reporting_year import ReportingYear
+from reporting.models.source_type import SourceType
 
 
 def json_seq(
@@ -108,9 +107,13 @@ facility_report = Recipe(
 )
 report_operation = Recipe(ReportOperation, report_version=foreign_key(report_version))
 
-report_verification = Recipe(ReportVerification, report_version=foreign_key(report_version))
+report_verification = Recipe(
+    ReportVerification, report_version=foreign_key(report_version)
+)
 
-electricity_import_data = Recipe(ReportElectricityImportData, report_version=foreign_key(report_version))
+electricity_import_data = Recipe(
+    ReportElectricityImportData, report_version=foreign_key(report_version)
+)
 configuration = Recipe(
     Configuration,
     # We make one config per week
@@ -320,7 +323,9 @@ report_sign_off = Recipe(
     signing_date=timezone.now(),
 )
 
-report_compliance_summary = Recipe(ReportComplianceSummary, report_version=foreign_key(report_version))
+report_compliance_summary = Recipe(
+    ReportComplianceSummary, report_version=foreign_key(report_version)
+)
 
 report_compliance_summary_product = Recipe(
     ReportComplianceSummaryProduct,

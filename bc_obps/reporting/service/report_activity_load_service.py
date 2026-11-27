@@ -1,4 +1,5 @@
 from uuid import UUID
+
 from reporting.models.report_activity import ReportActivity
 from reporting.service.report_activity_serializers import ReportActivitySerializer
 
@@ -23,7 +24,9 @@ class ReportActivityLoadService:
                 "reportsourcetype_records__reportunit_records__reportfuel_records__reportemission_records",
                 "reportsourcetype_records__reportunit_records__reportfuel_records__reportemission_records__report_methodology",
             ).get(
-                report_version_id=report_version_id, facility_report__facility_id=facility_id, activity_id=activity_id
+                report_version_id=report_version_id,
+                facility_report__facility_id=facility_id,
+                activity_id=activity_id,
             )
             return ReportActivitySerializer.serialize(r)
         except ReportActivity.DoesNotExist:

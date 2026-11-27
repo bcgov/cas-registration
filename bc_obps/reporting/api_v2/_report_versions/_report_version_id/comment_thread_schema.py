@@ -3,9 +3,8 @@ from typing import Annotated, Optional
 from uuid import UUID
 
 from ninja import Field, ModelSchema, Schema
-
 from pydantic import StringConstraints
-from reporting.models import CommentThread, Comment
+from reporting.models import Comment, CommentThread
 
 
 class CommentSchema(ModelSchema):
@@ -21,7 +20,7 @@ class CommentSchema(ModelSchema):
 
 class CommentThreadSchema(ModelSchema):
     version_id: int | None = Field(None, alias="report_version_id")
-    facility_id: Optional[UUID] = None
+    facility_id: UUID | None = None
     facility_name: str | None = Field(None, alias="facility.name")
     comments: list[CommentSchema]
 
@@ -47,7 +46,7 @@ class CommentThreadIn(Schema):
     Author and timestamp will be pre-populated by the backend.
     """
 
-    facility_id: Optional[UUID] = None
+    facility_id: UUID | None = None
     comment: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
 

@@ -1,8 +1,9 @@
 from unittest.mock import ANY, patch
+
 from django.http import StreamingHttpResponse
-from registration.utils import custom_reverse_lazy
-from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from model_bakery.baker import make_recipe
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from registration.utils import custom_reverse_lazy
 
 
 class TestGenerateComplianceReportVersionLateSubmissionPenaltyInvoice(CommonTestSetup):
@@ -39,7 +40,8 @@ class TestGenerateComplianceReportVersionLateSubmissionPenaltyInvoice(CommonTest
             compliance_report__report__operation__operator=operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=operator, operations=[compliance_report_version.compliance_report.report.operation]
+            operator=operator,
+            operations=[compliance_report_version.compliance_report.report.operation],
         )
 
         # Act
@@ -55,13 +57,17 @@ class TestGenerateComplianceReportVersionLateSubmissionPenaltyInvoice(CommonTest
         # Assert
         assert response.status_code == 200
 
-        mock_generate_late_submission_penalty_invoice_pdf.assert_called_once_with(compliance_report_version.id)
+        mock_generate_late_submission_penalty_invoice_pdf.assert_called_once_with(
+            compliance_report_version.id
+        )
         mock_create_pdf_response.assert_called_once_with((ANY, "invoice.pdf", 12))
 
     @patch(
         "compliance.service.elicensing.invoice_generation.elicensing_invoice_generator.ElicensingInvoiceGeneratorService.generate_late_submission_penalty_invoice_pdf"
     )
-    def test_get_invoice_error_from_service(self, mock_generate_late_submission_penalty_invoice_pdf):
+    def test_get_invoice_error_from_service(
+        self, mock_generate_late_submission_penalty_invoice_pdf
+    ):
         # Arrange: simulate an error result from the service
         mock_generate_late_submission_penalty_invoice_pdf.return_value = {
             "errors": {"unexpected_error": "Mocked: PDF generation failed"}
@@ -75,7 +81,8 @@ class TestGenerateComplianceReportVersionLateSubmissionPenaltyInvoice(CommonTest
             compliance_report__report__operation__operator=operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=operator, operations=[compliance_report_version.compliance_report.report.operation]
+            operator=operator,
+            operations=[compliance_report_version.compliance_report.report.operation],
         )
 
         # Act
@@ -90,4 +97,6 @@ class TestGenerateComplianceReportVersionLateSubmissionPenaltyInvoice(CommonTest
 
         # Assert
         assert response.status_code == 400
-        mock_generate_late_submission_penalty_invoice_pdf.assert_called_once_with(compliance_report_version.id)
+        mock_generate_late_submission_penalty_invoice_pdf.assert_called_once_with(
+            compliance_report_version.id
+        )

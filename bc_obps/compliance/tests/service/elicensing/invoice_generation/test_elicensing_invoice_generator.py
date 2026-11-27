@@ -3,21 +3,20 @@ from datetime import date
 from decimal import Decimal
 from unittest.mock import patch
 
-from django.utils import timezone
-from model_bakery.baker import make_recipe
 import pytest
-
 from compliance.models import (
     ComplianceChargeRate,
     CompliancePenalty,
     ComplianceReportVersion,
     ElicensingLineItem,
 )
+from compliance.service.elicensing.elicensing_invoice_service import STRFTIME_FORMAT
 from compliance.service.elicensing.invoice_generation.elicensing_invoice_generator import (
     ElicensingInvoiceGeneratorService,
 )
-from compliance.service.elicensing.elicensing_invoice_service import STRFTIME_FORMAT
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
+from django.utils import timezone
+from model_bakery.baker import make_recipe
 from reporting.models import ReportOperation
 from reporting.service.reporting_year_service import ReportingYearService
 
@@ -39,10 +38,26 @@ class TestElicensingInvoiceGeneratorService:
         self.test_data.compliance_obligation.fee_amount_dollars = Decimal("300.00")
         self.test_data.compliance_obligation.save()
         # Add payments and adjustments
-        make_recipe("compliance.tests.utils.elicensing_payment", elicensing_line_item=self.test_data.fee, amount=201)
-        make_recipe("compliance.tests.utils.elicensing_payment", elicensing_line_item=self.test_data.fee, amount=49)
-        make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=self.test_data.fee, amount=25)
-        make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=self.test_data.fee, amount=25)
+        make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=self.test_data.fee,
+            amount=201,
+        )
+        make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=self.test_data.fee,
+            amount=49,
+        )
+        make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            elicensing_line_item=self.test_data.fee,
+            amount=25,
+        )
+        make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            elicensing_line_item=self.test_data.fee,
+            amount=25,
+        )
 
         # Add FAA Interest + payment to the first invoice
         self.faa_line_item = make_recipe(
@@ -55,7 +70,9 @@ class TestElicensingInvoiceGeneratorService:
         )
 
         # Add automatic overdue penalty
-        self.penalty_invoice = make_recipe("compliance.tests.utils.elicensing_invoice", due_date=date(2025, 8, 1))
+        self.penalty_invoice = make_recipe(
+            "compliance.tests.utils.elicensing_invoice", due_date=date(2025, 8, 1)
+        )
         make_recipe(
             "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.test_data.compliance_obligation,
@@ -64,7 +81,9 @@ class TestElicensingInvoiceGeneratorService:
         )
 
         # Add late submission penalty using a separate invoice
-        self.late_penalty_invoice = make_recipe("compliance.tests.utils.elicensing_invoice", due_date=date(2025, 8, 1))
+        self.late_penalty_invoice = make_recipe(
+            "compliance.tests.utils.elicensing_invoice", due_date=date(2025, 8, 1)
+        )
         make_recipe(
             "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.test_data.compliance_obligation,
@@ -107,7 +126,11 @@ class TestElicensingInvoiceGeneratorService:
         mock_get_report_operation.return_value = ReportOperation.objects.get(
             report_version=self.test_data.report_version
         )
-        mock_generate_pdf.return_value = (b"%PDF mock", "invoice_INV-001_20250601.pdf", 2048)
+        mock_generate_pdf.return_value = (
+            b"%PDF mock",
+            "invoice_INV-001_20250601.pdf",
+            2048,
+        )
 
         result = ElicensingInvoiceGeneratorService.generate_obligation_invoice_pdf(
             self.test_data.compliance_report_version.id
@@ -150,12 +173,18 @@ class TestElicensingInvoiceGeneratorService:
 
         # Patch other services
         mock_get_obligation.return_value = self.test_data.compliance_obligation
-        mock_generate_pdf.return_value = (b"%PDF mock", "invoice_INV-001_20250601.pdf", 2048)
+        mock_generate_pdf.return_value = (
+            b"%PDF mock",
+            "invoice_INV-001_20250601.pdf",
+            2048,
+        )
         mock_prepare_partial_invoice_context.return_value = {
             "operator_name": self.test_data.operation.operator.legal_name,
             "operator_address_line1": "123 Main St",
             "operator_address_line2": "City, BC  V1A 2B3",
-            "operation_name": ReportOperation.objects.get(report_version=self.test_data.report_version),
+            "operation_name": ReportOperation.objects.get(
+                report_version=self.test_data.report_version
+            ),
             "invoice_number": self.test_data.compliance_obligation.elicensing_invoice.invoice_number,
             "invoice_due_date": self.test_data.compliance_obligation.elicensing_invoice.due_date.strftime(
                 STRFTIME_FORMAT
@@ -190,7 +219,8 @@ class TestElicensingInvoiceGeneratorService:
         mock_generate_pdf.assert_called_once()
         expected_date = timezone.now().strftime("%Y%m%d")
         assert (
-            mock_generate_pdf.call_args.kwargs["filename"] == f"OBPS GGEAPAR Penalty Invoice "
+            mock_generate_pdf.call_args.kwargs["filename"]
+            == f"OBPS GGEAPAR Penalty Invoice "
             f"{self.test_data.compliance_obligation.elicensing_invoice.invoice_number}_{expected_date}.pdf"
         )
 
@@ -219,12 +249,18 @@ class TestElicensingInvoiceGeneratorService:
 
         # Patch other services
         mock_get_obligation.return_value = self.test_data.compliance_obligation
-        mock_generate_pdf.return_value = (b"%PDF mock", "invoice_INV-001_20250601.pdf", 2048)
+        mock_generate_pdf.return_value = (
+            b"%PDF mock",
+            "invoice_INV-001_20250601.pdf",
+            2048,
+        )
         mock_prepare_partial_invoice_context.return_value = {
             "operator_name": self.test_data.operation.operator.legal_name,
             "operator_address_line1": "123 Main St",
             "operator_address_line2": "City, BC  V1A 2B3",
-            "operation_name": ReportOperation.objects.get(report_version=self.test_data.report_version).operation_name,
+            "operation_name": ReportOperation.objects.get(
+                report_version=self.test_data.report_version
+            ).operation_name,
             "invoice_number": self.test_data.compliance_obligation.elicensing_invoice.invoice_number,
             "invoice_due_date": self.test_data.compliance_obligation.elicensing_invoice.due_date.strftime(
                 STRFTIME_FORMAT
@@ -259,12 +295,15 @@ class TestElicensingInvoiceGeneratorService:
         mock_generate_pdf.assert_called_once()
         expected_date = timezone.now().strftime("%Y%m%d")
         assert (
-            mock_generate_pdf.call_args.kwargs["filename"] == f"OBPS Automatic Overdue Penalty Invoice "
+            mock_generate_pdf.call_args.kwargs["filename"]
+            == f"OBPS Automatic Overdue Penalty Invoice "
             f"{self.test_data.compliance_obligation.elicensing_invoice.invoice_number}_{expected_date}.pdf"
         )
 
     def test_create_pdf_response_returns_error(self):
-        error_payload = {"errors": {"unexpected_error": "Mocked: PDF generation failed"}}
+        error_payload = {
+            "errors": {"unexpected_error": "Mocked: PDF generation failed"}
+        }
         response = ElicensingInvoiceGeneratorService.create_pdf_response(error_payload)
         # Assert
         assert response.status_code == 400
@@ -273,15 +312,19 @@ class TestElicensingInvoiceGeneratorService:
         # ✅ Properly consume the streaming response
         raw_bytes = b"".join(response.streaming_content)
         parsed = json.loads(raw_bytes.decode("utf-8"))
-        assert parsed == {"errors": {"unexpected_error": "Mocked: PDF generation failed"}}
+        assert parsed == {
+            "errors": {"unexpected_error": "Mocked: PDF generation failed"}
+        }
 
     def test_create_pdf_response_success(self):
-
         mock_pdf = (b"%PDF mock", "invoice_INV-001_20250601.pdf", 2048)
 
         response = ElicensingInvoiceGeneratorService.create_pdf_response(mock_pdf)
 
         assert response.status_code == 200
-        assert response['Content-Type'] == 'application/pdf'
-        assert response["Content-Disposition"] == 'attachment; filename="invoice_INV-001_20250601.pdf"'
-        assert response["Content-Length"] == '2048'
+        assert response["Content-Type"] == "application/pdf"
+        assert (
+            response["Content-Disposition"]
+            == 'attachment; filename="invoice_INV-001_20250601.pdf"'
+        )
+        assert response["Content-Length"] == "2048"

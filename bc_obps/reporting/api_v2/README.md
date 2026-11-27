@@ -54,13 +54,13 @@ https://docs.pydantic.dev/latest/concepts/models/#generic-models
 
 ```py
 # A payload type that is a ninja schema itself
-TPayload = TypeVar('TPayload', bound=Schema)
+TPayload = TypeVar("TPayload", bound=Schema)
+
 
 class ReportingBaseSchema(Generic[TPayload]):
     payload: TPayload
-    json_schema: dict # or some fancier type?
+    json_schema: dict  # or some fancier type?
     program_data: ProgramDataSchema
-
 ```
 
 ## Schema location

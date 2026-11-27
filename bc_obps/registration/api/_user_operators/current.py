@@ -1,13 +1,14 @@
 from typing import Literal, Tuple
+
+from common.api.utils import get_current_user_guid
 from common.permissions import authorize
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
+from registration.api.router import router
 from registration.constants import USER_OPERATOR_TAGS
+from registration.models import UserOperator
 from registration.schema import CurrentUserOperatorOut, Message
 from registration.service.data_access_service.user_service import UserDataAccessService
-from common.api.utils import get_current_user_guid
-from registration.api.router import router
-from registration.models import UserOperator
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 # "current" refers to the current user-operator (we look up the current user-operator via the current user)
@@ -21,5 +22,9 @@ from common.service.error_service.custom_codes_4xx import custom_codes_4xx
     Declined user-operators are excluded from the results.""",
     auth=authorize("industry_user"),
 )
-def get_current_operator_from_user_operator(request: HttpRequest) -> Tuple[Literal[200], UserOperator]:
-    return 200, UserDataAccessService.get_user_operator_by_user(get_current_user_guid(request))
+def get_current_operator_from_user_operator(
+    request: HttpRequest,
+) -> tuple[Literal[200], UserOperator]:
+    return 200, UserDataAccessService.get_user_operator_by_user(
+        get_current_user_guid(request)
+    )

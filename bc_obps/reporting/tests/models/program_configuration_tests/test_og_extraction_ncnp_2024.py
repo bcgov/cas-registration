@@ -1,11 +1,16 @@
 from django.test import TestCase
+
 from .base_program_configuration_test import BaseProgramConfigurationTest
 
 
-class OGExtractionNonCompressionNonProcessing2024Test(BaseProgramConfigurationTest, TestCase):
+class OGExtractionNonCompressionNonProcessing2024Test(
+    BaseProgramConfigurationTest, TestCase
+):
     @classmethod
     def setUpTestData(cls):
-        cls.activity_name = "Oil & Gas extraction (other than compression and processing)"
+        cls.activity_name = (
+            "Oil & Gas extraction (other than compression and processing)"
+        )
         cls.year = 2024
         cls.config_element_count = 182
         cls.config = {

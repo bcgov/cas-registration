@@ -1,7 +1,9 @@
 from common.models import BaseModel
 from django.db import models
 from reporting.models import FuelType
-from reporting.models.rls_configs.expected_value_range_fuel_amount import Rls as ExpectedValueRangeFuelAmountRls
+from reporting.models.rls_configs.expected_value_range_fuel_amount import (
+    Rls as ExpectedValueRangeFuelAmountRls,
+)
 
 
 class ExpectedValueRangeFuelAmount(BaseModel):

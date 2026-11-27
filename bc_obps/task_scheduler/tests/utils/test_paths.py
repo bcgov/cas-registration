@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock
+
 from django.test import SimpleTestCase, TestCase
 from task_scheduler.utils.paths import get_function_path, resolve_function_from_path
 

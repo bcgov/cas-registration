@@ -1,7 +1,7 @@
-from common.tests.utils.helpers import BaseTestCase
-from registration.models import Activity
 import pytest
+from common.tests.utils.helpers import BaseTestCase
 from django.db import ProgrammingError
+from registration.models import Activity
 
 
 class ActivityModelTest(BaseTestCase):
@@ -29,9 +29,9 @@ class ActivityModelTest(BaseTestCase):
         )
 
     def testSlugIsImmutable(self):
-        self.test_object.slug = 'immutable'
+        self.test_object.slug = "immutable"
         with pytest.raises(
             ProgrammingError,
-            match='slug field is immutable',
+            match="slug field is immutable",
         ):
             self.test_object.save()

@@ -1,5 +1,4 @@
 from django.db import transaction
-
 from registration.models import RegulatedProduct
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_product import ReportProduct

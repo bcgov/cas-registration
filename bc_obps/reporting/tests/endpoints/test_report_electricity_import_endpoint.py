@@ -1,9 +1,12 @@
+from unittest.mock import MagicMock, patch
+
 from model_bakery import baker
-from unittest.mock import patch, MagicMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from reporting.schema.report_electricity_import_data import ElectricityImportDataSchema
-from reporting.service.report_electricity_import_data_service import ElectricityImportFormData
+from reporting.service.report_electricity_import_data_service import (
+    ElectricityImportFormData,
+)
 
 
 class TestElectricityImportDataApi(CommonTestSetup):
@@ -14,9 +17,12 @@ class TestElectricityImportDataApi(CommonTestSetup):
             report_version=self.report_version,
         )
         super().setup_method()
-        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator,
+            operations=[self.report_version.report.operation],
         )
 
     """Tests for GET electricity import data endpoint."""
@@ -32,25 +38,32 @@ class TestElectricityImportDataApi(CommonTestSetup):
         response_json = response.json()
 
         assert (
-            response_json["import_specified_electricity"] == self.electricity_import_data.import_specified_electricity
+            response_json["import_specified_electricity"]
+            == self.electricity_import_data.import_specified_electricity
         )
-        assert response_json["import_specified_emissions"] == self.electricity_import_data.import_specified_emissions
+        assert (
+            response_json["import_specified_emissions"]
+            == self.electricity_import_data.import_specified_emissions
+        )
         assert (
             response_json["import_unspecified_electricity"]
             == self.electricity_import_data.import_unspecified_electricity
         )
         assert (
-            response_json["import_unspecified_emissions"] == self.electricity_import_data.import_unspecified_emissions
+            response_json["import_unspecified_emissions"]
+            == self.electricity_import_data.import_unspecified_emissions
         )
         assert (
-            response_json["export_specified_electricity"] == self.electricity_import_data.export_specified_electricity
+            response_json["export_specified_electricity"]
+            == self.electricity_import_data.export_specified_electricity
         )
         assert (
             response_json["export_unspecified_electricity"]
             == self.electricity_import_data.export_unspecified_electricity
         )
         assert (
-            response_json["export_unspecified_emissions"] == self.electricity_import_data.export_unspecified_emissions
+            response_json["export_unspecified_emissions"]
+            == self.electricity_import_data.export_unspecified_emissions
         )
         assert (
             response_json["canadian_entitlement_electricity"]
@@ -66,17 +79,19 @@ class TestElectricityImportDataApi(CommonTestSetup):
     @patch(
         "reporting.service.report_electricity_import_data_service.ElectricityImportDataService.save_electricity_import_data"
     )
-    def test_saves_electricity_import_data(self, mock_save_electricity_import_data: MagicMock):
+    def test_saves_electricity_import_data(
+        self, mock_save_electricity_import_data: MagicMock
+    ):
         payload = ElectricityImportDataSchema(
-            import_specified_electricity='0.05',
+            import_specified_electricity="0.05",
             import_specified_emissions=None,
-            import_unspecified_electricity='123456789.123',
-            import_unspecified_emissions='0.05',
-            export_specified_electricity='0.05',
+            import_unspecified_electricity="123456789.123",
+            import_unspecified_emissions="0.05",
+            export_specified_electricity="0.05",
             export_specified_emissions=55,
             export_unspecified_electricity=None,
-            export_unspecified_emissions='0.05',
-            canadian_entitlement_electricity='0.05',
+            export_unspecified_emissions="0.05",
+            canadian_entitlement_electricity="0.05",
             canadian_entitlement_emissions=1000000,
         )
 
@@ -97,4 +112,6 @@ class TestElectricityImportDataApi(CommonTestSetup):
 
         assert response.status_code == 200
 
-        mock_save_electricity_import_data.assert_called_once_with(self.report_version.id, payload_data)
+        mock_save_electricity_import_data.assert_called_once_with(
+            self.report_version.id, payload_data
+        )

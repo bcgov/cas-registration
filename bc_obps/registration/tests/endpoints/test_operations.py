@@ -1,34 +1,42 @@
 import json
-from model_bakery import baker
-from localflavor.ca.models import CAPostalCodeField
-from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from unittest.mock import MagicMock, patch
 
-from registration.utils import custom_reverse_lazy
-from registration.models import Operation
-from unittest.mock import patch, MagicMock
-from model_bakery.baker import make_recipe
 from common.tests.utils.test_files import create_test_file
+from localflavor.ca.models import CAPostalCodeField
+from model_bakery import baker
+from model_bakery.baker import make_recipe
+from registration.models import Operation
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from registration.utils import custom_reverse_lazy
 
 baker.generators.add(CAPostalCodeField, TestUtils.mock_postal_code)
 
-fake_timestamp_from_past = '2024-01-09 14:13:08.888903-0800'
-fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
+fake_timestamp_from_past = "2024-01-09 14:13:08.888903-0800"
+fake_timestamp_from_past_str_format = "%Y-%m-%d %H:%M:%S.%f%z"
 
 
 class TestOperationsEndpoint(CommonTestSetup):
-    @patch("registration.service.operation_service.OperationService.list_operations_timeline", autospec=True)
-    def test_returns_data_as_provided_by_the_service(self, mock_list_operations_timeline: MagicMock):
+    @patch(
+        "registration.service.operation_service.OperationService.list_operations_timeline",
+        autospec=True,
+    )
+    def test_returns_data_as_provided_by_the_service(
+        self, mock_list_operations_timeline: MagicMock
+    ):
         """
         Testing that the API endpoint fetches the operation timeline data.
         """
 
         # Arrange: Mock facilities returned by the service
-        timeline = make_recipe('registration.tests.utils.operation_designated_operator_timeline', _quantity=2)
+        timeline = make_recipe(
+            "registration.tests.utils.operation_designated_operator_timeline",
+            _quantity=2,
+        )
         mock_list_operations_timeline.return_value = timeline
 
         # Act: Mock the authorization and perform the request
         TestUtils.authorize_current_user_as_operator_user(
-            self, operator=make_recipe('registration.tests.utils.operator')
+            self, operator=make_recipe("registration.tests.utils.operator")
         )
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -42,21 +50,21 @@ class TestOperationsEndpoint(CommonTestSetup):
         # Assert: Validate the response structure and data
         response_json = response.json()
         assert len(response_json) == 2
-        assert response_json.keys() == {'count', 'items'}
-        assert sorted(response_json['items'][0].keys()) == sorted(
+        assert response_json.keys() == {"count", "items"}
+        assert sorted(response_json["items"][0].keys()) == sorted(
             [
-                'operation__name',
-                'operation__type',
-                'sfo_facility_id',
-                'sfo_facility_name',
-                'operation__bcghg_id',
-                'operation__bc_obps_regulated_operation',
-                'operation__registration_purpose',
-                'id',
-                'operator__legal_name',
-                'operation__id',
-                'operation__status',
-                'operation__contact_ids',
+                "operation__name",
+                "operation__type",
+                "sfo_facility_id",
+                "sfo_facility_name",
+                "operation__bcghg_id",
+                "operation__bc_obps_regulated_operation",
+                "operation__registration_purpose",
+                "id",
+                "operator__legal_name",
+                "operation__id",
+                "operation__status",
+                "operation__contact_ids",
             ]
         )
 
@@ -74,7 +82,9 @@ class TestPostOperationsEndpoint(CommonTestSetup):
     }
 
     def test_user_can_post_operation_success(self):
-        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        baker.make_recipe(
+            "registration.tests.utils.approved_user_operator", user=self.user
+        )
 
         response = TestUtils.client.post(
             path=custom_reverse_lazy("register_create_operation_information"),
@@ -88,11 +98,13 @@ class TestPostOperationsEndpoint(CommonTestSetup):
         )
 
         assert response.status_code == 201
-        assert response.json().get('name') == "op name"
-        assert response.json().get('id') is not None
+        assert response.json().get("name") == "op name"
+        assert response.json().get("id") is not None
 
     def test_user_can_post_with_multiple_operators(self):
-        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        baker.make_recipe(
+            "registration.tests.utils.approved_user_operator", user=self.user
+        )
 
         payload = {
             **self.mock_payload,
@@ -124,5 +136,5 @@ class TestPostOperationsEndpoint(CommonTestSetup):
         )
 
         assert response.status_code == 201
-        assert response.json().get('name') == "op name"
-        assert response.json().get('id') is not None
+        assert response.json().get("name") == "op name"
+        assert response.json().get("id") is not None

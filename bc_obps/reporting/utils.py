@@ -22,13 +22,17 @@ class ReportingCustomPagination(PaginationBase):
         page: int = Query(1, ge=1)  # Input schema for page number
 
     class Output(Schema):
-        items: List[Any]  # `items` is a default attribute
+        items: list[Any]  # `items` is a default attribute
         count: int  # Total count of all items
-        is_completed_count: Optional[int]  # Count of completed items
+        is_completed_count: int | None  # Count of completed items
 
     def paginate_queryset(
-        self, queryset: QuerySet[Any], pagination: Input, request: HttpRequest, **params: Any
-    ) -> Dict[str, Any]:
+        self,
+        queryset: QuerySet[Any],
+        pagination: Input,
+        request: HttpRequest,
+        **params: Any,
+    ) -> dict[str, Any]:
         page = pagination.page
         page_size = 10
 

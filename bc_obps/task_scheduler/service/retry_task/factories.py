@@ -1,13 +1,15 @@
-from typing import Callable, Optional
+from collections.abc import Callable
+from typing import Optional
+
 from task_scheduler.config.settings import TASK_SCHEDULER_CONFIG
 from task_scheduler.service.retry_task.retryable import RetryableFunction
 
 
 def create_retryable(
     func: Callable,
-    tag: Optional[str] = None,
-    max_retries: Optional[int] = None,
-    retry_delay_minutes: Optional[int] = None,
+    tag: str | None = None,
+    max_retries: int | None = None,
+    retry_delay_minutes: int | None = None,
 ) -> RetryableFunction:
     """
     Create a RetryableFunction instance.
@@ -18,12 +20,16 @@ def create_retryable(
         max_retries: Maximum number of retry attempts
         retry_delay_minutes: Delay between retry attempts in minutes
     """
-    tag = tag if tag is not None else str(TASK_SCHEDULER_CONFIG['default_tag'])
-    max_retries = max_retries if max_retries is not None else int(str(TASK_SCHEDULER_CONFIG['default_max_retries']))
+    tag = tag if tag is not None else str(TASK_SCHEDULER_CONFIG["default_tag"])
+    max_retries = (
+        max_retries
+        if max_retries is not None
+        else int(str(TASK_SCHEDULER_CONFIG["default_max_retries"]))
+    )
     retry_delay_minutes = (
         retry_delay_minutes
         if retry_delay_minutes is not None
-        else int(str(TASK_SCHEDULER_CONFIG['default_retry_delay']))
+        else int(str(TASK_SCHEDULER_CONFIG["default_retry_delay"]))
     )
 
     return RetryableFunction(

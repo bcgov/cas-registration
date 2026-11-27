@@ -1,7 +1,7 @@
 from common.tests.utils.helpers import BaseTestCase
+from django.test import TestCase
 from model_bakery.baker import make_recipe
 from registration.models import RegulatedProduct
-from django.test import TestCase
 
 
 class RegulatedProductModelTest(BaseTestCase):
@@ -21,7 +21,7 @@ class RegulatedProductModelTest(BaseTestCase):
             ("regulatory_values_overrides", "naics regulatory override", None, None),
         ]
         cls.test_object = make_recipe(
-            'registration.tests.utils.regulated_product',
+            "registration.tests.utils.regulated_product",
             name="test product",
             unit="test unit",
             is_regulated=True,
@@ -30,8 +30,12 @@ class RegulatedProductModelTest(BaseTestCase):
 
 class TestAssociatedData(TestCase):
     def test_is_regulated_data(self):
-        regulated_products_count = RegulatedProduct.objects.filter(is_regulated=True).count()
-        not_regulated_products_count = RegulatedProduct.objects.filter(is_regulated=False).count()
+        regulated_products_count = RegulatedProduct.objects.filter(
+            is_regulated=True
+        ).count()
+        not_regulated_products_count = RegulatedProduct.objects.filter(
+            is_regulated=False
+        ).count()
 
         self.assertEqual(regulated_products_count, 38)
         self.assertEqual(not_regulated_products_count, 3)

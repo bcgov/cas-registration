@@ -1,20 +1,26 @@
-from registration.models.operation import Operation
-from registration.models import Facility
-from django.db.models import QuerySet
 from uuid import UUID
+
+from django.db.models import QuerySet
 from ninja.types import DictStrAny
+from registration.models import Facility
+from registration.models.operation import Operation
 
 
 class FacilityDataAccessService:
     @classmethod
-    def get_current_facilities_by_operation(cls, operation: Operation) -> QuerySet[Facility]:
+    def get_current_facilities_by_operation(
+        cls, operation: Operation
+    ) -> QuerySet[Facility]:
         return Facility.objects.filter(
-            designated_operations__end_date__isnull=True, designated_operations__operation=operation
+            designated_operations__end_date__isnull=True,
+            designated_operations__operation=operation,
         ).all()
 
     @classmethod
     def get_by_id(cls, facility_id: UUID) -> Facility:
-        return Facility.objects.prefetch_related("well_authorization_numbers").get(id=facility_id)
+        return Facility.objects.prefetch_related("well_authorization_numbers").get(
+            id=facility_id
+        )
 
     @classmethod
     def create_facility(

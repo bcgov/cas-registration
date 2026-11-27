@@ -1,12 +1,13 @@
-from compliance.schema.compliance_period import CompliancePeriodOut
-from compliance.models.compliance_period import CompliancePeriod
-from compliance.service.compliance_period_service import CompliancePeriodService
-from django.http import HttpRequest
 from common.permissions import authorize
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.schema.generic import Message
-from .router import router
 from compliance.constants import COMPLIANCE
+from compliance.models.compliance_period import CompliancePeriod
+from compliance.schema.compliance_period import CompliancePeriodOut
+from compliance.service.compliance_period_service import CompliancePeriodService
+from django.http import HttpRequest
+from registration.schema.generic import Message
+
+from .router import router
 
 
 @router.get(

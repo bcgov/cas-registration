@@ -1,6 +1,7 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.reporting_year import ReportingYear
+
 from .rls_configs.compliance_period import Rls as CompliancePeriodRls
 
 
@@ -18,8 +19,16 @@ class CompliancePeriod(TimeStampedModel):
     See docs/compliance/fixtures/README.md for more information.
     """
 
-    start_date = models.DateField(blank=False, null=False, db_comment="Start date of the compliance period, UTC-based")
-    end_date = models.DateField(blank=False, null=False, db_comment="End date of the compliance period, UTC-based")
+    start_date = models.DateField(
+        blank=False,
+        null=False,
+        db_comment="Start date of the compliance period, UTC-based",
+    )
+    end_date = models.DateField(
+        blank=False,
+        null=False,
+        db_comment="End date of the compliance period, UTC-based",
+    )
     compliance_deadline = models.DateField(
         blank=False,
         null=False,
@@ -37,7 +46,7 @@ class CompliancePeriod(TimeStampedModel):
     reporting_year = models.ForeignKey(
         ReportingYear,
         on_delete=models.PROTECT,
-        related_name='compliance_period',
+        related_name="compliance_period",
         db_comment="The associated reporting year for this compliance period. Foreign key to erc.reporting_year",
     )
 
@@ -45,6 +54,6 @@ class CompliancePeriod(TimeStampedModel):
         app_label = "compliance"
         db_table_comment = "A table to store compliance periods"
         db_table = 'erc"."compliance_period'
-        ordering = ['-end_date']
+        ordering = ["-end_date"]
 
     Rls = CompliancePeriodRls

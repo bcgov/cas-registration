@@ -1,19 +1,21 @@
 from typing import Literal, Tuple
-from reporting.api_v2._report_versions._report_version_id.comment_thread_schema import CommentThreadSchema
-from reporting.models.comment_thread import CommentThread
 from uuid import UUID
-from reporting.api_v2._report_versions._report_version_id.comment_thread_schema import CommentThreadIn
-from reporting.service.comment_service import CommentService
+
 from common.api.utils.current_user_utils import get_current_user_guid
 from common.permissions import authorize
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.db import transaction
 from django.http import HttpRequest
-
+from reporting.api_v2._report_versions._report_version_id.comment_thread_schema import (
+    CommentThreadIn,
+    CommentThreadSchema,
+)
 from reporting.api_v2.router import router
 from reporting.constants import EMISSIONS_REPORT_TAGS, REPORT_COMMENTS_TAGS
+from reporting.models.comment_thread import CommentThread
 from reporting.schema.generic import Message
+from reporting.service.comment_service import CommentService
 from reporting.service.comment_thread_service import CommentThreadService
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.delete(
@@ -26,10 +28,14 @@ from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 @transaction.atomic
 def delete_comment(
     request: HttpRequest, version_id: int, thread_id: int, comment_id: int
-) -> Tuple[Literal[200], CommentThread] | Tuple[Literal[204], None]:
+) -> tuple[Literal[200], CommentThread] | tuple[Literal[204], None]:
     user_guid: UUID = get_current_user_guid(request)
-    comment = CommentService.check_comment_owner(comment_id=comment_id, user_guid=user_guid)
-    thread = CommentService.delete_comment(thread_id=thread_id, comment=comment, user_guid=user_guid)
+    comment = CommentService.check_comment_owner(
+        comment_id=comment_id, user_guid=user_guid
+    )
+    thread = CommentService.delete_comment(
+        thread_id=thread_id, comment=comment, user_guid=user_guid
+    )
     if thread is None:
         return 204, None
     return 200, thread
@@ -45,14 +51,16 @@ def delete_comment(
 @transaction.atomic
 def create_comment(
     request: HttpRequest, version_id: int, thread_id: int, payload: CommentThreadIn
-) -> Tuple[Literal[201], CommentThread]:
+) -> tuple[Literal[201], CommentThread]:
     user_guid: UUID = get_current_user_guid(request)
     CommentService.create_comment(
         comment_thread_id=thread_id,
         report_version_id=version_id,
         content=payload.comment,
     )
-    thread = CommentThreadService.threads_with_annotated_comments(user_guid=user_guid).get(id=thread_id)
+    thread = CommentThreadService.threads_with_annotated_comments(
+        user_guid=user_guid
+    ).get(id=thread_id)
     return 201, thread
 
 
@@ -65,13 +73,21 @@ def create_comment(
 )
 @transaction.atomic
 def update_comment(
-    request: HttpRequest, version_id: int, thread_id: int, comment_id: int, payload: CommentThreadIn
-) -> Tuple[Literal[200], CommentThread]:
+    request: HttpRequest,
+    version_id: int,
+    thread_id: int,
+    comment_id: int,
+    payload: CommentThreadIn,
+) -> tuple[Literal[200], CommentThread]:
     user_guid: UUID = get_current_user_guid(request)
-    comment = CommentService.check_comment_owner(comment_id=comment_id, user_guid=user_guid)
+    comment = CommentService.check_comment_owner(
+        comment_id=comment_id, user_guid=user_guid
+    )
     CommentService.update_comment(
         comment=comment,
         content=payload.comment,
     )
-    thread = CommentThreadService.threads_with_annotated_comments(user_guid=user_guid).get(id=thread_id)
+    thread = CommentThreadService.threads_with_annotated_comments(
+        user_guid=user_guid
+    ).get(id=thread_id)
     return 200, thread

@@ -1,28 +1,29 @@
 from typing import List, Literal, Optional, Tuple
+
+from common.api.utils import get_current_user_guid
+from common.permissions import authorize
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.db.models import QuerySet
+from django.http import HttpRequest
+from ninja import Query
+from ninja.pagination import paginate
+from registration.api.router import router
+from registration.constants import TRANSFER_EVENT_TAGS
 from registration.models.event.transfer_event import TransferEvent
 from registration.schema import (
-    TransferEventFilterSchema,
-    TransferEventListOut,
     Message,
     TransferEventCreateIn,
+    TransferEventFilterSchema,
+    TransferEventListOut,
     TransferEventOut,
 )
 from registration.service.transfer_event_service import TransferEventService
-from common.permissions import authorize
-from django.http import HttpRequest
 from registration.utils import CustomPagination
-from registration.constants import TRANSFER_EVENT_TAGS
-from ninja.pagination import paginate
-from registration.api.router import router
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from ninja import Query
-from django.db.models import QuerySet
-from common.api.utils import get_current_user_guid
 
 
 @router.get(
     "/transfer-events",
-    response={200: List[TransferEventListOut], custom_codes_4xx: Message},
+    response={200: list[TransferEventListOut], custom_codes_4xx: Message},
     tags=TRANSFER_EVENT_TAGS,
     description="""Retrieves a paginated list of transfer events based on the provided filters.
     The endpoint allows authorized users to view and sort transfer events filtered by various criteria such as operation, facility, and status.""",
@@ -32,8 +33,8 @@ from common.api.utils import get_current_user_guid
 def list_transfer_events(
     request: HttpRequest,
     filters: TransferEventFilterSchema = Query(...),
-    sort_field: Optional[str] = "status",
-    sort_order: Optional[Literal["desc", "asc"]] = "desc",
+    sort_field: str | None = "status",
+    sort_order: Literal["desc", "asc"] | None = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[TransferEvent]:
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
@@ -50,5 +51,7 @@ def list_transfer_events(
 def create_transfer_event(
     request: HttpRequest,
     payload: TransferEventCreateIn,
-) -> Tuple[Literal[201], TransferEvent]:
-    return 201, TransferEventService.create_transfer_event(get_current_user_guid(request), payload)
+) -> tuple[Literal[201], TransferEvent]:
+    return 201, TransferEventService.create_transfer_event(
+        get_current_user_guid(request), payload
+    )

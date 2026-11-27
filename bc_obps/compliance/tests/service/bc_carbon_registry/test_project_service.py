@@ -14,7 +14,9 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def mock_api_client():
-    with patch('compliance.service.bc_carbon_registry.bc_carbon_registry_api_client.BCCarbonRegistryAPIClient') as mock:
+    with patch(
+        "compliance.service.bc_carbon_registry.bc_carbon_registry_api_client.BCCarbonRegistryAPIClient"
+    ) as mock:
         yield mock.return_value
 
 
@@ -51,7 +53,9 @@ def lfo_operation():
         postal_code="V6B 1A1",
         province="BC",
     )
-    operator = baker.make_recipe("registration.tests.utils.operator", mailing_address=mailing_address)
+    operator = baker.make_recipe(
+        "registration.tests.utils.operator", mailing_address=mailing_address
+    )
     operation = baker.make_recipe(
         "registration.tests.utils.operation",
         type=Operation.Types.LFO,
@@ -63,7 +67,9 @@ def lfo_operation():
 
 @pytest.fixture
 def lfo_operation_missing_address():
-    operator = baker.make_recipe("registration.tests.utils.operator", mailing_address=None)
+    operator = baker.make_recipe(
+        "registration.tests.utils.operator", mailing_address=None
+    )
     # No mailing address set
     operation = baker.make_recipe(
         "registration.tests.utils.operation",
@@ -83,7 +89,9 @@ def lfo_operation_incomplete_address():
         postal_code="V6B 1A1",
         province="BC",
     )
-    operator = baker.make_recipe("registration.tests.utils.operator", mailing_address=mailing_address)
+    operator = baker.make_recipe(
+        "registration.tests.utils.operator", mailing_address=mailing_address
+    )
     operation = baker.make_recipe(
         "registration.tests.utils.operation",
         type=Operation.Types.LFO,
@@ -122,13 +130,21 @@ def sfo_operation_no_facility():
 
 def create_compliance_report_version(operation):
     # Use a hardcoded operation_name for testing
-    report_operation = baker.make_recipe("reporting.tests.utils.report_operation", operation_name="Test Operation Name")
-    report_version = baker.make_recipe("reporting.tests.utils.report_version", report_operation=report_operation)
+    report_operation = baker.make_recipe(
+        "reporting.tests.utils.report_operation", operation_name="Test Operation Name"
+    )
+    report_version = baker.make_recipe(
+        "reporting.tests.utils.report_version", report_operation=report_operation
+    )
     report_compliance_summary = baker.make_recipe(
         "reporting.tests.utils.report_compliance_summary", report_version=report_version
     )
-    report = baker.make_recipe("reporting.tests.utils.report", operation=operation, operator=operation.operator)
-    compliance_report = baker.make_recipe("compliance.tests.utils.compliance_report", report=report)
+    report = baker.make_recipe(
+        "reporting.tests.utils.report", operation=operation, operator=operation.operator
+    )
+    compliance_report = baker.make_recipe(
+        "compliance.tests.utils.compliance_report", report=report
+    )
     compliance_report_version = baker.make_recipe(
         "compliance.tests.utils.compliance_report_version",
         compliance_report=compliance_report,
@@ -170,8 +186,8 @@ class TestBCCarbonRegistryProjectService:
         # Verify SFO-specific address fields
         assert "latitude" in call_args["mixedUnitList"][0]
         assert "longitude" in call_args["mixedUnitList"][0]
-        assert call_args["mixedUnitList"][0]["latitude"] == '49.282700'
-        assert call_args["mixedUnitList"][0]["longitude"] == '-123.120700'
+        assert call_args["mixedUnitList"][0]["latitude"] == "49.282700"
+        assert call_args["mixedUnitList"][0]["longitude"] == "-123.120700"
 
         # Verify return value
         assert result == {"id": "project_123"}
@@ -227,14 +243,19 @@ class TestBCCarbonRegistryProjectService:
         compliance_report_version = create_compliance_report_version(operation)
 
         # Act & Assert
-        with pytest.raises(UserError, match="Operation type must be SFO or LFO to create a project in BCCR."):
+        with pytest.raises(
+            UserError,
+            match="Operation type must be SFO or LFO to create a project in BCCR.",
+        ):
             service.create_project(
                 account_id="123456789012345",
                 compliance_report_version=compliance_report_version,
             )
         mock_api_client.create_project.assert_not_called()
 
-    def test_create_project_bccr_api_failure(self, service, mock_api_client, sfo_operation):
+    def test_create_project_bccr_api_failure(
+        self, service, mock_api_client, sfo_operation
+    ):
         # Arrange
         compliance_report_version = create_compliance_report_version(sfo_operation)
         mock_api_client.create_project.return_value = {}
@@ -248,12 +269,19 @@ class TestBCCarbonRegistryProjectService:
 
         mock_api_client.create_project.assert_called_once()
 
-    def test_create_project_sfo_missing_coordinates(self, service, mock_api_client, sfo_operation_missing_coordinates):
+    def test_create_project_sfo_missing_coordinates(
+        self, service, mock_api_client, sfo_operation_missing_coordinates
+    ):
         # Arrange
-        compliance_report_version = create_compliance_report_version(sfo_operation_missing_coordinates)
+        compliance_report_version = create_compliance_report_version(
+            sfo_operation_missing_coordinates
+        )
 
         # Act & Assert
-        with pytest.raises(UserError, match="Facility must have latitude and longitude for SFO operations."):
+        with pytest.raises(
+            UserError,
+            match="Facility must have latitude and longitude for SFO operations.",
+        ):
             service.create_project(
                 account_id="123456789012345",
                 compliance_report_version=compliance_report_version,
@@ -261,9 +289,13 @@ class TestBCCarbonRegistryProjectService:
 
         mock_api_client.create_project.assert_not_called()
 
-    def test_create_project_sfo_no_facility(self, service, mock_api_client, sfo_operation_no_facility):
+    def test_create_project_sfo_no_facility(
+        self, service, mock_api_client, sfo_operation_no_facility
+    ):
         # Arrange
-        compliance_report_version = create_compliance_report_version(sfo_operation_no_facility)
+        compliance_report_version = create_compliance_report_version(
+            sfo_operation_no_facility
+        )
 
         # Act & Assert
         with pytest.raises(Facility.DoesNotExist):
@@ -274,12 +306,18 @@ class TestBCCarbonRegistryProjectService:
 
         mock_api_client.create_project.assert_not_called()
 
-    def test_create_project_lfo_missing_mailing_address(self, service, mock_api_client, lfo_operation_missing_address):
+    def test_create_project_lfo_missing_mailing_address(
+        self, service, mock_api_client, lfo_operation_missing_address
+    ):
         # Arrange
-        compliance_report_version = create_compliance_report_version(lfo_operation_missing_address)
+        compliance_report_version = create_compliance_report_version(
+            lfo_operation_missing_address
+        )
 
         # Act & Assert
-        with pytest.raises(UserError, match="Operator must have a mailing address for LFO operations."):
+        with pytest.raises(
+            UserError, match="Operator must have a mailing address for LFO operations."
+        ):
             service.create_project(
                 account_id="123456789012345",
                 compliance_report_version=compliance_report_version,
@@ -287,9 +325,13 @@ class TestBCCarbonRegistryProjectService:
 
         mock_api_client.create_project.assert_not_called()
 
-    def test_create_project_lfo_incomplete_address(self, service, mock_api_client, lfo_operation_incomplete_address):
+    def test_create_project_lfo_incomplete_address(
+        self, service, mock_api_client, lfo_operation_incomplete_address
+    ):
         # Arrange
-        compliance_report_version = create_compliance_report_version(lfo_operation_incomplete_address)
+        compliance_report_version = create_compliance_report_version(
+            lfo_operation_incomplete_address
+        )
 
         # Act & Assert
         with pytest.raises(
@@ -324,9 +366,11 @@ class TestBCCarbonRegistryProjectService:
         description = call_args["project_description"]
 
         operation_name = "Test Operation Name"
-        compliance_period_end_date_year = compliance_report_version.compliance_report.compliance_period.end_date.year
+        compliance_period_end_date_year = (
+            compliance_report_version.compliance_report.compliance_period.end_date.year
+        )
         expected_description = f"The B.C. OBPS, established under the Greenhouse Gas Industrial Reporting and Control Act (GGIRCA), is a carbon pricing system that incentivizes emission reductions through performance-based targets. The Director under GGIRCA issued earned credits to {operation_name} because their verified emissions were below their emission limit in {compliance_period_end_date_year} B.C. Output Based Pricing System (OBPS)."
 
-        assert (
-            description == expected_description
-        ), f"Project description does not match expected format. Expected: {expected_description}, Got: {description}"
+        assert description == expected_description, (
+            f"Project description does not match expected format. Expected: {expected_description}, Got: {description}"
+        )

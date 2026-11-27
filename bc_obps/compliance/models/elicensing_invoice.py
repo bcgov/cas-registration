@@ -1,6 +1,7 @@
+from compliance.models.elicensing_client_operator import ElicensingClientOperator
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
-from compliance.models.elicensing_client_operator import ElicensingClientOperator
+
 from .rls_configs.elicensing_invoice import Rls as ElicensingInvoiceRls
 
 
@@ -10,7 +11,9 @@ class ElicensingInvoice(TimeStampedModel):
 
     """
 
-    invoice_number = models.CharField(db_comment="The invoice number pulled from elicensing")
+    invoice_number = models.CharField(
+        db_comment="The invoice number pulled from elicensing"
+    )
 
     elicensing_client_operator = models.ForeignKey(
         ElicensingClientOperator,
@@ -19,7 +22,9 @@ class ElicensingInvoice(TimeStampedModel):
         related_name="elicensing_invoices",
     )
 
-    due_date = models.DateField(db_comment="The due date of the invoice. invoicePaymentDueDate in elicensing")
+    due_date = models.DateField(
+        db_comment="The due date of the invoice. invoicePaymentDueDate in elicensing"
+    )
 
     outstanding_balance = models.DecimalField(
         decimal_places=2,
@@ -42,7 +47,8 @@ class ElicensingInvoice(TimeStampedModel):
     )
 
     is_void = models.BooleanField(
-        default=False, db_comment="Boolean field indicates whether or not this invoice has been voided"
+        default=False,
+        db_comment="Boolean field indicates whether or not this invoice has been voided",
     )
 
     last_refreshed = models.DateTimeField(

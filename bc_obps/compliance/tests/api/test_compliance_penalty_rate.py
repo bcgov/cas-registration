@@ -1,9 +1,8 @@
+from common.tests.utils.helpers import assert_error_response
 from compliance.models.compliance_penalty_rate import CompliancePenaltyRate
 from model_bakery.baker import make_recipe
-
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from common.tests.utils.helpers import assert_error_response
 
 
 class TestCompliancePenaltyRateEndpoint(CommonTestSetup):
@@ -14,7 +13,7 @@ class TestCompliancePenaltyRateEndpoint(CommonTestSetup):
     ):
         """Happy-path: service returns current compliance penalty rate."""
         # Mock authorization
-        operator = make_recipe('registration.tests.utils.operator')
+        operator = make_recipe("registration.tests.utils.operator")
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
         # Act

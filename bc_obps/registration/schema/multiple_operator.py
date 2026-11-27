@@ -1,10 +1,17 @@
 from typing import Optional
-from registration.models.business_structure import BusinessStructure
-from registration.schema import validate_business_structure, validate_cra_business_number
+
 from ninja import Field, ModelSchema
-from registration.constants import BC_CORPORATE_REGISTRY_REGEX, CRA_BUSINESS_NUMBER_REGEX
-from registration.models import MultipleOperator
 from pydantic import ConfigDict, field_validator
+from registration.constants import (
+    BC_CORPORATE_REGISTRY_REGEX,
+    CRA_BUSINESS_NUMBER_REGEX,
+)
+from registration.models import MultipleOperator
+from registration.models.business_structure import BusinessStructure
+from registration.schema import (
+    validate_business_structure,
+    validate_cra_business_number,
+)
 
 
 class MultipleOperatorIn(ModelSchema):
@@ -12,24 +19,28 @@ class MultipleOperatorIn(ModelSchema):
     Schema for the Multiple Operator part of the operation form
     """
 
-    id: Optional[int] = None
+    id: int | None = None
     legal_name: str = Field(..., alias="mo_legal_name")
     trade_name: str = Field(..., alias="mo_trade_name")
     business_structure: str = Field(..., alias="mo_business_structure")
-    cra_business_number: str = Field(..., alias="mo_cra_business_number", pattern=CRA_BUSINESS_NUMBER_REGEX)
-    bc_corporate_registry_number: Optional[str] = Field(
-        None, alias="mo_bc_corporate_registry_number", pattern=BC_CORPORATE_REGISTRY_REGEX
+    cra_business_number: str = Field(
+        ..., alias="mo_cra_business_number", pattern=CRA_BUSINESS_NUMBER_REGEX
     )
-    street_address: Optional[str] = Field(None, alias="mo_attorney_street_address")
-    municipality: Optional[str] = Field(None, alias="mo_municipality")
-    province: Optional[str] = Field(None, alias="mo_province")
-    postal_code: Optional[str] = Field(None, alias="mo_postal_code")
+    bc_corporate_registry_number: str | None = Field(
+        None,
+        alias="mo_bc_corporate_registry_number",
+        pattern=BC_CORPORATE_REGISTRY_REGEX,
+    )
+    street_address: str | None = Field(None, alias="mo_attorney_street_address")
+    municipality: str | None = Field(None, alias="mo_municipality")
+    province: str | None = Field(None, alias="mo_province")
+    postal_code: str | None = Field(None, alias="mo_postal_code")
 
     model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("cra_business_number")
     @classmethod
-    def validate_cra_business_number(cls, value: str) -> Optional[str]:
+    def validate_cra_business_number(cls, value: str) -> str | None:
         return validate_cra_business_number(value)
 
     @field_validator("business_structure")
@@ -51,12 +62,16 @@ class MultipleOperatorOut(ModelSchema):
     mo_legal_name: str = Field(..., alias="legal_name")
     mo_trade_name: str = Field(..., alias="trade_name")
     mo_cra_business_number: str = Field(..., alias="cra_business_number")
-    mo_bc_corporate_registry_number: Optional[str] = Field(None, alias="bc_corporate_registry_number")
+    mo_bc_corporate_registry_number: str | None = Field(
+        None, alias="bc_corporate_registry_number"
+    )
     mo_business_structure: str = Field(..., alias="business_structure")
-    mo_attorney_street_address: Optional[str] = Field(None, alias="attorney_address.street_address")
-    mo_municipality: Optional[str] = Field(None, alias="attorney_address.municipality")
-    mo_province: Optional[str] = Field(None, alias="attorney_address.province")
-    mo_postal_code: Optional[str] = Field(None, alias="attorney_address.postal_code")
+    mo_attorney_street_address: str | None = Field(
+        None, alias="attorney_address.street_address"
+    )
+    mo_municipality: str | None = Field(None, alias="attorney_address.municipality")
+    mo_province: str | None = Field(None, alias="attorney_address.province")
+    mo_postal_code: str | None = Field(None, alias="attorney_address.postal_code")
 
     @staticmethod
     def resolve_business_structure(mo: MultipleOperator) -> str:

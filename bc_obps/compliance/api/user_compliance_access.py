@@ -1,15 +1,18 @@
-from .router import router
-from django.http import HttpRequest
+from typing import Optional
+
+from common.api.utils import get_current_user_guid
 from common.permissions import authorize
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.schema.generic import Message
 from compliance.constants import COMPLIANCE
-
-from ninja import Query
-from common.api.utils import get_current_user_guid
-from typing import Optional
 from compliance.schema.user_compliance_access import UserStatusResponse
-from compliance.service.user_compliance_access_service import UserComplianceAccessService
+from compliance.service.user_compliance_access_service import (
+    UserComplianceAccessService,
+)
+from django.http import HttpRequest
+from ninja import Query
+from registration.schema.generic import Message
+
+from .router import router
 
 
 @router.get(
@@ -21,7 +24,7 @@ from compliance.service.user_compliance_access_service import UserComplianceAcce
 )
 def get_user_compliance_access_status(
     request: HttpRequest,
-    compliance_report_version_id: Optional[str] = Query(
+    compliance_report_version_id: str | None = Query(
         None, description="Optional ID of the compliance report version requested"
     ),
 ) -> dict:

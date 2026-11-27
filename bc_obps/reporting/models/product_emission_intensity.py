@@ -1,13 +1,15 @@
 from common.models import BaseModel
-from django.db import models
-from registration.models import RegulatedProduct
 from django.contrib.postgres.constraints import ExclusionConstraint
 from django.contrib.postgres.fields import (
     DateTimeRangeField,
     RangeBoundary,
     RangeOperators,
 )
-from reporting.models.rls_configs.product_emission_intensity import Rls as ProductEmissionIntensityRls
+from django.db import models
+from registration.models import RegulatedProduct
+from reporting.models.rls_configs.product_emission_intensity import (
+    Rls as ProductEmissionIntensityRls,
+)
 
 
 class TsTzRange(models.Func):

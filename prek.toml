@@ -4,7 +4,7 @@
 # Priority groups (hooks at the same priority run in parallel):
 #   0 — read-only integrity checks
 #   1 — file fixers (end-of-file, trailing whitespace)
-#   2 — formatters  (prettier for JS/TS/CSS/MD, black for Python)
+#   2 — formatters  (prettier for JS/TS/CSS/MD, ruff for Python)
 #   3 — linters & validators (after formatting is complete)
 
 [[repos]]
@@ -140,27 +140,36 @@ priority = 3
 # Python formatting and linting
 
 [[repos]]
-repo = "https://github.com/psf/black"
-rev = "25.11.0"
+repo = "https://github.com/astral-sh/ruff-pre-commit"
+rev = "v0.17.6"
 
 [[repos.hooks]]
-id = "black"
-types = ["python"]
-args = ["--config", "bc_obps/pyproject.toml"]
+id = "ruff-format"
+name = "ruff formatter"
+args = ["bc_obps/"]
 priority = 2
 
-[[repos]]
-repo = "https://github.com/astral-sh/ruff-pre-commit"
-rev = "v0.14.6"
-
 [[repos.hooks]]
-id = "ruff"
-args = ["bc_obps/", "--fix"]
+id = "ruff-check"
+alias = "ruff-lint-obps"
+name = "ruff linter"
+args = [
+    "--select",
+    "I,UP",
+    "--extend-select",
+    "RUF100",
+    "--ignore",
+    "F401,F403,E712,E731,UP035",
+    "--fix",
+]
+files = "^bc_obps/"
+exclude = "^bc_obps/common/lib/pgtrigger/"
 priority = 3
 
 [[repos.hooks]]
 id = "ruff-check"
-name = "ruff check Airflow Dags"
+alias = "ruff-lint-dags"
+name = "ruff linter Airflow Dags"
 args = ["dags/", "--select", "AIR3", "--fix"]
 priority = 3
 

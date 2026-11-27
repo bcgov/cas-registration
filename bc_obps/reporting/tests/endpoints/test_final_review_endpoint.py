@@ -1,14 +1,14 @@
-from model_bakery import baker
-from model_bakery.baker import make_recipe
 from decimal import Decimal
 
 import pytest
-from reporting.models import (
-    ReportEmissionAllocation,
-    ProductEmissionIntensity,
-)
-from registration.utils import custom_reverse_lazy
+from model_bakery import baker
+from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from registration.utils import custom_reverse_lazy
+from reporting.models import (
+    ProductEmissionIntensity,
+    ReportEmissionAllocation,
+)
 from reporting.models.emission_category import EmissionCategory
 
 
@@ -20,13 +20,18 @@ class TestReportFinalReview(CommonTestSetup):
         self.emission_category = EmissionCategory.objects.get(
             category_name="Stationary fuel combustion emissions", category_type="basic"
         )
-        self.activity_1 = make_recipe("reporting.tests.utils.activity", name="very fake activity", weight=1)
-        self.activity_2 = make_recipe("reporting.tests.utils.activity", name="fake activity", weight=2)
+        self.activity_1 = make_recipe(
+            "reporting.tests.utils.activity", name="very fake activity", weight=1
+        )
+        self.activity_2 = make_recipe(
+            "reporting.tests.utils.activity", name="fake activity", weight=2
+        )
         self.regulated_product_1 = make_recipe(
-            "registration.tests.utils.regulated_product", name='Test Cement equivalent'
+            "registration.tests.utils.regulated_product", name="Test Cement equivalent"
         )
         self.regulated_product_2 = make_recipe(
-            "registration.tests.utils.regulated_product", name='Test Chemicals: pure hydrogen peroxide'
+            "registration.tests.utils.regulated_product",
+            name="Test Chemicals: pure hydrogen peroxide",
         )
         self.unregulated_product = make_recipe(
             "registration.tests.utils.regulated_product",
@@ -39,9 +44,12 @@ class TestReportFinalReview(CommonTestSetup):
             report_type="Annual Report",
             status="Draft",
         )
-        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator,
+            operations=[self.report_version.report.operation],
         )
         self.report_operation = baker.make_recipe(
             "reporting.tests.utils.report_operation",
@@ -51,19 +59,24 @@ class TestReportFinalReview(CommonTestSetup):
         )
         self.report_operation.activities.set([self.activity_1, self.activity_2])
         self.report_operation.regulated_products.set(
-            [self.regulated_product_1, self.regulated_product_2, self.unregulated_product]
+            [
+                self.regulated_product_1,
+                self.regulated_product_2,
+                self.unregulated_product,
+            ]
         )
         self.report_operation.naics_code_id = 1
         self.report_operation.save()
         self.report_version.report.reporting_year_id = 2024
         self.report_version.report.save()
         self.report_operation_representative = baker.make_recipe(
-            'reporting.tests.utils.report_operation_representative',
+            "reporting.tests.utils.report_operation_representative",
             report_version=self.report_version,
             representative_name="Test Representative",
         )
         self.report_person_responsible = make_recipe(
-            'reporting.tests.utils.report_person_responsible', report_version=self.report_version
+            "reporting.tests.utils.report_person_responsible",
+            report_version=self.report_version,
         )
         self.report_non_attributable_emissions = baker.make_recipe(
             "reporting.tests.utils.report_non_attributable_emissions",
@@ -71,7 +84,8 @@ class TestReportFinalReview(CommonTestSetup):
             emission_category=self.emission_category,
         )
         self.compliance_summary = baker.make_recipe(
-            "reporting.tests.utils.report_compliance_summary", report_version=self.report_version
+            "reporting.tests.utils.report_compliance_summary",
+            report_version=self.report_version,
         )
         self.facility_report = baker.make_recipe(
             "reporting.tests.utils.facility_report",
@@ -83,36 +97,36 @@ class TestReportFinalReview(CommonTestSetup):
             report_version=self.report_version,
             facility_report=self.facility_report,
             product_id=self.regulated_product_1.id,
-            annual_production=Decimal('100002'),
-            production_data_apr_dec=Decimal('50000'),
+            annual_production=Decimal("100002"),
+            production_data_apr_dec=Decimal("50000"),
         )
         self.report_product_2 = make_recipe(
             "reporting.tests.utils.report_product",
             report_version=self.report_version,
             facility_report=self.facility_report,
             product_id=self.regulated_product_2.id,
-            annual_production=Decimal('100000'),
-            production_data_apr_dec=Decimal('1000'),
+            annual_production=Decimal("100000"),
+            production_data_apr_dec=Decimal("1000"),
         )
         self.report_product_3 = make_recipe(
             "reporting.tests.utils.report_product",
             report_version=self.report_version,
             facility_report=self.facility_report,
             product_id=self.unregulated_product.id,
-            annual_production=Decimal('0'),
-            production_data_apr_dec=Decimal('0'),
+            annual_production=Decimal("0"),
+            production_data_apr_dec=Decimal("0"),
         )
         self.product_emission_intensity_1 = ProductEmissionIntensity.objects.create(
             product=self.regulated_product_1,
-            product_weighted_average_emission_intensity='0.6262',
-            valid_from='2023-01-01',
-            valid_to='9999-12-31',
+            product_weighted_average_emission_intensity="0.6262",
+            valid_from="2023-01-01",
+            valid_to="9999-12-31",
         )
         self.product_emission_intensity_2 = ProductEmissionIntensity.objects.create(
             product=self.regulated_product_2,
-            product_weighted_average_emission_intensity='0.7321',
-            valid_from='2023-01-01',
-            valid_to='9999-12-31',
+            product_weighted_average_emission_intensity="0.7321",
+            valid_from="2023-01-01",
+            valid_to="9999-12-31",
         )
         self.report_activity = baker.make_recipe(
             "reporting.tests.utils.report_activity",
@@ -127,7 +141,9 @@ class TestReportFinalReview(CommonTestSetup):
             activity=self.activity_1,
             json_data={
                 "testSourceType": True,
-                "sourceTypes": {"testSourceType": {"prop1": "value1", "prop3": "value3"}},
+                "sourceTypes": {
+                    "testSourceType": {"prop1": "value1", "prop3": "value3"}
+                },
             },
         )
         self.report_emission_allocation = make_recipe(
@@ -155,7 +171,9 @@ class TestReportFinalReview(CommonTestSetup):
             facility_report=self.facility_report,
             emission_category=self.emission_category,
         )
-        self.endpoint_under_test = f"/report-version/{self.report_version.id}/final-review"
+        self.endpoint_under_test = (
+            f"/report-version/{self.report_version.id}/final-review"
+        )
 
     def test_get_report_final_review_data_success(self):
         response = TestUtils.mock_get_with_auth_role(
@@ -219,7 +237,9 @@ class TestReportFinalReview(CommonTestSetup):
 
         # The schema returns the result from the report product emission allocation service
         # One record per non-other-excluded emission category
-        assert len(EmissionCategory.objects.exclude(category_type="other_excluded")) == 12
+        assert (
+            len(EmissionCategory.objects.exclude(category_type="other_excluded")) == 12
+        )
         assert len(product_allocations) == 12
 
         for emission_allocation in product_allocations:
@@ -265,43 +285,43 @@ class TestReportFinalReview(CommonTestSetup):
             }
 
         assert data["activity_data"] == {
-            'very fake activity': {
-                'activity': 'very fake activity',
-                'source_types': {
-                    'testSourceType': {
-                        'prop1': 'value1',
-                        'prop3': 'value3',
+            "very fake activity": {
+                "activity": "very fake activity",
+                "source_types": {
+                    "testSourceType": {
+                        "prop1": "value1",
+                        "prop3": "value3",
                     },
                 },
             },
         }
 
         expected_report_products = {
-            'Test Cement equivalent': {
-                'product': 'Test Cement equivalent',
-                'unit': 'N/A',
-                'annual_production': 100002.0,
-                'production_data_jan_mar': None,
-                'production_data_apr_dec': 50000.0,
-                'production_methodology': 'OBPS Calculator',
-                'production_methodology_description': None,
-                'storage_quantity_start_of_period': None,
-                'storage_quantity_end_of_period': None,
-                'quantity_sold_during_period': None,
-                'quantity_throughput_during_period': None,
+            "Test Cement equivalent": {
+                "product": "Test Cement equivalent",
+                "unit": "N/A",
+                "annual_production": 100002.0,
+                "production_data_jan_mar": None,
+                "production_data_apr_dec": 50000.0,
+                "production_methodology": "OBPS Calculator",
+                "production_methodology_description": None,
+                "storage_quantity_start_of_period": None,
+                "storage_quantity_end_of_period": None,
+                "quantity_sold_during_period": None,
+                "quantity_throughput_during_period": None,
             },
-            'Test Chemicals: pure hydrogen peroxide': {
-                'product': 'Test Chemicals: pure hydrogen peroxide',
-                'unit': 'N/A',
-                'annual_production': 100000.0,
-                'production_data_jan_mar': None,
-                'production_data_apr_dec': 1000.0,
-                'production_methodology': 'OBPS Calculator',
-                'production_methodology_description': None,
-                'storage_quantity_start_of_period': None,
-                'storage_quantity_end_of_period': None,
-                'quantity_sold_during_period': None,
-                'quantity_throughput_during_period': None,
+            "Test Chemicals: pure hydrogen peroxide": {
+                "product": "Test Chemicals: pure hydrogen peroxide",
+                "unit": "N/A",
+                "annual_production": 100000.0,
+                "production_data_jan_mar": None,
+                "production_data_apr_dec": 1000.0,
+                "production_methodology": "OBPS Calculator",
+                "production_methodology_description": None,
+                "storage_quantity_start_of_period": None,
+                "storage_quantity_end_of_period": None,
+                "quantity_sold_during_period": None,
+                "quantity_throughput_during_period": None,
             },
         }
         assert data["report_products"] == expected_report_products
@@ -312,7 +332,10 @@ class TestReportFinalReview(CommonTestSetup):
         # Report emission allocations
         assert "report_emission_allocation" in data
         allocation = data["report_emission_allocation"]
-        assert allocation["allocation_methodology"] == self.report_emission_allocation.allocation_methodology
+        assert (
+            allocation["allocation_methodology"]
+            == self.report_emission_allocation.allocation_methodology
+        )
 
         product_allocations = allocation["report_product_emission_allocations"]
         for emission_allocation in product_allocations:

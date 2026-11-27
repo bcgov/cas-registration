@@ -1,8 +1,9 @@
 from decimal import Decimal
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
 from django.test import TestCase
 from model_bakery.baker import make_recipe
-import pytest
 from registration.models.activity import Activity
 from registration.models.regulated_product import RegulatedProduct
 from reporting.models.emission_category import EmissionCategory
@@ -21,13 +22,17 @@ class TestIndustrialProcess(TestCase):
     """
 
     def test_returns_old_behaviour_for_2024(self):
-        report_version = make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
+        report_version = make_recipe(
+            "reporting.tests.utils.report_version", report__reporting_year_id=2024
+        )
         split = retrieve_pulp_and_paper_biogenic_emissions_split(report_version)
 
         assert split == BiogenicEmissionsSplit(1, 0)
 
     def test_retrieve_biogenic_emissions_split_with_missing_report_activity(self):
-        report_version = make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2025)
+        report_version = make_recipe(
+            "reporting.tests.utils.report_version", report__reporting_year_id=2025
+        )
         with pytest.raises(
             ReportActivity.DoesNotExist,
             match='Under NAICS code 322112, there must be emissions reported under the "Pulp and Paper production" activity.',
@@ -50,7 +55,9 @@ class TestIndustrialProcess(TestCase):
             match="""Under NAICS code 322112 and with either 'chemical pulp' or 'lime recovered by kiln' products,
                 biogenic industrial process emission details must be reported.""",
         ):
-            retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version)
+            retrieve_pulp_and_paper_biogenic_emissions_split(
+                report_activity.report_version
+            )
 
     def test_retrieve_biogenic_emissions_split_with_bad_data(self):
         report_activity = make_recipe(
@@ -61,9 +68,11 @@ class TestIndustrialProcess(TestCase):
         )
         with pytest.raises(
             KeyError,
-            match="Biogenic industrial process emissions data: key error at \'biogenicIndustrialProcessEmissions\'",
+            match="Biogenic industrial process emissions data: key error at 'biogenicIndustrialProcessEmissions'",
         ):
-            retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version)
+            retrieve_pulp_and_paper_biogenic_emissions_split(
+                report_activity.report_version
+            )
 
     def test_retrieve_biogenic_emissions_split_with_not_100_total(self):
         report_activity = make_recipe(
@@ -80,8 +89,12 @@ class TestIndustrialProcess(TestCase):
             },
             report_version__report__reporting_year_id=2025,
         )
-        with pytest.raises(ValueError, match='The biogenic emissions split reported must total to 1.'):
-            retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version)
+        with pytest.raises(
+            ValueError, match="The biogenic emissions split reported must total to 1."
+        ):
+            retrieve_pulp_and_paper_biogenic_emissions_split(
+                report_activity.report_version
+            )
 
     def test_retrieve_biogenic_emissions_split_with_good_data(self):
         report_activity = make_recipe(
@@ -98,8 +111,10 @@ class TestIndustrialProcess(TestCase):
             },
             report_version__report__reporting_year_id=2025,
         )
-        result = retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version)
-        assert result == BiogenicEmissionsSplit(Decimal('0.38'), Decimal('0.62'))
+        result = retrieve_pulp_and_paper_biogenic_emissions_split(
+            report_activity.report_version
+        )
+        assert result == BiogenicEmissionsSplit(Decimal("0.38"), Decimal("0.62"))
 
     def test_retrieve_biogenic_emissions_split_with_floating_point(self):
         report_activity = make_recipe(
@@ -116,10 +131,14 @@ class TestIndustrialProcess(TestCase):
             },
             report_version__report__reporting_year_id=2025,
         )
-        result = retrieve_pulp_and_paper_biogenic_emissions_split(report_activity.report_version)
-        assert result == BiogenicEmissionsSplit(Decimal('0.1078'), Decimal('0.8922'))
+        result = retrieve_pulp_and_paper_biogenic_emissions_split(
+            report_activity.report_version
+        )
+        assert result == BiogenicEmissionsSplit(Decimal("0.1078"), Decimal("0.8922"))
 
-    @patch("reporting.service.compliance_service.industrial_process.retrieve_pulp_and_paper_biogenic_emissions_split")
+    @patch(
+        "reporting.service.compliance_service.industrial_process.retrieve_pulp_and_paper_biogenic_emissions_split"
+    )
     def test_compute_industrial_process_emissions(self, mock_split_function: MagicMock):
         ## SETUP ##
         # Not pulp and paper
@@ -130,7 +149,9 @@ class TestIndustrialProcess(TestCase):
             "reporting.tests.utils.report_product_emission_allocation",
             report_version=emission_allocation.report_version,
             report_product__report_version=emission_allocation.report_version,
-            emission_category=EmissionCategory.objects.get(category_name='Industrial process emissions'),
+            emission_category=EmissionCategory.objects.get(
+                category_name="Industrial process emissions"
+            ),
             allocated_quantity=Decimal("6000.0006"),
         )
         make_recipe(
@@ -152,17 +173,25 @@ class TestIndustrialProcess(TestCase):
         product_emission_allocation_chemical_pulp = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
             report_version=emission_allocation_pnp.report_version,
-            report_product__product=RegulatedProduct.objects.get(name="Pulp and paper: chemical pulp"),
+            report_product__product=RegulatedProduct.objects.get(
+                name="Pulp and paper: chemical pulp"
+            ),
             report_product__report_version=emission_allocation_pnp.report_version,
-            emission_category=EmissionCategory.objects.get(category_name='Industrial process emissions'),
+            emission_category=EmissionCategory.objects.get(
+                category_name="Industrial process emissions"
+            ),
             allocated_quantity=Decimal("1000"),
         )
         product_emission_allocation_lime_recovered_by_kiln = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
             report_version=emission_allocation_pnp.report_version,
-            report_product__product=RegulatedProduct.objects.get(name="Pulp and paper: lime recovered by kiln"),
+            report_product__product=RegulatedProduct.objects.get(
+                name="Pulp and paper: lime recovered by kiln"
+            ),
             report_product__report_version=emission_allocation_pnp.report_version,
-            emission_category=EmissionCategory.objects.get(category_name='Industrial process emissions'),
+            emission_category=EmissionCategory.objects.get(
+                category_name="Industrial process emissions"
+            ),
             allocated_quantity=Decimal("2000"),
         )
         industrial_and_woody_biomass_emission = make_recipe(
@@ -181,7 +210,8 @@ class TestIndustrialProcess(TestCase):
         industrial_only_emission.emission_categories.set([3])
 
         mock_split_function.return_value = BiogenicEmissionsSplit(
-            chemical_pulp_ratio=Decimal('0.2'), lime_recovered_by_kiln_ratio=Decimal('0.8')
+            chemical_pulp_ratio=Decimal("0.2"),
+            lime_recovered_by_kiln_ratio=Decimal("0.8"),
         )
 
         ## TESTS ##

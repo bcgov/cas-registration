@@ -1,4 +1,6 @@
-# ruff: noqa: F403
+# Order of imports is important to avoid circular dependencies
+# ruff: noqa: I001
+
 from .validators import *
 from .activities import *
 from .business_structure import *

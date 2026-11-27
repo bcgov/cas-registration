@@ -1,10 +1,14 @@
-from django.db import transaction
-from django.db.models import QuerySet
-from typing import List, Dict
+from typing import Dict, List
 from uuid import UUID
 
-from reporting.models import ReportVersion, FacilityReport, ReportOperation
-from registration.models import Facility, FacilityDesignatedOperationTimeline, FacilitySnapshot
+from django.db import transaction
+from django.db.models import QuerySet
+from registration.models import (
+    Facility,
+    FacilityDesignatedOperationTimeline,
+    FacilitySnapshot,
+)
+from reporting.models import FacilityReport, ReportOperation, ReportVersion
 from reporting.service.report_product_service import ReportProductService
 from reporting.service.sync_validation_service import SyncValidationService
 
@@ -12,7 +16,7 @@ from reporting.service.sync_validation_service import SyncValidationService
 class ReportFacilitiesService:
     @staticmethod
     @transaction.atomic
-    def get_report_facility_list_by_version_id(version_id: int) -> Dict[str, List[str]]:
+    def get_report_facility_list_by_version_id(version_id: int) -> dict[str, list[str]]:
         """
         Get facilities associated with a report version's operation.
 
@@ -22,12 +26,16 @@ class ReportFacilitiesService:
         Returns:
             Dictionary containing list of facilities with their details
         """
-        report_version = ReportVersion.objects.select_related('report__operation').get(id=version_id)
+        report_version = ReportVersion.objects.select_related("report__operation").get(
+            id=version_id
+        )
 
         # Retrieve distinct facilities associated with this report version's operation
         facilities_list = list(
-            Facility.objects.filter(designated_operations__operation=report_version.report.operation)
-            .values_list('name', flat=True)
+            Facility.objects.filter(
+                designated_operations__operation=report_version.report.operation
+            )
+            .values_list("name", flat=True)
             .distinct()
         )
 
@@ -35,17 +43,23 @@ class ReportFacilitiesService:
 
     @classmethod
     @transaction.atomic
-    def save_selected_facilities(cls, version_id: int, facility_list: list[UUID]) -> None:
-        report_version = ReportVersion.objects.select_related('report__operation', 'report__operator').get(
-            id=version_id
-        )
+    def save_selected_facilities(
+        cls, version_id: int, facility_list: list[UUID]
+    ) -> None:
+        report_version = ReportVersion.objects.select_related(
+            "report__operation", "report__operator"
+        ).get(id=version_id)
 
         # Remove facilities not in the new selection
-        FacilityReport.objects.filter(report_version=report_version).exclude(facility_id__in=facility_list).delete()
+        FacilityReport.objects.filter(report_version=report_version).exclude(
+            facility_id__in=facility_list
+        ).delete()
 
         # Determine which facilities need to be created
         existing_ids = set(
-            FacilityReport.objects.filter(report_version=report_version).values_list('facility_id', flat=True)
+            FacilityReport.objects.filter(report_version=report_version).values_list(
+                "facility_id", flat=True
+            )
         )
         to_create_ids = set(facility_list) - existing_ids
 
@@ -65,7 +79,7 @@ class ReportFacilitiesService:
         timeline_map = dict(
             FacilityDesignatedOperationTimeline.objects.filter(
                 operation=operation, facility_id__in=to_create_ids
-            ).values_list('facility_id', 'end_date')
+            ).values_list("facility_id", "end_date")
         )
 
         # Build facility reports
@@ -82,20 +96,26 @@ class ReportFacilitiesService:
 
         # Bulk create and assign activities
         created = FacilityReport.objects.bulk_create(new_reports)
-        default_activities = ReportOperation.objects.get(report_version=report_version).activities.all()
+        default_activities = ReportOperation.objects.get(
+            report_version=report_version
+        ).activities.all()
         for fr in created:
             fr.activities.set(default_activities)
 
         # Re-populate empty unregulated product records for the newly created facility reports
-        ReportProductService.update_empty_records_for_unregulated_products(report_version.id, [f.id for f in created])
+        ReportProductService.update_empty_records_for_unregulated_products(
+            report_version.id, [f.id for f in created]
+        )
 
     @staticmethod
     def _get_latest_snapshots(operation_id: UUID, facility_ids: set[UUID]) -> dict:
         """Get the most recent snapshot for each facility."""
         snapshots = (
-            FacilitySnapshot.objects.filter(operation_id=operation_id, facility_id__in=facility_ids)
-            .order_by('facility_id', '-snapshot_timestamp')
-            .distinct('facility_id')
+            FacilitySnapshot.objects.filter(
+                operation_id=operation_id, facility_id__in=facility_ids
+            )
+            .order_by("facility_id", "-snapshot_timestamp")
+            .distinct("facility_id")
         )
         return {snap.facility_id: snap for snap in snapshots}
 
@@ -108,7 +128,9 @@ class ReportFacilitiesService:
         is_old_operator: bool,
     ) -> FacilityReport:
         """Create a FacilityReport instance with appropriate snapshot or current data."""
-        use_snapshot = (is_old_operator or bool(timeline_map.get(facility.id))) and facility.id in snapshot_map
+        use_snapshot = (
+            is_old_operator or bool(timeline_map.get(facility.id))
+        ) and facility.id in snapshot_map
 
         if use_snapshot:
             snap = snapshot_map[facility.id]
@@ -138,16 +160,20 @@ class ReportFacilitiesService:
         from snapshots. For current operators, show all facilities in the timeline.
         """
         selected_facilities = set(
-            FacilityReport.objects.filter(report_version_id=version_id).values_list('facility_id', flat=True)
+            FacilityReport.objects.filter(report_version_id=version_id).values_list(
+                "facility_id", flat=True
+            )
         )
-        report_version = ReportVersion.objects.select_related('report__operation', 'report__operator').get(
-            id=version_id
-        )
+        report_version = ReportVersion.objects.select_related(
+            "report__operation", "report__operator"
+        ).get(id=version_id)
         operation = report_version.report.operation
         is_old_operator = report_version.report.operator_id != operation.operator_id
 
         # Get timelines and snapshots based on operator status
-        timelines, snapshot_map = cls._get_timelines_and_snapshots(operation.id, is_old_operator)
+        timelines, snapshot_map = cls._get_timelines_and_snapshots(
+            operation.id, is_old_operator
+        )
 
         # Build facility lists
         current_facilities, past_facilities = cls._build_facility_lists(
@@ -166,7 +192,9 @@ class ReportFacilitiesService:
         }
 
     @staticmethod
-    def _get_timelines_and_snapshots(operation_id: UUID, is_old_operator: bool) -> tuple:
+    def _get_timelines_and_snapshots(
+        operation_id: UUID, is_old_operator: bool
+    ) -> tuple:
         """
         Get facility timelines and snapshots based on whether it's an old operator.
 
@@ -175,22 +203,26 @@ class ReportFacilitiesService:
         """
         if is_old_operator:
             # For old operators, only show facilities from snapshots
-            snapshots = FacilitySnapshot.objects.filter(operation_id=operation_id).select_related('facility')
+            snapshots = FacilitySnapshot.objects.filter(
+                operation_id=operation_id
+            ).select_related("facility")
             snapshot_map = {s.facility_id: s for s in snapshots}
 
             timelines = (
                 FacilityDesignatedOperationTimeline.objects.filter(
                     operation_id=operation_id, facility_id__in=snapshot_map.keys()
                 )
-                .select_related('facility')
-                .order_by('facility__name')
+                .select_related("facility")
+                .order_by("facility__name")
                 .distinct()
             )
         else:
             # For current operator, show all facilities in the timeline
             timeline_facility_ids = (
-                FacilityDesignatedOperationTimeline.objects.filter(operation_id=operation_id)
-                .values_list('facility_id', flat=True)
+                FacilityDesignatedOperationTimeline.objects.filter(
+                    operation_id=operation_id
+                )
+                .values_list("facility_id", flat=True)
                 .distinct()
             )
             snapshots = FacilitySnapshot.objects.filter(
@@ -199,9 +231,11 @@ class ReportFacilitiesService:
             snapshot_map = {s.facility_id: s for s in snapshots}
 
             timelines = (
-                FacilityDesignatedOperationTimeline.objects.filter(operation_id=operation_id)
-                .select_related('facility')
-                .order_by('facility__name')
+                FacilityDesignatedOperationTimeline.objects.filter(
+                    operation_id=operation_id
+                )
+                .select_related("facility")
+                .order_by("facility__name")
                 .distinct()
             )
 
@@ -227,11 +261,17 @@ class ReportFacilitiesService:
 
         for timeline in timelines:
             facility = timeline.facility
-            use_snapshot = facility.id in snapshot_map and (is_old_operator or facility.operation_id != operation_id)
+            use_snapshot = facility.id in snapshot_map and (
+                is_old_operator or facility.operation_id != operation_id
+            )
 
             facility_data = {
-                "facility_id": snapshot_map[facility.id].facility_id if use_snapshot else facility.id,
-                "facility__name": snapshot_map[facility.id].name if use_snapshot else facility.name,
+                "facility_id": snapshot_map[facility.id].facility_id
+                if use_snapshot
+                else facility.id,
+                "facility__name": snapshot_map[facility.id].name
+                if use_snapshot
+                else facility.name,
                 "is_selected": (
                     facility.id in selected_facilities
                     if timeline.end_date
@@ -239,6 +279,8 @@ class ReportFacilitiesService:
                 ),
             }
 
-            (past_facilities if timeline.end_date else current_facilities).append(facility_data)
+            (past_facilities if timeline.end_date else current_facilities).append(
+                facility_data
+            )
 
         return current_facilities, past_facilities

@@ -1,12 +1,13 @@
 import json
 import os
 import unittest
-from django.apps import apps as django_apps
-from django.test import TestCase
+
 from common.management.commands.snapshot_db import (
     is_historical_model,
     snapshot_model,
 )
+from django.apps import apps as django_apps
+from django.test import TestCase
 
 
 class SquashIntegrityTestBase(TestCase):
@@ -24,7 +25,9 @@ class SquashIntegrityTestBase(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         if not cls.SNAPSHOT_APPS or not cls.SNAPSHOT_PATH:
-            raise NotImplementedError("Subclasses must define SNAPSHOT_APPS and SNAPSHOT_PATH")
+            raise NotImplementedError(
+                "Subclasses must define SNAPSHOT_APPS and SNAPSHOT_PATH"
+            )
         # Load the reference snapshot captured from the original migrations
         cls.snapshot = cls._load_snapshot()
         # Capture the current DB state produced by the squashed migration
@@ -73,7 +76,8 @@ class SquashIntegrityTestBase(TestCase):
         missing = set(self._active_keys()) - set(self.current.keys())
         self.assertFalse(
             missing,
-            "Tables present in snapshot but missing from current DB:\n" + "\n".join(f"  {k}" for k in sorted(missing)),
+            "Tables present in snapshot but missing from current DB:\n"
+            + "\n".join(f"  {k}" for k in sorted(missing)),
         )
 
     def test_no_extra_tables_in_current_db(self):
@@ -81,7 +85,8 @@ class SquashIntegrityTestBase(TestCase):
         extra = set(self.current.keys()) - set(self.snapshot.keys())
         self.assertFalse(
             extra,
-            "Tables present in current DB but NOT in snapshot:\n" + "\n".join(f"  {k}" for k in sorted(extra)),
+            "Tables present in current DB but NOT in snapshot:\n"
+            + "\n".join(f"  {k}" for k in sorted(extra)),
         )
 
     def test_row_counts_match(self):
@@ -117,7 +122,9 @@ class SquashIntegrityTestBase(TestCase):
 
             def fmt(label, rows):
                 preview = "\n".join(f"      {r}" for r in sorted(rows)[:10])
-                truncated = f"\n      ... and {len(rows) - 10} more" if len(rows) > 10 else ""
+                truncated = (
+                    f"\n      ... and {len(rows) - 10} more" if len(rows) > 10 else ""
+                )
                 return f"    {len(rows)} row(s) {label}:\n{preview}{truncated}"
 
             lines = [f"  {key}:"]

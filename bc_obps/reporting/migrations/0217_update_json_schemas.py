@@ -5,9 +5,8 @@ from reporting.migrations._helpers import load_source_type_schemas_from_json
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('reporting', '0216_V5_24_0'),
+        ("reporting", "0216_V5_24_0"),
     ]
 
     operations = [

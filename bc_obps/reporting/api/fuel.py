@@ -1,13 +1,14 @@
-from common.permissions import authorize
-from reporting.service.data_access_service.fuel_service import FuelTypeDataAccessService
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from .router import router
-from django.http import HttpRequest
 from typing import Tuple
+
+from common.permissions import authorize
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest
+from registration.schema import Message
 from reporting.models import FuelType
 from reporting.schema.fuel import FuelTypeSchema
-from registration.schema import Message
+from reporting.service.data_access_service.fuel_service import FuelTypeDataAccessService
 
+from .router import router
 
 ##### GET #####
 
@@ -20,5 +21,5 @@ from registration.schema import Message
 def get_fuel_data(
     request: HttpRequest,
     fuel_name: str,
-) -> Tuple[int, FuelType]:
+) -> tuple[int, FuelType]:
     return 200, FuelTypeDataAccessService.get_fuel(fuel_name)

@@ -1,10 +1,8 @@
-from uuid import UUID
 from unittest.mock import patch
+from uuid import UUID
 
 from django.test import SimpleTestCase
-
 from reporting.api_v2.forms.form_response_builder import FormResponseBuilder
-
 
 TEST_FACILITY_ID = UUID("12345678-1234-5678-1234-567812345678")
 
@@ -12,18 +10,24 @@ TEST_FACILITY_ID = UUID("12345678-1234-5678-1234-567812345678")
 class TestFormResponseBuilder(SimpleTestCase):
     @patch("reporting.api_v2.forms.form_response_builder.ReportVersion")
     def test_constructor(self, mock_report_version):
-        mocked_report_version = mock_report_version.objects.select_related.return_value.get.return_value
+        mocked_report_version = (
+            mock_report_version.objects.select_related.return_value.get.return_value
+        )
         mocked_report_version.report.reporting_year_id = 2021
         mocked_report_version.id = 99
 
         builder = FormResponseBuilder(123)
 
-        assert builder.build() == {"report_data": {"reporting_year": 2021, "report_version_id": 99}}
+        assert builder.build() == {
+            "report_data": {"reporting_year": 2021, "report_version_id": 99}
+        }
 
     @patch("reporting.api_v2.forms.form_response_builder.FacilityReport")
     @patch("reporting.api_v2.forms.form_response_builder.ReportVersion")
     def test_with_facility_data(self, mock_report_version, mock_facility_report):
-        mocked_report_version = mock_report_version.objects.select_related.return_value.get.return_value
+        mocked_report_version = (
+            mock_report_version.objects.select_related.return_value.get.return_value
+        )
         mocked_report_version.report.reporting_year_id = 1999
         mocked_report_version.id = 100
 
@@ -44,14 +48,20 @@ class TestFormResponseBuilder(SimpleTestCase):
     @patch("reporting.api_v2.forms.form_response_builder.ReportOperationOptOutService")
     @patch("reporting.api_v2.forms.form_response_builder.ReportOperation")
     @patch("reporting.api_v2.forms.form_response_builder.ReportVersion")
-    def test_with_operation_data(self, mock_report_version, mock_report_operation, mock_report_operation_opt_out):
-        mocked_report_version = mock_report_version.objects.select_related.return_value.get.return_value
+    def test_with_operation_data(
+        self, mock_report_version, mock_report_operation, mock_report_operation_opt_out
+    ):
+        mocked_report_version = (
+            mock_report_version.objects.select_related.return_value.get.return_value
+        )
         mocked_report_version.report.reporting_year_id = 2001
         mocked_report_version.id = 123456789
 
         mock_report_operation_opt_out.is_operation_opted_out.return_value = False
 
-        mocked_report_operation = mock_report_operation.objects.select_related.return_value.get.return_value
+        mocked_report_operation = (
+            mock_report_operation.objects.select_related.return_value.get.return_value
+        )
         mocked_report_operation.operation_type = "test type"
         mocked_report_operation.naics_code.naics_code = "123456"
 
@@ -68,7 +78,9 @@ class TestFormResponseBuilder(SimpleTestCase):
 
     @patch("reporting.api_v2.forms.form_response_builder.ReportVersion")
     def test_with_payload(self, mock_report_version):
-        mocked_report_version = mock_report_version.objects.select_related.return_value.get.return_value
+        mocked_report_version = (
+            mock_report_version.objects.select_related.return_value.get.return_value
+        )
         mocked_report_version.report.reporting_year_id = 2999
         mocked_report_version.id = 101
 
@@ -90,11 +102,15 @@ class TestFormResponseBuilder(SimpleTestCase):
         mock_facility_report,
         mock_report_operation_opt_out,
     ):
-        mocked_report_version = mock_report_version.objects.select_related.return_value.get.return_value
+        mocked_report_version = (
+            mock_report_version.objects.select_related.return_value.get.return_value
+        )
         mocked_report_version.report.reporting_year_id = 3000
         mocked_report_version.id = 102
 
-        mocked_report_operation = mock_report_operation.objects.select_related.return_value.get.return_value
+        mocked_report_operation = (
+            mock_report_operation.objects.select_related.return_value.get.return_value
+        )
         mocked_report_operation.operation_type = "Operation Type"
         mocked_report_operation.naics_code.naics_code = "222333"
 
@@ -108,11 +124,19 @@ class TestFormResponseBuilder(SimpleTestCase):
 
         # Build order shouldn't matter
         assert (
-            builder.payload({"c": 1}).facility_data(TEST_FACILITY_ID).operation_data().build()
-            == builder.operation_data().facility_data(TEST_FACILITY_ID).payload({"c": 1}).build()
+            builder.payload({"c": 1})
+            .facility_data(TEST_FACILITY_ID)
+            .operation_data()
+            .build()
+            == builder.operation_data()
+            .facility_data(TEST_FACILITY_ID)
+            .payload({"c": 1})
+            .build()
         )
 
-        assert builder.payload({"c": 1}).facility_data(TEST_FACILITY_ID).operation_data().build() == {
+        assert builder.payload({"c": 1}).facility_data(
+            TEST_FACILITY_ID
+        ).operation_data().build() == {
             "report_data": {"reporting_year": 3000, "report_version_id": 102},
             "facility_data": {
                 "facility_id": TEST_FACILITY_ID,

@@ -1,22 +1,24 @@
-from django.db import models
 from decimal import Decimal
-from registration.models.time_stamped_model import TimeStampedModel
+
 from compliance.models import ComplianceObligation, ElicensingInvoice
+from django.db import models
+from registration.models.time_stamped_model import TimeStampedModel
+
 from .rls_configs.compliance_penalty import Rls as CompliancePenaltyRls
 
 
 class CompliancePenalty(TimeStampedModel):
     class PenaltyType(models.TextChoices):
-        AUTOMATIC_OVERDUE = 'Automatic Overdue'
-        LATE_SUBMISSION = 'Late Submission'
+        AUTOMATIC_OVERDUE = "Automatic Overdue"
+        LATE_SUBMISSION = "Late Submission"
 
     class Frequency(models.TextChoices):
-        DAILY = 'Daily'
-        MONTHLY = 'Monthly'
+        DAILY = "Daily"
+        MONTHLY = "Monthly"
 
     class Status(models.TextChoices):
-        NOT_PAID = 'NOT PAID', 'Not Paid'
-        PAID = 'PAID', 'Paid'
+        NOT_PAID = "NOT PAID", "Not Paid"
+        PAID = "PAID", "Paid"
 
     compliance_obligation = models.ForeignKey(
         ComplianceObligation,
@@ -34,7 +36,9 @@ class CompliancePenalty(TimeStampedModel):
         blank=True,
     )
 
-    fee_date = models.DateField(null=True, blank=True, db_comment="The date the fee was created")
+    fee_date = models.DateField(
+        null=True, blank=True, db_comment="The date the fee was created"
+    )
 
     accrual_start_date = models.DateField(
         db_comment="The date on which the penalty began accruing. It will always be the day after the obligation's due date",
@@ -88,9 +92,7 @@ class CompliancePenalty(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
-        db_table_comment = (
-            "This table contains compliance penalty data for obligations that were not met before their due date"
-        )
+        db_table_comment = "This table contains compliance penalty data for obligations that were not met before their due date"
         db_table = 'erc"."compliance_penalty'
 
     Rls = CompliancePenaltyRls

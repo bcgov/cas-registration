@@ -1,7 +1,9 @@
 from django.db import models
-from reporting.models import ReportVersion
-from reporting.models.rls_configs.report_compliance_summary import Rls as ReportComplianceSummaryRls
 from registration.models.time_stamped_model import TimeStampedModel
+from reporting.models import ReportVersion
+from reporting.models.rls_configs.report_compliance_summary import (
+    Rls as ReportComplianceSummaryRls,
+)
 from reporting.models.triggers import immutable_report_version_trigger
 
 

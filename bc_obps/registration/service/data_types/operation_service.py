@@ -12,31 +12,31 @@ class MultipleOperatorData:
     business_structure_id: str
     cra_business_number: str
 
-    id: Optional[int] = None
-    bc_corporate_registry_number: Optional[str] = None
-    street_address: Optional[str] = None
-    municipality: Optional[str] = None
-    province: Optional[str] = None
-    postal_code: Optional[str] = None
+    id: int | None = None
+    bc_corporate_registry_number: str | None = None
+    street_address: str | None = None
+    municipality: str | None = None
+    province: str | None = None
+    postal_code: str | None = None
 
 
 @dataclass(kw_only=True)  # Allowing for extension with required fields
 class OperationData:
     name: str
     type: str
-    registration_purpose: Optional[Operation.Purposes] = None
-    regulated_products: Optional[List[int]] = None
-    activities: Optional[List[int]] = None
-    naics_code_id: Optional[int] = None
-    secondary_naics_code_id: Optional[int] = None
-    tertiary_naics_code_id: Optional[int] = None
-    multiple_operators_array: Optional[List[MultipleOperatorData]] = None
-    date_of_first_shipment: Optional[str] = None
+    registration_purpose: Operation.Purposes | None = None
+    regulated_products: list[int] | None = None
+    activities: list[int] | None = None
+    naics_code_id: int | None = None
+    secondary_naics_code_id: int | None = None
+    tertiary_naics_code_id: int | None = None
+    multiple_operators_array: list[MultipleOperatorData] | None = None
+    date_of_first_shipment: str | None = None
 
     # Attachments
-    boundary_map: Optional[UploadedFile] = None
-    process_flow_diagram: Optional[UploadedFile] = None
-    new_entrant_application: Optional[UploadedFile] = None
+    boundary_map: UploadedFile | None = None
+    process_flow_diagram: UploadedFile | None = None
+    new_entrant_application: UploadedFile | None = None
 
     def operation_fields(self) -> dict:
         return {
@@ -52,7 +52,7 @@ class OperationData:
 
 @dataclass
 class UpdateOperationData(OperationData):
-    operation_representatives: List[int]
+    operation_representatives: list[int]
 
 
 @dataclass
@@ -65,4 +65,4 @@ class OptedInOperationDetailData:
     meets_producing_gger_schedule_a1_regulated_product: bool
     meets_reporting_and_regulated_obligations: bool
     meets_notification_to_director_on_criteria_change: bool
-    final_reporting_year: Optional[int] = None
+    final_reporting_year: int | None = None

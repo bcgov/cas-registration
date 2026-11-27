@@ -1,15 +1,16 @@
-from unittest.mock import patch, MagicMock
+from dataclasses import asdict
+from unittest.mock import MagicMock, patch
+
 from model_bakery import baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from reporting.service.report_version_service import ReportVersionData
-from dataclasses import asdict
 
 
 class TestReportVersionEndpoint(CommonTestSetup):
     # GET report-operation
     def test_authorized_users_can_get_report_version(self):
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation')
+        report_operation = baker.make_recipe("reporting.tests.utils.report_operation")
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=report_operation.report_version.report.operator
         )
@@ -28,12 +29,16 @@ class TestReportVersionEndpoint(CommonTestSetup):
         assert response.status_code == 200
         # Test that the endpoint returns the correct data
         response_json = response.json()
-        assert response_json['operator_legal_name'] == str(
+        assert response_json["operator_legal_name"] == str(
             report_operation.report_version.report_operation.operator_legal_name
         )
 
-    @patch("reporting.service.report_version_service.ReportVersionService.change_report_version_type")
-    def test_change_report_version_type(self, mock_change_version_service_method: MagicMock):
+    @patch(
+        "reporting.service.report_version_service.ReportVersionService.change_report_version_type"
+    )
+    def test_change_report_version_type(
+        self, mock_change_version_service_method: MagicMock
+    ):
         mock_change_version_service_method.return_value = baker.make_recipe(
             "reporting.tests.utils.report_version",
             id=1234,
@@ -43,9 +48,12 @@ class TestReportVersionEndpoint(CommonTestSetup):
             report_type="Annual Report",
         )
 
-        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=report_version.report.operator, operations=[report_version.report.operation]
+            operator=report_version.report.operator,
+            operations=[report_version.report.operation],
         )
 
         response = TestUtils.mock_post_with_auth_role(
@@ -60,9 +68,12 @@ class TestReportVersionEndpoint(CommonTestSetup):
         assert response.json() == 1234
 
     # POST report_version change
-    @patch("reporting.service.report_version_service.ReportVersionService.save_report_version")
-    def test_authorized_users_can_save_report_version_change(self, mock_save_report_version_change: MagicMock):
-
+    @patch(
+        "reporting.service.report_version_service.ReportVersionService.save_report_version"
+    )
+    def test_authorized_users_can_save_report_version_change(
+        self, mock_save_report_version_change: MagicMock
+    ):
         payload = ReportVersionData(
             reason_for_change="testing",
         )
@@ -72,10 +83,15 @@ class TestReportVersionEndpoint(CommonTestSetup):
             status="Draft",
             reason_for_change=payload.reason_for_change,
         )
-        baker.make_recipe("reporting.tests.utils.report_operation", report_version=report_version)
-        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        baker.make_recipe(
+            "reporting.tests.utils.report_operation", report_version=report_version
+        )
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=report_version.report.operator, operations=[report_version.report.operation]
+            operator=report_version.report.operator,
+            operations=[report_version.report.operation],
         )
 
         mock_save_report_version_change.return_value = report_version
@@ -95,4 +111,6 @@ class TestReportVersionEndpoint(CommonTestSetup):
         response_json = response.json()
         assert response_json["reason_for_change"] == payload.reason_for_change
 
-        mock_save_report_version_change.assert_called_once_with(report_version.id, payload)
+        mock_save_report_version_change.assert_called_once_with(
+            report_version.id, payload
+        )

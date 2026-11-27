@@ -1,4 +1,6 @@
-from reporting.service.report_validation.report_validation_error import ReportValidationError
+from reporting.service.report_validation.report_validation_error import (
+    ReportValidationError,
+)
 
 
 class ReportValidationException(Exception):

@@ -1,7 +1,8 @@
 from typing import Generic, List, TypeVar
+
 from ninja import Schema
 
-TPayload = TypeVar('TPayload', bound='Schema')
+TPayload = TypeVar("TPayload", bound="Schema")
 
 """
 Generic schema for standard typed payload
@@ -18,7 +19,7 @@ Generic schemas for paginated typed payload
 
 
 class Paginated(Schema, Generic[TPayload]):
-    items: List[TPayload]
+    items: list[TPayload]
     count: int
 
 

@@ -1,5 +1,6 @@
 from decimal import Decimal
 from unittest.mock import patch
+
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
@@ -11,11 +12,11 @@ class TestComplianceReportVersionEndpoint(CommonTestSetup):
     )
     def test_get_compliance_report_version_success(self, mock_get_version):
         # Mock authorization
-        operator = make_recipe('registration.tests.utils.operator')
+        operator = make_recipe("registration.tests.utils.operator")
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         # Arrange
         compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
+            "compliance.tests.utils.compliance_report_version",
             report_compliance_summary__excess_emissions=Decimal("50.0000"),
             report_compliance_summary__credited_emissions=Decimal("25.0000"),
             status="Obligation not met",
@@ -24,7 +25,8 @@ class TestComplianceReportVersionEndpoint(CommonTestSetup):
             compliance_report__report__operator=operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=operator, operations=[compliance_report_version.compliance_report.report.operation]
+            operator=operator,
+            operations=[compliance_report_version.compliance_report.report.operation],
         )
         mock_get_version.return_value = compliance_report_version
 

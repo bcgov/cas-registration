@@ -1,5 +1,5 @@
-from model_bakery.baker import make_recipe
 import pytest
+from model_bakery.baker import make_recipe
 from reporting.models.report_attachment import ReportAttachment
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
@@ -26,7 +26,9 @@ class TestReportAttachmentsAreScannedValidator:
                 Severity.ERROR,
                 "Your verification_statement attachment is being scanned for security. This may take a few minutes, please wait before submitting.",
                 key=ReportValidationErrorKey.ATTACHMENT_NOT_SCANNED,
-                context=ErrorContext(report_version_id=report_attachment.report_version.id),
+                context=ErrorContext(
+                    report_version_id=report_attachment.report_version.id
+                ),
             )
         }
 

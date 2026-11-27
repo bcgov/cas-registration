@@ -1,15 +1,18 @@
 from typing import Literal, Tuple
-from ninja.types import DictStrAny
-from common.permissions import authorize
-from django.http import HttpRequest
-from registration.constants import USER_OPERATOR_TAGS
-from registration.schema import UserOperatorOut, Message
-from common.api.utils import get_current_user_guid
-from registration.api.router import router
-from registration.models import UserOperator
 from uuid import UUID
+
+from common.api.utils import get_current_user_guid
+from common.permissions import authorize
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.service.data_access_service.user_operator_service import UserOperatorDataAccessService
+from django.http import HttpRequest
+from ninja.types import DictStrAny
+from registration.api.router import router
+from registration.constants import USER_OPERATOR_TAGS
+from registration.models import UserOperator
+from registration.schema import Message, UserOperatorOut
+from registration.service.data_access_service.user_operator_service import (
+    UserOperatorDataAccessService,
+)
 from registration.service.user_operator_service import UserOperatorService
 
 
@@ -23,7 +26,9 @@ from registration.service.user_operator_service import UserOperatorService
     Internal users are always allowed to access user operators.""",
     auth=authorize("approved_authorized_roles"),
 )
-def get_user_operator_by_id(request: HttpRequest, user_operator_id: UUID) -> Tuple[Literal[200], UserOperator]:
+def get_user_operator_by_id(
+    request: HttpRequest, user_operator_id: UUID
+) -> tuple[Literal[200], UserOperator]:
     UserOperatorService.check_if_user_eligible_to_access_user_operator(
         get_current_user_guid(request), user_operator_id
     )  # industry users can only access their own user_operators
@@ -37,6 +42,10 @@ def get_user_operator_by_id(request: HttpRequest, user_operator_id: UUID) -> Tup
     description="""Deletes a user-operator by its ID.""",
     auth=authorize("industry_user"),
 )
-def delete_user_operator(request: HttpRequest, user_operator_id: UUID) -> Tuple[Literal[200], DictStrAny]:
-    UserOperatorService.delete_user_operator(get_current_user_guid(request), user_operator_id)
+def delete_user_operator(
+    request: HttpRequest, user_operator_id: UUID
+) -> tuple[Literal[200], DictStrAny]:
+    UserOperatorService.delete_user_operator(
+        get_current_user_guid(request), user_operator_id
+    )
     return 200, {"success": True}

@@ -1,31 +1,40 @@
-from common.permissions import authorize
-from django.http import HttpRequest
+from typing import List, Literal, Tuple
+
 from common.api.utils import get_current_user_guid
+from common.permissions import authorize
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.db.models import Q, QuerySet
+from django.http import HttpRequest
+from registration.api.router import router
 from registration.constants import USER_OPERATOR_TAGS
 from registration.models.user_operator import UserOperator
-from registration.service.data_access_service.user_operator_service import UserOperatorDataAccessService
-from django.db.models import QuerySet, Q
-from registration.schema import UserOperatorUsersOut, Message
-from typing import List, Literal, Tuple
-from registration.api.router import router
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from registration.schema import Message, UserOperatorUsersOut
+from registration.service.data_access_service.user_operator_service import (
+    UserOperatorDataAccessService,
+)
 
 
 # "current" refers to the current user-operator (we look up the current user-operator via the current user)
 @router.get(
     "/user-operators/current/operator-users",
-    response={200: List[UserOperatorUsersOut], custom_codes_4xx: Message},
+    response={200: list[UserOperatorUsersOut], custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves the list of users associated with the operator of the current user. The current user is an industry user admin.
     The endpoint returns the users that have Pending or Approved status.
     The list is filtered based on the business GUID of the current user and the associated operator.""",
     auth=authorize("approved_industry_user"),
 )
-def get_operator_users(request: HttpRequest) -> Tuple[Literal[200], QuerySet[UserOperator]]:
+def get_operator_users(
+    request: HttpRequest,
+) -> tuple[Literal[200], QuerySet[UserOperator]]:
     current_user_guid = get_current_user_guid(request)
     return (
         200,
-        UserOperatorDataAccessService.get_an_operators_user_operators_by_user_guid(current_user_guid)
-        .exclude(Q(user_id=current_user_guid) | Q(status=UserOperator.Statuses.DECLINED))
+        UserOperatorDataAccessService.get_an_operators_user_operators_by_user_guid(
+            current_user_guid
+        )
+        .exclude(
+            Q(user_id=current_user_guid) | Q(status=UserOperator.Statuses.DECLINED)
+        )
         .distinct(),
     )  # Exclude the current user and declined users from the list

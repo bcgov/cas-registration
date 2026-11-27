@@ -32,8 +32,8 @@ class TestPaginatedResponseBuilder(SimpleTestCase):
     def test_pagination_properties_overridden_by_request(self):
         request = HttpRequest()
         request.GET = request.GET.copy()
-        request.GET['page'] = 2
-        request.GET['page_size'] = 50
+        request.GET["page"] = 2
+        request.GET["page_size"] = 50
         builder = PaginatedResponseBuilder(request=request, page=1, page_size=1)
         self.assertEqual(builder.pagination.page, 2)
         self.assertEqual(builder.pagination.page_size, 50)
@@ -44,6 +44,8 @@ class TestPaginatedResponseBuilder(SimpleTestCase):
         sample_queryset = range(100)  # Simulating a queryset with 100 items
         builder.payload(sample_queryset)
         response = builder.build()
-        self.assertIn('payload', response)
-        self.assertIn('items', response['payload'])
-        self.assertEqual(len(response['payload']['items']), PAGE_SIZE)  # Default page size items returned
+        self.assertIn("payload", response)
+        self.assertIn("items", response["payload"])
+        self.assertEqual(
+            len(response["payload"]["items"]), PAGE_SIZE
+        )  # Default page size items returned

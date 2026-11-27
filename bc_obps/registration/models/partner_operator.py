@@ -1,17 +1,17 @@
-from django.db import models
 from common.enums import Schemas
-from registration.enums.enums import RegistrationTableNames
-from registration.models.operator import Operator
+from django.core.validators import RegexValidator
+from django.db import models
 from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,
     BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
     CRA_BUSINESS_NUMBER_MESSAGE,
     CRA_BUSINESS_NUMBER_REGEX,
 )
-from registration.models import TimeStampedModel, BusinessStructure
-from simple_history.models import HistoricalRecords
-from django.core.validators import RegexValidator
+from registration.enums.enums import RegistrationTableNames
+from registration.models import BusinessStructure, TimeStampedModel
+from registration.models.operator import Operator
 from registration.models.rls_configs.partner_operator import Rls as PartnerOperatorRls
+from simple_history.models import HistoricalRecords
 
 
 class PartnerOperator(TimeStampedModel):
@@ -21,15 +21,31 @@ class PartnerOperator(TimeStampedModel):
         on_delete=models.DO_NOTHING,
         related_name="partner_operators",
     )
-    legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator")
-    trade_name = models.CharField(max_length=1000, blank=True, null=True, db_comment="The trade name of an operator")
+    legal_name = models.CharField(
+        max_length=1000, db_comment="The legal name of an operator"
+    )
+    trade_name = models.CharField(
+        max_length=1000,
+        blank=True,
+        null=True,
+        db_comment="The trade name of an operator",
+    )
     cra_business_number = models.CharField(
-        validators=[RegexValidator(regex=CRA_BUSINESS_NUMBER_REGEX, message=CRA_BUSINESS_NUMBER_MESSAGE)],
+        validators=[
+            RegexValidator(
+                regex=CRA_BUSINESS_NUMBER_REGEX, message=CRA_BUSINESS_NUMBER_MESSAGE
+            )
+        ],
         db_comment="The CRA (Canada Revenue Agency) business number of this partner operator, a unique 9-digit identifier",
     )
     bc_corporate_registry_number = models.CharField(
         db_comment="The BC corporate registry number of an operator",
-        validators=[RegexValidator(regex=BC_CORPORATE_REGISTRY_REGEX, message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE)],
+        validators=[
+            RegexValidator(
+                regex=BC_CORPORATE_REGISTRY_REGEX,
+                message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
+            )
+        ],
     )
     business_structure = models.ForeignKey(
         BusinessStructure,
@@ -45,6 +61,8 @@ class PartnerOperator(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "Table containing data about operators' partner operators. Partner operators may have a record in the Operator table. If so, that record is controlled by someone who works for that partner operator. The information in this table is controlled by BC OBPS (Output-Based Pricing System) operators who should not have access to other operator's records."
-        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.PARTNER_OPERATOR.value}'
+        db_table = (
+            f'{Schemas.ERC.value}"."{RegistrationTableNames.PARTNER_OPERATOR.value}'
+        )
 
     Rls = PartnerOperatorRls

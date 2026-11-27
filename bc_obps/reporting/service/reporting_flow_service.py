@@ -1,4 +1,5 @@
 from enum import StrEnum
+
 from registration.models import Operation
 from reporting.models.report_version import ReportVersion
 

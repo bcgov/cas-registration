@@ -2,10 +2,11 @@ import logging
 from datetime import date, timedelta
 from decimal import Decimal
 from typing import List, Optional
-from django.db import transaction
+
 from compliance.models.elicensing_interest_rate import ElicensingInterestRate
 from compliance.service.elicensing.elicensing_api_client import elicensing_api_client
 from compliance.service.elicensing.schema import InterestRatePeriod
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,9 @@ class ElicensingInterestRateService:
         """Fetches the latest interest rates from eLicensing and updates the database."""
         try:
             interest_rates = elicensing_api_client.get_interest_rates()
-            logger.info(f"Fetched {len(interest_rates.periods)} interest rate periods from eLicensing")
+            logger.info(
+                f"Fetched {len(interest_rates.periods)} interest rate periods from eLicensing"
+            )
             cls._update_database_with_rates(interest_rates.periods)
             logger.info("Interest rate refresh completed successfully")
         except Exception as exc:
@@ -34,7 +37,7 @@ class ElicensingInterestRateService:
         return date.fromisoformat(period.startDate) >= cls.CUTOFF_DATE
 
     @classmethod
-    def _update_database_with_rates(cls, periods: List[InterestRatePeriod]) -> None:
+    def _update_database_with_rates(cls, periods: list[InterestRatePeriod]) -> None:
         if not periods:
             logger.warning("No interest rate periods provided")
             return
@@ -51,7 +54,7 @@ class ElicensingInterestRateService:
             cls._update_current_rate_flag()
 
     @classmethod
-    def _process_and_store_periods(cls, periods: List[InterestRatePeriod]) -> None:
+    def _process_and_store_periods(cls, periods: list[InterestRatePeriod]) -> None:
         """Process and store interest rate periods in the database."""
         for index, period in enumerate(periods):
             start_date = date.fromisoformat(period.startDate)
@@ -62,10 +65,12 @@ class ElicensingInterestRateService:
             # Before creating a new record, update any existing records that would overlap
             cls._fix_overlapping_records(start_date)
 
-            end_date = cls._calculate_period_end_date(periods[index + 1] if index < len(periods) - 1 else None)
+            end_date = cls._calculate_period_end_date(
+                periods[index + 1] if index < len(periods) - 1 else None
+            )
             # Convert to Decimal and divide by 100, then quantize to 6 decimal places
-            decimal_rate = Decimal(str(period.rate)) / Decimal('100')
-            quantized_rate = decimal_rate.quantize(Decimal('0.000001'))
+            decimal_rate = Decimal(str(period.rate)) / Decimal("100")
+            quantized_rate = decimal_rate.quantize(Decimal("0.000001"))
             ElicensingInterestRate.objects.create(
                 start_date=start_date,
                 interest_rate=quantized_rate,
@@ -75,14 +80,20 @@ class ElicensingInterestRateService:
             cls._update_previous_period_end_date(index, start_date, periods)
 
     @classmethod
-    def _calculate_period_end_date(cls, next_period: Optional[InterestRatePeriod] = None) -> date:
+    def _calculate_period_end_date(
+        cls, next_period: InterestRatePeriod | None = None
+    ) -> date:
         """Calculate the end date for a given period."""
         if next_period:
-            return date.fromisoformat(next_period.startDate) - cls.DEFAULT_END_DATE_OFFSET
+            return (
+                date.fromisoformat(next_period.startDate) - cls.DEFAULT_END_DATE_OFFSET
+            )
         return cls.FAR_FUTURE_DATE
 
     @classmethod
-    def _update_previous_period_end_date(cls, index: int, start_date: date, periods: List[InterestRatePeriod]) -> None:
+    def _update_previous_period_end_date(
+        cls, index: int, start_date: date, periods: list[InterestRatePeriod]
+    ) -> None:
         """
         Updates the end date of the previous period's record.
 
@@ -97,11 +108,15 @@ class ElicensingInterestRateService:
         previous_start_date = date.fromisoformat(periods[index - 1].startDate)
         new_end_date = start_date - cls.DEFAULT_END_DATE_OFFSET
 
-        previous_record = ElicensingInterestRate.objects.get(start_date=previous_start_date)
+        previous_record = ElicensingInterestRate.objects.get(
+            start_date=previous_start_date
+        )
         if previous_record.end_date != new_end_date:
             previous_record.end_date = new_end_date
-            previous_record.save(update_fields=['end_date'])
-            logger.info(f"Updated previous record end date from {previous_start_date} to {new_end_date}")
+            previous_record.save(update_fields=["end_date"])
+            logger.info(
+                f"Updated previous record end date from {previous_start_date} to {new_end_date}"
+            )
 
     @classmethod
     def _fix_overlapping_records(cls, new_start_date: date) -> None:
@@ -120,8 +135,10 @@ class ElicensingInterestRateService:
 
         for record in overlapping_records:
             record.end_date = new_end_date
-            record.save(update_fields=['end_date'])
-            logger.info(f"Updated overlapping record (start_date={record.start_date}) end_date to {new_end_date}")
+            record.save(update_fields=["end_date"])
+            logger.info(
+                f"Updated overlapping record (start_date={record.start_date}) end_date to {new_end_date}"
+            )
 
     @classmethod
     def _update_current_rate_flag(cls) -> None:
@@ -136,9 +153,13 @@ class ElicensingInterestRateService:
 
         # Find and mark the current rate
         try:
-            current_rate = ElicensingInterestRate.objects.get(start_date__lte=today, end_date__gte=today)
+            current_rate = ElicensingInterestRate.objects.get(
+                start_date__lte=today, end_date__gte=today
+            )
             current_rate.is_current_rate = True
-            current_rate.save(update_fields=['is_current_rate'])
-            logger.info(f"Set current rate to period starting {current_rate.start_date}")
+            current_rate.save(update_fields=["is_current_rate"])
+            logger.info(
+                f"Set current rate to period starting {current_rate.start_date}"
+            )
         except ElicensingInterestRate.DoesNotExist:
             logger.warning(f"No interest rate found for today's date: {today}")

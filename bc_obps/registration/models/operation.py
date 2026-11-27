@@ -1,41 +1,41 @@
 import re
+import uuid
 from typing import Optional
 from uuid import UUID
-import uuid
-from django.db import models
+
+import pgtrigger
 from common.enums import Schemas
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.db.models import QuerySet
+from django.utils import timezone
 from registration.constants import BORO_ID_REGEX
 from registration.enums.enums import RegistrationTableNames
 from registration.models import (
-    TimeStampedModel,
-    Operator,
-    NaicsCode,
-    Contact,
-    RegulatedProduct,
     Activity,
     BcObpsRegulatedOperation,
+    Contact,
+    NaicsCode,
+    Operator,
+    RegulatedProduct,
+    TimeStampedModel,
     UserOperator,
 )
-
 from registration.models.business_role import BusinessRole
-from django.db.models import QuerySet
-from simple_history.models import HistoricalRecords
-from django.utils import timezone
-from django.core.exceptions import ValidationError
 from registration.models.document import Document
 from registration.models.document_type import DocumentType
 from registration.models.rls_configs.operation import Rls as OperationRls
-import pgtrigger
+from simple_history.models import HistoricalRecords
 
 
 class Operation(TimeStampedModel):
     class Purposes(models.TextChoices):
-        REPORTING_OPERATION = 'Reporting Operation'
-        OBPS_REGULATED_OPERATION = 'OBPS Regulated Operation'
-        OPTED_IN_OPERATION = 'Opted-in Operation'
-        NEW_ENTRANT_OPERATION = 'New Entrant Operation'
-        ELECTRICITY_IMPORT_OPERATION = 'Electricity Import Operation'
-        POTENTIAL_REPORTING_OPERATION = 'Potential Reporting Operation'
+        REPORTING_OPERATION = "Reporting Operation"
+        OBPS_REGULATED_OPERATION = "OBPS Regulated Operation"
+        OPTED_IN_OPERATION = "Opted-in Operation"
+        NEW_ENTRANT_OPERATION = "New Entrant Operation"
+        ELECTRICITY_IMPORT_OPERATION = "Electricity Import Operation"
+        POTENTIAL_REPORTING_OPERATION = "Potential Reporting Operation"
 
     class Statuses(models.TextChoices):
         NOT_STARTED = "Not Started"
@@ -53,10 +53,15 @@ class Operation(TimeStampedModel):
         EIO = "Electricity Import Operation"
 
     id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operation", verbose_name="ID"
+        primary_key=True,
+        default=uuid.uuid4,
+        db_comment="Primary key to identify the operation",
+        verbose_name="ID",
     )
     name = models.CharField(max_length=1000, db_comment="The name of an operation")
-    type = models.CharField(max_length=1000, choices=Types, db_comment="The type of an operation")
+    type = models.CharField(
+        max_length=1000, choices=Types, db_comment="The type of an operation"
+    )
     operator = models.ForeignKey(
         Operator,
         on_delete=models.PROTECT,
@@ -69,7 +74,7 @@ class Operation(TimeStampedModel):
         null=True,
         blank=True,
         db_comment="The primary NAICS (North American Industry Classification System) code for this operation. Foreign key to erc.naics_code",
-        related_name='operations',
+        related_name="operations",
     )
     secondary_naics_code = models.ForeignKey(
         NaicsCode,
@@ -77,7 +82,7 @@ class Operation(TimeStampedModel):
         null=True,
         blank=True,
         db_comment="The secondary NAICS (North American Industry Classification System) code for this operation, if applicable. Foreign key to erc.naics_code",
-        related_name='operations_naics_secondary',
+        related_name="operations_naics_secondary",
     )
     tertiary_naics_code = models.ForeignKey(
         NaicsCode,
@@ -85,7 +90,7 @@ class Operation(TimeStampedModel):
         null=True,
         blank=True,
         db_comment="The tertiary NAICS (North American Industry Classification System) code for this operation, if applicable. Foreign key to erc.naics_code",
-        related_name='operations_naics_tertiary',
+        related_name="operations_naics_tertiary",
     )
     swrs_facility_id = models.IntegerField(
         db_comment="The SWRS (Single Window Reporting System) facility ID associated with this operation, if it reported under that system in the previous year",
@@ -108,7 +113,7 @@ class Operation(TimeStampedModel):
     contacts = models.ManyToManyField(
         Contact,
         blank=True,
-        related_name='operations_contacts',
+        related_name="operations_contacts",
     )
     status = models.CharField(
         max_length=1000,
@@ -127,12 +132,12 @@ class Operation(TimeStampedModel):
     regulated_products = models.ManyToManyField(
         RegulatedProduct,
         blank=True,
-        related_name='%(class)ss',
+        related_name="%(class)ss",
     )
     activities = models.ManyToManyField(
         Activity,
         blank=True,
-        related_name='%(class)ss',
+        related_name="%(class)ss",
     )
     opted_in_operation = models.OneToOneField(
         "OptedInOperationDetail",
@@ -206,32 +211,40 @@ class Operation(TimeStampedModel):
 
     Rls = OperationRls
 
-    def get_new_entrant_application(self) -> Optional[Document]:
+    def get_new_entrant_application(self) -> Document | None:
         """
         Returns the new entrant application document associated with the operation (document only exists if the operation has registered as a New Entrant).
         """
 
         return (
-            self.documents.filter(type=DocumentType.objects.get(name="new_entrant_application"))
-            .only('file', 'status')
+            self.documents.filter(
+                type=DocumentType.objects.get(name="new_entrant_application")
+            )
+            .only("file", "status")
             .first()
         )
 
-    def get_boundary_map(self) -> Optional[Document]:
+    def get_boundary_map(self) -> Document | None:
         """
         Returns the boundary map document associated with the operation.
         """
 
-        return self.documents.filter(type=DocumentType.objects.get(name="boundary_map")).only('file', 'status').first()
+        return (
+            self.documents.filter(type=DocumentType.objects.get(name="boundary_map"))
+            .only("file", "status")
+            .first()
+        )
 
-    def get_process_flow_diagram(self) -> Optional[Document]:
+    def get_process_flow_diagram(self) -> Document | None:
         """
         Returns the process flow diagram document associated with the operation.
         """
 
         return (
-            self.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram"))
-            .only('file', 'status')
+            self.documents.filter(
+                type=DocumentType.objects.get(name="process_flow_diagram")
+            )
+            .only("file", "status")
             .first()
         )
 
@@ -239,16 +252,22 @@ class Operation(TimeStampedModel):
         """
         Returns the operation representatives associated with the operation.
         """
-        return self.contacts.filter(business_role=BusinessRole.objects.get(role_name='Operation Representative'))
+        return self.contacts.filter(
+            business_role=BusinessRole.objects.get(role_name="Operation Representative")
+        )
 
     def user_has_access(self, user_guid: UUID) -> bool:
         """
         Returns whether a user has access to the operation.
         """
         return (
-            UserOperator.objects.only('user__user_guid', 'operator__id')
-            .select_related('operator', 'user')
-            .filter(user_id=user_guid, operator_id=self.operator_id, status=UserOperator.Statuses.APPROVED)
+            UserOperator.objects.only("user__user_guid", "operator__id")
+            .select_related("operator", "user")
+            .filter(
+                user_id=user_guid,
+                operator_id=self.operator_id,
+                status=UserOperator.Statuses.APPROVED,
+            )
             .exists()
         )
 
@@ -261,31 +280,43 @@ class Operation(TimeStampedModel):
         if self.bc_obps_regulated_operation:
             return None
 
-        current_year_last_digits = timezone.now().year % 100  # Get the last two digits of the current year
+        current_year_last_digits = (
+            timezone.now().year % 100
+        )  # Get the last two digits of the current year
 
-        latest_boro_id = BcObpsRegulatedOperation.objects.order_by('-id').values_list('id', flat=True).first()
+        latest_boro_id = (
+            BcObpsRegulatedOperation.objects.order_by("-id")
+            .values_list("id", flat=True)
+            .first()
+        )
 
         latest_number = 1
         if latest_boro_id:
-            latest_latest_boro_id_year, latest_boro_id_number = map(int, latest_boro_id.split('-'))
+            latest_latest_boro_id_year, latest_boro_id_number = map(
+                int, latest_boro_id.split("-")
+            )
             # Check if the latest BORO ID is from the current year
             if latest_latest_boro_id_year == current_year_last_digits:
                 latest_number = latest_boro_id_number + 1
 
-        new_boro_id = (
-            f"{current_year_last_digits}-{latest_number:04d}"  # Pad the number with zeros to make it 4 digits long
-        )
+        new_boro_id = f"{current_year_last_digits}-{latest_number:04d}"  # Pad the number with zeros to make it 4 digits long
 
         if not re.match(BORO_ID_REGEX, new_boro_id):
             raise ValidationError("Generated BORO ID is not in the correct format.")
-        if Operation.objects.filter(bc_obps_regulated_operation__pk=new_boro_id).exists():
+        if Operation.objects.filter(
+            bc_obps_regulated_operation__pk=new_boro_id
+        ).exists():
             raise ValidationError("Generated BORO ID is not unique.")
 
-        new_boro_id_instance = BcObpsRegulatedOperation.objects.create(id=new_boro_id, issued_by_id=user_guid)
+        new_boro_id_instance = BcObpsRegulatedOperation.objects.create(
+            id=new_boro_id, issued_by_id=user_guid
+        )
         self.bc_obps_regulated_operation = new_boro_id_instance
 
     def generate_unique_bcghg_id(self, user_guid: UUID) -> None:
-        from registration.models.utils import generate_unique_bcghg_id_for_operation_or_facility
+        from registration.models.utils import (
+            generate_unique_bcghg_id_for_operation_or_facility,
+        )
 
         generate_unique_bcghg_id_for_operation_or_facility(self, user_guid)
 

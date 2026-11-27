@@ -1,12 +1,20 @@
-from typing import Dict, Optional, Any, TypeVar, cast
+from typing import Any, Dict, Optional, TypeVar, cast
+
 from common.exceptions import UserError
+from compliance.dataclass import (
+    BCCRAccountResponseDetails,
+    BCCRComplianceAccountResponseDetails,
+)
 from compliance.models import ComplianceReport
 from compliance.models.compliance_report_version import ComplianceReportVersion
-from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
-from compliance.dataclass import BCCRAccountResponseDetails, BCCRComplianceAccountResponseDetails
-from compliance.service.compliance_report_version_service import ComplianceReportVersionService
+from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import (
+    BCCarbonRegistryAPIClient,
+)
+from compliance.service.compliance_report_version_service import (
+    ComplianceReportVersionService,
+)
 
-T = TypeVar('T', bound=Dict[str, Any])
+T = TypeVar("T", bound=dict[str, Any])
 
 
 class BCCarbonRegistryAccountService:
@@ -14,7 +22,7 @@ class BCCarbonRegistryAccountService:
         self.client = BCCarbonRegistryAPIClient()
 
     @staticmethod
-    def _get_first_entity(response: Optional[Dict[str, Any]]) -> Optional[T]:
+    def _get_first_entity(response: dict[str, Any] | None) -> T | None:
         """Extract the first entity from a BCCR API response.
 
         Most BCCR API responses wrap entities in a list, even when returning a single item.
@@ -26,8 +34,8 @@ class BCCarbonRegistryAccountService:
         return None
 
     def get_account_details(
-        self, account_id: str, account_type_id: Optional[int] = None
-    ) -> Optional[BCCRAccountResponseDetails]:
+        self, account_id: str, account_type_id: int | None = None
+    ) -> BCCRAccountResponseDetails | None:
         """Retrieve account details from BCCR.
 
         Args:
@@ -41,7 +49,9 @@ class BCCarbonRegistryAccountService:
         Raises:
             UserError: If account exists but does not match the required account type
         """
-        account_details = self.client.get_account_details(account_id=account_id, account_type_id=account_type_id)
+        account_details = self.client.get_account_details(
+            account_id=account_id, account_type_id=account_type_id
+        )
         account_details_dict = self._get_first_entity(account_details)
 
         if not account_details_dict:
@@ -49,13 +59,17 @@ class BCCarbonRegistryAccountService:
 
         return BCCRAccountResponseDetails(
             entity_id=account_details_dict.get("entityId"),
-            organization_classification_id=account_details_dict.get("organizationClassificationId"),
+            organization_classification_id=account_details_dict.get(
+                "organizationClassificationId"
+            ),
             type_of_account_holder=account_details_dict.get("type_of_account_holder"),
             trading_name=account_details_dict.get("tradingName"),
         )
 
     @staticmethod
-    def _get_type_of_organization(type_of_account_holder: Optional[str]) -> Optional[str]:
+    def _get_type_of_organization(
+        type_of_account_holder: str | None,
+    ) -> str | None:
         """Map account holder type to BCCR organization type codes.
 
         Maps user-friendly account holder types to the numeric codes required by BCCR.
@@ -85,20 +99,22 @@ class BCCarbonRegistryAccountService:
         The subaccount is linked to a specific compliance period and boro_id.
         """
         # Get the operation name from the report operation through the compliance summary
-        operation_name = (
-            compliance_report_version.report_compliance_summary.report_version.report_operation.operation_name
-        )
+        operation_name = compliance_report_version.report_compliance_summary.report_version.report_operation.operation_name
 
         sub_account_payload = {
             "master_account_id": str(holding_account_id),
             "compliance_year": compliance_year,
             "boro_id": boro_id,
             "registered_name": f"{operation_name} {boro_id} - {compliance_year}",
-            "type_of_organization": self._get_type_of_organization(type_of_account_holder),
+            "type_of_organization": self._get_type_of_organization(
+                type_of_account_holder
+            ),
             "organization_classification_id": organization_classification_id,
         }
 
-        new_compliance_account_response_dict = self.client.create_sub_account(sub_account_payload)
+        new_compliance_account_response_dict = self.client.create_sub_account(
+            sub_account_payload
+        )
         new_compliance_account = new_compliance_account_response_dict.get(
             "entity", {}
         )  # passing empty dict to avoid KeyError
@@ -109,8 +125,11 @@ class BCCarbonRegistryAccountService:
         )
 
     def _get_compliance_account_from_bccr(
-        self, holding_account_details: BCCRAccountResponseDetails, compliance_year: int, boro_id: str
-    ) -> Optional[T]:
+        self,
+        holding_account_details: BCCRAccountResponseDetails,
+        compliance_year: int,
+        boro_id: str,
+    ) -> T | None:
         """Retrieve compliance account from BCCR API.
 
         Args:
@@ -122,7 +141,9 @@ class BCCarbonRegistryAccountService:
             Compliance account details from BCCR if found, None otherwise
         """
         compliance_account = self.client.get_compliance_account(
-            master_account_id=holding_account_details.entity_id, compliance_year=compliance_year, boro_id=boro_id
+            master_account_id=holding_account_details.entity_id,
+            compliance_year=compliance_year,
+            boro_id=boro_id,
         )
         return self._get_first_entity(compliance_account)
 
@@ -146,7 +167,9 @@ class BCCarbonRegistryAccountService:
         boro_id = compliance_report.report.operation.bc_obps_regulated_operation.id  # type: ignore[union-attr]
 
         if not holding_account_details.type_of_account_holder:
-            raise ValueError("type_of_account_holder is required to create a compliance account")
+            raise ValueError(
+                "type_of_account_holder is required to create a compliance account"
+            )
 
         new_compliance_account = self.create_compliance_account(
             holding_account_id=holding_account_details.entity_id,
@@ -181,15 +204,18 @@ class BCCarbonRegistryAccountService:
             UserError: If the sub-account does not exist in BCCR or does not belong to the holding account
         """
         # Fetch compliance report from version ID
-        compliance_report_version = ComplianceReportVersionService.get_compliance_report_version(
-            compliance_report_version_id
+        compliance_report_version = (
+            ComplianceReportVersionService.get_compliance_report_version(
+                compliance_report_version_id
+            )
         )
         compliance_report = compliance_report_version.compliance_report
 
         # If we already have a bccr_subaccount_id, check if it belongs to this holding account
         if compliance_report.bccr_subaccount_id:
             subaccount_details = self.client.get_account_details(
-                account_id=compliance_report.bccr_subaccount_id, account_type_id=self.client.COMPLIANCE_ACCOUNT_TYPE_ID
+                account_id=compliance_report.bccr_subaccount_id,
+                account_type_id=self.client.COMPLIANCE_ACCOUNT_TYPE_ID,
             )
             subaccount_entity = self._get_first_entity(subaccount_details)
 
@@ -207,7 +233,9 @@ class BCCarbonRegistryAccountService:
         compliance_year = compliance_report.compliance_period.end_date.year
         boro_id = compliance_report.report.operation.bc_obps_regulated_operation.id  # type: ignore[union-attr]
         existing_compliance_account = self.client.get_compliance_account(
-            master_account_id=holding_account_id, compliance_year=compliance_year, boro_id=boro_id
+            master_account_id=holding_account_id,
+            compliance_year=compliance_year,
+            boro_id=boro_id,
         )
         if existing_compliance_account:
             return bool(self._get_first_entity(existing_compliance_account))
@@ -251,7 +279,9 @@ class BCCarbonRegistryAccountService:
             compliance_report.save(update_fields=["bccr_subaccount_id"])
 
             return BCCRComplianceAccountResponseDetails(
-                master_account_name=existing_compliance_account.get("masterAccountName"),
+                master_account_name=existing_compliance_account.get(
+                    "masterAccountName"
+                ),
                 entity_id=str(entity_id) if entity_id else None,
             )
 

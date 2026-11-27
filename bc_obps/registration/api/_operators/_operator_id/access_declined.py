@@ -1,13 +1,14 @@
 from typing import Literal, Tuple
 from uuid import UUID
-from common.permissions import authorize
-from django.http import HttpRequest
-from registration.constants import OPERATOR_TAGS
-from registration.service.data_access_service.user_service import UserDataAccessService
-from registration.schema import Message
-from registration.api.router import router
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+
 from common.api.utils import get_current_user_guid
+from common.permissions import authorize
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest
+from registration.api.router import router
+from registration.constants import OPERATOR_TAGS
+from registration.schema import Message
+from registration.service.data_access_service.user_service import UserDataAccessService
 
 
 @router.get(
@@ -19,5 +20,9 @@ from common.api.utils import get_current_user_guid
     If the user’s access is declined, it returns 'True'; otherwise, it returns 'False'.""",
     auth=authorize("industry_user"),
 )
-def get_user_operator_access_declined(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200], bool]:
-    return 200, UserDataAccessService.is_users_user_operator_declined(get_current_user_guid(request), operator_id)
+def get_user_operator_access_declined(
+    request: HttpRequest, operator_id: UUID
+) -> tuple[Literal[200], bool]:
+    return 200, UserDataAccessService.is_users_user_operator_declined(
+        get_current_user_guid(request), operator_id
+    )

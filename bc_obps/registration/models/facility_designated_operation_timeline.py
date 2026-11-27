@@ -1,9 +1,11 @@
-from django.db import models
 from common.enums import Schemas
+from django.db import models
 from registration.enums.enums import RegistrationTableNames
 from registration.models import Facility, Operation, TimeStampedModel
+from registration.models.rls_configs.facility_designated_operation_timeline import (
+    Rls as FacilityDesignatedOperationRls,
+)
 from simple_history.models import HistoricalRecords
-from registration.models.rls_configs.facility_designated_operation_timeline import Rls as FacilityDesignatedOperationRls
 
 
 class FacilityDesignatedOperationTimeline(TimeStampedModel):
@@ -41,9 +43,9 @@ class FacilityDesignatedOperationTimeline(TimeStampedModel):
 
         constraints = [
             models.UniqueConstraint(
-                fields=['facility'],
+                fields=["facility"],
                 condition=models.Q(end_date__isnull=True),
-                name='unique_active_designated_operation_per_facility',
+                name="unique_active_designated_operation_per_facility",
             )
         ]
 

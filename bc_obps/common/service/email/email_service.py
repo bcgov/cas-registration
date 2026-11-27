@@ -1,38 +1,39 @@
+import logging
+import typing
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, TypedDict, Union
-import typing
 from uuid import UUID
-import logging
+
 import requests
-from django.utils import timezone
 from common.models import EmailNotification, EmailNotificationTemplate
 from django.conf import settings
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
-SENDER_EMAIL = 'no-reply.cas@gov.bc.ca'
-GHG_REGULATOR_EMAIL = 'GHGRegulator@gov.bc.ca'
+SENDER_EMAIL = "no-reply.cas@gov.bc.ca"
+GHG_REGULATOR_EMAIL = "GHGRegulator@gov.bc.ca"
 
 
 class Message(TypedDict):
     msgId: str
     tag: str
-    to: List[str]
+    to: list[str]
 
 
 class EmailResponseType(TypedDict):
-    messages: List[Message]
+    messages: list[Message]
     txId: str
 
 
-class EmailService(object):
+class EmailService:
     """
     EmailService uses Common Hosted Email Service (CHES) API to enqueue emails for delivery. Uses BC Government-hosted SMTP server to send emails.
     NOTE: Use `email_service = EmailService()` to access the EmailService singleton object in other .py files
     """
 
     _instance = None
-    token: Optional[str]  # Define type for token
+    token: str | None  # Define type for token
     token_expiry: datetime  # Define type for token_expiry
     token_endpoint: str
     api_url: str
@@ -43,7 +44,7 @@ class EmailService(object):
     @typing.no_type_check
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(EmailService, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
             cls._instance.api_url = settings.CHES_API_URL
             cls._instance.client_id = settings.CHES_CLIENT_ID
             cls._instance.client_secret = settings.CHES_CLIENT_SECRET
@@ -51,7 +52,7 @@ class EmailService(object):
             cls._instance.token = None
             cls._instance.token_expiry = timezone.now()
             logger.info(
-                f'Logger: Initializing EmailService for clientID {cls._instance.client_id} to connect to {cls._instance.api_url}'
+                f"Logger: Initializing EmailService for clientID {cls._instance.client_id} to connect to {cls._instance.api_url}"
             )
         return cls._instance
 
@@ -74,29 +75,35 @@ class EmailService(object):
                 )
                 if response.status_code == 200:
                     self.token = response.json()["access_token"]
-                    self.token_expiry = timezone.now() + timedelta(seconds=response.json()["expires_in"])
+                    self.token_expiry = timezone.now() + timedelta(
+                        seconds=response.json()["expires_in"]
+                    )
                 else:
                     logger.error("Logger: Failed to retrieve CHES access token")
         except Exception as exc:
-            logger.error(f'Logger: Exception in _get_token {str(exc)}')
+            logger.error(f"Logger: Exception in _get_token {str(exc)}")
 
     def _make_request(
-        self, endpoint: str, method: Optional[str] = 'GET', data: Optional[Any] = None
+        self, endpoint: str, method: str | None = "GET", data: Any | None = None
     ) -> requests.Response:
         """
         Helper function to build and send either GET or POST request to CHES API with appropriate headers.
         """
-        headers = {"Authorization": f'Bearer {self.token}'} if self.token else {}
-        if method == 'GET':
-            response = requests.get(self.api_url + endpoint, headers=headers, timeout=10)
-        elif method == 'POST':
-            response = requests.post(self.api_url + endpoint, headers=headers, json=data, timeout=10)
+        headers = {"Authorization": f"Bearer {self.token}"} if self.token else {}
+        if method == "GET":
+            response = requests.get(
+                self.api_url + endpoint, headers=headers, timeout=10
+            )
+        elif method == "POST":
+            response = requests.post(
+                self.api_url + endpoint, headers=headers, json=data, timeout=10
+            )
         else:
             raise ValueError("Invalid HTTP method")
 
         return response
 
-    def health_check(self) -> Optional[Any]:
+    def health_check(self) -> Any | None:
         """
         Retrieves health check data from CHES API.
         Response is a dict with key "dependencies", containing a list of 3 dicts (one for each component).
@@ -107,10 +114,10 @@ class EmailService(object):
             response = self._make_request("/health")
             return response.json()
         except Exception as exc:
-            logger.error(f'Logger: Exception in /email/health_check {str(exc)}')
+            logger.error(f"Logger: Exception in /email/health_check {str(exc)}")
             raise
 
-    def get_message_status(self, message_id: UUID) -> Optional[Any]:
+    def get_message_status(self, message_id: UUID) -> Any | None:
         """
         Given a message_id (which is different from a transaction_id), returns the status of the message.
 
@@ -125,13 +132,15 @@ class EmailService(object):
         """
         self._get_token()
         try:
-            response = self._make_request(f'/status/{message_id}')
+            response = self._make_request(f"/status/{message_id}")
             return response.json()
         except Exception as exc:
-            logger.error(f'Logger: Exception retrieving message status for {message_id} - {str(exc)}')
+            logger.error(
+                f"Logger: Exception retrieving message status for {message_id} - {str(exc)}"
+            )
             raise
 
-    def merge_template_and_send(self, email_template_data: Dict) -> Optional[Any]:
+    def merge_template_and_send(self, email_template_data: dict) -> Any | None:
         """
         Given an email template with variables for customized content, CHES API merges the template with the given
         "contexts" (values of variables) and sends each message to the CHES API queue for email delivery. Each "context"
@@ -157,19 +166,23 @@ class EmailService(object):
         """
         self._get_token()
         try:
-            response = self._make_request("/emailMerge", method='POST', data=email_template_data)
+            response = self._make_request(
+                "/emailMerge", method="POST", data=email_template_data
+            )
             return response.json()
         except Exception as exc:
-            logger.error(f'Logger: Exception in merging template and sending! - {str(exc)}')
+            logger.error(
+                f"Logger: Exception in merging template and sending! - {str(exc)}"
+            )
             raise
 
     def send_email_by_template(
         self,
         template_instance: EmailNotificationTemplate,
         email_context: dict,
-        recipients_email: List[str],
+        recipients_email: list[str],
         cc_ghg_regulator: bool = True,
-    ) -> Optional[EmailResponseType]:
+    ) -> EmailResponseType | None:
         """
         Sends an email using the provided email template, email context, and recipient email addresses.
 
@@ -184,30 +197,34 @@ class EmailService(object):
         """
         # Only CC GHG regulator in prod if cc_ghg_regulator is True and not already a recipient
         should_cc_ghg_regulator = all(
-            [cc_ghg_regulator, settings.ENVIRONMENT == 'prod', GHG_REGULATOR_EMAIL not in recipients_email]
+            [
+                cc_ghg_regulator,
+                settings.ENVIRONMENT == "prod",
+                GHG_REGULATOR_EMAIL not in recipients_email,
+            ]
         )
         cc_emails = [GHG_REGULATOR_EMAIL] if should_cc_ghg_regulator else []
 
         email_data = {
-            'bodyType': 'html',
-            'body': template_instance.body,
-            'contexts': [
+            "bodyType": "html",
+            "body": template_instance.body,
+            "contexts": [
                 {
-                    'context': email_context,
-                    'to': recipients_email,
-                    'cc': cc_emails,
+                    "context": email_context,
+                    "to": recipients_email,
+                    "cc": cc_emails,
                 }
             ],
-            'from': SENDER_EMAIL,
-            'subject': template_instance.subject,
+            "from": SENDER_EMAIL,
+            "subject": template_instance.subject,
         }
         return self.merge_template_and_send(email_data)
 
     def create_email_notification_record(
         self,
-        transaction_id: Union[UUID, str],
-        message_id: Union[UUID, str],
-        recipients_email: List[str],
+        transaction_id: UUID | str,
+        message_id: UUID | str,
+        recipients_email: list[str],
         template_id: int,
     ) -> None:
         """

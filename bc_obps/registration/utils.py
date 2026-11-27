@@ -1,5 +1,6 @@
 import logging
-from typing import Any, Dict, Iterable, Optional, TypeVar, Union
+from collections.abc import Iterable
+from typing import Any, TypeVar, Union
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -16,12 +17,12 @@ from registration.models.operation import Operation
 
 logger = logging.getLogger(__name__)
 
-TModel = TypeVar('TModel', bound=models.Model)
+TModel = TypeVar("TModel", bound=models.Model)
 
 
 def update_model_instance(
     instance: TModel,
-    fields_to_update: Union[Iterable[str], Dict[str, str]],
+    fields_to_update: Iterable[str] | dict[str, str],
     data_dict: DictStrAny,
 ) -> TModel:
     """
@@ -58,35 +59,39 @@ def update_model_instance(
     return instance
 
 
-def generate_useful_error(error: Union[ValidationError, NinjaValidationError]) -> Optional[str]:
+def generate_useful_error(
+    error: ValidationError | NinjaValidationError,
+) -> str | None:
     """
     Generate a useful error message from a ValidationError.
     NOTE: this only returns the first error message until we can figure out a better way to handle multiple errors in the client side.
     """
     if isinstance(error, NinjaValidationError):
         # Just return the first error message if it is a NinjaValidationError (Like Unprocessable Entity)
-        errors_list = error.__dict__['errors']
+        errors_list = error.__dict__["errors"]
         if not errors_list or not isinstance(errors_list, list):
             return None
         first_error = errors_list[0]
-        if 'loc' not in first_error or 'msg' not in first_error:
+        if "loc" not in first_error or "msg" not in first_error:
             return None
         # Extract field name from loc tuple and capitalize it
-        field_name = first_error['loc'][-1]  # Last item in loc tuple is the field name
-        formatted_key = ' '.join(word.capitalize() for word in field_name.split('_'))
+        field_name = first_error["loc"][-1]  # Last item in loc tuple is the field name
+        formatted_key = " ".join(word.capitalize() for word in field_name.split("_"))
         return f"{formatted_key}: {first_error['msg']}"
-    if hasattr(error, 'message_dict'):
+    if hasattr(error, "message_dict"):
         for key, value in error.message_dict.items():
-            if key == '__all__':  # ignore adding formatted key for general error message like constraints
+            if (
+                key == "__all__"
+            ):  # ignore adding formatted key for general error message like constraints
                 return value[0]  # Return the general error message directly
-            formatted_key = ' '.join(word.capitalize() for word in key.split('_'))
+            formatted_key = " ".join(word.capitalize() for word in key.split("_"))
             return f"{formatted_key}: {value[0]}"
         return None
     messages = error.messages
     return messages[0] if messages else None
 
 
-def custom_reverse_lazy(view_name: str, *args: Any, **kwargs: Any) -> Union[str, Any]:
+def custom_reverse_lazy(view_name: str, *args: Any, **kwargs: Any) -> str | Any:
     """
     A custom reverse_lazy function that includes the default API namespace.
     """
@@ -106,19 +111,19 @@ class CustomPagination(PageNumberPagination):
         request: HttpRequest,
         **params: Any,
     ) -> Any:
-        paginate_result = params.get('paginate_result', True)
+        paginate_result = params.get("paginate_result", True)
         page_size = self.page_size if paginate_result else queryset.count()
         offset = (pagination.page - 1) * page_size
         return {
             "items": queryset[offset : offset + page_size],
             "count": self._items_count(queryset),
-        }  # noqa: E203
+        }
 
 
 def is_document_scan_complete(operation: Operation) -> bool:
     # If we're in the local environment, we don't hit GCS; we use local file storage (see settings.py)
     ENVIRONMENT = settings.ENVIRONMENT
-    if ENVIRONMENT == 'local':
+    if ENVIRONMENT == "local":
         return True
 
     return not operation.documents.filter(status=Document.FileStatus.UNSCANNED).exists()

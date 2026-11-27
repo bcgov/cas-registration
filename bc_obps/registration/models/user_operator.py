@@ -1,14 +1,15 @@
-from typing import List
 import typing
 import uuid
-from django.core.cache import cache
-from django.db import models
+from typing import List
+
 from common.constants import PERMISSION_CONFIGS_CACHE_KEY
 from common.enums import Schemas
+from django.core.cache import cache
+from django.db import models
 from registration.enums.enums import RegistrationTableNames
-from registration.models import TimeStampedModel, User, Operator
-from simple_history.models import HistoricalRecords
+from registration.models import Operator, TimeStampedModel, User
 from registration.models.rls_configs.user_operator import Rls as UserOperatorRls
+from simple_history.models import HistoricalRecords
 
 
 class UserOperator(TimeStampedModel):
@@ -23,10 +24,15 @@ class UserOperator(TimeStampedModel):
         DECLINED = "Declined"
 
     id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the user operator", verbose_name="ID"
+        primary_key=True,
+        default=uuid.uuid4,
+        db_comment="Primary key to identify the user operator",
+        verbose_name="ID",
     )
     user_friendly_id = models.IntegerField(
-        null=True, blank=True, db_comment="A user-friendly ID to identify the user operator"
+        null=True,
+        blank=True,
+        db_comment="A user-friendly ID to identify the user operator",
     )
     user = models.ForeignKey(
         User,
@@ -84,7 +90,7 @@ class UserOperator(TimeStampedModel):
     Rls = UserOperatorRls
 
     @staticmethod
-    def get_all_industry_user_operator_roles() -> List[str]:
+    def get_all_industry_user_operator_roles() -> list[str]:
         """
         Return all UserOperator.role options
         """
@@ -95,10 +101,14 @@ class UserOperator(TimeStampedModel):
         # Add a user_friendly_id to the UserOperator if it doesn't already have one
         if not self.user_friendly_id:
             self.user_friendly_id = UserOperator.objects.count() + 1
-        cache.delete(PERMISSION_CONFIGS_CACHE_KEY)  # Clear the cache when a user operator is saved
+        cache.delete(
+            PERMISSION_CONFIGS_CACHE_KEY
+        )  # Clear the cache when a user operator is saved
         super().save(*args, **kwargs)
 
     @typing.no_type_check
     def delete(self, *args, **kwargs):
-        cache.delete(PERMISSION_CONFIGS_CACHE_KEY)  # Clear the cache when a user operator is deleted
+        cache.delete(
+            PERMISSION_CONFIGS_CACHE_KEY
+        )  # Clear the cache when a user operator is deleted
         super().delete(*args, **kwargs)

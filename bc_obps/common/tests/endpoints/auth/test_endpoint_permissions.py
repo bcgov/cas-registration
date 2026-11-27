@@ -1,15 +1,15 @@
 import json
 import logging
-from common.tests.utils.call_endpoint import call_endpoint
+from unittest.mock import ANY, MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock, ANY
-from django.urls import get_resolver
-from django.test import Client, override_settings, TestCase
-from registration.utils import custom_reverse_lazy
-from registration.models import User
-from common.tests.endpoints.auth.constants import ENDPOINTS
 from common.permissions import get_permission_configs
-from registration.models import AppRole
+from common.tests.endpoints.auth.constants import ENDPOINTS
+from common.tests.utils.call_endpoint import call_endpoint
+from django.test import Client, TestCase, override_settings
+from django.urls import get_resolver
+from registration.models import AppRole, User
+from registration.utils import custom_reverse_lazy
 
 
 @pytest.fixture(autouse=True)
@@ -17,7 +17,9 @@ def suppress_django_request_logs(caplog):
     caplog.set_level(logging.ERROR, logger="django.request")
 
 
-@override_settings(MIDDLEWARE=[])  # Remove middleware to prevent checking the user in the database
+@override_settings(
+    MIDDLEWARE=[]
+)  # Remove middleware to prevent checking the user in the database
 class TestEndpointPermissions(TestCase):
     client = Client()
     endpoints_to_test = ENDPOINTS
@@ -30,7 +32,9 @@ class TestEndpointPermissions(TestCase):
     ):
         for role, configs in cls.endpoints_to_test.items():
             for config in configs:
-                endpoint = custom_reverse_lazy(config["endpoint_name"], kwargs=config.get("kwargs", {}))
+                endpoint = custom_reverse_lazy(
+                    config["endpoint_name"], kwargs=config.get("kwargs", {})
+                )
                 method = config.get("method")
                 call_endpoint(cls.client, method, endpoint)
                 # Assert that the correct role check is called
@@ -51,16 +55,24 @@ class TestEndpointPermissions(TestCase):
             "create_user_profile",
             "get_user_profile",
             "get_user_role",
-            'check_is_user_archived',
+            "check_is_user_archived",
             # TODO: Pending on the answer from Reporting Team
             "get_activities",
             "get_fuel_data",
         ]
-        all_url_patterns = get_resolver().url_patterns[0].url_patterns  # index 0 is the API route
-        valid_urls = [pattern.name for pattern in all_url_patterns if pattern.name not in exclusion_list]
+        all_url_patterns = (
+            get_resolver().url_patterns[0].url_patterns
+        )  # index 0 is the API route
+        valid_urls = [
+            pattern.name
+            for pattern in all_url_patterns
+            if pattern.name not in exclusion_list
+        ]
         # Flatten endpoints_to_test to extract all endpoint names that are permission-tested
         tested_endpoints = {
-            item["endpoint_name"] for role, configs in cls.endpoints_to_test.items() for item in configs
+            item["endpoint_name"]
+            for role, configs in cls.endpoints_to_test.items()
+            for item in configs
         }
         untested_endpoints = [url for url in valid_urls if url not in tested_endpoints]
         # Assert that all endpoints are tested; if not, raise an error with each endpoint on a new line
@@ -80,7 +92,9 @@ class TestEndpointPermissions(TestCase):
                     duplicates.add(endpoint_key)
                 else:
                     seen.add(endpoint_key)
-            self.assertFalse(duplicates, f"Duplicate endpoints found in role '{role}': {duplicates}")
+            self.assertFalse(
+                duplicates, f"Duplicate endpoints found in role '{role}': {duplicates}"
+            )
 
     @classmethod
     @patch("common.permissions.check_permission_for_role")
@@ -107,7 +121,7 @@ class TestEndpointPermissions(TestCase):
 
         def permission_side_effect(request, permission):
             auth_header = json.loads(request.headers.get("Authorization", "{}"))
-            user = User.objects.get(user_guid=auth_header.get('user_guid'))
+            user = User.objects.get(user_guid=auth_header.get("user_guid"))
             request.current_user = user
             return user.app_role_id in get_authorized_roles(permission)
 
@@ -118,13 +132,19 @@ class TestEndpointPermissions(TestCase):
                 authorized_app_roles = get_authorized_roles(permission_group)
 
                 for config in configs:
-                    endpoint = custom_reverse_lazy(config["endpoint_name"], kwargs=config.get("kwargs", {}))
+                    endpoint = custom_reverse_lazy(
+                        config["endpoint_name"], kwargs=config.get("kwargs", {})
+                    )
                     method = config.get("method")
-                    response = call_endpoint(cls.client, method, endpoint, current_app_role)
+                    response = call_endpoint(
+                        cls.client, method, endpoint, current_app_role
+                    )
 
                     if current_app_role not in authorized_app_roles:
-                        assert (
-                            response.status_code == 401
-                        ), f"Got {response.status_code} but expected 401 for unauthorized role {current_app_role} for endpoint {endpoint}"
-                    mock_check_permission_for_role.assert_called_once_with(ANY, permission_group)
+                        assert response.status_code == 401, (
+                            f"Got {response.status_code} but expected 401 for unauthorized role {current_app_role} for endpoint {endpoint}"
+                        )
+                    mock_check_permission_for_role.assert_called_once_with(
+                        ANY, permission_group
+                    )
                     mock_check_permission_for_role.reset_mock()

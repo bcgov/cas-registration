@@ -1,8 +1,9 @@
 from datetime import timedelta
+
 from common.tests.utils.helpers import BaseTestCase
-from task_scheduler.models import RetryTask
-from model_bakery.baker import make_recipe
 from django.utils import timezone
+from model_bakery.baker import make_recipe
+from task_scheduler.models import RetryTask
 
 
 class RetryTaskTest(BaseTestCase):
@@ -71,8 +72,8 @@ class RetryTaskTest(BaseTestCase):
         assert self.test_object.status == RetryTask.TaskStatus.FAILED
         assert self.test_object.retry_count == 1
         assert len(self.test_object.error_history) == 1
-        assert self.test_object.error_history[0]['error'] == error_message
-        assert 'timestamp' in self.test_object.error_history[0]
+        assert self.test_object.error_history[0]["error"] == error_message
+        assert "timestamp" in self.test_object.error_history[0]
 
     def test_retry_task_mark_attempt_failed_multiple_times(self):
         self.test_object.status = RetryTask.TaskStatus.RUNNING
@@ -122,8 +123,12 @@ class RetryTaskTest(BaseTestCase):
 
         # Should only keep last 5
         assert len(self.test_object.error_history) == 5
-        assert self.test_object.error_history[0]['error'] == "Error 1"  # First error was removed
-        assert self.test_object.error_history[4]['error'] == "Error 5"  # Last error is kept
+        assert (
+            self.test_object.error_history[0]["error"] == "Error 1"
+        )  # First error was removed
+        assert (
+            self.test_object.error_history[4]["error"] == "Error 5"
+        )  # Last error is kept
 
     def test_retry_task_error_history_structure(self):
         self.test_object.status = RetryTask.TaskStatus.RUNNING
@@ -135,10 +140,10 @@ class RetryTaskTest(BaseTestCase):
 
         assert len(self.test_object.error_history) == 1
         error_entry = self.test_object.error_history[0]
-        assert 'error' in error_entry
-        assert 'timestamp' in error_entry
-        assert error_entry['error'] == error_message
-        assert isinstance(error_entry['timestamp'], str)  # ISO format timestamp
+        assert "error" in error_entry
+        assert "timestamp" in error_entry
+        assert error_entry["error"] == error_message
+        assert isinstance(error_entry["timestamp"], str)  # ISO format timestamp
 
     def test_retry_task_mark_attempt_started(self):
         self.test_object.mark_attempt_started()
@@ -150,14 +155,18 @@ class RetryTaskTest(BaseTestCase):
     def test_retry_task_mark_attempt_success(self):
         self.test_object.status = RetryTask.TaskStatus.RUNNING
         self.test_object.lock_acquired_at = timezone.now()
-        self.test_object.error_history = [{"error": "Previous error", "timestamp": "2024-01-01T10:00:00"}]
+        self.test_object.error_history = [
+            {"error": "Previous error", "timestamp": "2024-01-01T10:00:00"}
+        ]
         self.test_object.save()
 
         self.test_object.mark_attempt_success()
         self.test_object.refresh_from_db()
 
         assert self.test_object.status == RetryTask.TaskStatus.COMPLETED
-        assert self.test_object.error_history == [{"error": "Previous error", "timestamp": "2024-01-01T10:00:00"}]
+        assert self.test_object.error_history == [
+            {"error": "Previous error", "timestamp": "2024-01-01T10:00:00"}
+        ]
         assert self.test_object.lock_acquired_at is None
 
     @staticmethod
@@ -187,7 +196,9 @@ class RetryTaskTest(BaseTestCase):
 
     def test_acquire_lock_expired_lock(self):
         # Set an expired lock
-        self.test_object.lock_acquired_at = timezone.now() - timedelta(minutes=70)  # Expired
+        self.test_object.lock_acquired_at = timezone.now() - timedelta(
+            minutes=70
+        )  # Expired
         self.test_object.save()
 
         # Should be able to acquire new lock

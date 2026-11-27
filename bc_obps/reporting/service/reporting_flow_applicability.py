@@ -1,6 +1,5 @@
 from reporting.service.reporting_flow_service import ReportingFlow
 
-
 SECTION_APPLICABLE_FLOWS: dict[str, set[ReportingFlow]] = {
     "review_operation_information": {
         ReportingFlow.EIO,

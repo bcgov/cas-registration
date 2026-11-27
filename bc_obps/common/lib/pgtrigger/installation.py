@@ -13,7 +13,7 @@ from . import features, registry, utils
 LOGGER = logging.getLogger("pgtrigger")
 
 
-def install(*uris: str, database: Union[str, None] = None) -> None:
+def install(*uris: str, database: str | None = None) -> None:
     """
     Install triggers.
 
@@ -35,7 +35,7 @@ def install(*uris: str, database: Union[str, None] = None) -> None:
         prune(database=database)
 
 
-def prunable(database: Union[str, None] = None) -> List[Tuple[str, str, bool, str]]:
+def prunable(database: str | None = None) -> list[tuple[str, str, bool, str]]:
     """Return triggers that are candidates for pruning
 
     Args:
@@ -48,11 +48,14 @@ def prunable(database: Union[str, None] = None) -> List[Tuple[str, str, bool, st
         return []
 
     registered = {
-        (utils.quote(model._meta.db_table), trigger.get_pgid(model)) for model, trigger in registry.registered()
+        (utils.quote(model._meta.db_table), trigger.get_pgid(model))
+        for model, trigger in registry.registered()
     }
 
     with utils.connection(database).cursor() as cursor:
-        parent_trigger_clause = "tgparentid = 0 AND" if utils.pg_maj_version(cursor) >= 13 else ""
+        parent_trigger_clause = (
+            "tgparentid = 0 AND" if utils.pg_maj_version(cursor) >= 13 else ""
+        )
 
         # Only select triggers that are in the current search path. We accomplish
         # this by parsing the tgrelid and only selecting triggers that don't have
@@ -75,7 +78,7 @@ def prunable(database: Union[str, None] = None) -> List[Tuple[str, str, bool, st
     ]
 
 
-def prune(database: Union[str, None] = None) -> None:
+def prune(database: str | None = None) -> None:
     """
     Remove any pgtrigger triggers in the database that are not used by models.
     I.e. if a model or trigger definition is deleted from a model, ensure
@@ -98,7 +101,7 @@ def prune(database: Union[str, None] = None) -> None:
             cursor.execute(uninstall_sql)
 
 
-def enable(*uris: str, database: Union[str, None] = None) -> None:
+def enable(*uris: str, database: str | None = None) -> None:
     """
     Enables registered triggers.
 
@@ -117,7 +120,7 @@ def enable(*uris: str, database: Union[str, None] = None) -> None:
         trigger.enable(model, database=database)
 
 
-def uninstall(*uris: str, database: Union[str, None] = None) -> None:
+def uninstall(*uris: str, database: str | None = None) -> None:
     """
     Uninstalls triggers.
 
@@ -139,7 +142,7 @@ def uninstall(*uris: str, database: Union[str, None] = None) -> None:
         prune(database=database)
 
 
-def disable(*uris: str, database: Union[str, None] = None) -> None:
+def disable(*uris: str, database: str | None = None) -> None:
     """
     Disables triggers.
 

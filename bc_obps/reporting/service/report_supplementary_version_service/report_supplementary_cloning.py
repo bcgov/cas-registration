@@ -2,8 +2,8 @@ import copy
 from typing import Optional
 
 from django.core.files.storage import default_storage
-
-from reporting.service.emission_category_mapping_service import EmissionCategoryMappingService
+from django.db.models import Q
+from registration.models import Contact
 from reporting.models import (
     FacilityReport,
     ReportActivity,
@@ -29,19 +29,25 @@ from reporting.models import (
     ReportVerification,
     ReportVersion,
 )
-
-from django.db.models import Q
-from registration.models import Contact
+from reporting.service.emission_category_mapping_service import (
+    EmissionCategoryMappingService,
+)
 from reporting.utils import CONTACT_HAS_COMPLETE_ADDRESS
 
 
-def clone_report_version_operation(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
+def clone_report_version_operation(
+    old_report_version: ReportVersion, new_report_version: ReportVersion
+) -> None:
     # Retrieve the original operation from the old report version
-    report_version_operation_to_clone = ReportOperation.objects.get(report_version=old_report_version)
+    report_version_operation_to_clone = ReportOperation.objects.get(
+        report_version=old_report_version
+    )
 
     # Store the many-to-many relationships before cloning
     original_activities = list(report_version_operation_to_clone.activities.all())
-    original_regulated_products = list(report_version_operation_to_clone.regulated_products.all())
+    original_regulated_products = list(
+        report_version_operation_to_clone.regulated_products.all()
+    )
 
     # Clone the operation by resetting the primary key and assigning the new report version
     report_version_operation_to_clone.id = None
@@ -50,42 +56,58 @@ def clone_report_version_operation(old_report_version: ReportVersion, new_report
 
     # Reassign the many-to-many relationships to the new cloned operation
     report_version_operation_to_clone.activities.set(original_activities)
-    report_version_operation_to_clone.regulated_products.set(original_regulated_products)
+    report_version_operation_to_clone.regulated_products.set(
+        original_regulated_products
+    )
 
 
 def clone_or_refresh_report_version_representatives(
-    old_report_version: ReportVersion, new_report_version: ReportVersion, is_operation_transferred: bool
+    old_report_version: ReportVersion,
+    new_report_version: ReportVersion,
+    is_operation_transferred: bool,
 ) -> None:
     if is_operation_transferred:
         # We recreate the options for operation representatives from the contacts on file
         # User will need to save an update upon filing the supplementary report
 
         contacts = Contact.objects.filter(
-            CONTACT_HAS_COMPLETE_ADDRESS, operator_id=new_report_version.report.operator_id
+            CONTACT_HAS_COMPLETE_ADDRESS,
+            operator_id=new_report_version.report.operator_id,
         )
         for c in contacts:
             ReportOperationRepresentative.objects.create(
-                report_version=new_report_version, representative_name=c.get_full_name(), selected_for_report=False
+                report_version=new_report_version,
+                representative_name=c.get_full_name(),
+                selected_for_report=False,
             )
 
     else:
         # Retrieve all ReportOperationRepresentative instances associated with the old report version
-        representatives_to_clone = ReportOperationRepresentative.objects.filter(report_version=old_report_version)
+        representatives_to_clone = ReportOperationRepresentative.objects.filter(
+            report_version=old_report_version
+        )
 
         # Clone each representative instance for the new report version
         for representative_to_clone in representatives_to_clone:
-            representative_to_clone.pk = None  # Reset primary key to create a new instance
+            representative_to_clone.pk = (
+                None  # Reset primary key to create a new instance
+            )
             representative_to_clone.report_version = new_report_version
             representative_to_clone.save()
 
         # Add any operator contacts not already listed so they are selectable (unselected by default)
-        cloned_names = set(representatives_to_clone.values_list("representative_name", flat=True))
+        cloned_names = set(
+            representatives_to_clone.values_list("representative_name", flat=True)
+        )
         for c in Contact.objects.filter(
-            CONTACT_HAS_COMPLETE_ADDRESS, operator_id=new_report_version.report.operator_id
+            CONTACT_HAS_COMPLETE_ADDRESS,
+            operator_id=new_report_version.report.operator_id,
         ):
             if c.get_full_name() not in cloned_names:
                 ReportOperationRepresentative.objects.create(
-                    report_version=new_report_version, representative_name=c.get_full_name(), selected_for_report=False
+                    report_version=new_report_version,
+                    representative_name=c.get_full_name(),
+                    selected_for_report=False,
                 )
 
 
@@ -93,7 +115,6 @@ def clone_report_version_person_responsible(
     old_report_version: ReportVersion,
     new_report_version: ReportVersion,
 ) -> None:
-
     # Retrieve the ReportPersonResponsible instance associated with the old report version
     report_person_responsible_to_clone = ReportPersonResponsible.objects.filter(
         report_version=old_report_version
@@ -104,7 +125,8 @@ def clone_report_version_person_responsible(
 
     # Check if the PersonResponsible referenced contact still exists
     contact_exists = Contact.objects.filter(
-        Q(id=report_person_responsible_to_clone.contact_id) | Q(email=report_person_responsible_to_clone.email),
+        Q(id=report_person_responsible_to_clone.contact_id)
+        | Q(email=report_person_responsible_to_clone.email),
         archived_at__isnull=True,
     ).exists()
 
@@ -118,9 +140,13 @@ def clone_report_version_person_responsible(
     report_person_responsible_to_clone.save()
 
 
-def clone_report_version_additional_data(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
+def clone_report_version_additional_data(
+    old_report_version: ReportVersion, new_report_version: ReportVersion
+) -> None:
     # Retrieve the ReportAdditionalData instance associated with the old report version
-    report_additional_data_to_clone = ReportAdditionalData.objects.filter(report_version=old_report_version).first()
+    report_additional_data_to_clone = ReportAdditionalData.objects.filter(
+        report_version=old_report_version
+    ).first()
 
     if report_additional_data_to_clone:
         # Clone the instance by resetting the primary key and updating the report version
@@ -129,7 +155,9 @@ def clone_report_version_additional_data(old_report_version: ReportVersion, new_
         report_additional_data_to_clone.save()
 
 
-def clone_electricity_import_data(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
+def clone_electricity_import_data(
+    old_report_version: ReportVersion, new_report_version: ReportVersion
+) -> None:
     # Retrieve the ElectricityImportData instance associated with the old report version
     electricity_import_data_to_clone = ReportElectricityImportData.objects.filter(
         report_version=old_report_version
@@ -142,15 +170,27 @@ def clone_electricity_import_data(old_report_version: ReportVersion, new_report_
         electricity_import_data_to_clone.save()
 
 
-def clone_report_version_new_entrant_data(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
+def clone_report_version_new_entrant_data(
+    old_report_version: ReportVersion, new_report_version: ReportVersion
+) -> None:
     # Retrieve the ReportNewEntrant instance associated with the old report version
-    report_new_entrant_to_clone = ReportNewEntrant.objects.filter(report_version=old_report_version).first()
+    report_new_entrant_to_clone = ReportNewEntrant.objects.filter(
+        report_version=old_report_version
+    ).first()
     if not report_new_entrant_to_clone:
         return
 
     # Retrieve associated ReportNewEntrantEmission and ReportNewEntrantProduction data from the old instance
-    old_emissions = list(ReportNewEntrantEmission.objects.filter(report_new_entrant=report_new_entrant_to_clone))
-    old_productions = list(ReportNewEntrantProduction.objects.filter(report_new_entrant=report_new_entrant_to_clone))
+    old_emissions = list(
+        ReportNewEntrantEmission.objects.filter(
+            report_new_entrant=report_new_entrant_to_clone
+        )
+    )
+    old_productions = list(
+        ReportNewEntrantProduction.objects.filter(
+            report_new_entrant=report_new_entrant_to_clone
+        )
+    )
 
     # Clone the ReportNewEntrant instance by resetting the primary key and updating the report version
     report_new_entrant_to_clone.pk = None
@@ -182,9 +222,13 @@ def clone_report_version_new_entrant_data(old_report_version: ReportVersion, new
     ReportNewEntrantProduction.objects.bulk_create(productions_to_create)
 
 
-def clone_report_version_verification(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
+def clone_report_version_verification(
+    old_report_version: ReportVersion, new_report_version: ReportVersion
+) -> None:
     # Retrieve the ReportVerification instance associated with the old report version
-    verification_to_clone = ReportVerification.objects.filter(report_version=old_report_version).first()
+    verification_to_clone = ReportVerification.objects.filter(
+        report_version=old_report_version
+    ).first()
     if not verification_to_clone:
         return
 
@@ -194,9 +238,13 @@ def clone_report_version_verification(old_report_version: ReportVersion, new_rep
     verification_to_clone.save()
 
 
-def clone_report_version_attachments(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
+def clone_report_version_attachments(
+    old_report_version: ReportVersion, new_report_version: ReportVersion
+) -> None:
     # Retrieve all ReportAttachment instances associated with the old report version
-    old_attachments = ReportAttachment.objects.filter(report_version_id=old_report_version)
+    old_attachments = ReportAttachment.objects.filter(
+        report_version_id=old_report_version
+    )
     # Clone each attachment for the new report version
     for attachment in old_attachments:
         new_name = default_storage.duplicate_file(attachment.get_file_field().name)  # type: ignore
@@ -207,27 +255,41 @@ def clone_report_version_attachments(old_report_version: ReportVersion, new_repo
         attachment.save()
 
 
-def clone_report_version_facilities(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
+def clone_report_version_facilities(
+    old_report_version: ReportVersion, new_report_version: ReportVersion
+) -> None:
     # Retrieve all FacilityReport instances associated with the old report version.
-    facility_reports_to_clone = FacilityReport.objects.filter(report_version=old_report_version)
+    facility_reports_to_clone = FacilityReport.objects.filter(
+        report_version=old_report_version
+    )
 
     for facility_report_to_clone in facility_reports_to_clone:
         activities = facility_report_to_clone.activities.all()
         # Use a deep copy so that the original instance (with its relationships) is preserved.
         cloned_facility_report = copy.deepcopy(facility_report_to_clone)
         cloned_facility_report.pk = None  # Reset the primary key.
-        cloned_facility_report.report_version = new_report_version  # Set the new report version.
+        cloned_facility_report.report_version = (
+            new_report_version  # Set the new report version.
+        )
         cloned_facility_report.is_completed = False
         cloned_facility_report.save()
 
         cloned_facility_report.activities.set(activities)
 
-        clone_report_version_facility_activities(facility_report_to_clone, cloned_facility_report)
+        clone_report_version_facility_activities(
+            facility_report_to_clone, cloned_facility_report
+        )
         clone_report_version_facility_non_attributable_emissions(
-            old_report_version, new_report_version, facility_report_to_clone, cloned_facility_report
+            old_report_version,
+            new_report_version,
+            facility_report_to_clone,
+            cloned_facility_report,
         )
         clone_report_version_facility_product_data(
-            old_report_version, new_report_version, facility_report_to_clone, cloned_facility_report
+            old_report_version,
+            new_report_version,
+            facility_report_to_clone,
+            cloned_facility_report,
         )
 
 
@@ -235,7 +297,9 @@ def clone_report_version_facility_activities(
     old_facility_report: FacilityReport, new_facility_report: FacilityReport
 ) -> None:
     # Retrieve and clone each ReportActivity for the new facility report.
-    for report_activity in ReportActivity.objects.filter(facility_report=old_facility_report):
+    for report_activity in ReportActivity.objects.filter(
+        facility_report=old_facility_report
+    ):
         clone_report_version_facility_activity(report_activity, new_facility_report)
 
 
@@ -255,13 +319,17 @@ def clone_report_version_facility_activity(
     clone_activity_raw_json_data(old_report_activity_to_clone, new_facility_report)
 
     # Clone each related ReportSourceType associated with the old activity
-    for old_source_type_to_clone in ReportSourceType.objects.filter(report_activity=old_report_activity_to_clone):
+    for old_source_type_to_clone in ReportSourceType.objects.filter(
+        report_activity=old_report_activity_to_clone
+    ):
         clone_activity_source_type(old_source_type_to_clone, cloned_report_activity)
 
     return cloned_report_activity
 
 
-def clone_activity_raw_json_data(old_activity_to_clone: ReportActivity, new_facility_report: FacilityReport) -> None:
+def clone_activity_raw_json_data(
+    old_activity_to_clone: ReportActivity, new_facility_report: FacilityReport
+) -> None:
     try:
         old_raw_data = ReportRawActivityData.objects.get(
             facility_report=old_activity_to_clone.facility_report,
@@ -272,14 +340,18 @@ def clone_activity_raw_json_data(old_activity_to_clone: ReportActivity, new_faci
 
     cloned_raw_data = copy.deepcopy(old_raw_data)
     cloned_raw_data.pk = None  # Reset the primary key so a new record is created.
-    cloned_raw_data.facility_report = new_facility_report  # Update the relationship to the new facility report.
+    cloned_raw_data.facility_report = (
+        new_facility_report  # Update the relationship to the new facility report.
+    )
     cloned_raw_data.report_version = (  # Update the relationship to the new report version.
         new_facility_report.report_version
     )
     cloned_raw_data.save()
 
 
-def clone_activity_source_type(old_source_type_to_clone: ReportSourceType, new_activity: ReportActivity) -> None:
+def clone_activity_source_type(
+    old_source_type_to_clone: ReportSourceType, new_activity: ReportActivity
+) -> None:
     # Clone ReportSourceType using a deep copy.
     cloned_source_type = copy.deepcopy(old_source_type_to_clone)
     cloned_source_type.pk = None
@@ -296,9 +368,13 @@ def clone_activity_source_type(old_source_type_to_clone: ReportSourceType, new_a
         clone_source_type_emissions(old_source_type_to_clone, cloned_source_type)
 
 
-def clone_source_type_units(old_source_type_to_clone: ReportSourceType, new_source_type: ReportSourceType) -> None:
+def clone_source_type_units(
+    old_source_type_to_clone: ReportSourceType, new_source_type: ReportSourceType
+) -> None:
     # Clone each ReportUnit related to the source type.
-    old_units_to_clone = ReportUnit.objects.filter(report_source_type=old_source_type_to_clone)
+    old_units_to_clone = ReportUnit.objects.filter(
+        report_source_type=old_source_type_to_clone
+    )
     for old_unit_to_clone in old_units_to_clone:
         cloned_unit = copy.deepcopy(old_unit_to_clone)
         cloned_unit.pk = None
@@ -307,12 +383,24 @@ def clone_source_type_units(old_source_type_to_clone: ReportSourceType, new_sour
         cloned_unit.save()
 
         if old_source_type_to_clone.activity_source_type_base_schema.has_fuel:
-            clone_unit_fuels(old_source_type_to_clone, new_source_type, old_unit_to_clone, cloned_unit)
+            clone_unit_fuels(
+                old_source_type_to_clone,
+                new_source_type,
+                old_unit_to_clone,
+                cloned_unit,
+            )
         else:
-            clone_unit_emissions(old_source_type_to_clone, new_source_type, old_unit_to_clone, cloned_unit)
+            clone_unit_emissions(
+                old_source_type_to_clone,
+                new_source_type,
+                old_unit_to_clone,
+                cloned_unit,
+            )
 
 
-def clone_source_type_fuels(old_source_type_to_clone: ReportSourceType, new_source_type: ReportSourceType) -> None:
+def clone_source_type_fuels(
+    old_source_type_to_clone: ReportSourceType, new_source_type: ReportSourceType
+) -> None:
     # Clone ReportFuel instances that are directly related to the source type (with no associated unit).
     old_fuels_to_clone = ReportFuel.objects.filter(
         report_source_type=old_source_type_to_clone, report_unit__isnull=True
@@ -323,7 +411,9 @@ def clone_source_type_fuels(old_source_type_to_clone: ReportSourceType, new_sour
         cloned_fuel.report_version = new_source_type.report_version
         cloned_fuel.report_source_type = new_source_type
         cloned_fuel.save()
-        clone_fuel_emissions(old_source_type_to_clone, new_source_type, old_fuel_to_clone, cloned_fuel)
+        clone_fuel_emissions(
+            old_source_type_to_clone, new_source_type, old_fuel_to_clone, cloned_fuel
+        )
 
 
 def clone_unit_fuels(
@@ -343,15 +433,21 @@ def clone_unit_fuels(
         cloned_fuel.report_source_type = new_source_type
         cloned_fuel.report_unit = new_unit
         cloned_fuel.save()
-        clone_fuel_emissions(old_source_type_to_clone, new_source_type, old_fuel_to_clone, cloned_fuel, new_unit)
+        clone_fuel_emissions(
+            old_source_type_to_clone,
+            new_source_type,
+            old_fuel_to_clone,
+            cloned_fuel,
+            new_unit,
+        )
 
 
 def _clone_emission_common_fields(
     old_emission_to_clone: ReportEmission,
     report_version: ReportVersion,
     new_source_type: ReportSourceType,
-    new_unit: Optional[ReportUnit] = None,
-    new_fuel: Optional[ReportFuel] = None,
+    new_unit: ReportUnit | None = None,
+    new_fuel: ReportFuel | None = None,
 ) -> None:
     # Clone a ReportEmission instance using deep copy.
     cloned_emission = copy.deepcopy(old_emission_to_clone)
@@ -363,16 +459,22 @@ def _clone_emission_common_fields(
     cloned_emission.save()
 
     # Clone the many-to-many emission categories.
-    cloned_emission.emission_categories.set(old_emission_to_clone.emission_categories.all())
+    cloned_emission.emission_categories.set(
+        old_emission_to_clone.emission_categories.all()
+    )
 
     # Clone related methodology.
     clone_emission_methodology(old_emission_to_clone, cloned_emission)
 
 
-def clone_source_type_emissions(old_source_type_to_clone: ReportSourceType, new_source_type: ReportSourceType) -> None:
+def clone_source_type_emissions(
+    old_source_type_to_clone: ReportSourceType, new_source_type: ReportSourceType
+) -> None:
     # Clone ReportEmission instances that have no unit and no fuel.
     old_emissions_to_clone = ReportEmission.objects.filter(
-        report_source_type=old_source_type_to_clone, report_unit__isnull=True, report_fuel__isnull=True
+        report_source_type=old_source_type_to_clone,
+        report_unit__isnull=True,
+        report_fuel__isnull=True,
     )
     for old_emission_to_clone in old_emissions_to_clone:
         _clone_emission_common_fields(
@@ -390,7 +492,9 @@ def clone_unit_emissions(
 ) -> None:
     # Clone ReportEmission instances associated with a unit (and no fuel).
     old_emissions_to_clone = ReportEmission.objects.filter(
-        report_source_type=old_source_type_to_clone, report_unit=old_unit_to_clone, report_fuel__isnull=True
+        report_source_type=old_source_type_to_clone,
+        report_unit=old_unit_to_clone,
+        report_fuel__isnull=True,
     )
     for old_emission_to_clone in old_emissions_to_clone:
         _clone_emission_common_fields(
@@ -406,7 +510,7 @@ def clone_fuel_emissions(
     new_source_type: ReportSourceType,
     old_fuel_to_clone: ReportFuel,
     new_fuel: ReportFuel,
-    new_unit: Optional[ReportUnit] = None,
+    new_unit: ReportUnit | None = None,
 ) -> None:
     # Clone ReportEmission instances associated with a fuel.
     old_emissions_to_clone = ReportEmission.objects.filter(
@@ -422,9 +526,13 @@ def clone_fuel_emissions(
         )
 
 
-def clone_emission_methodology(old_emission_to_clone: ReportEmission, new_emission: ReportEmission) -> None:
+def clone_emission_methodology(
+    old_emission_to_clone: ReportEmission, new_emission: ReportEmission
+) -> None:
     # Clone each ReportMethodology related to the old emission.
-    old_methodologies_to_clone = ReportMethodology.objects.filter(report_emission=old_emission_to_clone)
+    old_methodologies_to_clone = ReportMethodology.objects.filter(
+        report_emission=old_emission_to_clone
+    )
     for old_methodology_to_clone in old_methodologies_to_clone:
         cloned_methodology = copy.deepcopy(old_methodology_to_clone)
         cloned_methodology.pk = None
@@ -512,7 +620,9 @@ def clone_report_version_facility_product_emission_allocations(
         cloned_product_allocation.pk = None
         cloned_product_allocation.report_version = new_report_version
         if new_report_emission_allocation:
-            cloned_product_allocation.report_emission_allocation = new_report_emission_allocation
+            cloned_product_allocation.report_emission_allocation = (
+                new_report_emission_allocation
+            )
         cloned_product_allocation.report_product = new_report_product
         cloned_product_allocation.save()
 
@@ -523,25 +633,34 @@ def reapply_emission_categories(report_version: ReportVersion) -> None:
     This ensures that the emission categories are applied to the report correctly, in case changes to emission categories
     have occurred in the database since the report was last updated.
     """
-    report_emissions = ReportEmission.objects.filter(report_version=report_version).select_related(
-        "report_methodology__methodology"
-    )
+    report_emissions = ReportEmission.objects.filter(
+        report_version=report_version
+    ).select_related("report_methodology__methodology")
 
     for report_emission in report_emissions:
         report_methodology = report_emission.report_methodology
         EmissionCategoryMappingService.apply_emission_categories(
             report_source_type=report_emission.report_source_type,
-            report_fuel=report_emission.report_fuel if report_emission.report_fuel else None,
+            report_fuel=report_emission.report_fuel
+            if report_emission.report_fuel
+            else None,
             report_emission=report_emission,
             # Same shape as the activity form payload: methodology name plus its json fields
-            methodology_data={"methodology": report_methodology.methodology.name, **report_methodology.json_data},
+            methodology_data={
+                "methodology": report_methodology.methodology.name,
+                **report_methodology.json_data,
+            },
         )
 
 
-def clone_all(source: ReportVersion, target: ReportVersion, is_operation_transferred: bool) -> None:
+def clone_all(
+    source: ReportVersion, target: ReportVersion, is_operation_transferred: bool
+) -> None:
     """Copies all related data from source report version into target report version."""
     clone_report_version_operation(source, target)
-    clone_or_refresh_report_version_representatives(source, target, is_operation_transferred)
+    clone_or_refresh_report_version_representatives(
+        source, target, is_operation_transferred
+    )
     clone_report_version_person_responsible(source, target)
     clone_electricity_import_data(source, target)
     clone_report_version_additional_data(source, target)

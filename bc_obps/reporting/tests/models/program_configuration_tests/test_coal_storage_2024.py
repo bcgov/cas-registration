@@ -1,8 +1,9 @@
 from django.test import TestCase
-from .base_program_configuration_test import BaseProgramConfigurationTest
 from registration.models.activity import Activity
 from reporting.models import CustomMethodologySchema
 from reporting.models.configuration import Configuration
+
+from .base_program_configuration_test import BaseProgramConfigurationTest
 
 
 class CoalStorage2024Test(BaseProgramConfigurationTest, TestCase):
@@ -23,11 +24,15 @@ class CoalStorage2024Test(BaseProgramConfigurationTest, TestCase):
 
     def testCustomMethodologySchema(self):
         # Fetch the activity and configuration objects
-        activity = Activity.objects.get(name='Coal storage at facilities that combust coal')
-        config = Configuration.objects.get(slug='2024')
+        activity = Activity.objects.get(
+            name="Coal storage at facilities that combust coal"
+        )
+        config = Configuration.objects.get(slug="2024")
 
         # Fetch the custom methodology schemas
-        custom_schemas = CustomMethodologySchema.objects.filter(activity=activity, valid_from=config, valid_to=config)
+        custom_schemas = CustomMethodologySchema.objects.filter(
+            activity=activity, valid_from=config, valid_to=config
+        )
 
         # Define the expected schema for the "Default EF" methodology
         expected_schema = {
@@ -121,7 +126,11 @@ class CoalStorage2024Test(BaseProgramConfigurationTest, TestCase):
                                 "Other",
                             ],
                         },
-                        "mineType": {"title": "Mine Type", "type": "string", "enum": ["Underground", "Open-pit"]},
+                        "mineType": {
+                            "title": "Mine Type",
+                            "type": "string",
+                            "enum": ["Underground", "Open-pit"],
+                        },
                         "defaultCH4EmissionFactor": {
                             "title": "Default CH4 Emission Factor",
                             "type": "number",
@@ -134,11 +143,21 @@ class CoalStorage2024Test(BaseProgramConfigurationTest, TestCase):
                                 {
                                     "properties": {
                                         "coalBasin": {"enum": ["Other"]},
-                                        "basinName": {"title": "Basin Name", "type": "string"},
-                                        "basinDescription": {"title": "Basin Description", "type": "string"},
+                                        "basinName": {
+                                            "title": "Basin Name",
+                                            "type": "string",
+                                        },
+                                        "basinDescription": {
+                                            "title": "Basin Description",
+                                            "type": "string",
+                                        },
                                     }
                                 },
-                                {"not": {"properties": {"coalBasin": {"enum": ["Other"]}}}},
+                                {
+                                    "not": {
+                                        "properties": {"coalBasin": {"enum": ["Other"]}}
+                                    }
+                                },
                             ]
                         }
                     },
@@ -147,17 +166,21 @@ class CoalStorage2024Test(BaseProgramConfigurationTest, TestCase):
         }
 
         # Check if the expected schema is present for "Default EF"
-        coal_purchase_schema_exists = custom_schemas.filter(methodology__name='Default EF').exists()
+        coal_purchase_schema_exists = custom_schemas.filter(
+            methodology__name="Default EF"
+        ).exists()
 
-        self.assertTrue(coal_purchase_schema_exists, msg='Default EF methodology schema is missing')
+        self.assertTrue(
+            coal_purchase_schema_exists, msg="Default EF methodology schema is missing"
+        )
 
         for custom_schema in custom_schemas:
-            if custom_schema.methodology.name == 'Default EF':
-                actual_schema = custom_schema.json_schema['properties']
+            if custom_schema.methodology.name == "Default EF":
+                actual_schema = custom_schema.json_schema["properties"]
 
                 # Assert equality
                 self.assertEqual(
                     actual_schema,
                     expected_schema,
-                    msg='Custom schema for Default EF does not match the expected schema',
+                    msg="Custom schema for Default EF does not match the expected schema",
                 )

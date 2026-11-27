@@ -43,7 +43,9 @@ def connection(database=None):
 
 def pg_maj_version(cursor):
     """Return the major version of Postgres that's running"""
-    version = getattr(cursor.connection, "server_version", cursor.connection.info.server_version)
+    version = getattr(
+        cursor.connection, "server_version", cursor.connection.info.server_version
+    )
     return int(str(version)[:-4])
 
 

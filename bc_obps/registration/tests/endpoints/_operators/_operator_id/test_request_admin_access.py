@@ -17,7 +17,9 @@ class TestOperatorRequestAdminAccessEndpoint(CommonTestSetup):
             "industry_user",
             self.content_type,
             {},
-            custom_reverse_lazy("request_admin_access", kwargs={"operator_id": operator.id}),
+            custom_reverse_lazy(
+                "request_admin_access", kwargs={"operator_id": operator.id}
+            ),
         )
 
         # Assert that the email notification was sent
@@ -45,7 +47,6 @@ class TestOperatorRequestAdminAccessEndpoint(CommonTestSetup):
         assert user_operator_exists, "UserOperator object was not created"
 
     def test_request_access_with_invalid_payload(self):
-
         response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
@@ -54,4 +55,6 @@ class TestOperatorRequestAdminAccessEndpoint(CommonTestSetup):
             custom_reverse_lazy("request_admin_access", kwargs={"operator_id": 99999}),
         )
         assert response.status_code == 422
-        assert response.json() == {'message': 'Operator Id: Input should be a valid UUID, invalid length: found 5'}
+        assert response.json() == {
+            "message": "Operator Id: Input should be a valid UUID, invalid length: found 5"
+        }

@@ -1,10 +1,11 @@
 from decimal import Decimal
-from ninja import Schema
+from enum import StrEnum
+
 from compliance.models import ComplianceObligation, CompliancePenalty
-from enum import Enum
+from ninja import Schema
 
 
-class PenaltyTypeStatus(str, Enum):
+class PenaltyTypeStatus(StrEnum):
     NONE = ComplianceObligation.PenaltyStatus.NONE.value
     ACCRUING = ComplianceObligation.PenaltyStatus.ACCRUING.value
     PAID = ComplianceObligation.PenaltyStatus.PAID.value

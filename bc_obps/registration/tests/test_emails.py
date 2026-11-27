@@ -1,12 +1,22 @@
 import uuid
-from common.models import EmailNotification
-from common.service.email.email_service import EmailService
-from registration.emails import send_registration_and_boro_id_email, send_operator_access_request_email
-from registration.enums.enums import AccessRequestStates, AccessRequestTypes, EmailTemplateNames
+
 import pytest
+from common.models import EmailNotification
+from common.service.data_access_service.email_template_service import (
+    EmailNotificationTemplateService,
+)
+from common.service.email.email_service import EmailService
+from registration.emails import (
+    send_operator_access_request_email,
+    send_registration_and_boro_id_email,
+)
+from registration.enums.enums import (
+    AccessRequestStates,
+    AccessRequestTypes,
+    EmailTemplateNames,
+)
 from registration.models import Operation, User
 from registration.tests.utils.bakers import operation_baker, user_baker
-from common.service.data_access_service.email_template_service import EmailNotificationTemplateService
 
 pytestmark = pytest.mark.django_db
 email_service = EmailService()
@@ -32,26 +42,34 @@ class TestSendOperatorAccessRequestEmail:
             message_id = uuid.uuid4()
             expected_email_notifications_after_sending.append(
                 {
-                    'txId': transaction_id,
-                    'messages': [{'msgId': message_id}],
-                    'template': args[0].id,
-                    'recipients': args[2][0],
+                    "txId": transaction_id,
+                    "messages": [{"msgId": message_id}],
+                    "template": args[0].id,
+                    "recipients": args[2][0],
                 }
             )
-            return {'txId': transaction_id, 'messages': [{'msgId': message_id}]}
+            return {"txId": transaction_id, "messages": [{"msgId": message_id}]}
 
         # Mock the send_email_by_template method to prevent sending real emails
         mocked_send_email_by_template = mocker.patch.object(
-            email_service, 'send_email_by_template', side_effect=generate_return_value
+            email_service, "send_email_by_template", side_effect=generate_return_value
         )
 
-        return mocked_send_email_by_template, expected_email_notifications_after_sending, expected_context
+        return (
+            mocked_send_email_by_template,
+            expected_email_notifications_after_sending,
+            expected_context,
+        )
 
     @pytest.mark.parametrize("access_type", list(AccessRequestTypes))
     @pytest.mark.parametrize("access_state", list(AccessRequestStates))
-    def test_send_operator_access_request_email(self, access_type, access_state, mocker):
+    def test_send_operator_access_request_email(
+        self, access_type, access_state, mocker
+    ):
         template_name = f"{access_type.value} Access Request {access_state.value}"
-        template_instance = EmailNotificationTemplateService.get_template_by_name(template_name)
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            template_name
+        )
         (
             mocked_send_email_by_template,
             expected_email_notifications_after_sending,
@@ -65,7 +83,11 @@ class TestSendOperatorAccessRequestEmail:
         ).exists()
 
         send_operator_access_request_email(
-            access_state, access_type, operator_legal_name, external_user_full_name, external_user_email_address
+            access_state,
+            access_type,
+            operator_legal_name,
+            external_user_full_name,
+            external_user_email_address,
         )
 
         # Assert that send_email_by_template is called with the correct data
@@ -76,10 +98,10 @@ class TestSendOperatorAccessRequestEmail:
         # Assert that an email notification records were created
         for expected_email_notification in expected_email_notifications_after_sending:
             assert EmailNotification.objects.filter(
-                transaction_id=expected_email_notification['txId'],
-                message_id=expected_email_notification['messages'][0]['msgId'],
-                template=expected_email_notification['template'],
-                recipients_email=[expected_email_notification['recipients']],
+                transaction_id=expected_email_notification["txId"],
+                message_id=expected_email_notification["messages"][0]["msgId"],
+                template=expected_email_notification["template"],
+                recipients_email=[expected_email_notification["recipients"]],
             ).exists()
 
 
@@ -98,26 +120,32 @@ class TestSendBoroIdApplicationEmail:
             message_id = uuid.uuid4()
             expected_email_notifications_after_sending.append(
                 {
-                    'txId': transaction_id,
-                    'messages': [{'msgId': message_id}],
-                    'template': args[0].id,
-                    'recipients': args[2][0],
+                    "txId": transaction_id,
+                    "messages": [{"msgId": message_id}],
+                    "template": args[0].id,
+                    "recipients": args[2][0],
                 }
             )
-            return {'txId': transaction_id, 'messages': [{'msgId': message_id}]}
+            return {"txId": transaction_id, "messages": [{"msgId": message_id}]}
 
         mocked_send_email_by_template = mocker.patch.object(
-            email_service, 'send_email_by_template', side_effect=generate_return_value
+            email_service, "send_email_by_template", side_effect=generate_return_value
         )
         return mocked_send_email_by_template, expected_email_notifications_after_sending
 
     @pytest.mark.parametrize("template_name", list(EmailTemplateNames))
-    def test_send_registration_and_boro_id_email_with_the_same_recipients(self, template_name, mocker):
+    def test_send_registration_and_boro_id_email_with_the_same_recipients(
+        self, template_name, mocker
+    ):
         assert EmailNotification.objects.count() == 0
-        template_instance = EmailNotificationTemplateService.get_template_by_name(template_name.value)
-        mocked_send_email_by_template, expected_email_notifications_after_sending = self.mock_email_service(mocker)
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            template_name.value
+        )
+        mocked_send_email_by_template, expected_email_notifications_after_sending = (
+            self.mock_email_service(mocker)
+        )
 
-        self.operation.created_by = user_baker({'email': 'email@email.com'})
+        self.operation.created_by = user_baker({"email": "email@email.com"})
         self.operation.save()
 
         send_registration_and_boro_id_email(
@@ -143,8 +171,8 @@ class TestSendBoroIdApplicationEmail:
         # Assert that the email notifications were created
         for expected_email_notification in expected_email_notifications_after_sending:
             assert EmailNotification.objects.filter(
-                transaction_id=expected_email_notification['txId'],
-                message_id=expected_email_notification['messages'][0]['msgId'],
-                template=expected_email_notification['template'],
-                recipients_email=[expected_email_notification['recipients']],
+                transaction_id=expected_email_notification["txId"],
+                message_id=expected_email_notification["messages"][0]["msgId"],
+                template=expected_email_notification["template"],
+                recipients_email=[expected_email_notification["recipients"]],
             ).exists()

@@ -1,9 +1,17 @@
 from common.models import BaseModel
 from django.db import models
 from registration.models import Activity
-from reporting.models import SourceType, GasType, Methodology, Configuration, ReportingField
+from reporting.models import (
+    Configuration,
+    GasType,
+    Methodology,
+    ReportingField,
+    SourceType,
+)
 from reporting.models.custom_methodology_schema import CustomMethodologySchema
-from reporting.models.rls_configs.configuration_element import Rls as ConfigurationElementRls
+from reporting.models.rls_configs.configuration_element import (
+    Rls as ConfigurationElementRls,
+)
 from reporting.models.triggers import no_overlapping_configuration_records_trigger
 
 

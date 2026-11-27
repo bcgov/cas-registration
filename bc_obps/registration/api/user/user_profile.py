@@ -1,31 +1,35 @@
 import json
-from typing import Literal, Tuple, Union
-from common.permissions import authorize
-from django.http import HttpRequest
+from typing import Literal, Union
+
 from common.api.utils import get_current_user_guid
-from registration.constants import USER_TAGS
-from registration.service.data_access_service.user_service import UserDataAccessService
-from registration.models import User
-from registration.service.user_profile_service import UserProfileService
-from registration.service.data_types.user_profile_service import UserLoginSyncData
-from registration.schema import UserUpdateIn, UserLoginSyncIn, UserOut, Message
-from registration.api.router import router
+from common.permissions import authorize
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest
+from registration.api.router import router
+from registration.constants import USER_TAGS
+from registration.models import User
+from registration.schema import Message, UserLoginSyncIn, UserOut, UserUpdateIn
+from registration.service.data_access_service.user_service import UserDataAccessService
+from registration.service.data_types.user_profile_service import UserLoginSyncData
+from registration.service.user_profile_service import UserProfileService
 
 
 # endpoint to return user data if user exists in user table
 @router.get(
     "/user/user-profile",
-    response={200: Union[UserOut, dict], custom_codes_4xx: Message},
+    response={200: UserOut | dict, custom_codes_4xx: Message},
     tags=USER_TAGS,
     description="""Retrieves the profile data of the current user.
     The endpoint uses the user GUID from the authorization header to look up and return the user's profile information, including their application role.""",
 )
-def get_user_profile(request: HttpRequest) -> Tuple[Literal[200], Union[User, dict]]:
-    response: Union[User, dict] = {}  # to make mypy happy
+def get_user_profile(request: HttpRequest) -> tuple[Literal[200], User | dict]:
+    response: User | dict = {}  # to make mypy happy
     try:
         # using `get_by_guid` because we call this endpoint from the frontend middleware as part of the login flow
-        response = UserDataAccessService.get_by_guid(json.loads(request.headers.get('Authorization')).get('user_guid'), include_archived=True)  # type: ignore[arg-type]
+        response = UserDataAccessService.get_by_guid(
+            json.loads(request.headers.get("Authorization")).get("user_guid"),  # type: ignore[arg-type]
+            include_archived=True,
+        )
     except User.DoesNotExist:
         # if the user is not in the database, return 200 with empty dict rather than a 404 to allow frontend flow to continue smoothly
         pass
@@ -44,8 +48,12 @@ def get_user_profile(request: HttpRequest) -> Tuple[Literal[200], Union[User, di
     The user's data is retrieved and updated with the new values from the payload.""",
     auth=authorize("all_roles"),
 )
-def update_user_profile(request: HttpRequest, payload: UserUpdateIn) -> Tuple[Literal[200], User]:
-    return 200, UserDataAccessService.update_user(get_current_user_guid(request), payload)
+def update_user_profile(
+    request: HttpRequest, payload: UserUpdateIn
+) -> tuple[Literal[200], User]:
+    return 200, UserDataAccessService.update_user(
+        get_current_user_guid(request), payload
+    )
 
 
 @router.put(
@@ -55,7 +63,9 @@ def update_user_profile(request: HttpRequest, payload: UserUpdateIn) -> Tuple[Li
     description="""Refreshes the current industry user's email and BCeID business name with the values from their identity provider (BCeID) profile.""",
     auth=authorize("industry_user"),
 )
-def sync_user_profile_on_login(request: HttpRequest, payload: UserLoginSyncIn) -> Tuple[Literal[200], User]:
+def sync_user_profile_on_login(
+    request: HttpRequest, payload: UserLoginSyncIn
+) -> tuple[Literal[200], User]:
     return 200, UserProfileService.sync_user_profile_from_idp(
         get_current_user_guid(request), UserLoginSyncData(**payload.model_dump())
     )

@@ -1,6 +1,6 @@
-from django.db import models
-from django.contrib.postgres.fields import ArrayField
 from common.models.email_notification_template import EmailNotificationTemplate
+from django.contrib.postgres.fields import ArrayField
+from django.db import models
 
 
 class EmailNotification(models.Model):
@@ -14,12 +14,13 @@ class EmailNotification(models.Model):
         db_comment="Message identifier for the email message in CHES (Common Hosted Email Service), BC government's shared email API",
     )
     recipients_email = ArrayField(
-        models.EmailField(max_length=255), db_comment="List of email addresses to send the email to"
+        models.EmailField(max_length=255),
+        db_comment="List of email addresses to send the email to",
     )
     template = models.ForeignKey(
         EmailNotificationTemplate,
         on_delete=models.DO_NOTHING,
-        related_name='email_notifications',
+        related_name="email_notifications",
         db_comment="Email template to use for the email notification",
     )
 

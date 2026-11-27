@@ -1,6 +1,5 @@
 import pytest
 from model_bakery import baker
-
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
     ReportValidationError,
@@ -13,7 +12,6 @@ from reporting.service.report_validation.validators.required_fields.required_fie
     validate,
 )
 from reporting.service.reporting_flow_service import ReportingFlow
-
 
 pytestmark = pytest.mark.django_db
 
@@ -76,7 +74,9 @@ class TestRequiredFieldsReportAdditionalDataValidator:
         assert error.context.report_version_id == self.report_version.id
         assert error.context.section == SECTION
         assert error.context.section_title == SECTION_TITLE
-        assert error.context.missing_fields == ["At least one emissions capture type must be provided"]
+        assert error.context.missing_fields == [
+            "At least one emissions capture type must be provided"
+        ]
 
     def test_validate_returns_empty_dict_when_capture_emissions_is_false(self):
         baker.make_recipe(
@@ -92,7 +92,9 @@ class TestRequiredFieldsReportAdditionalDataValidator:
 
         assert result == {}
 
-    def test_validate_returns_empty_dict_when_capture_emissions_fields_are_present(self):
+    def test_validate_returns_empty_dict_when_capture_emissions_fields_are_present(
+        self,
+    ):
         baker.make_recipe(
             "reporting.tests.utils.report_additional_data",
             report_version=self.report_version,

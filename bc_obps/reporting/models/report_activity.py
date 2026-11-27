@@ -3,8 +3,8 @@ from registration.models.activity import Activity
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_data_base_model import ReportDataBaseModel
-from reporting.models.triggers import immutable_report_version_trigger
 from reporting.models.rls_configs.report_activity import Rls as ReportActivityRls
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportActivity(ReportDataBaseModel):
@@ -29,7 +29,9 @@ class ReportActivity(ReportDataBaseModel):
     )
 
     class Meta(ReportDataBaseModel.Meta):
-        db_table_comment = "A table to store the reported activity-specific data, in a JSON format"
+        db_table_comment = (
+            "A table to store the reported activity-specific data, in a JSON format"
+        )
         db_table = 'erc"."report_activity'
         app_label = "reporting"
         constraints = [

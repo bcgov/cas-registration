@@ -1,6 +1,6 @@
 from decimal import Decimal
-from typing import Dict, Tuple, cast
 from enum import Enum
+from typing import Dict, Tuple, cast
 
 
 class ProductionPeriod(Enum):
@@ -25,8 +25,10 @@ class ComplianceParameters:
 
     @staticmethod
     def resolve_compliance_parameters(
-        production_period: ProductionPeriod, allocated_for_compliance: Decimal, production_totals: Dict[str, Decimal]
-    ) -> Tuple[Decimal, Decimal, Decimal]:
+        production_period: ProductionPeriod,
+        allocated_for_compliance: Decimal,
+        production_totals: dict[str, Decimal],
+    ) -> tuple[Decimal, Decimal, Decimal]:
         """
         Resolve which production amount and allocated emissions to use for compliance calculations.
         For reporting year 2024, production is reported for Apr-Dec, and allocated emissions are prorated for the partial year.
@@ -48,16 +50,34 @@ class ComplianceParameters:
             case ProductionPeriod.ANNUAL:
                 production_for_limit = annual
                 prorated_allocated = Decimal(0)
-                allocated_compliance_emissions_value = ComplianceParameters.round(allocated_for_compliance)
+                allocated_compliance_emissions_value = ComplianceParameters.round(
+                    allocated_for_compliance
+                )
             case ProductionPeriod.APR_DEC:
                 apr_dec = Decimal(production_totals.get("apr_dec") or 0)
                 production_for_limit = apr_dec
-                prorated_allocated = Decimal(0) if annual == 0 else (allocated_for_compliance / annual) * apr_dec
-                allocated_compliance_emissions_value = ComplianceParameters.round(prorated_allocated)
+                prorated_allocated = (
+                    Decimal(0)
+                    if annual == 0
+                    else (allocated_for_compliance / annual) * apr_dec
+                )
+                allocated_compliance_emissions_value = ComplianceParameters.round(
+                    prorated_allocated
+                )
             case ProductionPeriod.JAN_MAR:
                 jan_mar = Decimal(production_totals.get("jan_mar") or 0)
                 production_for_limit = jan_mar
-                prorated_allocated = Decimal(0) if annual == 0 else (allocated_for_compliance / annual) * jan_mar
-                allocated_compliance_emissions_value = ComplianceParameters.round(prorated_allocated)
+                prorated_allocated = (
+                    Decimal(0)
+                    if annual == 0
+                    else (allocated_for_compliance / annual) * jan_mar
+                )
+                allocated_compliance_emissions_value = ComplianceParameters.round(
+                    prorated_allocated
+                )
 
-        return production_for_limit, prorated_allocated, allocated_compliance_emissions_value
+        return (
+            production_for_limit,
+            prorated_allocated,
+            allocated_compliance_emissions_value,
+        )

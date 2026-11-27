@@ -1,6 +1,7 @@
-from decimal import Decimal
 from dataclasses import dataclass, field
-from typing import Literal, Optional, List, TypedDict
+from decimal import Decimal
+from typing import List, Literal, Optional, TypedDict
+
 from compliance.models import ElicensingInvoice
 
 
@@ -9,45 +10,47 @@ class BCCRUnit:
     """Data model for BC Carbon Registry Unit information"""
 
     # Common fields
-    id: Optional[str] = None
-    type: Optional[str] = None
-    serial_number: Optional[str] = None
-    vintage_year: Optional[str] = None
+    id: str | None = None
+    type: str | None = None
+    serial_number: str | None = None
+    vintage_year: str | None = None
 
     # BCCR Unit specific fields
-    quantity_available: Optional[str] = None
-    quantity_to_be_applied: int = 0  # Default to 0, will be passed to the frontend to populate the input field
+    quantity_available: str | None = None
+    quantity_to_be_applied: int = (
+        0  # Default to 0, will be passed to the frontend to populate the input field
+    )
 
     # Applied Compliance Unit specific fields
-    quantity_applied: Optional[str] = None
-    equivalent_value: Optional[str] = None
+    quantity_applied: str | None = None
+    equivalent_value: str | None = None
 
 
 @dataclass
 class AppliedComplianceUnit:
     """Data model for applied compliance units in grid format"""
 
-    id: Optional[str] = None
-    type: Optional[str] = None
-    serial_number: Optional[str] = None
-    vintage_year: Optional[str] = None
-    quantity_applied: Optional[str] = None
-    equivalent_emission_reduced: Optional[str] = None
-    equivalent_value: Optional[str] = None
+    id: str | None = None
+    type: str | None = None
+    serial_number: str | None = None
+    vintage_year: str | None = None
+    quantity_applied: str | None = None
+    equivalent_emission_reduced: str | None = None
+    equivalent_value: str | None = None
 
 
 @dataclass
 class ComplianceUnitsPageData:
     """Data model for the Apply Compliance Units page data"""
 
-    bccr_trading_name: Optional[str]
-    bccr_compliance_account_id: Optional[str]
-    charge_rate: Optional[Decimal]
-    outstanding_balance: Optional[Decimal]
-    bccr_units: List[BCCRUnit]
-    compliance_unit_cap_limit: Optional[Decimal] = None
-    compliance_unit_cap_remaining: Optional[Decimal] = None
-    max_credit_usage_percentage: Optional[Decimal] = None
+    bccr_trading_name: str | None
+    bccr_compliance_account_id: str | None
+    charge_rate: Decimal | None
+    outstanding_balance: Decimal | None
+    bccr_units: list[BCCRUnit]
+    compliance_unit_cap_limit: Decimal | None = None
+    compliance_unit_cap_remaining: Decimal | None = None
+    max_credit_usage_percentage: Decimal | None = None
 
 
 @dataclass
@@ -56,7 +59,7 @@ class BCCRAccountResponseDetails:
 
     entity_id: str
     organization_classification_id: str
-    type_of_account_holder: Optional[str]
+    type_of_account_holder: str | None
     trading_name: str
 
 
@@ -64,8 +67,8 @@ class BCCRAccountResponseDetails:
 class BCCRComplianceAccountResponseDetails:
     """Data model for BC Carbon Registry compliance account"""
 
-    master_account_name: Optional[str]
-    entity_id: Optional[str]
+    master_account_name: str | None
+    entity_id: str | None
 
 
 ## Elicensing Dataclasses
@@ -97,7 +100,7 @@ class TransferComplianceUnitsPayload:
     """Data model for the BCCR transfer compliance units API payload"""
 
     destination_account_id: str
-    mixedUnitList: List[MixedUnit]
+    mixedUnitList: list[MixedUnit]
 
 
 @dataclass
@@ -109,7 +112,7 @@ class ObligationData:
     equivalent_value: Decimal
     obligation_id: str
     penalty_status: str
-    fee_amount_dollars: Optional[Decimal]
+    fee_amount_dollars: Decimal | None
 
 
 @dataclass
@@ -124,7 +127,7 @@ class ComplianceInvoiceContext:
     operator_address_line2: str
     operation_name: str
     compliance_obligation_id: str
-    billing_items: List[dict]
+    billing_items: list[dict]
     total_amount_due: str
     logo_base64: str
 
@@ -146,16 +149,23 @@ class AutomaticOverduePenaltyInvoiceContext(ComplianceInvoiceContext):
 class ComplianceEarnedCreditsUpdate:
     """Data model for the BCCR earned credits update API payload"""
 
-    bccr_trading_name: Optional[str] = None  # Only required for industry users - we enforce this in the service layer
-    bccr_holding_account_id: Optional[str] = (
+    bccr_trading_name: str | None = (
         None  # Only required for industry users - we enforce this in the service layer
     )
-    analyst_suggestion: Optional[
-        Literal["Ready to approve", "Requiring change of BCCR Holding Account ID", "Requiring supplementary report"]
-    ] = None
-    analyst_comment: Optional[str] = None
-    director_comment: Optional[str] = None
-    director_decision: Optional[Literal["Approved", "Declined"]] = None
+    bccr_holding_account_id: str | None = (
+        None  # Only required for industry users - we enforce this in the service layer
+    )
+    analyst_suggestion: (
+        Literal[
+            "Ready to approve",
+            "Requiring change of BCCR Holding Account ID",
+            "Requiring supplementary report",
+        ]
+        | None
+    ) = None
+    analyst_comment: str | None = None
+    director_comment: str | None = None
+    director_decision: Literal["Approved", "Declined"] | None = None
 
 
 @dataclass(slots=True, frozen=True)
@@ -187,8 +197,8 @@ class AdjustmentStrategy:
     - should_create_earned_credits: whether to create an earned-credits record
     """
 
-    invoices: List["InvoiceAdjustment"] = field(default_factory=list)
-    manual_handling_context: Optional[str] = None
+    invoices: list["InvoiceAdjustment"] = field(default_factory=list)
+    manual_handling_context: str | None = None
 
     earned_credits_tonnes: Decimal = Decimal("0")
     should_create_earned_credits: bool = False
@@ -204,10 +214,5 @@ class ManualHandlingUpdate:
     Payload for manual handling updates.
     """
 
-    analyst_comment: Optional[str] = None
-    director_decision: Optional[
-        Literal[
-            "action_required",
-            "issue_resolved",
-        ]
-    ] = None
+    analyst_comment: str | None = None
+    director_decision: Literal["action_required", "issue_resolved"] | None = None

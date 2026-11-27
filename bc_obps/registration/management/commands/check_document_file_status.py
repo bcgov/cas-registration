@@ -1,14 +1,15 @@
-from itertools import chain
 import logging
 import sys
-from typing import Iterable
+import time
+from collections.abc import Iterable
+from itertools import chain
+
 from common.management.commands.custom_migrate import has_unapplied_migrations
 from common.models.scanned_file_storage_mixin import ScannedFileStorageMixin
+from common.service.error_service.handle_exception import ExceptionHandler
 from django.core.management.base import BaseCommand
 from registration.models import Document
-import time
 from reporting.models.report_attachment import ReportAttachment
-from common.service.error_service.handle_exception import ExceptionHandler
 
 logger = logging.getLogger(__name__)
 
@@ -66,9 +67,13 @@ class Command(BaseCommand):
             RUN_FOREVER = False
             if REPETITIONS == 0:
                 RUN_FOREVER = True
-                logger.info(f"Running indefinitely with a delay of {REPEAT_DELAY} seconds between checks")
+                logger.info(
+                    f"Running indefinitely with a delay of {REPEAT_DELAY} seconds between checks"
+                )
             else:
-                logger.info(f"Will run {REPETITIONS} times with a delay of {REPEAT_DELAY} seconds between checks")
+                logger.info(
+                    f"Will run {REPETITIONS} times with a delay of {REPEAT_DELAY} seconds between checks"
+                )
 
             self._run_check_loop(RUN_FOREVER, REPETITIONS, REPEAT_DELAY)
 
@@ -77,7 +82,9 @@ class Command(BaseCommand):
             ExceptionHandler.capture_sentry_exception(e, "document_file_status_error")
             raise e
 
-    def _run_check_loop(self, run_forever: bool, repetitions: int, repeat_delay: int) -> None:
+    def _run_check_loop(
+        self, run_forever: bool, repetitions: int, repeat_delay: int
+    ) -> None:
         start_time = int(time.time())
         iteration = 0
 
@@ -103,21 +110,31 @@ class Command(BaseCommand):
 
             try:
                 unscanned_models: Iterable[ScannedFileStorageMixin] = chain(
-                    Document.objects.filter(status=ScannedFileStorageMixin.FileStatus.UNSCANNED).iterator(),
-                    ReportAttachment.objects.filter(status=ScannedFileStorageMixin.FileStatus.UNSCANNED).iterator(),
+                    Document.objects.filter(
+                        status=ScannedFileStorageMixin.FileStatus.UNSCANNED
+                    ).iterator(),
+                    ReportAttachment.objects.filter(
+                        status=ScannedFileStorageMixin.FileStatus.UNSCANNED
+                    ).iterator(),
                 )
 
                 counter = 0
                 for model in unscanned_models:
                     counter += 1
-                    logger.info(f"Checking status of model {model._meta.object_name} with id: {model.id}")
+                    logger.info(
+                        f"Checking status of model {model._meta.object_name} with id: {model.id}"
+                    )
                     model.sync_file_status()
 
                 logger.info(self.style.SUCCESS(f"Checked {counter} documents"))
 
             except Exception as e:
-                logger.warning(self.style.NOTICE(f"Error checking status of documents: {e}"))
-                ExceptionHandler.capture_sentry_exception(e, "document_file_status_error")
+                logger.warning(
+                    self.style.NOTICE(f"Error checking status of documents: {e}")
+                )
+                ExceptionHandler.capture_sentry_exception(
+                    e, "document_file_status_error"
+                )
                 raise e
 
         logger.info("Completed check loop")

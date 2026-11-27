@@ -1,4 +1,5 @@
-from typing import Iterator
+from collections.abc import Iterator
+
 import pgtrigger
 
 
@@ -6,7 +7,9 @@ def no_overlapping_configuration_records_trigger(
     message: str,
     additional_filters: list[str] | None = None,
 ) -> pgtrigger.Trigger:
-    extra_filters = "".join(f"  and t.{field}_id = new.{field}_id\n" for field in (additional_filters or []))
+    extra_filters = "".join(
+        f"  and t.{field}_id = new.{field}_id\n" for field in (additional_filters or [])
+    )
     func_body = (
         """
         declare
@@ -65,12 +68,17 @@ def immutable_report_version_trigger(
     """
 
     if not orm_path_to_version.endswith("report_version"):
-        raise ValueError("The immutable report version trigger path should point at the erc.report_version table")
+        raise ValueError(
+            "The immutable report version trigger path should point at the erc.report_version table"
+        )
 
     relation_alias_generator = get_sql_relation_alias_generator()
 
     relations = [
-        *[(table, next(relation_alias_generator)) for table in reversed(orm_path_to_version.split("__"))],
+        *[
+            (table, next(relation_alias_generator))
+            for table in reversed(orm_path_to_version.split("__"))
+        ],
         ("current_table", next(relation_alias_generator)),
     ]
 
@@ -100,7 +108,9 @@ def immutable_report_version_trigger(
 
     return pgtrigger.Trigger(
         name="immutable_report_version",
-        operation=pgtrigger.Operations(pgtrigger.Update, pgtrigger.Insert, pgtrigger.Delete),
+        operation=pgtrigger.Operations(
+            pgtrigger.Update, pgtrigger.Insert, pgtrigger.Delete
+        ),
         when=pgtrigger.Before,
         func=pgtrigger.Func(
             """

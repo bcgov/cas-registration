@@ -45,6 +45,8 @@ class TestAsdict:
     def test_include_and_exclude_none_together(self):
         subject = Parent(name="parent", child=Child(value=1), optional_field=None)
 
-        assert asdict(subject, include={"name", "optional_field"}, exclude_none=True) == {
+        assert asdict(
+            subject, include={"name", "optional_field"}, exclude_none=True
+        ) == {
             "name": "parent",
         }

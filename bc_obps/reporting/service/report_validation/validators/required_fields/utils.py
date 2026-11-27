@@ -1,13 +1,13 @@
-from typing import Any, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 from reporting.service.report_validation.validators.required_fields.types import (
     RequiredFieldConfig,
 )
-
-from reporting.service.reporting_flow_service import ReportingFlow
 from reporting.service.reporting_flow_applicability import (
     SECTION_APPLICABLE_FLOWS,
 )
+from reporting.service.reporting_flow_service import ReportingFlow
 
 
 def applies_to_section(flow: ReportingFlow, section: str) -> bool:

@@ -1,14 +1,17 @@
 from typing import Literal
 from uuid import UUID
 
-from reporting.constants import EMISSIONS_REPORT_TAGS
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
+from reporting.api.permissions import (
+    approved_industry_user_report_version_composite_auth,
+)
+from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from .router import router
+
 from ..schema.report_review_facility import ReportReviewFacilitySchemaOut
 from ..service.report_facilities_service import ReportFacilitiesService
-from reporting.api.permissions import approved_industry_user_report_version_composite_auth
+from .router import router
 
 
 @router.get(

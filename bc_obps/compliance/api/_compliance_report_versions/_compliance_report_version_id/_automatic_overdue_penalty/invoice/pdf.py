@@ -1,12 +1,14 @@
-from django.http import HttpRequest, StreamingHttpResponse
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.schema.generic import Message
+from compliance.api.permissions import (
+    approved_authorized_roles_compliance_report_version_composite_auth,
+)
 from compliance.api.router import router
 from compliance.constants import COMPLIANCE
-from compliance.api.permissions import approved_authorized_roles_compliance_report_version_composite_auth
 from compliance.service.elicensing.invoice_generation.elicensing_invoice_generator import (
     ElicensingInvoiceGeneratorService,
 )
+from django.http import HttpRequest, StreamingHttpResponse
+from registration.schema.generic import Message
 
 
 @router.get(

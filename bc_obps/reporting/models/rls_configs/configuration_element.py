@@ -1,6 +1,6 @@
 from reporting.enums.enums import ReportingTableNames
-from rls.enums import RlsRoles, RlsOperations
-from rls.utils.helpers import generate_rls_grants, generate_m2m_rls
+from rls.enums import RlsOperations, RlsRoles
+from rls.utils.helpers import generate_m2m_rls, generate_rls_grants
 from rls.utils.m2m import M2MPolicyStatements
 
 
@@ -12,7 +12,9 @@ class Rls:
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
-    grants = generate_rls_grants(role_grants_mapping, ReportingTableNames.CONFIGURATION_ELEMENT)
+    grants = generate_rls_grants(
+        role_grants_mapping, ReportingTableNames.CONFIGURATION_ELEMENT
+    )
     # M2M relationships
     m2m_models_grants_mapping = {
         ReportingTableNames.CONFIGURATION_ELEMENT_REPORTING_FIELDS: {
@@ -25,7 +27,9 @@ class Rls:
     }
     m2m_models_policy_mapping = {
         ReportingTableNames.CONFIGURATION_ELEMENT_REPORTING_FIELDS: M2MPolicyStatements(
-            using_statement='true', delete_using_statement='true'
+            using_statement="true", delete_using_statement="true"
         ),
     }
-    m2m_rls_list = generate_m2m_rls(m2m_models_grants_mapping, m2m_models_policy_mapping)
+    m2m_rls_list = generate_m2m_rls(
+        m2m_models_grants_mapping, m2m_models_policy_mapping
+    )

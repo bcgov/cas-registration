@@ -1,5 +1,6 @@
 from uuid import UUID
-from django.db.models import Prefetch, QuerySet, F
+
+from django.db.models import F, Prefetch, QuerySet
 from django.db.models.lookups import Exact
 from reporting.models.comment import Comment
 from reporting.models.comment_thread import CommentThread
@@ -7,7 +8,6 @@ from reporting.models.report_version import ReportVersion
 
 
 class CommentThreadService:
-
     @staticmethod
     def threads_with_annotated_comments(user_guid: UUID) -> QuerySet[CommentThread]:
         """
@@ -38,7 +38,9 @@ class CommentThreadService:
         return threads
 
     @staticmethod
-    def create_thread(version_id: int, user_guid: UUID, comment: str, facility_id: UUID | None = None) -> CommentThread:
+    def create_thread(
+        version_id: int, user_guid: UUID, comment: str, facility_id: UUID | None = None
+    ) -> CommentThread:
         report_id = ReportVersion.objects.get(id=version_id).report_id
         thread = CommentThread.objects.create(
             report_id=report_id,
@@ -50,15 +52,17 @@ class CommentThreadService:
             report_version_id=version_id,
             comment=comment,
         )
-        return CommentThreadService.threads_with_annotated_comments(user_guid=user_guid).get(
-            id=thread.id, report_version_id=version_id
-        )
+        return CommentThreadService.threads_with_annotated_comments(
+            user_guid=user_guid
+        ).get(id=thread.id, report_version_id=version_id)
 
     @staticmethod
-    def resolve_thread(version_id: int, thread_id: int, user_guid: UUID, resolved: bool = True) -> CommentThread:
-        thread = CommentThreadService.threads_with_annotated_comments(user_guid=user_guid).get(
-            id=thread_id, report_version_id=version_id
-        )
+    def resolve_thread(
+        version_id: int, thread_id: int, user_guid: UUID, resolved: bool = True
+    ) -> CommentThread:
+        thread = CommentThreadService.threads_with_annotated_comments(
+            user_guid=user_guid
+        ).get(id=thread_id, report_version_id=version_id)
         thread.resolved = resolved
         thread.save()
         return thread

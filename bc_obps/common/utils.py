@@ -1,14 +1,16 @@
-from typing import Optional, List
+from datetime import UTC, datetime
+from datetime import timezone as dt_timezone
+from decimal import Decimal
+from typing import List, Optional
+from zoneinfo import ZoneInfo
+
 from django.apps import apps
 from django.core.management import call_command
-from decimal import Decimal
-from datetime import datetime, timezone as dt_timezone
-from zoneinfo import ZoneInfo
 from django.utils import timezone as dj_timezone
 
 
 def format_timestamp_en_ca(
-    dt: Optional[datetime],
+    dt: datetime | None,
     tz: str = "America/Vancouver",
 ) -> str:
     """
@@ -23,7 +25,7 @@ def format_timestamp_en_ca(
 
     # Ensure aware; assume UTC if naive
     if dj_timezone.is_naive(dt):
-        dt = dj_timezone.make_aware(dt, timezone=dt_timezone.utc)  # <- use datetime's UTC
+        dt = dj_timezone.make_aware(dt, timezone=UTC)  # <- use datetime's UTC
 
     local_dt = dj_timezone.localtime(dt, ZoneInfo(tz))
 
@@ -43,11 +45,11 @@ def format_timestamp_en_ca(
     return f"{date_part}\n{time_part}"
 
 
-def get_fixture_files() -> List[str]:
+def get_fixture_files() -> list[str]:
     """Return list of fixture files based on environment."""
-    fixture_base = 'common/fixtures/dashboard'
+    fixture_base = "common/fixtures/dashboard"
 
-    def fixtures(*paths: str) -> List[str]:
+    def fixtures(*paths: str) -> list[str]:
         return [f"{fixture_base}/{path}" for path in paths]
 
     base_fixtures = fixtures(
@@ -62,14 +64,14 @@ def reset_dashboard_data() -> None:
     """
     Reset DashboardData objects to initial state by clearing existing data and loading fixtures.
     """
-    DashboardData = apps.get_model('common', 'DashboardData')
+    DashboardData = apps.get_model("common", "DashboardData")
     DashboardData.objects.all().delete()
 
     for fixture in get_fixture_files():
-        call_command('loaddata', fixture)
+        call_command("loaddata", fixture)
 
 
-def format_decimal(value: Decimal, decimal_places: int = 2) -> Optional[Decimal]:
+def format_decimal(value: Decimal, decimal_places: int = 2) -> Decimal | None:
     """
     Formats a Decimal or numeric value to the specified number of decimal places
     without rounding (truncates the extra digits).

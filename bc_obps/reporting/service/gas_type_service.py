@@ -1,12 +1,17 @@
-from reporting.models import GasType
 from typing import List
+
+from reporting.models import GasType
 
 
 class GasTypeService:
     @classmethod
-    def get_all_gas_types(cls) -> List[GasType]:
+    def get_all_gas_types(cls) -> list[GasType]:
         return list(GasType.objects.all())
 
     @classmethod
-    def get_basic_gas_types(cls) -> List[GasType]:
-        return list(GasType.objects.filter(chemical_formula__in=['CO2', 'CH4', 'N2O', 'SF6', 'CF4', 'C2F6']))
+    def get_basic_gas_types(cls) -> list[GasType]:
+        return list(
+            GasType.objects.filter(
+                chemical_formula__in=["CO2", "CH4", "N2O", "SF6", "CF4", "C2F6"]
+            )
+        )

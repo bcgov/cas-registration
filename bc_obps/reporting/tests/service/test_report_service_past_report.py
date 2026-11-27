@@ -1,5 +1,6 @@
-import pytest
 from unittest import mock
+
+import pytest
 from common.exceptions import UserError
 from model_bakery.baker import make_recipe
 from registration.models import Operation
@@ -10,7 +11,6 @@ from registration.tests.utils.bakers import (
 )
 from reporting.models import ReportVersion
 from reporting.service.report_service import ReportService
-
 
 USER_GUID = "00000000-0000-0000-0000-000000000000"
 REPORTING_YEAR = 2024
@@ -61,7 +61,9 @@ class TestReportServicePastReport:
             type=operation_type,
             status=Operation.Statuses.REGISTERED,
             registration_purpose=Operation.Purposes.OBPS_REGULATED_OPERATION,
-            bc_obps_regulated_operation=(bc_obps_regulated_operation_baker() if has_boro else None),
+            bc_obps_regulated_operation=(
+                bc_obps_regulated_operation_baker() if has_boro else None
+            ),
         )
 
         make_recipe(
@@ -96,8 +98,14 @@ class TestReportServicePastReport:
         report_version = ReportVersion.objects.get(id=report_version_id)
         operation.refresh_from_db()
 
-        assert operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
-        assert report_version.report_operation.registration_purpose == selected_registration_purpose
+        assert (
+            operation.registration_purpose
+            == Operation.Purposes.OBPS_REGULATED_OPERATION
+        )
+        assert (
+            report_version.report_operation.registration_purpose
+            == selected_registration_purpose
+        )
 
     def test_create_report_for_reporting_year_fallback_rejects_unregistered_operation(
         self,

@@ -1,21 +1,35 @@
+from typing import Optional, cast
 from uuid import UUID
-from compliance.service.compliance_report_version_service import ComplianceReportVersionService
-from django.db.models import QuerySet, Value, Q, F
-from compliance.models import ComplianceReportVersion, ElicensingPayment, ComplianceEarnedCredit
-from registration.service.data_access_service.user_service import UserDataAccessService
-from registration.service.data_access_service.operation_service import OperationDataAccessService
-from registration.models import Operation
-from typing import Optional
-from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
-from registration.service.user_operator_service import UserOperatorService
-from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
-from compliance.enums import ComplianceInvoiceTypes
-from ninja import Query
-from compliance.schema.compliance_report_version import ComplianceReportVersionFilterSchema
-from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
 
-from django.db.models import Case, When, CharField, BooleanField
-from typing import cast
+from compliance.enums import ComplianceInvoiceTypes
+from compliance.models import (
+    ComplianceEarnedCredit,
+    ComplianceReportVersion,
+    ElicensingPayment,
+)
+from compliance.models.compliance_report_version_manual_handling import (
+    ComplianceReportVersionManualHandling,
+)
+from compliance.schema.compliance_report_version import (
+    ComplianceReportVersionFilterSchema,
+)
+from compliance.service.compliance_charge_rate_service import (
+    ComplianceChargeRateService,
+)
+from compliance.service.compliance_report_version_service import (
+    ComplianceReportVersionService,
+)
+from compliance.service.elicensing.elicensing_data_refresh_service import (
+    ElicensingDataRefreshService,
+)
+from django.db.models import BooleanField, Case, CharField, F, Q, QuerySet, Value, When
+from ninja import Query
+from registration.models import Operation
+from registration.service.data_access_service.operation_service import (
+    OperationDataAccessService,
+)
+from registration.service.data_access_service.user_service import UserDataAccessService
+from registration.service.user_operator_service import UserOperatorService
 
 
 class ComplianceDashboardService:
@@ -27,8 +41,8 @@ class ComplianceDashboardService:
     def get_compliance_report_versions_for_dashboard(
         cls,
         user_guid: UUID,
-        sort_field: Optional[str],
-        sort_order: Optional[str],
+        sort_field: str | None,
+        sort_order: str | None,
         filters: ComplianceReportVersionFilterSchema = Query(...),
     ) -> QuerySet[ComplianceReportVersion]:
         """
@@ -67,8 +81,12 @@ class ComplianceDashboardService:
         )
 
         # Annotate DB-side aliases
-        compliance_report_version_queryset = cls._annotate_for_schema(compliance_report_version_queryset)
-        compliance_report_version_queryset = cls._annotate_status(compliance_report_version_queryset)
+        compliance_report_version_queryset = cls._annotate_for_schema(
+            compliance_report_version_queryset
+        )
+        compliance_report_version_queryset = cls._annotate_status(
+            compliance_report_version_queryset
+        )
         # Build a Django order_by key from the requested sort inputs.
         order = (sort_order or "asc").lower()
         sort_direction = "-" if order == "desc" else ""
@@ -82,9 +100,9 @@ class ComplianceDashboardService:
         else:
             operations = (
                 OperationDataAccessService.get_all_current_operations_for_user(user)
-                .select_related('operator')
+                .select_related("operator")
                 .filter(status=Operation.Statuses.REGISTERED)
-                .values_list('id')
+                .values_list("id")
             )
             # Get all compliance report versions for the filtered operations
             # apply filters BEFORE union
@@ -118,10 +136,16 @@ class ComplianceDashboardService:
             compliance_report_versions = current_ops_qs | previously_owned_qs
 
             if sort_by:
-                compliance_report_versions = compliance_report_versions.order_by(sort_by)
+                compliance_report_versions = compliance_report_versions.order_by(
+                    sort_by
+                )
 
         for version in compliance_report_versions:
-            version.outstanding_balance_tco2e = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(version)  # type: ignore[attr-defined]
+            version.outstanding_balance_tco2e = (  # type: ignore[attr-defined]
+                ComplianceReportVersionService.calculate_outstanding_balance_tco2e(
+                    version
+                )
+            )
             summary = version.report_compliance_summary
             if summary and summary.excess_emissions is not None:
                 summary.excess_emissions = ComplianceReportVersionService.calculate_computed_value_excess_emissions(
@@ -132,7 +156,7 @@ class ComplianceDashboardService:
     @classmethod
     def get_compliance_report_version_by_id(
         cls, user_guid: UUID, compliance_report_version_id: int
-    ) -> Optional[ComplianceReportVersion]:
+    ) -> ComplianceReportVersion:
         """
         Fetches a specific compliance report version by ID if it belongs to one of the user's operations
 
@@ -144,24 +168,28 @@ class ComplianceDashboardService:
             The requested ComplianceReportVersion object or None if not found
         """
         user = UserDataAccessService.get_by_guid(user_guid)
-        compliance_report_version_queryset = ComplianceReportVersion.objects.select_related(
-            'compliance_report',
-            'compliance_report__report__operation',
-            'compliance_report__compliance_period',
-            'compliance_report__compliance_period__reporting_year',
-            'compliance_report__report__operator',
-            'obligation',
-            'obligation__elicensing_invoice',
-            'report_compliance_summary',
-            'report_compliance_summary__report_version__report__operator',
-            'report_compliance_summary__report_version__report__operation',
-            'report_compliance_summary__report_version__report__reporting_year',
-        ).prefetch_related(
-            'obligation__elicensing_invoice__elicensing_line_items',
+        compliance_report_version_queryset = (
+            ComplianceReportVersion.objects.select_related(
+                "compliance_report",
+                "compliance_report__report__operation",
+                "compliance_report__compliance_period",
+                "compliance_report__compliance_period__reporting_year",
+                "compliance_report__report__operator",
+                "obligation",
+                "obligation__elicensing_invoice",
+                "report_compliance_summary",
+                "report_compliance_summary__report_version__report__operator",
+                "report_compliance_summary__report_version__report__operation",
+                "report_compliance_summary__report_version__report__reporting_year",
+            ).prefetch_related(
+                "obligation__elicensing_invoice__elicensing_line_items",
+            )
         )
 
         if user.is_irc_user():
-            compliance_report_version = compliance_report_version_queryset.get(id=compliance_report_version_id)
+            compliance_report_version = compliance_report_version_queryset.get(
+                id=compliance_report_version_id
+            )
         else:
             compliance_report_version = compliance_report_version_queryset.get(
                 id=compliance_report_version_id,
@@ -171,31 +199,38 @@ class ComplianceDashboardService:
             )
 
         # Calculated values
-        if compliance_report_version:
-            report = compliance_report_version.compliance_report
-            if report and report.compliance_period:
-                reporting_year = report.compliance_period.reporting_year
-                charge_rate = ComplianceChargeRateService.get_rate_for_year(reporting_year)
-                compliance_report_version.compliance_charge_rate = charge_rate  # type: ignore[attr-defined]
+        report = compliance_report_version.compliance_report
+        if report and report.compliance_period:
+            reporting_year = report.compliance_period.reporting_year
+            charge_rate = ComplianceChargeRateService.get_rate_for_year(reporting_year)
+            compliance_report_version.compliance_charge_rate = charge_rate  # type: ignore[attr-defined]
 
-            summary = compliance_report_version.report_compliance_summary
-            if summary and summary.excess_emissions is not None:
-                computed_excess_emissions = ComplianceReportVersionService.calculate_computed_value_excess_emissions(
+        summary = compliance_report_version.report_compliance_summary
+        if summary and summary.excess_emissions is not None:
+            computed_excess_emissions = ComplianceReportVersionService.calculate_computed_value_excess_emissions(
+                compliance_report_version
+            )
+            compliance_report_version.equivalent_value = (  # type: ignore[attr-defined]
+                computed_excess_emissions * charge_rate
+            )
+
+        obligation = getattr(compliance_report_version, "obligation", None)
+        if (
+            obligation
+            and obligation.elicensing_invoice
+            and obligation.elicensing_invoice.outstanding_balance is not None
+        ):
+            ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+                compliance_report_version_id=compliance_report_version_id
+            )
+            compliance_report_version.outstanding_balance_tco2e = (  # type: ignore[attr-defined]
+                ComplianceReportVersionService.calculate_outstanding_balance_tco2e(
                     compliance_report_version
                 )
-                compliance_report_version.equivalent_value = computed_excess_emissions * charge_rate  # type: ignore[attr-defined]
-
-            obligation = getattr(compliance_report_version, "obligation", None)
-            if (
-                obligation
-                and obligation.elicensing_invoice
-                and obligation.elicensing_invoice.outstanding_balance is not None
-            ):
-                ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
-                    compliance_report_version_id=compliance_report_version_id
-                )
-                compliance_report_version.outstanding_balance_tco2e = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(compliance_report_version)  # type: ignore[attr-defined]
-                compliance_report_version.outstanding_balance_equivalent_value = obligation.elicensing_invoice.invoice_fee_balance  # type: ignore[attr-defined]
+            )
+            compliance_report_version.outstanding_balance_equivalent_value = (  # type: ignore[attr-defined]
+                obligation.elicensing_invoice.invoice_fee_balance
+            )
 
         return compliance_report_version
 
@@ -217,7 +252,7 @@ class ComplianceDashboardService:
             compliance_report_version_id=compliance_report_version_id
         )
 
-        return ElicensingPayment.objects.select_related('elicensing_line_item').filter(
+        return ElicensingPayment.objects.select_related("elicensing_line_item").filter(
             elicensing_line_item__elicensing_invoice=refreshed_data.invoice
         )
 
@@ -242,16 +277,24 @@ class ComplianceDashboardService:
             invoice_type=invoice_type,
         )
 
-        return ElicensingPayment.objects.filter(elicensing_line_item__elicensing_invoice=refreshed_data.invoice)
+        return ElicensingPayment.objects.filter(
+            elicensing_line_item__elicensing_invoice=refreshed_data.invoice
+        )
 
     @staticmethod
     def _annotate_for_schema(
         qs: QuerySet[ComplianceReportVersion],
     ) -> QuerySet[ComplianceReportVersion]:
         annotated = qs.annotate(
-            operator_name=F("report_compliance_summary__report_version__report_operation__operator_legal_name"),
-            operation_name=F("report_compliance_summary__report_version__report_operation__operation_name"),
-            reporting_year=F("report_compliance_summary__report_version__report__reporting_year__reporting_year"),
+            operator_name=F(
+                "report_compliance_summary__report_version__report_operation__operator_legal_name"
+            ),
+            operation_name=F(
+                "report_compliance_summary__report_version__report_operation__operation_name"
+            ),
+            reporting_year=F(
+                "report_compliance_summary__report_version__report__reporting_year__reporting_year"
+            ),
             excess_emissions=F("report_compliance_summary__excess_emissions"),
             issuance_status=F("compliance_earned_credit__issuance_status"),
             penalty_status=Case(
@@ -335,7 +378,8 @@ class ComplianceDashboardService:
                     then=Value("Earned credits - changes required"),
                 ),
                 When(
-                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value, then=Value("Earned credits")
+                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS.value,
+                    then=Value("Earned credits"),
                 ),
                 When(
                     status=ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING.value,

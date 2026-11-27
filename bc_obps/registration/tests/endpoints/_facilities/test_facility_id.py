@@ -1,10 +1,13 @@
 import math
 from datetime import datetime
-from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
+
 from model_bakery import baker
 from registration.models import Facility, WellAuthorizationNumber
-from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from registration.models.facility_designated_operation_timeline import (
+    FacilityDesignatedOperationTimeline,
+)
 from registration.tests.utils.bakers import operation_baker
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 
 
@@ -51,76 +54,97 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         Raises:
             AssertionError: If any of the assertions fail.
         """
-        assert response_data.get('name') == payload.get('name'), "Name does not match"
-        assert response_data.get('type') == payload.get('type'), "Type does not match"
+        assert response_data.get("name") == payload.get("name"), "Name does not match"
+        assert response_data.get("type") == payload.get("type"), "Type does not match"
         assert math.isclose(
-            float(response_data.get('latitude_of_largest_emissions')),
-            float(payload.get('latitude_of_largest_emissions')),
+            float(response_data.get("latitude_of_largest_emissions")),
+            float(payload.get("latitude_of_largest_emissions")),
             rel_tol=1e-5,
         ), "Latitude of largest emissions does not match"
         assert math.isclose(
-            float(response_data.get('longitude_of_largest_emissions')),
-            float(payload.get('longitude_of_largest_emissions')),
+            float(response_data.get("longitude_of_largest_emissions")),
+            float(payload.get("longitude_of_largest_emissions")),
             rel_tol=1e-5,
         ), "Longitude of largest emissions does not match"
 
     # GET
     def test_industry_users_can_get_their_own_facilities(self):
-        operator = baker.make_recipe('registration.tests.utils.operator')
+        operator = baker.make_recipe("registration.tests.utils.operator")
         TestUtils.authorize_current_user_as_operator_user(self, operator)
-        owning_operation = baker.make_recipe('registration.tests.utils.operation', operator=operator)
-        facility = baker.make_recipe('registration.tests.utils.facility', operation=owning_operation)
+        owning_operation = baker.make_recipe(
+            "registration.tests.utils.operation", operator=operator
+        )
+        facility = baker.make_recipe(
+            "registration.tests.utils.facility", operation=owning_operation
+        )
 
         response = TestUtils.mock_get_with_auth_role(
             self,
-            endpoint=custom_reverse_lazy("get_facility", kwargs={"facility_id": facility.id}),
+            endpoint=custom_reverse_lazy(
+                "get_facility", kwargs={"facility_id": facility.id}
+            ),
             role_name="industry_user",
         )
         assert response.status_code == 200
-        assert response.json().get('name') is not None
+        assert response.json().get("name") is not None
 
     def test_industry_users_cannot_get_other_users_facilities(self):
-        facility = baker.make_recipe('registration.tests.utils.facility')
-        baker.make(FacilityDesignatedOperationTimeline, operation=operation_baker(), facility=facility)
+        facility = baker.make_recipe("registration.tests.utils.facility")
+        baker.make(
+            FacilityDesignatedOperationTimeline,
+            operation=operation_baker(),
+            facility=facility,
+        )
 
         response = TestUtils.mock_get_with_auth_role(
             self,
-            endpoint=custom_reverse_lazy("get_facility", kwargs={"facility_id": facility.id}),
+            endpoint=custom_reverse_lazy(
+                "get_facility", kwargs={"facility_id": facility.id}
+            ),
             role_name="industry_user",
         )
         assert response.status_code == 401
-        assert response.json()['detail'] == 'Unauthorized'
+        assert response.json()["detail"] == "Unauthorized"
 
     # PUT
     def test_unauthorized_users_cannot_update(self):
         # Arrange
-        _, owning_operation, facility = TestUtils.create_operator_operation_and_facility(self)
+        _, owning_operation, facility = (
+            TestUtils.create_operator_operation_and_facility(self)
+        )
 
         # Construct the URL for the update_facility endpoint with the facility ID
-        url = custom_reverse_lazy("update_facility", kwargs={"facility_id": facility.id})
+        url = custom_reverse_lazy(
+            "update_facility", kwargs={"facility_id": facility.id}
+        )
 
         # Act
         response = TestUtils.mock_put_with_auth_role(
             self,
             "industry_user",
             self.content_type,
-            self.mock_payload_with_mandatory_data | {"operation_id": str(owning_operation.id)},
+            self.mock_payload_with_mandatory_data
+            | {"operation_id": str(owning_operation.id)},
             url,
         )
 
         # Assert
         assert response.status_code == 401
-        assert response.json().get('detail') == 'Unauthorized'
+        assert response.json().get("detail") == "Unauthorized"
 
     def test_authorized_users_can_update_mandatory_data(self):
         # Arrange
-        _, owning_operation, facility = TestUtils.create_operator_operation_and_facility(self, authorize_user=True)
+        _, owning_operation, facility = (
+            TestUtils.create_operator_operation_and_facility(self, authorize_user=True)
+        )
 
         # Assert Initial State
         TestUtils.assert_facility_db_state(facility)
 
         # Construct the URL for the update_facility endpoint with the facility ID
-        url = custom_reverse_lazy("update_facility", kwargs={"facility_id": facility.id})
+        url = custom_reverse_lazy(
+            "update_facility", kwargs={"facility_id": facility.id}
+        )
 
         # Define a payload
         payload = self.mock_payload_with_mandatory_data
@@ -128,7 +152,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         # Act
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             payload | {"operation_id": str(owning_operation.id)},
             url,
@@ -142,26 +166,30 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         self._assert_updated_mandatory_fields(response_data, payload)
 
         # Assert Non-Updated Optional Fields
-        assert response_data.get('is_current_year') is None
-        assert response_data.get('starting_date') is None
-        assert response_data.get('well_authorization_numbers') == []
-        assert response_data.get('street_address') is None
-        assert response_data.get('municipality') is None
-        assert response_data.get('province') is None
-        assert response_data.get('postal_code') is None
+        assert response_data.get("is_current_year") is None
+        assert response_data.get("starting_date") is None
+        assert response_data.get("well_authorization_numbers") == []
+        assert response_data.get("street_address") is None
+        assert response_data.get("municipality") is None
+        assert response_data.get("province") is None
+        assert response_data.get("postal_code") is None
 
         # Assert Updated State
         TestUtils.assert_facility_db_state(Facility.objects.first())
 
     def test_authorized_users_can_update_all_data(self):
         # Arrange
-        _, owning_operation, facility = TestUtils.create_operator_operation_and_facility(self, authorize_user=True)
+        _, owning_operation, facility = (
+            TestUtils.create_operator_operation_and_facility(self, authorize_user=True)
+        )
 
         # Assert Initial State
         TestUtils.assert_facility_db_state(facility)
 
         # Construct the URL for the update_facility endpoint with the facility ID
-        url = custom_reverse_lazy("update_facility", kwargs={"facility_id": facility.id})
+        url = custom_reverse_lazy(
+            "update_facility", kwargs={"facility_id": facility.id}
+        )
 
         # Define a payload
         payload = self.mock_payload_with_all_data
@@ -169,7 +197,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         # Act
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             payload | {"operation_id": str(owning_operation.id)},
             url,
@@ -183,40 +211,54 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         self._assert_updated_mandatory_fields(response_data, payload)
 
         # Assert Updated Optional Fields
-        assert response_data.get('is_current_year') == payload.get('is_current_year')
+        assert response_data.get("is_current_year") == payload.get("is_current_year")
         assert datetime.strptime(
-            response_data.get('starting_date'),
-            "%Y-%m-%dT%H:%M:%S.%fZ" if "." in response_data.get('starting_date') else "%Y-%m-%dT%H:%M:%SZ",
+            response_data.get("starting_date"),
+            "%Y-%m-%dT%H:%M:%S.%fZ"
+            if "." in response_data.get("starting_date")
+            else "%Y-%m-%dT%H:%M:%SZ",
         ) == datetime.strptime(
-            payload.get('starting_date'),
-            "%Y-%m-%dT%H:%M:%S.%fZ" if "." in payload.get('starting_date') else "%Y-%m-%dT%H:%M:%SZ",
+            payload.get("starting_date"),
+            "%Y-%m-%dT%H:%M:%S.%fZ"
+            if "." in payload.get("starting_date")
+            else "%Y-%m-%dT%H:%M:%SZ",
         )
 
-        assert len(response_data.get('well_authorization_numbers')) == len(payload.get('well_authorization_numbers'))
-        assert sorted(response_data['well_authorization_numbers']) == sorted(payload['well_authorization_numbers'])
-        assert response_data.get('street_address') == payload.get('street_address')
-        assert response_data.get('municipality') == payload.get('municipality')
-        assert response_data.get('province') == payload.get('province')
-        assert response_data.get('postal_code') == payload.get('postal_code')
+        assert len(response_data.get("well_authorization_numbers")) == len(
+            payload.get("well_authorization_numbers")
+        )
+        assert sorted(response_data["well_authorization_numbers"]) == sorted(
+            payload["well_authorization_numbers"]
+        )
+        assert response_data.get("street_address") == payload.get("street_address")
+        assert response_data.get("municipality") == payload.get("municipality")
+        assert response_data.get("province") == payload.get("province")
+        assert response_data.get("postal_code") == payload.get("postal_code")
 
         # Assert Updated State
         TestUtils.assert_facility_db_state(
             Facility.objects.first(),
             expect_address=Facility.objects.first().address,
-            expect_well_authorization_numbers=len(response_data.get('well_authorization_numbers')),
+            expect_well_authorization_numbers=len(
+                response_data.get("well_authorization_numbers")
+            ),
         )
 
     def test_authorized_users_can_update_address(self):
         # Arrange
-        _, owning_operation, facility = TestUtils.create_operator_operation_and_facility(
-            self, authorize_user=True, with_address=True
+        _, owning_operation, facility = (
+            TestUtils.create_operator_operation_and_facility(
+                self, authorize_user=True, with_address=True
+            )
         )
 
         # Assert Initial State
         TestUtils.assert_facility_db_state(facility, expect_address=facility.address)
 
         # Construct the URL for the update_facility endpoint with the facility ID
-        url = custom_reverse_lazy("update_facility", kwargs={"facility_id": facility.id})
+        url = custom_reverse_lazy(
+            "update_facility", kwargs={"facility_id": facility.id}
+        )
 
         # Define a payload
         payload = self.mock_payload_with_mandatory_data.copy()
@@ -225,7 +267,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         # Act
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             payload | {"operation_id": str(owning_operation.id)},
             url,
@@ -239,25 +281,31 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         self._assert_updated_mandatory_fields(response_data, payload)
 
         # Assert Updated Optional Fields
-        assert response_data.get('street_address') == payload.get('street_address')
-        assert response_data.get('municipality') is None
-        assert response_data.get('province') is None
-        assert response_data.get('postal_code') is None
+        assert response_data.get("street_address") == payload.get("street_address")
+        assert response_data.get("municipality") is None
+        assert response_data.get("province") is None
+        assert response_data.get("postal_code") is None
 
         # Assert Updated State
-        TestUtils.assert_facility_db_state(Facility.objects.first(), expect_address=Facility.objects.first().address)
+        TestUtils.assert_facility_db_state(
+            Facility.objects.first(), expect_address=Facility.objects.first().address
+        )
 
     def test_authorized_users_can_remove_address(self):
         # Arrange
-        _, owning_operation, facility = TestUtils.create_operator_operation_and_facility(
-            self, authorize_user=True, with_address=True
+        _, owning_operation, facility = (
+            TestUtils.create_operator_operation_and_facility(
+                self, authorize_user=True, with_address=True
+            )
         )
 
         # Assert Initial State
         TestUtils.assert_facility_db_state(facility, expect_address=facility.address)
 
         # Construct the URL for the update_facility endpoint with the facility ID
-        url = custom_reverse_lazy("update_facility", kwargs={"facility_id": facility.id})
+        url = custom_reverse_lazy(
+            "update_facility", kwargs={"facility_id": facility.id}
+        )
 
         # Define a payload
         payload = self.mock_payload_with_mandatory_data  # no address keys
@@ -265,7 +313,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         # Act
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             payload | {"operation_id": str(owning_operation.id)},
             url,
@@ -279,10 +327,10 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         self._assert_updated_mandatory_fields(response_data, payload)
 
         # Assert Updated Optional Fields
-        assert response_data.get('street_address') is None
-        assert response_data.get('municipality') is None
-        assert response_data.get('province') is None
-        assert response_data.get('postal_code') is None
+        assert response_data.get("street_address") is None
+        assert response_data.get("municipality") is None
+        assert response_data.get("province") is None
+        assert response_data.get("postal_code") is None
 
         # Assert Updated State
         TestUtils.assert_facility_db_state(Facility.objects.first())
@@ -290,24 +338,36 @@ class TestFacilityIdEndpoint(CommonTestSetup):
     def test_authorized_users_can_update_well_authorization_numbers(self):
         # Arrange
         well_auth_numbers = ["123456789", "987654321"]
-        _, owning_operation, facility = TestUtils.create_operator_operation_and_facility(
-            self, authorize_user=True, facility_well_authorization_numbers=well_auth_numbers
+        _, owning_operation, facility = (
+            TestUtils.create_operator_operation_and_facility(
+                self,
+                authorize_user=True,
+                facility_well_authorization_numbers=well_auth_numbers,
+            )
         )
 
         # Assert Initial State
-        TestUtils.assert_facility_db_state(facility, expect_well_authorization_numbers=len(well_auth_numbers))
+        TestUtils.assert_facility_db_state(
+            facility, expect_well_authorization_numbers=len(well_auth_numbers)
+        )
 
         # Construct the URL for the update_facility endpoint with the facility ID
-        url = custom_reverse_lazy("update_facility", kwargs={"facility_id": facility.id})
+        url = custom_reverse_lazy(
+            "update_facility", kwargs={"facility_id": facility.id}
+        )
 
         # Define a payload
         payload = self.mock_payload_with_mandatory_data.copy()
-        payload["well_authorization_numbers"] = ["10000", "20000", "39999"]  # updates to well_authorization_numbers
+        payload["well_authorization_numbers"] = [
+            "10000",
+            "20000",
+            "39999",
+        ]  # updates to well_authorization_numbers
 
         # Act
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             payload | {"operation_id": str(owning_operation.id)},
             url,
@@ -321,27 +381,41 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         self._assert_updated_mandatory_fields(response_data, payload)
 
         # Assert Updated Optional Fields
-        assert len(response_data.get('well_authorization_numbers')) == len(payload.get('well_authorization_numbers'))
-        assert sorted(response_data['well_authorization_numbers']) == sorted(payload['well_authorization_numbers'])
+        assert len(response_data.get("well_authorization_numbers")) == len(
+            payload.get("well_authorization_numbers")
+        )
+        assert sorted(response_data["well_authorization_numbers"]) == sorted(
+            payload["well_authorization_numbers"]
+        )
 
         # Assert Updated State
         TestUtils.assert_facility_db_state(
             Facility.objects.first(),
-            expect_well_authorization_numbers=len(response_data.get('well_authorization_numbers')),
+            expect_well_authorization_numbers=len(
+                response_data.get("well_authorization_numbers")
+            ),
         )
 
     def test_authorized_users_can_remove_well_authorization_numbers(self):
         # Arrange
         well_auth_numbers = ["123456789", "987654321"]
-        _, owning_operation, facility = TestUtils.create_operator_operation_and_facility(
-            self, authorize_user=True, facility_well_authorization_numbers=well_auth_numbers
+        _, owning_operation, facility = (
+            TestUtils.create_operator_operation_and_facility(
+                self,
+                authorize_user=True,
+                facility_well_authorization_numbers=well_auth_numbers,
+            )
         )
 
         # Assert Initial State
-        TestUtils.assert_facility_db_state(facility, expect_well_authorization_numbers=len(well_auth_numbers))
+        TestUtils.assert_facility_db_state(
+            facility, expect_well_authorization_numbers=len(well_auth_numbers)
+        )
 
         # Construct the URL for the update_facility endpoint with the facility ID
-        url = custom_reverse_lazy("update_facility", kwargs={"facility_id": facility.id})
+        url = custom_reverse_lazy(
+            "update_facility", kwargs={"facility_id": facility.id}
+        )
 
         # Define a payload
         payload = self.mock_payload_with_mandatory_data  # no well_authorization_numbers
@@ -349,7 +423,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         # Act
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             payload | {"operation_id": str(owning_operation.id)},
             url,
@@ -363,28 +437,41 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         self._assert_updated_mandatory_fields(response_data, payload)
 
         # Assert Updated Optional Fields
-        assert len(response_data.get('well_authorization_numbers')) == 0
+        assert len(response_data.get("well_authorization_numbers")) == 0
 
         # Assert Updated State
-        TestUtils.assert_facility_db_state(Facility.objects.first(), expect_well_authorization_numbers=0)
+        TestUtils.assert_facility_db_state(
+            Facility.objects.first(), expect_well_authorization_numbers=0
+        )
 
-    def test_authorized_users_cannot_update_with_duplicate_well_authorization_numbers(self):
+    def test_authorized_users_cannot_update_with_duplicate_well_authorization_numbers(
+        self,
+    ):
         # Arrange
-        _, owning_operation, facility = TestUtils.create_operator_operation_and_facility(self, authorize_user=True)
+        _, owning_operation, facility = (
+            TestUtils.create_operator_operation_and_facility(self, authorize_user=True)
+        )
 
         # Assert Initial State
         TestUtils.assert_facility_db_state(facility)
 
-        url = custom_reverse_lazy("update_facility", kwargs={"facility_id": facility.id})
+        url = custom_reverse_lazy(
+            "update_facility", kwargs={"facility_id": facility.id}
+        )
 
         # Define a payload
         payload = self.mock_payload_with_mandatory_data.copy()
-        payload["well_authorization_numbers"] = ["1", "1", "2", "3"]  # Duplicate value 1
+        payload["well_authorization_numbers"] = [
+            "1",
+            "1",
+            "2",
+            "3",
+        ]  # Duplicate value 1
 
         # Act
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             payload | {"operation_id": str(owning_operation.id)},
             url,
@@ -392,11 +479,18 @@ class TestFacilityIdEndpoint(CommonTestSetup):
 
         # Assert
         assert response.status_code == 400
-        assert response.json().get('message') == 'Well Authorization Number: Duplicates are not allowed.'
+        assert (
+            response.json().get("message")
+            == "Well Authorization Number: Duplicates are not allowed."
+        )
 
-    def test_authorized_users_cannot_update_with_existing_well_authorization_numbers(self):
+    def test_authorized_users_cannot_update_with_existing_well_authorization_numbers(
+        self,
+    ):
         # Arrange
-        _, owning_operation, facility = TestUtils.create_operator_operation_and_facility(self, authorize_user=True)
+        _, owning_operation, facility = (
+            TestUtils.create_operator_operation_and_facility(self, authorize_user=True)
+        )
 
         # Assert Initial State
         TestUtils.assert_facility_db_state(facility)
@@ -405,11 +499,14 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         well_auth_numbers = [123456789, 987654321]
         # Create WellAuthorizationNumber objects
         WellAuthorizationNumber.objects.bulk_create(
-            WellAuthorizationNumber(well_authorization_number=num) for num in well_auth_numbers
+            WellAuthorizationNumber(well_authorization_number=num)
+            for num in well_auth_numbers
         )
         assert WellAuthorizationNumber.objects.count() == len(well_auth_numbers)
 
-        url = custom_reverse_lazy("update_facility", kwargs={"facility_id": facility.id})
+        url = custom_reverse_lazy(
+            "update_facility", kwargs={"facility_id": facility.id}
+        )
 
         # Define a payload
         payload = self.mock_payload_with_mandatory_data.copy()
@@ -418,7 +515,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         # Act
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             payload | {"operation_id": str(owning_operation.id)},
             url,
@@ -427,28 +524,32 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         # Assert
         assert response.status_code == 422
         assert (
-            response.json().get('message')
-            == 'Well Authorization Number: Well authorization number with this Well authorization number already exists.'
+            response.json().get("message")
+            == "Well Authorization Number: Well authorization number with this Well authorization number already exists."
         )
 
     def test_authorized_users_cannot_update_with_malformed_data(self):
         # Arrange
-        _, owning_operation, facility = TestUtils.create_operator_operation_and_facility(self, authorize_user=True)
+        _, owning_operation, facility = (
+            TestUtils.create_operator_operation_and_facility(self, authorize_user=True)
+        )
 
         # Assert Initial State
         TestUtils.assert_facility_db_state(facility)
 
         # Define a payload
         payload = self.mock_payload_with_mandatory_data.copy()
-        payload['latitude_of_largest_emissions'] = "I am a string"  # malformed integer
+        payload["latitude_of_largest_emissions"] = "I am a string"  # malformed integer
 
-        url = custom_reverse_lazy("update_facility", kwargs={"facility_id": facility.id})
+        url = custom_reverse_lazy(
+            "update_facility", kwargs={"facility_id": facility.id}
+        )
 
         # Act
 
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             payload | {"operation_id": str(owning_operation.id)},
             url,
@@ -456,4 +557,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
 
         # Assert
         assert response.status_code == 422
-        assert response.json().get('message') == "Latitude Of Largest Emissions: Input should be a valid decimal"
+        assert (
+            response.json().get("message")
+            == "Latitude Of Largest Emissions: Input should be a valid decimal"
+        )

@@ -1,9 +1,10 @@
 from typing import Optional
 from uuid import UUID
+
+import pgtrigger
 from common.models import BaseModel
 from django.db import models
 from django.utils import timezone
-import pgtrigger
 
 
 class TimeStampedModelManager(models.Manager):
@@ -14,33 +15,37 @@ class TimeStampedModelManager(models.Manager):
 
 class TimeStampedModel(BaseModel):
     created_by = models.ForeignKey(
-        'registration.User',
+        "registration.User",
         null=True,
         blank=True,
         on_delete=models.PROTECT,
-        related_name='%(class)s_created',
+        related_name="%(class)s_created",
         db_comment="ID of the user who created the record. Foreign key to erc.user",
     )
     created_at = models.DateTimeField(
-        null=True, blank=True, db_comment="Timestamp with timezone of when the record was created"
+        null=True,
+        blank=True,
+        db_comment="Timestamp with timezone of when the record was created",
     )
     updated_by = models.ForeignKey(
-        'registration.User',
+        "registration.User",
         on_delete=models.PROTECT,
         null=True,
         blank=True,
-        related_name='%(class)s_updated',
+        related_name="%(class)s_updated",
         db_comment="ID of the user who last updated the record. Foreign key to erc.user",
     )
     updated_at = models.DateTimeField(
-        null=True, blank=True, db_comment="Timestamp with timezone of when the record was last updated"
+        null=True,
+        blank=True,
+        db_comment="Timestamp with timezone of when the record was last updated",
     )
     archived_by = models.ForeignKey(
-        'registration.User',
+        "registration.User",
         on_delete=models.PROTECT,
         null=True,
         blank=True,
-        related_name='%(class)s_archived',
+        related_name="%(class)s_archived",
         db_comment="ID of the user who archived (soft-deleted) the record. Null if the record is active. Foreign key to erc.user",
     )
     archived_at = models.DateTimeField(
@@ -75,8 +80,10 @@ class TimeStampedModel(BaseModel):
         """Set the archived by field and archived at field if they are not already set."""
         if self.archived_by_id or self.archived_at:
             raise ValueError("Archived by or archived at is already set.")
-        self.__class__.objects.filter(pk=self.pk).update(archived_by_id=modifier_pk, archived_at=timezone.now())
+        self.__class__.objects.filter(pk=self.pk).update(
+            archived_by_id=modifier_pk, archived_at=timezone.now()
+        )
 
     @property
-    def _history_user(self) -> Optional['models.User']:  # type: ignore[name-defined]
+    def _history_user(self) -> Optional["models.User"]:  # type: ignore[name-defined]
         return self.archived_by or self.updated_by or self.created_by

@@ -1,19 +1,25 @@
+import pytest
 from django.test import TestCase
 from model_bakery import baker
-import pytest
+from model_bakery.baker import make_recipe
 from registration.models.regulated_product import RegulatedProduct
 from reporting.models.report_product import ReportProduct
-from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
+from reporting.models.report_product_emission_allocation import (
+    ReportProductEmissionAllocation,
+)
 from reporting.service.report_product_service import ReportProductService
-from model_bakery.baker import make_recipe
 
 
 class TestReportProductService(TestCase):
     def setUp(self):
-        self.test_user_guid = make_recipe('registration.tests.utils.industry_operator_user').user_guid
+        self.test_user_guid = make_recipe(
+            "registration.tests.utils.industry_operator_user"
+        ).user_guid
 
         report_version = make_recipe("reporting.tests.utils.report_version")
-        self.facility_report = make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
+        self.facility_report = make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         self.report_operation = make_recipe(
             "reporting.tests.utils.report_operation",
             report_version=report_version,
@@ -44,8 +50,10 @@ class TestReportProductService(TestCase):
         ]
 
     def test_save_data(self):
-
-        assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 0
+        assert (
+            ReportProduct.objects.filter(facility_report=self.facility_report).count()
+            == 0
+        )
 
         ReportProductService.save_production_data(
             self.report_version_id,
@@ -54,9 +62,14 @@ class TestReportProductService(TestCase):
             self.test_user_guid,
         )
 
-        assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 2
+        assert (
+            ReportProduct.objects.filter(facility_report=self.facility_report).count()
+            == 2
+        )
 
-        rp1 = ReportProduct.objects.get(facility_report=self.facility_report, product_id=1)
+        rp1 = ReportProduct.objects.get(
+            facility_report=self.facility_report, product_id=1
+        )
         assert rp1.annual_production == 2
         assert rp1.production_data_apr_dec == 3
         assert rp1.production_methodology == "OBPS Calculator"
@@ -66,7 +79,9 @@ class TestReportProductService(TestCase):
         assert rp1.quantity_sold_during_period is None
         assert rp1.quantity_throughput_during_period is None
 
-        rp2 = ReportProduct.objects.get(facility_report=self.facility_report, product_id=29)
+        rp2 = ReportProduct.objects.get(
+            facility_report=self.facility_report, product_id=29
+        )
         assert rp2.annual_production == 1234
         assert rp2.production_data_apr_dec == 56789
         assert rp2.production_methodology == "other"
@@ -83,7 +98,10 @@ class TestReportProductService(TestCase):
         )
         self.report_operation.regulated_products.add(unregulated_product)
 
-        assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 0
+        assert (
+            ReportProduct.objects.filter(facility_report=self.facility_report).count()
+            == 0
+        )
 
         ReportProductService.save_production_data(
             self.report_version_id,
@@ -92,7 +110,10 @@ class TestReportProductService(TestCase):
             self.test_user_guid,
         )
 
-        assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 3
+        assert (
+            ReportProduct.objects.filter(facility_report=self.facility_report).count()
+            == 3
+        )
 
         unregulated_report_product = ReportProduct.objects.get(
             facility_report=self.facility_report, product_id=unregulated_product.id
@@ -112,18 +133,27 @@ class TestReportProductService(TestCase):
 
     def test_deletes_report_product_records_when_not_in_submitted_data(self):
         ReportProductService.save_production_data(
-            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
+            self.report_version_id,
+            self.facility_id,
+            self.test_data,
+            self.test_user_guid,
         )
         assert ReportProduct.objects.count() == 2
         ReportProductService.save_production_data(
-            self.report_version_id, self.facility_id, self.test_data[:1], self.test_user_guid
+            self.report_version_id,
+            self.facility_id,
+            self.test_data[:1],
+            self.test_user_guid,
         )
         assert ReportProduct.objects.count() == 1
         assert ReportProduct.objects.get(product_id=29) is not None
 
     def test_deletes_emission_allocations_for_products_not_in_submitted_data(self):
         ReportProductService.save_production_data(
-            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
+            self.report_version_id,
+            self.facility_id,
+            self.test_data,
+            self.test_user_guid,
         )
         report_version = self.facility_report.report_version
         report_emission_allocation = make_recipe(
@@ -136,7 +166,9 @@ class TestReportProductService(TestCase):
                 "reporting.tests.utils.report_product_emission_allocation",
                 report_version=report_version,
                 report_emission_allocation=report_emission_allocation,
-                report_product=ReportProduct.objects.get(facility_report=self.facility_report, product_id=product_id),
+                report_product=ReportProduct.objects.get(
+                    facility_report=self.facility_report, product_id=product_id
+                ),
                 allocated_quantity=10,
             )
             for product_id in [29, 1]
@@ -144,18 +176,32 @@ class TestReportProductService(TestCase):
 
         # Product 1 is no longer submitted
         ReportProductService.save_production_data(
-            self.report_version_id, self.facility_id, self.test_data[:1], self.test_user_guid
+            self.report_version_id,
+            self.facility_id,
+            self.test_data[:1],
+            self.test_user_guid,
         )
 
-        assert not ReportProduct.objects.filter(facility_report=self.facility_report, product_id=1).exists()
-        assert not ReportProductEmissionAllocation.objects.filter(id=dropped_allocation.id).exists()
-        assert ReportProductEmissionAllocation.objects.filter(id=kept_allocation.id).exists()
+        assert not ReportProduct.objects.filter(
+            facility_report=self.facility_report, product_id=1
+        ).exists()
+        assert not ReportProductEmissionAllocation.objects.filter(
+            id=dropped_allocation.id
+        ).exists()
+        assert ReportProductEmissionAllocation.objects.filter(
+            id=kept_allocation.id
+        ).exists()
 
     def test_saves_additional_data(self):
-        self.report_operation.regulated_products.add(RegulatedProduct.objects.get(id=10))
+        self.report_operation.regulated_products.add(
+            RegulatedProduct.objects.get(id=10)
+        )
 
         ReportProductService.save_production_data(
-            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
+            self.report_version_id,
+            self.facility_id,
+            self.test_data,
+            self.test_user_guid,
         )
         assert ReportProduct.objects.all().count() == 2
 
@@ -171,14 +217,24 @@ class TestReportProductService(TestCase):
         }
 
         ReportProductService.save_production_data(
-            self.report_version_id, self.facility_id, [*self.test_data, new_item], self.test_user_guid
+            self.report_version_id,
+            self.facility_id,
+            [*self.test_data, new_item],
+            self.test_user_guid,
         )
         assert ReportProduct.objects.count() == 3
-        assert list(ReportProduct.objects.order_by("product__id").values_list("product_id", flat=True)) == [1, 10, 29]
+        assert list(
+            ReportProduct.objects.order_by("product__id").values_list(
+                "product_id", flat=True
+            )
+        ) == [1, 10, 29]
 
     def test_updates_existing_report_products(self):
         ReportProductService.save_production_data(
-            self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
+            self.report_version_id,
+            self.facility_id,
+            self.test_data,
+            self.test_user_guid,
         )
         updated_item = {
             "product_id": 1,
@@ -191,10 +247,15 @@ class TestReportProductService(TestCase):
             "quantity_throughput_during_period": 0,
         }
         ReportProductService.save_production_data(
-            self.report_version_id, self.facility_id, [self.test_data[0], updated_item], self.test_user_guid
+            self.report_version_id,
+            self.facility_id,
+            [self.test_data[0], updated_item],
+            self.test_user_guid,
         )
         assert ReportProduct.objects.count() == 2
-        rp1 = ReportProduct.objects.get(facility_report=self.facility_report, product_id=1)
+        rp1 = ReportProduct.objects.get(
+            facility_report=self.facility_report, product_id=1
+        )
         assert rp1.annual_production == 0
         assert rp1.production_data_apr_dec == 0
         assert rp1.production_methodology == "OBPS Calculator"
@@ -204,7 +265,9 @@ class TestReportProductService(TestCase):
         assert rp1.quantity_throughput_during_period == 0
 
     def test_raises_if_facility_report_doesnt_list_products(self):
-        products = make_recipe("registration.tests.utils.regulated_product", _quantity=3)
+        products = make_recipe(
+            "registration.tests.utils.regulated_product", _quantity=3
+        )
         self.report_operation.regulated_products.set(products)
 
         with pytest.raises(
@@ -212,7 +275,10 @@ class TestReportProductService(TestCase):
             match="Data was submitted for a product that is not in the products allowed for this facility*",
         ):
             ReportProductService.save_production_data(
-                self.report_version_id, self.facility_id, self.test_data, self.test_user_guid
+                self.report_version_id,
+                self.facility_id,
+                self.test_data,
+                self.test_user_guid,
             )
 
     # Test saving errors out if no product_id
@@ -227,11 +293,16 @@ class TestReportProductService(TestCase):
 
         with pytest.raises(KeyError, match="product_id"):
             ReportProductService.save_production_data(
-                self.facility_report.report_version.id, self.facility_report.facility.id, test_data, self.test_user_guid
+                self.facility_report.report_version.id,
+                self.facility_report.facility.id,
+                test_data,
+                self.test_user_guid,
             )
 
     def test_retrieves_the_data_sorted_by_product_id(self):
-        products = make_recipe("registration.tests.utils.regulated_product", _quantity=3)
+        products = make_recipe(
+            "registration.tests.utils.regulated_product", _quantity=3
+        )
         data = [
             {
                 "product_id": products[2].id,
@@ -254,9 +325,15 @@ class TestReportProductService(TestCase):
         ]
         self.report_operation.regulated_products.set(products)
 
-        ReportProductService.save_production_data(self.report_version_id, self.facility_id, data, self.test_user_guid)
+        ReportProductService.save_production_data(
+            self.report_version_id, self.facility_id, data, self.test_user_guid
+        )
 
-        return_value = list(ReportProductService.get_production_data(self.report_version_id, self.facility_id))
+        return_value = list(
+            ReportProductService.get_production_data(
+                self.report_version_id, self.facility_id
+            )
+        )
 
         assert len(return_value) == 3
         assert return_value[0] == ReportProduct.objects.get(product_id=products[0].id)
@@ -265,10 +342,13 @@ class TestReportProductService(TestCase):
 
     # If the operation has the FOG regulated_product, it should be auto-generated despite not being in the data
     def test_saves_fog_record_data(self):
-
-        assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 0
+        assert (
+            ReportProduct.objects.filter(facility_report=self.facility_report).count()
+            == 0
+        )
         fog_product_id = RegulatedProduct.objects.get(
-            name='Fat, oil and grease collection, refining and storage', is_regulated=False
+            name="Fat, oil and grease collection, refining and storage",
+            is_regulated=False,
         ).id
 
         self.report_operation.regulated_products.set([1, 29, fog_product_id])
@@ -280,17 +360,28 @@ class TestReportProductService(TestCase):
             self.test_user_guid,
         )
 
-        assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 3
-
-        assert ReportProduct.objects.filter(facility_report=self.facility_report, product_id=fog_product_id).exists()
-
-    def test_get_allowed_products_returns_all_listed_regulated_products(self):
-        regulated_products = make_recipe("registration.tests.utils.regulated_product", is_regulated=True, _quantity=2)
-        unregulated_products = make_recipe(
-            "registration.tests.utils.regulated_product", is_regulated=False, _quantity=2
+        assert (
+            ReportProduct.objects.filter(facility_report=self.facility_report).count()
+            == 3
         )
 
-        self.report_operation.regulated_products.set([*regulated_products, *unregulated_products])
+        assert ReportProduct.objects.filter(
+            facility_report=self.facility_report, product_id=fog_product_id
+        ).exists()
+
+    def test_get_allowed_products_returns_all_listed_regulated_products(self):
+        regulated_products = make_recipe(
+            "registration.tests.utils.regulated_product", is_regulated=True, _quantity=2
+        )
+        unregulated_products = make_recipe(
+            "registration.tests.utils.regulated_product",
+            is_regulated=False,
+            _quantity=2,
+        )
+
+        self.report_operation.regulated_products.set(
+            [*regulated_products, *unregulated_products]
+        )
 
         self.assertQuerySetEqual(
             ReportProductService.get_allowed_products(self.report_version_id),
@@ -298,8 +389,12 @@ class TestReportProductService(TestCase):
             ordered=False,
         )
 
-    def test_get_reported_products_includes_regulated_products_and_excludes_other_versions(self):
-        regulated_product = make_recipe("registration.tests.utils.regulated_product", is_regulated=True)
+    def test_get_reported_products_includes_regulated_products_and_excludes_other_versions(
+        self,
+    ):
+        regulated_product = make_recipe(
+            "registration.tests.utils.regulated_product", is_regulated=True
+        )
         reported = make_recipe(
             "reporting.tests.utils.report_product",
             report_version=self.facility_report.report_version,
@@ -315,9 +410,13 @@ class TestReportProductService(TestCase):
             ordered=False,
         )
 
-    def test_get_reported_products_includes_unregulated_products_only_with_allocated_emissions(self):
+    def test_get_reported_products_includes_unregulated_products_only_with_allocated_emissions(
+        self,
+    ):
         allocated_product, zero_allocated_product, unallocated_product = make_recipe(
-            "registration.tests.utils.regulated_product", is_regulated=False, _quantity=3
+            "registration.tests.utils.regulated_product",
+            is_regulated=False,
+            _quantity=3,
         )
         report_version = self.facility_report.report_version
         allocated, zero_allocated, _ = [
@@ -327,10 +426,17 @@ class TestReportProductService(TestCase):
                 facility_report=self.facility_report,
                 product=product,
             )
-            for product in [allocated_product, zero_allocated_product, unallocated_product]
+            for product in [
+                allocated_product,
+                zero_allocated_product,
+                unallocated_product,
+            ]
         ]
         # Allocations in two emission categories must not duplicate the product
-        for report_product, quantities in [(allocated, [10, 5]), (zero_allocated, [0, 0])]:
+        for report_product, quantities in [
+            (allocated, [10, 5]),
+            (zero_allocated, [0, 0]),
+        ]:
             for quantity in quantities:
                 make_recipe(
                     "reporting.tests.utils.report_product_emission_allocation",

@@ -1,18 +1,20 @@
 import pytest
-from model_bakery import baker
 from common.permissions import raise_401_if_user_not_authorized
-from registration.models import User, UserOperator, AppRole
+from django.core.exceptions import ValidationError
+from django.test import RequestFactory, TestCase, override_settings
+from model_bakery import baker
+from ninja.errors import HttpError
+from registration.models import AppRole, User, UserOperator
 from registration.models.operation import Operation
+from registration.tests.service.operation_service.test_operation_service import (
+    set_up_valid_mock_operation,
+)
+from registration.tests.utils.bakers import user_operator_baker
 from registration.utils import (
+    generate_useful_error,
     is_document_scan_complete,
     update_model_instance,
-    generate_useful_error,
 )
-from django.core.exceptions import ValidationError
-from ninja.errors import HttpError
-from django.test import RequestFactory, TestCase, override_settings
-from registration.tests.utils.bakers import user_operator_baker
-from registration.tests.service.operation_service.test_operation_service import set_up_valid_mock_operation
 
 pytestmark = pytest.mark.django_db
 
@@ -21,53 +23,53 @@ class TestUpdateModelInstance:
     def test_update_with_dict_mapping(self):
         class TestModel:
             def __init__(self):
-                self.field1 = ''
-                self.field2 = ''
+                self.field1 = ""
+                self.field2 = ""
 
             # this method is mandatory for django models but we don't need it for this test
             def full_clean(self):
                 pass
 
         instance = TestModel()
-        data_dict = {'data_field1': 'value1', 'data_field2': 'value2'}
-        fields_to_update = {'data_field1': 'field1', 'data_field2': 'field2'}
+        data_dict = {"data_field1": "value1", "data_field2": "value2"}
+        fields_to_update = {"data_field1": "field1", "data_field2": "field2"}
 
         updated_instance = update_model_instance(instance, fields_to_update, data_dict)
 
-        assert updated_instance.field1 == 'value1'
-        assert updated_instance.field2 == 'value2'
+        assert updated_instance.field1 == "value1"
+        assert updated_instance.field2 == "value2"
 
     def test_update_with_field_list(self):
         class TestModel:
             def __init__(self):
-                self.field1 = ''
-                self.field2 = ''
+                self.field1 = ""
+                self.field2 = ""
 
             # this method is mandatory for django models but we don't need it for this test
             def full_clean(self):
                 pass
 
         instance = TestModel()
-        data_dict = {'field1': 'value1', 'field2': 'value2'}
-        fields_to_update = ['field1', 'field2']
+        data_dict = {"field1": "value1", "field2": "value2"}
+        fields_to_update = ["field1", "field2"]
 
         updated_instance = update_model_instance(instance, fields_to_update, data_dict)
 
-        assert updated_instance.field1 == 'value1'
-        assert updated_instance.field2 == 'value2'
+        assert updated_instance.field1 == "value1"
+        assert updated_instance.field2 == "value2"
 
     def test_validation_error(self):
         class TestModel:
             def __init__(self):
-                self.field1 = ''
-                self.field2 = ''
+                self.field1 = ""
+                self.field2 = ""
 
             def full_clean(self):
                 raise ValidationError("Validation error occurred")
 
         instance = TestModel()
-        data_dict = {'field1': 'value1', 'field2': 'value2'}
-        fields_to_update = ['field1', 'field2']
+        data_dict = {"field1": "value1", "field2": "value2"}
+        fields_to_update = ["field1", "field2"]
 
         with pytest.raises(ValidationError):
             update_model_instance(instance, fields_to_update, data_dict)
@@ -75,29 +77,29 @@ class TestUpdateModelInstance:
     def test_attribute_error(self):
         class TestModel:
             def __init__(self):
-                self.field1 = ''
-                self.field2 = ''
+                self.field1 = ""
+                self.field2 = ""
 
             # this method is mandatory for django models but we don't need it for this test
             def full_clean(self):
                 pass
 
         instance = TestModel()
-        data_dict = {'field1': 'value1', 'field2': 'value2'}
-        fields_to_update = ['field1', 'field3']  # 'field3' does not exist in TestModel
+        data_dict = {"field1": "value1", "field2": "value2"}
+        fields_to_update = ["field1", "field3"]  # 'field3' does not exist in TestModel
 
         updated_instance = update_model_instance(instance, fields_to_update, data_dict)
 
-        assert updated_instance.field1 == 'value1'
-        assert not hasattr(updated_instance, 'field3')
+        assert updated_instance.field1 == "value1"
+        assert not hasattr(updated_instance, "field3")
 
 
 class TestGenerateUsefulError:
     def test_generate_useful_error_formatting(self):
         error = ValidationError(
             {
-                'long_field_name_with_underscores': ['Error message 1 for field'],
-                'another_field': ['Another error message for field'],
+                "long_field_name_with_underscores": ["Error message 1 for field"],
+                "another_field": ["Another error message for field"],
             }
         )
 
@@ -109,8 +111,8 @@ class TestGenerateUsefulError:
     def test_generate_useful_error_single_error(self):
         error = ValidationError(
             {
-                'field1': ['Error message 1 for field1', 'Error message 2 for field1'],
-                'field2': ['Error message for field2'],
+                "field1": ["Error message 1 for field1", "Error message 2 for field1"],
+                "field2": ["Error message for field2"],
             }
         )
 
@@ -137,61 +139,81 @@ class TestCheckIfRoleAuthorized(TestCase):
         self.request = self.factory.get("/not/important")
 
     def test_raises_when_no_authorized_role_argument_is_provided(self):
-        self.request.current_user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        self.request.current_user = baker.make(
+            User, app_role=AppRole.objects.get(role_name="industry_user")
+        )
         user_operator_instance = user_operator_baker()
         user_operator_instance.user = self.request.current_user
-        user_operator_instance.save(update_fields=['user'])
+        user_operator_instance.save(update_fields=["user"])
         with pytest.raises(HttpError):
-            raise_401_if_user_not_authorized(self.request, ['industry_user'])
+            raise_401_if_user_not_authorized(self.request, ["industry_user"])
 
     def test_does_not_raise_when_app_role_is_authorized(self):
-        self.request.current_user = baker.make(User, app_role=AppRole.objects.get(role_name="cas_admin"))
+        self.request.current_user = baker.make(
+            User, app_role=AppRole.objects.get(role_name="cas_admin")
+        )
 
-        assert raise_401_if_user_not_authorized(self.request, ['cas_admin']) is None
+        assert raise_401_if_user_not_authorized(self.request, ["cas_admin"]) is None
 
     def test_raises_when_app_role_is_not_authorized(self):
-        self.request.current_user = baker.make(User, app_role=AppRole.objects.get(role_name="cas_admin"))
+        self.request.current_user = baker.make(
+            User, app_role=AppRole.objects.get(role_name="cas_admin")
+        )
         with pytest.raises(HttpError):
             raise_401_if_user_not_authorized(
                 self.request,
                 [
-                    'role_that_is_not_cas_admin',
+                    "role_that_is_not_cas_admin",
                 ],
             )
 
     def test_raises_when_industry_user_role_is_not_approved(self):
-        self.request.current_user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        self.request.current_user = baker.make(
+            User, app_role=AppRole.objects.get(role_name="industry_user")
+        )
         user_operator_instance = user_operator_baker()
         user_operator_instance.user = self.request.current_user
-        user_operator_instance.role = 'reporter'
-        user_operator_instance.save(update_fields=['user', 'role'])
+        user_operator_instance.role = "reporter"
+        user_operator_instance.save(update_fields=["user", "role"])
         with pytest.raises(HttpError):
-            raise_401_if_user_not_authorized(self.request, ['industry_user'], ['admin'])
+            raise_401_if_user_not_authorized(self.request, ["industry_user"], ["admin"])
 
     def test_does_not_raise_when_industry_user_role_does_not_require_approval(self):
-        self.request.current_user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        self.request.current_user = baker.make(
+            User, app_role=AppRole.objects.get(role_name="industry_user")
+        )
         # note: I haven't added baker.make(UserOperator) because when a user first logs in, they haven't selected an operator yet and and they don't have a UserOperator record
 
         assert (
             raise_401_if_user_not_authorized(
-                self.request, ['cas_admin', 'industry_user'], ['reporter', 'admin', 'pending'], False
+                self.request,
+                ["cas_admin", "industry_user"],
+                ["reporter", "admin", "pending"],
+                False,
             )
             is None
         )
 
-    def test_does_not_raise_when_approved_industry_user_is_authorized_and_approved(self):
+    def test_does_not_raise_when_approved_industry_user_is_authorized_and_approved(
+        self,
+    ):
         self.request.current_user = baker.make(
             User,
             app_role=AppRole.objects.get(role_name="industry_user"),
         )
         user_operator_instance = user_operator_baker()
         user_operator_instance.user = self.request.current_user
-        user_operator_instance.role = 'reporter'
+        user_operator_instance.role = "reporter"
         user_operator_instance.status = UserOperator.Statuses.APPROVED
 
-        user_operator_instance.save(update_fields=['user', 'role', 'status'])
+        user_operator_instance.save(update_fields=["user", "role", "status"])
 
-        assert raise_401_if_user_not_authorized(self.request, ['industry_user'], ['reporter', 'admin']) is None
+        assert (
+            raise_401_if_user_not_authorized(
+                self.request, ["industry_user"], ["reporter", "admin"]
+            )
+            is None
+        )
 
     def test_raises_when_user_operator_does_not_exist_and_approval_is_required(self):
         self.request.current_user = baker.make(
@@ -200,19 +222,18 @@ class TestCheckIfRoleAuthorized(TestCase):
         )
 
         with pytest.raises(HttpError):
-            raise_401_if_user_not_authorized(self.request, ['industry_user'], ['admin'])
+            raise_401_if_user_not_authorized(self.request, ["industry_user"], ["admin"])
 
     def test_raises_when_current_user_does_not_exist(self):
         # note there is no baker.make(User) here
         with pytest.raises(HttpError):
-            raise_401_if_user_not_authorized(self.request, ['industry_user'])
+            raise_401_if_user_not_authorized(self.request, ["industry_user"])
 
 
 class TestDocumentScanStatus:
     @staticmethod
     @override_settings(ENVIRONMENT="develop", CI="true")
     def test_is_document_scan_complete_skipped_in_ci():
-
         operation = set_up_valid_mock_operation(
             Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Quarantined"
         )
@@ -222,7 +243,6 @@ class TestDocumentScanStatus:
     @staticmethod
     @override_settings(ENVIRONMENT="local", CI="true")
     def test_is_document_scan_complete_skipped_in_local():
-
         operation = set_up_valid_mock_operation(
             Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Quarantined"
         )
@@ -232,13 +252,17 @@ class TestDocumentScanStatus:
     @staticmethod
     @override_settings(ENVIRONMENT="develop", CI="false")
     def test_is_document_scan_complete_runs_fail():
-        operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Unscanned")
+        operation = set_up_valid_mock_operation(
+            Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Unscanned"
+        )
 
         assert is_document_scan_complete(operation) is False
 
     @staticmethod
     @override_settings(ENVIRONMENT="develop", CI="false")
     def test_is_document_scan_complete_runs_success():
-        operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Clean")
+        operation = set_up_valid_mock_operation(
+            Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Clean"
+        )
 
         assert is_document_scan_complete(operation) is True

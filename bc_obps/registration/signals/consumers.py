@@ -1,5 +1,6 @@
 import logging
 from typing import Any, Dict, List, Union
+
 from django.core.exceptions import ValidationError
 from django.db.models.signals import m2m_changed, pre_save
 from django.dispatch import receiver
@@ -9,13 +10,18 @@ from registration.models.event.temporary_shutdown_event import TemporaryShutdown
 from registration.models.event.transfer_event import TransferEvent
 
 # List of models to apply the same signal handling logic
-event_models: List[Any] = [ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent]
+event_models: list[Any] = [
+    ClosureEvent,
+    RestartEvent,
+    TemporaryShutdownEvent,
+    TransferEvent,
+]
 
 logger = logging.getLogger(__name__)
 
 
 def validate_event_constraints(
-    instance: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent],
+    instance: ClosureEvent | RestartEvent | TemporaryShutdownEvent | TransferEvent,
 ) -> None:
     """
     Validates that the given event instance does not have both an operation and facilities set simultaneously.
@@ -26,7 +32,9 @@ def validate_event_constraints(
         raise ValidationError("An event cannot have both an operation and facilities.")
 
 
-def create_m2m_signal_handler(model: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent]) -> None:
+def create_m2m_signal_handler(
+    model: ClosureEvent | RestartEvent | TemporaryShutdownEvent | TransferEvent,
+) -> None:
     """
     Creates and registers an m2m_changed signal handler for the specified model to validate
     that the event does not have both an operation and facilities set simultaneously.
@@ -40,9 +48,9 @@ def create_m2m_signal_handler(model: Union[ClosureEvent, RestartEvent, Temporary
     )
     def validate_facilities_m2m_constraint(
         sender: Any,
-        instance: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent],
+        instance: ClosureEvent | RestartEvent | TemporaryShutdownEvent | TransferEvent,
         action: str,
-        **kwargs: Dict,
+        **kwargs: dict,
     ) -> None:
         """
         Signal handler to validate that the event does not have both an operation and facilities set simultaneously
@@ -57,23 +65,28 @@ def create_m2m_signal_handler(model: Union[ClosureEvent, RestartEvent, Temporary
         Raises:
             ValidationError: If the event has both an operation and facilities set.
         """
-        if action in ['post_add', 'post_remove', 'post_clear']:
+        if action in ["post_add", "post_remove", "post_clear"]:
             validate_event_constraints(instance)
 
 
 def create_pre_save_signal_handler(
-    model: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent],
+    model: ClosureEvent | RestartEvent | TemporaryShutdownEvent | TransferEvent,
 ) -> None:
     """
     Creates and registers a pre_save signal handler for the specified model to validate
     that the event does not have both an operation and facilities set simultaneously before saving.
     """
 
-    @receiver(pre_save, sender=model, weak=False, dispatch_uid=f"{model.__class__.__name__}_pre_save")
+    @receiver(
+        pre_save,
+        sender=model,
+        weak=False,
+        dispatch_uid=f"{model.__class__.__name__}_pre_save",
+    )
     def validate_operation_and_facilities_constraint(
-        sender: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent],
-        instance: Union[ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent],
-        **kwargs: Dict,
+        sender: ClosureEvent | RestartEvent | TemporaryShutdownEvent | TransferEvent,
+        instance: ClosureEvent | RestartEvent | TemporaryShutdownEvent | TransferEvent,
+        **kwargs: dict,
     ) -> None:
         """
         Signal handler to validate that the event does not have both an operation and facilities set simultaneously

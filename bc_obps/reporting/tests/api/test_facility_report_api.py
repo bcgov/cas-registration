@@ -1,13 +1,15 @@
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
+
+from common.tests.utils.helpers import assert_error_response
+from model_bakery import baker
+from registration.models import Activity
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.models import FacilityReport
-from registration.models import Activity
-from model_bakery import baker
-
 from reporting.schema.facility_report import FacilityReportListInSchema
-from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
-from common.tests.utils.helpers import assert_error_response
+from reporting.tests.utils.report_access_validation import (
+    assert_report_version_ownership_is_validated,
+)
 
 
 class TestFacilityReportEndpoints(CommonTestSetup):
@@ -16,48 +18,62 @@ class TestFacilityReportEndpoints(CommonTestSetup):
 
     # GET
     def test_error_if_no_facility_report_exists(self):
-        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
-        TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report")
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=facility_report.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
             operator=facility_report.report_version.report.operator,
             operations=[facility_report.report_version.report.operation],
         )
 
-        endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version.id}/facility-report/00000000-0000-0000-0000-000000000000'
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', endpoint_under_test)
+        endpoint_under_test = f"/api/reporting/report-version/{facility_report.report_version.id}/facility-report/00000000-0000-0000-0000-000000000000"
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", endpoint_under_test
+        )
 
         assert_error_response(response, 404, "Not Found")
 
     def test_error_if_no_invalid_facility_id(self):
-        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
-        TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report")
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=facility_report.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
             operator=facility_report.report_version.report.operator,
             operations=[facility_report.report_version.report.operation],
         )
 
-        endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version.id}/facility-report/1'
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', endpoint_under_test)
+        endpoint_under_test = f"/api/reporting/report-version/{facility_report.report_version.id}/facility-report/1"
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", endpoint_under_test
+        )
         assert response.status_code == 422
         assert "Facility Id: Input should be a valid UUID" in response.json()["message"]
 
     def test_returns_correct_data(self):
-        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
-        TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report")
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=facility_report.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
             operator=facility_report.report_version.report.operator,
             operations=[facility_report.report_version.report.operation],
         )
 
-        endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}'
-        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', endpoint_under_test)
+        endpoint_under_test = f"/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}"
+        response = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", endpoint_under_test
+        )
         assert response.status_code == 200
-        assert response.json()['facility_name'] == facility_report.facility_name
+        assert response.json()["facility_name"] == facility_report.facility_name
 
     ## Facility Report Activity List
     def test_returns_ordered_activity_list_for_facility_report(self):
-        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
-        TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report")
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=facility_report.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
             operator=facility_report.report_version.report.operator,
             operations=[facility_report.report_version.report.operation],
@@ -66,29 +82,36 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         a2 = Activity.objects.get(pk=14)
         a3 = Activity.objects.get(pk=28)
         facility_report.activities.add(a1, a2, a3)
-        print('FACILITY ID: ', facility_report.facility_id)
-        print('REPORT VERSION ID: ', facility_report.report_version_id)
-        print('REPORT VERSION ID ACTUAL: ', facility_report.report_version.id)
-        print('REPORTING YEAR: ', facility_report.report_version.report.reporting_year.reporting_year)
-        endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/activity-list'
-        response = TestUtils.mock_get_with_auth_role(self, 'industry_user', endpoint_under_test)
+        print("FACILITY ID: ", facility_report.facility_id)
+        print("REPORT VERSION ID: ", facility_report.report_version_id)
+        print("REPORT VERSION ID ACTUAL: ", facility_report.report_version.id)
+        print(
+            "REPORTING YEAR: ",
+            facility_report.report_version.report.reporting_year.reporting_year,
+        )
+        endpoint_under_test = f"/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/activity-list"
+        response = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", endpoint_under_test
+        )
         ordered_activities = [a1, a3, a2]
         assert response.status_code == 200
         assert len(response.json()) == 3
-        assert response.json()[0]['id'] == ordered_activities[0].id
-        assert response.json()[1]['id'] == ordered_activities[1].id
-        assert response.json()[2]['id'] == ordered_activities[2].id
+        assert response.json()[0]["id"] == ordered_activities[0].id
+        assert response.json()[1]["id"] == ordered_activities[1].id
+        assert response.json()[2]["id"] == ordered_activities[2].id
 
     # POST
     def test_saves_facility_data(self):
-        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
-        TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report")
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=facility_report.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
             operator=facility_report.report_version.report.operator,
             operations=[facility_report.report_version.report.operation],
         )
 
-        endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}'
+        endpoint_under_test = f"/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}"
         request_data = {
             "facility_name": "CHANGED",
             "facility_type": "Single Facility Operation",
@@ -98,21 +121,28 @@ class TestFacilityReportEndpoints(CommonTestSetup):
 
         TestUtils.mock_post_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             request_data,
             endpoint_under_test,
         )
 
-        assert FacilityReport.objects.get(pk=facility_report.id).facility_name == "CHANGED"
+        assert (
+            FacilityReport.objects.get(pk=facility_report.id).facility_name == "CHANGED"
+        )
         assert FacilityReport.objects.get(pk=facility_report.id).activities.count() == 3
 
-    @patch("reporting.service.facility_report_service.FacilityReportService.save_facility_report_list")
+    @patch(
+        "reporting.service.facility_report_service.FacilityReportService.save_facility_report_list"
+    )
     def test_patch_calls_the_save_service_with_correct_data(self, mock_save: MagicMock):
-        self.report_version = baker.make_recipe('reporting.tests.utils.report_version')
-        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        self.report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator,
+            operations=[self.report_version.report.operation],
         )
 
         facility_id_1 = uuid4()
@@ -125,7 +155,7 @@ class TestFacilityReportEndpoints(CommonTestSetup):
 
         endpoint_under_test = f"/api/reporting/report-version/{self.report_version.id}/facility-report-list"
         response = TestUtils.mock_patch_with_auth_role(
-            self, 'industry_user', 'application/json', payload, endpoint_under_test
+            self, "industry_user", "application/json", payload, endpoint_under_test
         )
 
         assert response.status_code == 200
@@ -138,30 +168,48 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         )
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_facility_report_form_data", facility_id="uuid")
-        assert_report_version_ownership_is_validated("get_ordered_facility_report_activities", facility_id="uuid")
-        assert_report_version_ownership_is_validated("save_facility_report", method="post", facility_id="uuid")
-        assert_report_version_ownership_is_validated("get_facility_report_by_version_id")
-        assert_report_version_ownership_is_validated("save_facility_report_list", method="patch")
+        assert_report_version_ownership_is_validated(
+            "get_facility_report_form_data", facility_id="uuid"
+        )
+        assert_report_version_ownership_is_validated(
+            "get_ordered_facility_report_activities", facility_id="uuid"
+        )
+        assert_report_version_ownership_is_validated(
+            "save_facility_report", method="post", facility_id="uuid"
+        )
+        assert_report_version_ownership_is_validated(
+            "get_facility_report_by_version_id"
+        )
+        assert_report_version_ownership_is_validated(
+            "save_facility_report_list", method="patch"
+        )
 
-    @patch("reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed")
-    @patch("reporting.service.facility_report_service.FacilityReportService.update_facility_report")
-    def test_update_facility_report_api(self, mock_update: MagicMock, mock_is_sync_allowed: MagicMock):
-        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
-        TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+    @patch(
+        "reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed"
+    )
+    @patch(
+        "reporting.service.facility_report_service.FacilityReportService.update_facility_report"
+    )
+    def test_update_facility_report_api(
+        self, mock_update: MagicMock, mock_is_sync_allowed: MagicMock
+    ):
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report")
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=facility_report.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
             operator=facility_report.report_version.report.operator,
             operations=[facility_report.report_version.report.operation],
         )
 
         updated_facility_report = baker.prepare(
-            'reporting.FacilityReport', id=facility_report.id, facility_name="UPDATED"
+            "reporting.FacilityReport", id=facility_report.id, facility_name="UPDATED"
         )
         mock_is_sync_allowed.return_value = True
 
         mock_update.return_value = updated_facility_report
 
-        endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/update'
+        endpoint_under_test = f"/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/update"
         request_data = {
             "facility_name": "UPDATED",
             "facility_type": "Single Facility Operation",
@@ -171,40 +219,48 @@ class TestFacilityReportEndpoints(CommonTestSetup):
 
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             request_data,
             endpoint_under_test,
         )
 
         assert response.status_code == 200
-        assert response.json()['facility_name'] == "UPDATED"
-        mock_update.assert_called_once_with(facility_report.report_version_id, facility_report.facility_id)
+        assert response.json()["facility_name"] == "UPDATED"
+        mock_update.assert_called_once_with(
+            facility_report.report_version_id, facility_report.facility_id
+        )
         mock_is_sync_allowed.assert_called_once_with(facility_report.report_version_id)
 
-    @patch("reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed")
-    def test_update_facility_report_returns_403_when_sync_not_allowed(self, mock_is_sync_allowed: MagicMock):
+    @patch(
+        "reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed"
+    )
+    def test_update_facility_report_returns_403_when_sync_not_allowed(
+        self, mock_is_sync_allowed: MagicMock
+    ):
         # Mock sync validation to return False (sync not allowed)
         mock_is_sync_allowed.return_value = False
 
-        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
-        TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report")
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=facility_report.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
             operator=facility_report.report_version.report.operator,
             operations=[facility_report.report_version.report.operation],
         )
 
-        endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/update'
+        endpoint_under_test = f"/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/update"
 
         response = TestUtils.mock_put_with_auth_role(
             self,
-            'industry_user',
+            "industry_user",
             self.content_type,
             {},  # Empty payload
             endpoint_under_test,
         )
 
         assert response.status_code == 403
-        assert "Sync is not allowed" in response.json()['message']
+        assert "Sync is not allowed" in response.json()["message"]
         # Verify sync validation was called
         mock_is_sync_allowed.assert_called_once_with(facility_report.report_version_id)

@@ -1,17 +1,18 @@
 import uuid
-from django.db import models
+
 from common.enums import Schemas
+from django.core.validators import RegexValidator
+from django.db import models
 from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,
     BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
     CRA_BUSINESS_NUMBER_MESSAGE,
     CRA_BUSINESS_NUMBER_REGEX,
 )
-from registration.models import TimeStampedModel, Address, BusinessStructure
 from registration.enums.enums import RegistrationTableNames
-from simple_history.models import HistoricalRecords
-from django.core.validators import RegexValidator
+from registration.models import Address, BusinessStructure, TimeStampedModel
 from registration.models.rls_configs.operator import Rls as OperatorRls
+from simple_history.models import HistoricalRecords
 
 
 class Operator(TimeStampedModel):
@@ -23,12 +24,26 @@ class Operator(TimeStampedModel):
         CHANGES_REQUESTED = "Changes Requested"
 
     id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the operator", verbose_name="ID"
+        primary_key=True,
+        default=uuid.uuid4,
+        db_comment="Primary key to identify the operator",
+        verbose_name="ID",
     )
-    legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator", unique=True)
-    trade_name = models.CharField(max_length=1000, blank=True, null=True, db_comment="The trade name of an operator")
+    legal_name = models.CharField(
+        max_length=1000, db_comment="The legal name of an operator", unique=True
+    )
+    trade_name = models.CharField(
+        max_length=1000,
+        blank=True,
+        null=True,
+        db_comment="The trade name of an operator",
+    )
     cra_business_number = models.CharField(
-        validators=[RegexValidator(regex=CRA_BUSINESS_NUMBER_REGEX, message=CRA_BUSINESS_NUMBER_MESSAGE)],
+        validators=[
+            RegexValidator(
+                regex=CRA_BUSINESS_NUMBER_REGEX, message=CRA_BUSINESS_NUMBER_MESSAGE
+            )
+        ],
         db_comment="The CRA (Canada Revenue Agency) business number of this operator, a unique 9-digit identifier",
     )
     swrs_organisation_id = models.IntegerField(
@@ -40,7 +55,12 @@ class Operator(TimeStampedModel):
         db_comment="The BC corporate registry number of an operator",
         null=True,
         unique=True,
-        validators=[RegexValidator(regex=BC_CORPORATE_REGISTRY_REGEX, message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE)],
+        validators=[
+            RegexValidator(
+                regex=BC_CORPORATE_REGISTRY_REGEX,
+                message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
+            )
+        ],
     )
     business_structure = models.ForeignKey(
         BusinessStructure,
@@ -105,7 +125,7 @@ class Operator(TimeStampedModel):
         from registration.models import UserOperator
 
         return (
-            self.user_operators.only('user__user_guid')
+            self.user_operators.only("user__user_guid")
             .filter(user_id=user_guid, status=UserOperator.Statuses.APPROVED)
             .exclude(role=UserOperator.Roles.PENDING)
             .exists()

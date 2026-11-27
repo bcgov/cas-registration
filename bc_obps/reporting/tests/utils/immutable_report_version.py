@@ -1,10 +1,12 @@
-from django.db import ProgrammingError, transaction
-from model_bakery import baker
-import pytest
 from decimal import Decimal
 
+import pytest
+from django.db import ProgrammingError, transaction
+from model_bakery import baker
 
-IMMUTABLE_REPORT_ERROR_MESSAGE_MATCH = r".* record is immutable after a report version has been submitted"
+IMMUTABLE_REPORT_ERROR_MESSAGE_MATCH = (
+    r".* record is immutable after a report version has been submitted"
+)
 
 
 # Wrapping this in an atomic transaction
@@ -12,7 +14,7 @@ def assert_immutable_report_version(
     recipe_path: str,
     str_field_to_update: str = "json_data",
     path_to_report_version: str = "report_version",
-    decimal_value_to_update: Decimal = Decimal('0'),
+    decimal_value_to_update: Decimal = Decimal("0"),
 ):
     """
     A default test that asserts a model is immutable after its report_version is submitted.
@@ -33,7 +35,7 @@ def assert_immutable_report_version(
         **{path_to_report_version: report_version},
     )
 
-    if decimal_value_to_update != Decimal('0'):
+    if decimal_value_to_update != Decimal("0"):
         setattr(model_under_test, str_field_to_update, decimal_value_to_update)
     else:
         setattr(model_under_test, str_field_to_update, "{'test': 'allow change'}")
@@ -48,10 +50,12 @@ def assert_immutable_report_version(
             ProgrammingError,
             match=IMMUTABLE_REPORT_ERROR_MESSAGE_MATCH,
         ):
-            if decimal_value_to_update != Decimal('0'):
+            if decimal_value_to_update != Decimal("0"):
                 setattr(model_under_test, str_field_to_update, decimal_value_to_update)
             else:
-                setattr(model_under_test, str_field_to_update, "{'test': 'forbid change'}")
+                setattr(
+                    model_under_test, str_field_to_update, "{'test': 'forbid change'}"
+                )
             model_under_test.save()
 
     # Delete

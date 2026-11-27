@@ -1,18 +1,24 @@
 import logging
+from typing import Dict, Optional
+
+from common.exceptions import UserError
 from compliance.dataclass import ComplianceEarnedCreditsUpdate
 from compliance.models import ComplianceEarnedCredit, ComplianceReportVersion
-from typing import Dict, Optional
-from django.db.models import Subquery, UUIDField, OuterRef
-from common.exceptions import UserError
-from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
-from compliance.service.bc_carbon_registry.project_service import BCCarbonRegistryProjectService
-from compliance.service.bc_carbon_registry.credit_issuance_service import BCCarbonRegistryCreditIssuanceService
-from compliance.tasks import (
-    retryable_send_notice_of_earned_credits_email,
-    retryable_send_notice_of_credits_requested_email,
+from compliance.service.bc_carbon_registry.account_service import (
+    BCCarbonRegistryAccountService,
 )
+from compliance.service.bc_carbon_registry.credit_issuance_service import (
+    BCCarbonRegistryCreditIssuanceService,
+)
+from compliance.service.bc_carbon_registry.project_service import (
+    BCCarbonRegistryProjectService,
+)
+from compliance.tasks import (
+    retryable_send_notice_of_credits_requested_email,
+    retryable_send_notice_of_earned_credits_email,
+)
+from django.db.models import OuterRef, Subquery, UUIDField
 from registration.models.user import User
-
 
 bccr_project_service = BCCarbonRegistryProjectService()
 bccr_credit_issuance_service = BCCarbonRegistryCreditIssuanceService()
@@ -28,7 +34,7 @@ class ComplianceEarnedCreditsService:
     @classmethod
     def get_earned_credit_data_by_report_version(
         cls, compliance_report_version_id: int
-    ) -> Optional[ComplianceEarnedCredit]:
+    ) -> ComplianceEarnedCredit | None:
         """
         Fetches earned credit data for a specific compliance report version
 
@@ -40,7 +46,9 @@ class ComplianceEarnedCreditsService:
         """
         latest_compliance_report_version_subquery = (
             ComplianceReportVersion.objects.filter(
-                compliance_report_id=OuterRef("compliance_report_version__compliance_report_id"),
+                compliance_report_id=OuterRef(
+                    "compliance_report_version__compliance_report_id"
+                ),
                 status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
             )
             .order_by("-id")
@@ -48,7 +56,9 @@ class ComplianceEarnedCreditsService:
         )
 
         earned_credits_record = (
-            ComplianceEarnedCredit.objects.filter(compliance_report_version_id=compliance_report_version_id)
+            ComplianceEarnedCredit.objects.filter(
+                compliance_report_version_id=compliance_report_version_id
+            )
             .annotate(
                 latest_compliance_report_version_id=Subquery(
                     latest_compliance_report_version_subquery, output_field=UUIDField()
@@ -62,7 +72,7 @@ class ComplianceEarnedCreditsService:
     def create_earned_credits_record(
         cls,
         compliance_report_version: ComplianceReportVersion,
-        amount: Optional[int] = None,
+        amount: int | None = None,
     ) -> ComplianceEarnedCredit:
         """
         Create and persist an earned credits record for a compliance report version.
@@ -77,25 +87,36 @@ class ComplianceEarnedCreditsService:
         Returns:
             ComplianceEarnedCredit: The newly created earned credits record.
         """
-        resolved_amount = amount or int(compliance_report_version.report_compliance_summary.credited_emissions)
+        resolved_amount = amount or int(
+            compliance_report_version.report_compliance_summary.credited_emissions
+        )
         earned_credits_record = ComplianceEarnedCredit.objects.create(
             compliance_report_version=compliance_report_version,
             earned_credits_amount=resolved_amount,
         )
         # Only send email if the earned credits amount is at least 1
         if resolved_amount >= 1:
-            retryable_send_notice_of_earned_credits_email.execute(earned_credits_record.id)
+            retryable_send_notice_of_earned_credits_email.execute(
+                earned_credits_record.id
+            )
         return earned_credits_record
 
     @classmethod
     def _handle_industry_user_update(
-        cls, earned_credit: ComplianceEarnedCredit, update_payload: ComplianceEarnedCreditsUpdate
+        cls,
+        earned_credit: ComplianceEarnedCredit,
+        update_payload: ComplianceEarnedCreditsUpdate,
     ) -> None:
         """
         Handles the update of earned credits by an industry user
         """
-        if not update_payload.bccr_trading_name or not update_payload.bccr_holding_account_id:
-            raise UserError("BCCR Trading Name and Holding Account ID are required to update earned credits")
+        if (
+            not update_payload.bccr_trading_name
+            or not update_payload.bccr_holding_account_id
+        ):
+            raise UserError(
+                "BCCR Trading Name and Holding Account ID are required to update earned credits"
+            )
 
         industry_allowed_statuses = [
             ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
@@ -108,32 +129,51 @@ class ComplianceEarnedCreditsService:
 
         payload_bccr_holding_account_id = update_payload.bccr_holding_account_id
         # We don't care about the response from this call, we just want to make sure the account is a valid master account type
-        BCCarbonRegistryAccountService().get_account_details(payload_bccr_holding_account_id)
+        BCCarbonRegistryAccountService().get_account_details(
+            payload_bccr_holding_account_id
+        )
 
         earned_credit.bccr_trading_name = update_payload.bccr_trading_name
         earned_credit.bccr_holding_account_id = payload_bccr_holding_account_id
-        earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
-        earned_credit.save(update_fields=["issuance_status", "bccr_trading_name", "bccr_holding_account_id"])
+        earned_credit.issuance_status = (
+            ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
+        )
+        earned_credit.save(
+            update_fields=[
+                "issuance_status",
+                "bccr_trading_name",
+                "bccr_holding_account_id",
+            ]
+        )
         retryable_send_notice_of_credits_requested_email.execute(earned_credit.id)
 
     @classmethod
     def _handle_cas_analyst_update(
-        cls, earned_credit: ComplianceEarnedCredit, update_payload: ComplianceEarnedCreditsUpdate
+        cls,
+        earned_credit: ComplianceEarnedCredit,
+        update_payload: ComplianceEarnedCreditsUpdate,
     ) -> None:
         """
         Handles the update of earned credits by a CAS analyst
         """
 
         # Prevent further updates once the analyst has declined the request
-        if earned_credit.analyst_suggestion == ComplianceEarnedCredit.AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT:
-            raise UserError("Updates are not allowed after the analyst has provided a final suggestion")
+        if (
+            earned_credit.analyst_suggestion
+            == ComplianceEarnedCredit.AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT
+        ):
+            raise UserError(
+                "Updates are not allowed after the analyst has provided a final suggestion"
+            )
 
         analyst_allowed_statuses = [
             ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
             ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
         ]
         if earned_credit.issuance_status not in analyst_allowed_statuses:
-            raise UserError("Credits can only be updated by CAS analysts when the user has requested issuance")
+            raise UserError(
+                "Credits can only be updated by CAS analysts when the user has requested issuance"
+            )
 
         earned_credit.analyst_suggestion = update_payload.analyst_suggestion
         earned_credit.analyst_comment = update_payload.analyst_comment
@@ -146,32 +186,55 @@ class ComplianceEarnedCreditsService:
         }
 
         if update_payload.analyst_suggestion in suggestion_to_status:
-            earned_credit.issuance_status = suggestion_to_status[update_payload.analyst_suggestion]
+            earned_credit.issuance_status = suggestion_to_status[
+                update_payload.analyst_suggestion
+            ]
 
-        earned_credit.save(update_fields=["issuance_status", "analyst_suggestion", "analyst_comment"])
+        earned_credit.save(
+            update_fields=["issuance_status", "analyst_suggestion", "analyst_comment"]
+        )
 
     @classmethod
     def _handle_cas_director_update(
-        cls, earned_credit: ComplianceEarnedCredit, update_payload: ComplianceEarnedCreditsUpdate
+        cls,
+        earned_credit: ComplianceEarnedCredit,
+        update_payload: ComplianceEarnedCreditsUpdate,
     ) -> None:
         """
         Handles the update of earned credits by a CAS director
         """
-        if not earned_credit.bccr_trading_name or not earned_credit.bccr_holding_account_id:
-            raise UserError("BCCR Trading Name and Holding Account ID are required to update earned credits")
+        if (
+            not earned_credit.bccr_trading_name
+            or not earned_credit.bccr_holding_account_id
+        ):
+            raise UserError(
+                "BCCR Trading Name and Holding Account ID are required to update earned credits"
+            )
 
-        if earned_credit.analyst_suggestion != ComplianceEarnedCredit.AnalystSuggestion.READY_TO_APPROVE:
-            raise UserError("Credits cannot be issued until analyst has reviewed and approved")
+        if (
+            earned_credit.analyst_suggestion
+            != ComplianceEarnedCredit.AnalystSuggestion.READY_TO_APPROVE
+        ):
+            raise UserError(
+                "Credits cannot be issued until analyst has reviewed and approved"
+            )
 
         # CAS directors can only update the status if it's ISSUANCE_REQUESTED
-        if earned_credit.issuance_status != ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED:
-            raise UserError("Credits can only be updated by CAS directors when the user has requested issuance")
+        if (
+            earned_credit.issuance_status
+            != ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
+        ):
+            raise UserError(
+                "Credits can only be updated by CAS directors when the user has requested issuance"
+            )
 
         earned_credit.director_comment = update_payload.director_comment
         director_decision = update_payload.director_decision
         if director_decision not in ComplianceEarnedCredit.IssuanceStatus.values:
             raise UserError("Invalid director decision provided")
-        earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus(director_decision)
+        earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus(
+            director_decision
+        )
 
         if director_decision == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
             new_project_data = cls.create_bccr_project_for_earned_credit(earned_credit)
@@ -179,20 +242,27 @@ class ComplianceEarnedCreditsService:
         earned_credit.save(update_fields=["issuance_status", "director_comment"])
 
     @classmethod
-    def create_bccr_project_for_earned_credit(cls, earned_credit: ComplianceEarnedCredit) -> Dict:
+    def create_bccr_project_for_earned_credit(
+        cls, earned_credit: ComplianceEarnedCredit
+    ) -> dict:
         """
         Create or fetch a BCCR project for the earned credit, ensuring idempotency.
         """
         if earned_credit.bccr_project_id:
-            logger.info(f"Project already created for earned credit {earned_credit.id}, fetching details...")
-            project_data = bccr_project_service.client.get_project_details(earned_credit.bccr_project_id)
+            logger.info(
+                f"Project already created for earned credit {earned_credit.id}, fetching details..."
+            )
+            project_data = bccr_project_service.client.get_project_details(
+                earned_credit.bccr_project_id
+            )
         else:
             if not earned_credit.bccr_holding_account_id:
                 raise UserError(
                     "BCCR Holding Account ID is required to create a project"
                 )  # Just to make mypy happy - We already checked this in the _handle_cas_director_update method
             project_data = bccr_project_service.create_project(
-                earned_credit.bccr_holding_account_id, earned_credit.compliance_report_version
+                earned_credit.bccr_holding_account_id,
+                earned_credit.compliance_report_version,
             )
             if project_data and "id" in project_data:
                 earned_credit.bccr_project_id = project_data["id"]
@@ -200,7 +270,9 @@ class ComplianceEarnedCreditsService:
         return project_data
 
     @classmethod
-    def issue_bccr_credits_for_earned_credit(cls, earned_credit: ComplianceEarnedCredit, project_data: Dict) -> None:
+    def issue_bccr_credits_for_earned_credit(
+        cls, earned_credit: ComplianceEarnedCredit, project_data: dict
+    ) -> None:
         """
         Issue credits for the earned credit, ensuring idempotency.
         """
@@ -208,14 +280,16 @@ class ComplianceEarnedCreditsService:
             # Credits already issued, skip
             logger.info(f"Credits already issued for earned credit {earned_credit.id}")
             return
-        issuance_result = bccr_credit_issuance_service.issue_credits(earned_credit, project_data)
+        issuance_result = bccr_credit_issuance_service.issue_credits(
+            earned_credit, project_data
+        )
         if issuance_result and "id" in issuance_result:
             earned_credit.bccr_issuance_id = issuance_result["id"]
             earned_credit.save(update_fields=["bccr_issuance_id"])
 
     @classmethod
     def update_earned_credit(
-        cls, compliance_report_version_id: int, payload: Dict, user: User
+        cls, compliance_report_version_id: int, payload: dict, user: User
     ) -> ComplianceEarnedCredit:
         """
         Updates earned credits based on user role and permissions:
@@ -229,12 +303,16 @@ class ComplianceEarnedCreditsService:
             payload: The payload containing fields to update based on user role
             user: The user making the request (determines what fields can be updated)
         """
-        earned_credit = ComplianceEarnedCreditsService.get_earned_credit_data_by_report_version(
-            compliance_report_version_id
+        earned_credit = (
+            ComplianceEarnedCreditsService.get_earned_credit_data_by_report_version(
+                compliance_report_version_id
+            )
         )
 
         if not earned_credit:
-            raise UserError("No earned credit record found for this compliance report version")
+            raise UserError(
+                "No earned credit record found for this compliance report version"
+            )
 
         update_payload = ComplianceEarnedCreditsUpdate(**payload)
         # Industry user can only update the BCCR trading name and holding account ID

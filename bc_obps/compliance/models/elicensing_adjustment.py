@@ -1,8 +1,9 @@
+from compliance.models import ElicensingLineItem
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from django.db import models
 from django.db.models import Q
 from registration.models.time_stamped_model import TimeStampedModel
-from compliance.models import ElicensingLineItem
-from compliance.models.compliance_report_version import ComplianceReportVersion
+
 from .rls_configs.elicensing_adjustment import Rls as ElicensingAdjustmentRls
 
 
@@ -12,9 +13,11 @@ class ElicensingAdjustment(TimeStampedModel):
     """
 
     class Reason(models.TextChoices):
-        SUPPLEMENTARY_REPORT_ADJUSTMENT = 'Supplementary Report Adjustment'
-        SUPPLEMENTARY_REPORT_ADJUSTMENT_TO_VOID_INVOICE = 'Supplementary Report Adjustment to Void Invoice'
-        COMPLIANCE_UNITS_APPLIED = 'Compliance Units Applied'
+        SUPPLEMENTARY_REPORT_ADJUSTMENT = "Supplementary Report Adjustment"
+        SUPPLEMENTARY_REPORT_ADJUSTMENT_TO_VOID_INVOICE = (
+            "Supplementary Report Adjustment to Void Invoice"
+        )
+        COMPLIANCE_UNITS_APPLIED = "Compliance Units Applied"
 
     adjustment_object_id = models.IntegerField(
         db_comment="The object id of the adjustment in elicensing (adjustmentObjectId)"
@@ -42,13 +45,23 @@ class ElicensingAdjustment(TimeStampedModel):
         db_comment="The amount of this adjustment in CAD dollars from elicensing",
     )
 
-    adjustment_date = models.DateField(db_comment="date of the adjustment in elicensing", null=True, blank=True)
+    adjustment_date = models.DateField(
+        db_comment="date of the adjustment in elicensing", null=True, blank=True
+    )
 
-    reason = models.CharField(db_comment="Reason for adjustment in elicensing", null=True, blank=True)
+    reason = models.CharField(
+        db_comment="Reason for adjustment in elicensing", null=True, blank=True
+    )
 
-    type = models.CharField(db_comment="Type of adjustment in elicensing. (e.g. 'CREDIT')", null=True, blank=True)
+    type = models.CharField(
+        db_comment="Type of adjustment in elicensing. (e.g. 'CREDIT')",
+        null=True,
+        blank=True,
+    )
 
-    comment = models.CharField(db_comment="Comments on adjustment in elicensing", null=True, blank=True)
+    comment = models.CharField(
+        db_comment="Comments on adjustment in elicensing", null=True, blank=True
+    )
 
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
@@ -61,8 +74,8 @@ class ElicensingAdjustment(TimeStampedModel):
                     ~(
                         Q(
                             reason__in=[
-                                'Supplementary Report Adjustment',
-                                'Supplementary Report Adjustment to Void Invoice',
+                                "Supplementary Report Adjustment",
+                                "Supplementary Report Adjustment to Void Invoice",
                             ]
                         )
                         & Q(supplementary_compliance_report_version__isnull=True)

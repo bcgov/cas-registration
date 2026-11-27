@@ -1,16 +1,19 @@
-from common.tests.utils.helpers import BaseTestCase
-from model_bakery.baker import make_recipe
 import pytest
-from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
-from reporting.tests.utils.constants import REPORT_DATA_MODELS_COMMON_FIELDS
+from common.lib import pgtrigger
+from common.tests.utils.helpers import BaseTestCase
 from django.core.exceptions import ValidationError
+from model_bakery.baker import make_recipe
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from reporting.models import ReportEmission
+from reporting.tests.utils.constants import REPORT_DATA_MODELS_COMMON_FIELDS
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
-from reporting.models import ReportEmission
 from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsTestSetup
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from common.lib import pgtrigger
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ReportEmissionModelTest(BaseTestCase):
@@ -74,27 +77,28 @@ class ReportEmissionModelTest(BaseTestCase):
 
 
 class ReportEmissionRlsTest(BaseTestCase):
-
     def test_report_emission_rls_industry_user(self):
         # Common Test Setup
-        t = ReportRlsTestSetup(parent_object='report_source_type')
+        t = ReportRlsTestSetup(parent_object="report_source_type")
 
         # ReportEmission Setup
         # Inside access bounds
         with pgtrigger.ignore("reporting.ReportEmission:immutable_report_version"):
             report_emission_2010_submitted = make_recipe(
-                'reporting.tests.utils.report_emission',
+                "reporting.tests.utils.report_emission",
                 report_version=t.report_version_2010_submitted,
             )
         report_emission_2010_draft = make_recipe(
-            'reporting.tests.utils.report_emission', report_version=t.report_version_2010_draft
+            "reporting.tests.utils.report_emission",
+            report_version=t.report_version_2010_draft,
         )
         # Outside access bounds
         report_emission_2013_draft = make_recipe(
-            'reporting.tests.utils.report_emission', report_version=t.report_version_2013_draft
+            "reporting.tests.utils.report_emission",
+            report_version=t.report_version_2013_draft,
         )
 
-        test_gas_type = make_recipe('reporting.tests.utils.gas_type')
+        test_gas_type = make_recipe("reporting.tests.utils.gas_type")
 
         def select_function(cursor):
             ReportEmission.objects.get(id=report_emission_2010_submitted.id)

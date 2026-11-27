@@ -1,7 +1,8 @@
-from ninja import ModelSchema, Schema
+from decimal import Decimal
+
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.schema.elicensing_payments import ElicensingPaymentListOut
-from decimal import Decimal
+from ninja import ModelSchema, Schema
 
 
 class ComplianceObligationOut(ModelSchema):
@@ -10,7 +11,7 @@ class ComplianceObligationOut(ModelSchema):
     class Meta:
         model = ComplianceObligation
         fields = [
-            'id',
+            "id",
         ]
 
 

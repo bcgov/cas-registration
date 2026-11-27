@@ -1,23 +1,29 @@
-from registration.tests.utils.bakers import operation_baker, operator_baker
-from reporting.models import configuration_element, ReportPersonResponsible, ReportAdditionalData
-from reporting.models.gas_type import GasType
+from model_bakery import baker
 from registration.models import Activity
+from registration.tests.utils.bakers import operation_baker, operator_baker
+from reporting.models import (
+    ReportAdditionalData,
+    ReportPersonResponsible,
+    configuration_element,
+)
+from reporting.models.configuration import Configuration
+from reporting.models.configuration_element import ConfigurationElement
+from reporting.models.gas_type import GasType
+from reporting.models.methodology import Methodology
+from reporting.models.report import Report
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
 from reporting.models.reporting_year import ReportingYear
 from reporting.models.source_type import SourceType
-from model_bakery import baker
-from reporting.models.report import Report
-from reporting.models.configuration_element import ConfigurationElement
-from reporting.models.configuration import Configuration
-from reporting.models.methodology import Methodology
 
 
 def report_baker(**props) -> Report:
     if "operator" not in props and "operator_id" not in props:
         props["operator"] = operator_baker()
     if "operation" not in props and "operation_id" not in props:
-        props["operation"] = operation_baker(operator_id=(props["operator"].id if "operator" in props else None))
+        props["operation"] = operation_baker(
+            operator_id=(props["operator"].id if "operator" in props else None)
+        )
     return baker.make(Report, **props)
 
 

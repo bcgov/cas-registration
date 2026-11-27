@@ -1,9 +1,12 @@
 from decimal import Decimal
+
 from django.db.models import Q, QuerySet, Sum
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_emission import ReportEmission
-from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
+from reporting.models.report_product_emission_allocation import (
+    ReportProductEmissionAllocation,
+)
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
@@ -16,7 +19,9 @@ from reporting.service.report_validation.report_validation_tags import Validatio
 TAGS = [ValidationTags.REPORT_VALIDATION]
 
 
-def validate_facility_report(facility_report: FacilityReport) -> dict[str, ReportValidationError]:
+def validate_facility_report(
+    facility_report: FacilityReport,
+) -> dict[str, ReportValidationError]:
     """
     Method validating "other_excluded" emissions for a single facility report.
 
@@ -37,32 +42,38 @@ def validate_facility_report(facility_report: FacilityReport) -> dict[str, Repor
 
     for cat in basic_categories:
         other_excluded_emission_total = (
-            ReportEmission.objects_with_decimal_emissions.select_related("report_source_type__report_activity")
-            .filter(report_source_type__report_activity__facility_report_id=facility_report.id)
+            ReportEmission.objects_with_decimal_emissions.select_related(
+                "report_source_type__report_activity"
+            )
+            .filter(
+                report_source_type__report_activity__facility_report_id=facility_report.id
+            )
             .filter(emission_categories=cat)
             .filter(emission_categories__category_type="other_excluded")
-            .aggregate(Sum("emission"))['emission__sum']
+            .aggregate(Sum("emission"))["emission__sum"]
         ) or Decimal("0")
 
         """
         FOG product needs to be excluded from this validation,
         the reporting and allocation rules are different than for the other products and activities.
         """
-        allocated_to_non_reg_products = ReportProductEmissionAllocation.objects.select_related(
-            "report_product__product",
-            "report_emission_allocation",
-        ).filter(
-            Q(report_product__product__is_regulated=False)
-            & ~Q(report_product__product__name="Fat, oil and grease collection, refining and storage")
-        ).filter(
-            emission_category=cat,
-            report_emission_allocation__facility_report_id=facility_report.id,
-        ).aggregate(
-            Sum("allocated_quantity")
-        )[
-            'allocated_quantity__sum'
-        ] or Decimal(
-            "0"
+        allocated_to_non_reg_products = (
+            ReportProductEmissionAllocation.objects.select_related(
+                "report_product__product",
+                "report_emission_allocation",
+            )
+            .filter(
+                Q(report_product__product__is_regulated=False)
+                & ~Q(
+                    report_product__product__name="Fat, oil and grease collection, refining and storage"
+                )
+            )
+            .filter(
+                emission_category=cat,
+                report_emission_allocation__facility_report_id=facility_report.id,
+            )
+            .aggregate(Sum("allocated_quantity"))["allocated_quantity__sum"]
+            or Decimal("0")
         )
 
         if other_excluded_emission_total < allocated_to_non_reg_products:

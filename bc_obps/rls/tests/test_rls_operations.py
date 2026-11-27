@@ -1,10 +1,10 @@
 from django.apps import apps
 from django.conf import settings
-from model_bakery import baker
+from django.db import IntegrityError, connection, transaction, utils
 from django.test import TestCase
-from django.db import connection, utils, transaction, IntegrityError
+from model_bakery import baker
 from registration.models import AppRole
-from rls.enums import RlsRoles, RlsOperations
+from rls.enums import RlsOperations, RlsRoles
 from rls.tests.helpers import get_models_for_rls
 
 
@@ -12,7 +12,9 @@ class TestRlsOperations(TestCase):
     def setUp(self):
         """Setup test users with their respective roles."""
         self.users = {
-            role: baker.make("registration.User", app_role=AppRole.objects.get(role_name=role.value))
+            role: baker.make(
+                "registration.User", app_role=AppRole.objects.get(role_name=role.value)
+            )
             for role in RlsRoles
         }
 
@@ -26,12 +28,14 @@ class TestRlsOperations(TestCase):
         for app_name in apps_to_apply_rls:
             for model_name in apps.all_models[app_name]:
                 model = apps.all_models[app_name][model_name]
-                if hasattr(model, 'Rls'):
+                if hasattr(model, "Rls"):
                     rls = model.Rls
-                    if not hasattr(rls, 'enable_rls') or not rls.enable_rls:
+                    if not hasattr(rls, "enable_rls") or not rls.enable_rls:
                         continue  # Or raise an error to fail fast
                     with connection.cursor() as cursor:
-                        cursor.execute(f'ALTER TABLE {rls.schema}.{rls.table.value} DISABLE ROW LEVEL SECURITY')
+                        cursor.execute(
+                            f"ALTER TABLE {rls.schema}.{rls.table.value} DISABLE ROW LEVEL SECURITY"
+                        )
 
     @staticmethod
     def _set_role(user):
@@ -62,15 +66,21 @@ class TestRlsOperations(TestCase):
         table_name = self._get_table_name(model)
 
         if not hasattr(model, "Rls"):
-            raise NotImplementedError(f"Model `{table_name}` must implement an 'Rls' class.")
+            raise NotImplementedError(
+                f"Model `{table_name}` must implement an 'Rls' class."
+            )
 
         rls = model.Rls
         if not hasattr(rls, "grants"):
-            raise NotImplementedError(f"Model `{table_name}` must implement a 'grants' attribute in 'Rls' class.")
+            raise NotImplementedError(
+                f"Model `{table_name}` must implement a 'grants' attribute in 'Rls' class."
+            )
 
         enable_rls = getattr(rls, "enable_rls", False)
         if enable_rls and not hasattr(rls, "policies"):
-            raise NotImplementedError(f"Model `{table_name}` must implement a 'policies' attribute in 'Rls' class.")
+            raise NotImplementedError(
+                f"Model `{table_name}` must implement a 'policies' attribute in 'Rls' class."
+            )
 
         if model._meta.many_to_many:
             m2m_rls_list = getattr(rls, "m2m_rls_list", None)
@@ -91,18 +101,26 @@ class TestRlsOperations(TestCase):
 
         def raw_delete():
             with connection.cursor() as cursor:
-                cursor.execute(f"delete from {model._meta.db_table.replace('\"','')}")  # NOSONAR
+                cursor.execute(
+                    f"delete from {model._meta.db_table.replace('"', '')}"
+                )  # NOSONAR
 
         def raw_create():
             with connection.cursor() as cursor:
-                cursor.execute(f"insert into {model._meta.db_table.replace('\"','')} default values")  # NOSONAR
+                cursor.execute(
+                    f"insert into {model._meta.db_table.replace('"', '')} default values"
+                )  # NOSONAR
 
         return {
             # We don't care about the actual data, just the permissions (exists will fail if permission is denied)
-            RlsOperations.SELECT: lambda: self.assertIn(model.objects.exists(), [True, False]),
+            RlsOperations.SELECT: lambda: self.assertIn(
+                model.objects.exists(), [True, False]
+            ),
             RlsOperations.INSERT: raw_create,
             # Use primary key to trigger the UPDATE operation
-            RlsOperations.UPDATE: lambda: model.objects.update(**{model._meta.pk.name: 1}),
+            RlsOperations.UPDATE: lambda: model.objects.update(
+                **{model._meta.pk.name: 1}
+            ),
             RlsOperations.DELETE: raw_delete,
         }
 
@@ -113,7 +131,9 @@ class TestRlsOperations(TestCase):
                 action()
         except IntegrityError:
             if operation == RlsOperations.UPDATE:
-                self.assertEqual(operation, RlsOperations.UPDATE)  # Expected error on update
+                self.assertEqual(
+                    operation, RlsOperations.UPDATE
+                )  # Expected error on update
 
     def _assert_permission_error(self, func, msg):
         """Ensure an operation fails with the expected permission error message."""
@@ -129,7 +149,9 @@ class TestRlsOperations(TestCase):
             if operation in user_grants:
                 self._perform_action_with_grants(action, operation)
             else:
-                self._assert_permission_error(action, f"permission denied for table {table_name}")
+                self._assert_permission_error(
+                    action, f"permission denied for table {table_name}"
+                )
 
     def _test_grants(self, model, role):
         self._validate_rls_model(model)
@@ -143,11 +165,13 @@ class TestRlsOperations(TestCase):
             user_grants = role_grants_mapping.get(role, [])
             through_model = self._get_through_model(model, table_name.value)
             through_model_name = self._get_table_name(through_model)
-            if hasattr(model, 'Rls'):
+            if hasattr(model, "Rls"):
                 with connection.cursor() as cursor:
                     cursor.execute("set role postgres")
                 with connection.cursor() as cursor:
-                    cursor.execute(f'ALTER TABLE erc.{through_model_name} DISABLE ROW LEVEL SECURITY')
+                    cursor.execute(
+                        f"ALTER TABLE erc.{through_model_name} DISABLE ROW LEVEL SECURITY"
+                    )
             self._set_role(self.users[role])
             self._check_permissions(through_model, user_grants, table_name.value)
 

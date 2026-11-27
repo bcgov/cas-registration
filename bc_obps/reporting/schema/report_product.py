@@ -1,4 +1,5 @@
 from typing import List, Optional
+
 from ninja import Field, ModelSchema, Schema
 from registration.schema import RegulatedProductSchema
 from reporting.models.report_product import ReportProduct
@@ -27,10 +28,10 @@ class ReportProductSchemaIn(ReportProductSchema):
 class ReportProductSchemaOut(ReportProductSchema):
     product_id: int = Field(..., alias="product.id")
     product_name: str = Field(..., alias="product.name")
-    unit: Optional[str] = Field(..., alias="product.unit")
+    unit: str | None = Field(..., alias="product.unit")
     is_regulated: bool = Field(..., alias="product.is_regulated")
 
 
 class ProductionDataOut(Schema):
-    report_products: List[ReportProductSchemaOut]
-    allowed_products: List[RegulatedProductSchema]
+    report_products: list[ReportProductSchemaOut]
+    allowed_products: list[RegulatedProductSchema]

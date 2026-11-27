@@ -103,7 +103,9 @@ class RequiredFieldsReviewFacilityInformationValidator(BaseRequiredFieldsValidat
             return {
                 f"error_required_fields_{cls.SECTION}": cls.build_error(
                     report_version_id=report_version.id,
-                    missing_field_labels=[item["label"] for item in cls.REQUIRED_FIELDS],
+                    missing_field_labels=[
+                        item["label"] for item in cls.REQUIRED_FIELDS
+                    ],
                 )
             }
 
@@ -121,14 +123,18 @@ class RequiredFieldsReviewFacilityInformationValidator(BaseRequiredFieldsValidat
         resolved_flow = flow or resolve_flow(report_version)
 
         if resolved_flow in LFO_COMPLETION_REQUIRED_FLOWS:
-            has_incomplete_facility = any(not facility_report.is_completed for facility_report in facility_reports)
+            has_incomplete_facility = any(
+                not facility_report.is_completed for facility_report in facility_reports
+            )
 
             if has_incomplete_facility:
-                errors[f"error_required_fields_{REVIEW_FACILITIES_SECTION}"] = cls.build_error(
-                    report_version_id=report_version.id,
-                    missing_field_labels=["All facilities must be marked complete"],
-                    section=REVIEW_FACILITIES_SECTION,
-                    section_title=REVIEW_FACILITIES_SECTION_TITLE,
+                errors[f"error_required_fields_{REVIEW_FACILITIES_SECTION}"] = (
+                    cls.build_error(
+                        report_version_id=report_version.id,
+                        missing_field_labels=["All facilities must be marked complete"],
+                        section=REVIEW_FACILITIES_SECTION,
+                        section_title=REVIEW_FACILITIES_SECTION_TITLE,
+                    )
                 )
 
         return errors

@@ -12,11 +12,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 import sys
-from google.oauth2 import service_account
+import urllib.parse
 from pathlib import Path
+
 import dj_database_url
 from dotenv import load_dotenv
-import urllib.parse
+from google.oauth2 import service_account
 
 from .error_tracking import configure_error_tracking
 
@@ -32,12 +33,14 @@ ENVIRONMENT = os.environ.get("ENVIRONMENT")
 CI = os.environ.get("CI")
 
 # If we're in the CI environment, don't hit Google Cloud Storage
-if ENVIRONMENT == 'local' or CI == 'true':
+if ENVIRONMENT == "local" or CI == "true":
     # Use local file storage for tests
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media/')
+    MEDIA_ROOT = os.path.join(BASE_DIR, "test_media/")
     STORAGES = {
         "default": {"BACKEND": "bc_obps.storage_backends.SimpleLocal"},
-        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        },
     }
 else:
     # Google Cloud Storage Settings
@@ -47,7 +50,9 @@ else:
 
     STORAGES = {
         "default": {"BACKEND": "bc_obps.storage_backends.UnifiedGcsStorage"},
-        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
+        },
     }
     if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
         GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
@@ -60,7 +65,7 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG") == "True"
-IS_PYTEST_ENV = 'pytest' in sys.argv
+IS_PYTEST_ENV = "pytest" in sys.argv
 BYPASS_ROLE_ASSIGNMENT = os.environ.get("BYPASS_ROLE_ASSIGNMENT", False) == "True"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost").split(",")
@@ -82,7 +87,14 @@ BCCR_CLIENT_SECRET = os.getenv("BCCR_CLIENT_SECRET")
 
 NON_PROD_ENVIRONMENT = ENVIRONMENT in ["CI", "local", "dev", "test"] or CI == "true"
 
-LOCAL_APPS = ["registration", "reporting", "common", "rls", "task_scheduler", "compliance"]
+LOCAL_APPS = [
+    "registration",
+    "reporting",
+    "common",
+    "rls",
+    "task_scheduler",
+    "compliance",
+]
 NON_PROD_APPS: list[str] = ["mocks"]
 
 RLS_GRANT_APPS = ["registration", "reporting", "compliance"]
@@ -102,7 +114,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.postgres",
     # Third-party apps
-    'simple_history',
+    "simple_history",
     "corsheaders",
     "localflavor",
     "pgtrigger",
@@ -112,7 +124,11 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
-    *(["mocks.middleware.mock_time_middleware.MockTimeMiddleware"] if NON_PROD_ENVIRONMENT else []),
+    *(
+        ["mocks.middleware.mock_time_middleware.MockTimeMiddleware"]
+        if NON_PROD_ENVIRONMENT
+        else []
+    ),
     "common.middleware.kubernetes_health_check.KubernetesHealthCheckMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -125,7 +141,7 @@ MIDDLEWARE = [
     "rls.middleware.rls.RlsMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'simple_history.middleware.HistoryRequestMiddleware',
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 if DEBUG:  # DEV only apps
@@ -165,7 +181,11 @@ WSGI_APPLICATION = "bc_obps.wsgi.application"
 DB_USER = os.environ.get("DB_USER", "postgres")
 
 default_db_url = f"postgres://{DB_USER}:{urllib.parse.quote(str(os.environ.get('DB_PASSWORD')))}@{os.environ.get('DB_HOST', '127.0.0.1')}:{os.environ.get('DB_PORT', '5432')}/{os.environ.get('DB_NAME', 'registration')}"
-DATABASES = {'default': dj_database_url.config(default=default_db_url, conn_max_age=0, conn_health_checks=True)}
+DATABASES = {
+    "default": dj_database_url.config(
+        default=default_db_url, conn_max_age=0, conn_health_checks=True
+    )
+}
 
 
 # Password validation
@@ -232,11 +252,11 @@ if not DEBUG and ENVIRONMENT in ["dev", "test"]:
 # Repo: https://github.com/bradmontgomery/django-querycount
 QUERYCOUNT = {
     # define a list of regexp patterns that get applied to each request's path. If there is a match, the middleware will not be applied to that request
-    'IGNORE_REQUEST_PATTERNS': [r'^/admin/', r'^/static/', r'^/silk/'],
+    "IGNORE_REQUEST_PATTERNS": [r"^/admin/", r"^/static/", r"^/silk/"],
     # define a list of regexp patterns that ignored to statistic sql query count
-    'IGNORE_SQL_PATTERNS': [r'silk_'],
+    "IGNORE_SQL_PATTERNS": [r"silk_"],
     # print the 2 most duplicated queries
-    'DISPLAY_DUPLICATES': 2,
+    "DISPLAY_DUPLICATES": 2,
 }
 
 
@@ -261,27 +281,27 @@ CACHES = {
 # ERROR   - A more serious problem occurred
 # CRITICAL - A critical problem that may prevent the program from running
 LOGGING = {
-    'version': 1,
+    "version": 1,
     # Whether to disable existing loggers from other Django apps
-    'disable_existing_loggers': False,
+    "disable_existing_loggers": False,
     # Formatters define how log messages are displayed
-    'formatters': {
-        'verbose': {
-            'format': '[{asctime}] {levelname} | {module} | {message}',
-            'style': '{',
-            'datefmt': '%H:%M:%S',  # Just time, not full date
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname} | {module} | {message}",
+            "style": "{",
+            "datefmt": "%H:%M:%S",  # Just time, not full date
         },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
         },
     },
     # Handlers define where log messages are sent (console, file, email, etc.)
-    'handlers': {
+    "handlers": {
         # Console handler: outputs logs to terminal/console
-        'console': {
-            'class': 'logging.StreamHandler',  # Python's built-in console handler
-            'formatter': 'verbose',  # Use the verbose formatter defined above
+        "console": {
+            "class": "logging.StreamHandler",  # Python's built-in console handler
+            "formatter": "verbose",  # Use the verbose formatter defined above
         },
         # We could add a file handler here if we wanted to log to a file
         # 'file': {
@@ -291,23 +311,25 @@ LOGGING = {
         # },
     },
     # Root logger: the default logger that all other loggers inherit from
-    'root': {
-        'handlers': ['console'],  # Send all root logs to console
-        'level': 'DEBUG' if DEBUG else 'INFO',  # Show DEBUG in local, INFO+ in other environments
+    "root": {
+        "handlers": ["console"],  # Send all root logs to console
+        "level": "DEBUG"
+        if DEBUG
+        else "INFO",  # Show DEBUG in local, INFO+ in other environments
     },
     # Specific loggers for different parts of the application
-    'loggers': {
+    "loggers": {
         # Django framework logger: controls Django's own logging
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',  # Only show INFO and above from Django framework
-            'propagate': False,  # Don't pass messages up to parent (root) logger
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",  # Only show INFO and above from Django framework
+            "propagate": False,  # Don't pass messages up to parent (root) logger
         },
         # Specific logger for our BCCR utils module
-        'compliance.service.bc_carbon_registry.utils': {
-            'handlers': ['console'],
-            'level': 'DEBUG',  # Show all DEBUG messages from this specific module
-            'propagate': False,
+        "compliance.service.bc_carbon_registry.utils": {
+            "handlers": ["console"],
+            "level": "DEBUG",  # Show all DEBUG messages from this specific module
+            "propagate": False,
         },
         # Add more specific loggers here
     },
@@ -315,8 +337,8 @@ LOGGING = {
 
 # Add Silk logger only when DEBUG is True (local development) and not when running pytest
 if DEBUG and not IS_PYTEST_ENV:
-    LOGGING['loggers']['silk'] = {  # type: ignore[index]
-        'handlers': ['console'],
-        'level': 'WARNING',  # Only show WARNING and above from Silk
-        'propagate': False,  # Don't pass messages up to parent logger
+    LOGGING["loggers"]["silk"] = {  # type: ignore[index]
+        "handlers": ["console"],
+        "level": "WARNING",  # Only show WARNING and above from Silk
+        "propagate": False,  # Don't pass messages up to parent logger
     }

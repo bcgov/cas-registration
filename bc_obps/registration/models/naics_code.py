@@ -1,11 +1,12 @@
 import typing
+
 from common.enums import Schemas
 from common.models import BaseModel
-from django.db import models
-from simple_history.models import HistoricalRecords
 from django.core.cache import cache
+from django.db import models
 from registration.enums.enums import RegistrationTableNames
 from registration.models.rls_configs.naics_code import Rls as NaicsCodeRls
+from simple_history.models import HistoricalRecords
 
 
 class NaicsCode(BaseModel):
@@ -17,7 +18,9 @@ class NaicsCode(BaseModel):
         max_length=1000,
         db_comment="Description of the NAICS (North American Industry Classification System) code",
     )
-    is_regulated = models.BooleanField(db_comment="Whether the NAICS code applies to regulated operations")
+    is_regulated = models.BooleanField(
+        db_comment="Whether the NAICS code applies to regulated operations"
+    )
     history = HistoricalRecords(
         table_name='erc_history"."naics_code_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
@@ -34,5 +37,5 @@ class NaicsCode(BaseModel):
         """
         Override the save method to clear the cache when/if the NAICS code is saved.
         """
-        cache.delete('naics_codes')
+        cache.delete("naics_codes")
         super().save(*args, **kwargs)

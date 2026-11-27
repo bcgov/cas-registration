@@ -1,17 +1,17 @@
 from typing import Annotated, Optional
 from uuid import UUID
 
-from pydantic import ConfigDict
 from ninja import Field, FilterSchema, ModelSchema, Schema
+from pydantic import ConfigDict
 from registration.models import Contact
 
 
 class ContactOut(ModelSchema):
-    street_address: Optional[str] = Field(None, alias="address.street_address")
-    municipality: Optional[str] = Field(None, alias="address.municipality")
-    province: Optional[str] = Field(None, alias="address.province")
-    postal_code: Optional[str] = Field(None, alias="address.postal_code")
-    places_assigned: Optional[list] = None
+    street_address: str | None = Field(None, alias="address.street_address")
+    municipality: str | None = Field(None, alias="address.municipality")
+    province: str | None = Field(None, alias="address.province")
+    postal_code: str | None = Field(None, alias="address.postal_code")
+    places_assigned: list | None = None
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -21,7 +21,15 @@ class ContactOut(ModelSchema):
 
     class Meta:
         model = Contact
-        fields = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'position_title', 'business_role']
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+            "position_title",
+            "business_role",
+        ]
 
 
 class PlacesAssigned(Schema):
@@ -31,7 +39,7 @@ class PlacesAssigned(Schema):
 
 
 class ContactWithPlacesAssigned(ContactOut):
-    places_assigned: Optional[list[PlacesAssigned]] = []
+    places_assigned: list[PlacesAssigned] | None = []
 
 
 class ContactListOut(ModelSchema):
@@ -39,15 +47,17 @@ class ContactListOut(ModelSchema):
 
     class Meta:
         model = Contact
-        fields = ['id', 'first_name', 'last_name', 'email']
+        fields = ["id", "first_name", "last_name", "email"]
 
 
 class ContactFilterSchema(FilterSchema):
-    first_name: Annotated[str | None, Field(q='first_name__icontains')] = None
-    last_name: Annotated[str | None, Field(q='last_name__icontains')] = None
-    email: Annotated[str | None, Field(q='email__icontains')] = None
-    operator__legal_name: Annotated[str | None, Field(q='operator__legal_name__icontains')] = None
-    operator_id: Annotated[UUID | None, Field(q='operator_id')] = None
+    first_name: Annotated[str | None, Field(q="first_name__icontains")] = None
+    last_name: Annotated[str | None, Field(q="last_name__icontains")] = None
+    email: Annotated[str | None, Field(q="email__icontains")] = None
+    operator__legal_name: Annotated[
+        str | None, Field(q="operator__legal_name__icontains")
+    ] = None
+    operator_id: Annotated[UUID | None, Field(q="operator_id")] = None
 
 
 class OperationRepresentativeListOut(Schema):
@@ -60,11 +70,11 @@ class OperationRepresentativeListOut(Schema):
 
 
 class ContactIn(ModelSchema):
-    street_address: Optional[str] = None
-    municipality: Optional[str] = None
-    province: Optional[str] = None
-    postal_code: Optional[str] = None
+    street_address: str | None = None
+    municipality: str | None = None
+    province: str | None = None
+    postal_code: str | None = None
 
     class Meta:
         model = Contact
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 'position_title']
+        fields = ["first_name", "last_name", "email", "phone_number", "position_title"]

@@ -1,14 +1,13 @@
-from reporting.models import Configuration
-from django.core.exceptions import ValidationError
-from django.test import TestCase
 import pytest
+from django.core.exceptions import ValidationError
 from django.db import ProgrammingError
+from django.test import TestCase
+from reporting.models import Configuration
 
 
 class ConfigurationTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-
         cls.test_object = Configuration.objects.create(
             slug="testConfig",
             valid_from="5025-01-01",
@@ -23,18 +22,24 @@ class ConfigurationTest(TestCase):
 
     # Throws when a record being inserted has an overlapping date range
     def testExclusionConstraintOverlaps(self):
-        invalid_record = Configuration(slug='invalidRecord', valid_from='5025-02-01', valid_to='5025-12-31')
-        with self.assertRaises(ValidationError, msg="Configuration record already exists."):
+        invalid_record = Configuration(
+            slug="invalidRecord", valid_from="5025-02-01", valid_to="5025-12-31"
+        )
+        with self.assertRaises(
+            ValidationError, msg="Configuration record already exists."
+        ):
             invalid_record.save()
 
     def testValidRecordInsert(self):
-        valid_record = Configuration(slug='validRecord', valid_from='5026-01-01', valid_to='5026-12-31')
+        valid_record = Configuration(
+            slug="validRecord", valid_from="5026-01-01", valid_to="5026-12-31"
+        )
         valid_record.save()
 
     def testSlugIsImmutable(self):
-        self.test_object.slug = 'immutable'
+        self.test_object.slug = "immutable"
         with pytest.raises(
             ProgrammingError,
-            match='slug field is immutable',
+            match="slug field is immutable",
         ):
             self.test_object.save()

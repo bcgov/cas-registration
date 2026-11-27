@@ -1,18 +1,19 @@
 from datetime import date
 from decimal import Decimal
 
-from model_bakery.baker import make_recipe
 import pytest
-
 from compliance.models import (
     CompliancePenalty,
     ComplianceReportVersion,
     ElicensingInvoice,
     ElicensingLineItem,
 )
-from compliance.service.elicensing.elicensing_invoice_service import ElicensingInvoiceService
+from compliance.service.elicensing.elicensing_invoice_service import (
+    ElicensingInvoiceService,
+)
 from compliance.tests.service.test_compliance_dashboard_service import _NoopFilters
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
+from model_bakery.baker import make_recipe
 from reporting.service.reporting_year_service import ReportingYearService
 
 pytestmark = pytest.mark.django_db
@@ -32,10 +33,26 @@ class TestElicensingInvoiceService:
         self.test_data.compliance_obligation.fee_amount_dollars = Decimal("300.00")
         self.test_data.compliance_obligation.save()
         # Add payments and adjustments
-        make_recipe("compliance.tests.utils.elicensing_payment", elicensing_line_item=self.test_data.fee, amount=201)
-        make_recipe("compliance.tests.utils.elicensing_payment", elicensing_line_item=self.test_data.fee, amount=49)
-        make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=self.test_data.fee, amount=25)
-        make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=self.test_data.fee, amount=25)
+        make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=self.test_data.fee,
+            amount=201,
+        )
+        make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=self.test_data.fee,
+            amount=49,
+        )
+        make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            elicensing_line_item=self.test_data.fee,
+            amount=25,
+        )
+        make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            elicensing_line_item=self.test_data.fee,
+            amount=25,
+        )
 
         # Add FAA Interest + payment to the first invoice
         self.faa_line_item = make_recipe(
@@ -48,7 +65,9 @@ class TestElicensingInvoiceService:
         )
 
         # Add automatic overdue penalty
-        self.penalty_invoice = make_recipe("compliance.tests.utils.elicensing_invoice", due_date=date(2025, 8, 1))
+        self.penalty_invoice = make_recipe(
+            "compliance.tests.utils.elicensing_invoice", due_date=date(2025, 8, 1)
+        )
         make_recipe(
             "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.test_data.compliance_obligation,
@@ -57,7 +76,9 @@ class TestElicensingInvoiceService:
         )
 
         # Add late submission penalty using a separate invoice
-        self.late_penalty_invoice = make_recipe("compliance.tests.utils.elicensing_invoice", due_date=date(2025, 8, 1))
+        self.late_penalty_invoice = make_recipe(
+            "compliance.tests.utils.elicensing_invoice", due_date=date(2025, 8, 1)
+        )
         make_recipe(
             "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.test_data.compliance_obligation,
@@ -91,7 +112,10 @@ class TestElicensingInvoiceService:
         cas_analyst = make_recipe("registration.tests.utils.cas_analyst")
 
         result = ElicensingInvoiceService.get_elicensing_invoice_for_dashboard(
-            cas_analyst.user_guid, sort_field="id", sort_order="asc", filters=_NoopFilters()
+            cas_analyst.user_guid,
+            sort_field="id",
+            sort_order="asc",
+            filters=_NoopFilters(),
         )
         assert (
             result.count() == ElicensingInvoice.objects.count()
@@ -122,14 +146,31 @@ class TestElicensingInvoiceService:
         test_data_2.fee.save()
 
         approved_user_operator = make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=test_data_2.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data_2.operation.operator,
         )
 
         # Add payments and adjustments
-        make_recipe("compliance.tests.utils.elicensing_payment", elicensing_line_item=test_data_2.fee, amount=201)
-        make_recipe("compliance.tests.utils.elicensing_payment", elicensing_line_item=test_data_2.fee, amount=49)
-        make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=test_data_2.fee, amount=25)
-        make_recipe("compliance.tests.utils.elicensing_adjustment", elicensing_line_item=test_data_2.fee, amount=25)
+        make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=test_data_2.fee,
+            amount=201,
+        )
+        make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=test_data_2.fee,
+            amount=49,
+        )
+        make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            elicensing_line_item=test_data_2.fee,
+            amount=25,
+        )
+        make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            elicensing_line_item=test_data_2.fee,
+            amount=25,
+        )
 
         # Add FAA Interest + payment
         faa_line_item = make_recipe(
@@ -151,7 +192,10 @@ class TestElicensingInvoiceService:
         )  # 3 from setup (obligation + 2 penalty invoices) + 1 from this test
 
         result = ElicensingInvoiceService.get_elicensing_invoice_for_dashboard(
-            approved_user_operator.user.user_guid, sort_field="id", sort_order="asc", filters=_NoopFilters()
+            approved_user_operator.user.user_guid,
+            sort_field="id",
+            sort_order="asc",
+            filters=_NoopFilters(),
         )
         assert result.count() == 1
 

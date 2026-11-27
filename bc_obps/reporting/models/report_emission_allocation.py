@@ -1,12 +1,12 @@
 from django.db import models
 from django.db.models import Q
+from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models import report_version
 from reporting.models.facility_report import FacilityReport
-from registration.models.time_stamped_model import TimeStampedModel
-from reporting.models.triggers import immutable_report_version_trigger
 from reporting.models.rls_configs.report_emission_allocation import (
     Rls as ReportEmissionAllocationRls,
 )
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportEmissionAllocation(TimeStampedModel):
@@ -45,7 +45,9 @@ class ReportEmissionAllocation(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_emission_allocation'
-        db_table_comment = "A table to store the emission allocation information of a facility report"
+        db_table_comment = (
+            "A table to store the emission allocation information of a facility report"
+        )
         app_label = "reporting"
         constraints = [
             models.UniqueConstraint(

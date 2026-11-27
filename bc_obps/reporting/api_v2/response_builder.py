@@ -1,4 +1,5 @@
-from typing import Any, Iterable, Self, override
+from collections.abc import Iterable
+from typing import Any, Self, override
 
 from django.http import HttpRequest
 from ninja.pagination import PageNumberPagination
@@ -25,7 +26,10 @@ class ResponseBuilder[TPayload = dict]:
         if errors is None:
             self.response["errors"] = None
         else:
-            self.response["errors"] = [error.serialize() if hasattr(error, "serialize") else error for error in errors]
+            self.response["errors"] = [
+                error.serialize() if hasattr(error, "serialize") else error
+                for error in errors
+            ]
 
         return self
 
@@ -39,24 +43,35 @@ class PaginatedResponseBuilder(ResponseBuilder):
     """
 
     @override
-    def __init__(self, request: HttpRequest | None = None, page_size: int = PAGE_SIZE, page: int = 1) -> None:
-        self.response: dict = {'payload': {"items": []}}
+    def __init__(
+        self,
+        request: HttpRequest | None = None,
+        page_size: int = PAGE_SIZE,
+        page: int = 1,
+    ) -> None:
+        self.response: dict = {"payload": {"items": []}}
         self.request = request
         pagination_page = int(request.GET.get("page", page)) if request else page
-        pagination_page_size = int(request.GET.get("page_size", page_size)) if request else page_size
-        self.pagination = PageNumberPagination.Input(page=pagination_page, page_size=pagination_page_size)
+        pagination_page_size = (
+            int(request.GET.get("page_size", page_size)) if request else page_size
+        )
+        self.pagination = PageNumberPagination.Input(
+            page=pagination_page, page_size=pagination_page_size
+        )
 
     @override
     def payload(self, payload: Iterable) -> Self:
         if self.request is None:
             raise ValueError("Request is required for pagination")
-        self.response['payload'] = PageNumberPagination().paginate_queryset(
-            payload, self.pagination, self.request  # type: ignore
+        self.response["payload"] = PageNumberPagination().paginate_queryset(
+            payload,  # type: ignore
+            self.pagination,
+            self.request,
         )
         return self
 
     @override
     def build(self) -> dict:
         # Evaluate the queryset on build
-        self.response['payload']['items'] = list(self.response['payload']['items'])
+        self.response["payload"]["items"] = list(self.response["payload"]["items"])
         return self.response

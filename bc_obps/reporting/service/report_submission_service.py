@@ -1,15 +1,19 @@
 from uuid import UUID
-from reporting.service.exceptions import ReportValidationException
-from reporting.service.report_sign_off_service import ReportSignOffData, ReportSignOffService
+
+from common.lib import pgtrigger
+from django.db import transaction
 from reporting.models.report_version import ReportVersion
+from reporting.service.compliance_service import ComplianceService
+from reporting.service.exceptions import ReportValidationException
+from reporting.service.report_sign_off_service import (
+    ReportSignOffData,
+    ReportSignOffService,
+)
 from reporting.service.report_validation.report_validation_service import (
     ReportValidationService,
 )
-from reporting.signals.signals import report_submitted
-from common.lib import pgtrigger
-from django.db import transaction
-from reporting.service.compliance_service import ComplianceService
 from reporting.service.report_validation.report_validation_tags import ValidationTags
+from reporting.signals.signals import report_submitted
 
 
 class ReportSubmissionService:
@@ -19,7 +23,9 @@ class ReportSubmissionService:
 
     @staticmethod
     @transaction.atomic()
-    def submit_report(version_id: int, user_guid: UUID, sign_off_data: ReportSignOffData) -> ReportVersion:
+    def submit_report(
+        version_id: int, user_guid: UUID, sign_off_data: ReportSignOffData
+    ) -> ReportVersion:
         report_version = ReportVersion.objects.get(id=version_id)
 
         validation_result = ReportValidationService.validate_report_version(
@@ -50,6 +56,8 @@ class ReportSubmissionService:
         report_version.save()
 
         # Send a signal that the report has been submitted
-        report_submitted.send(sender=ReportSubmissionService, version_id=version_id, user_guid=user_guid)
+        report_submitted.send(
+            sender=ReportSubmissionService, version_id=version_id, user_guid=user_guid
+        )
 
         return report_version

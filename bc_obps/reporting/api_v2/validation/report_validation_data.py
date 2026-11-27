@@ -1,15 +1,17 @@
 from typing import Any, Literal, Tuple
 
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
-from reporting.api.permissions import approved_industry_user_report_version_composite_auth
+from reporting.api.permissions import (
+    approved_industry_user_report_version_composite_auth,
+)
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
+from reporting.schema.report_validation_data import ValidationErrorsSchemaOut
 from reporting.service.report_validation.report_validation_service import (
     ReportValidationService,
 )
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.service.report_validation.report_validation_tags import ValidationTags
-from reporting.schema.report_validation_data import ValidationErrorsSchemaOut
 
 from ..router import router
 
@@ -28,7 +30,7 @@ from ..router import router
 def get_report_validation_data(
     request: HttpRequest,
     version_id: int,
-) -> Tuple[Literal[200], dict[str, Any]]:
+) -> tuple[Literal[200], dict[str, Any]]:
     errors = ReportValidationService.validate_report_version(
         version_id=version_id,
         tag=ValidationTags.REPORT_VALIDATION,

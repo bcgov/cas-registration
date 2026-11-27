@@ -1,15 +1,15 @@
 import logging
-from typing import cast, List, Union
+from typing import List, Optional, Union, cast
 from uuid import UUID
-from django.db import transaction
-from django.utils import timezone
-from django.db.models import QuerySet
+
 from common.exceptions import UserError
+from django.db import transaction
+from django.db.models import QuerySet
+from django.utils import timezone
+from ninja import Query
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models import User
 from registration.models.event.transfer_event import TransferEvent
-from typing import Optional
-from ninja import Query
 from registration.schema import (
     TransferEventCreateIn,
     TransferEventFilterSchema,
@@ -21,7 +21,9 @@ from registration.service.data_access_service.facility_designated_operation_time
 from registration.service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
-from registration.service.data_access_service.transfer_event_service import TransferEventDataAccessService
+from registration.service.data_access_service.transfer_event_service import (
+    TransferEventDataAccessService,
+)
 from registration.service.data_access_service.user_service import UserDataAccessService
 from registration.service.facility_designated_operation_timeline_service import (
     FacilityDesignatedOperationTimelineService,
@@ -40,25 +42,27 @@ class TransferEventService:
     @classmethod
     def list_transfer_events(
         cls,
-        sort_field: Optional[str],
-        sort_order: Optional[str],
+        sort_field: str | None,
+        sort_order: str | None,
         filters: TransferEventFilterSchema = Query(...),
     ) -> QuerySet[TransferEvent]:
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
         queryset = (
             filters.filter(
-                TransferEvent.objects.order_by(sort_by, f"{sort_direction}created_at", f"{sort_direction}id")
+                TransferEvent.objects.order_by(
+                    sort_by, f"{sort_direction}created_at", f"{sort_direction}id"
+                )
             )
             .values(
-                'id',
-                'effective_date',
-                'status',
-                'created_at',
-                'operation__name',
-                'operation__id',
-                'facilities__name',
-                'facilities__id',
+                "id",
+                "effective_date",
+                "status",
+                "created_at",
+                "operation__name",
+                "operation__id",
+                "facilities__name",
+                "facilities__id",
             )
             .distinct()
         )
@@ -67,9 +71,9 @@ class TransferEventService:
     @classmethod
     def _validate_no_overlapping_transfer_events(
         cls,
-        operation_id: Optional[UUID] = None,
-        facility_ids: Optional[List[UUID]] = None,
-        current_transfer_id: Optional[UUID] = None,
+        operation_id: UUID | None = None,
+        facility_ids: list[UUID] | None = None,
+        current_transfer_id: UUID | None = None,
     ) -> None:
         """
         Validates that there are no overlapping active transfer events for the given operation or facilities.
@@ -86,10 +90,14 @@ class TransferEventService:
             )
 
             if current_transfer_id:
-                overlapping_operation_query = overlapping_operation_query.exclude(id=current_transfer_id)
+                overlapping_operation_query = overlapping_operation_query.exclude(
+                    id=current_transfer_id
+                )
 
             if overlapping_operation_query.exists():
-                raise UserError("An active transfer event already exists for the selected operation.")
+                raise UserError(
+                    "An active transfer event already exists for the selected operation."
+                )
 
         if facility_ids:
             # Check for overlapping transfer events with the facilities
@@ -102,7 +110,9 @@ class TransferEventService:
             ).distinct()
 
             if current_transfer_id:
-                overlapping_facilities_query = overlapping_facilities_query.exclude(id=current_transfer_id)
+                overlapping_facilities_query = overlapping_facilities_query.exclude(
+                    id=current_transfer_id
+                )
 
             if overlapping_facilities_query.exists():
                 raise UserError(
@@ -112,7 +122,7 @@ class TransferEventService:
     @classmethod
     def _process_event_if_effective(
         cls,
-        payload: Union[TransferEventCreateIn, TransferEventUpdateIn],
+        payload: TransferEventCreateIn | TransferEventUpdateIn,
         transfer_event: TransferEvent,
         user_guid: UUID,
     ) -> None:
@@ -123,7 +133,9 @@ class TransferEventService:
 
     @classmethod
     @transaction.atomic
-    def create_transfer_event(cls, user_guid: UUID, payload: TransferEventCreateIn) -> TransferEvent:
+    def create_transfer_event(
+        cls, user_guid: UUID, payload: TransferEventCreateIn
+    ) -> TransferEvent:
         user = UserDataAccessService.get_by_guid(user_guid)
         if not user.is_cas_analyst() and not user.is_cas_director():
             raise UserError("User is not authorized to create transfer events.")
@@ -132,7 +144,9 @@ class TransferEventService:
         if payload.transfer_entity == "Operation":
             cls._validate_no_overlapping_transfer_events(operation_id=payload.operation)
         elif payload.transfer_entity == "Facility":
-            cls._validate_no_overlapping_transfer_events(facility_ids=payload.facilities)
+            cls._validate_no_overlapping_transfer_events(
+                facility_ids=payload.facilities
+            )
 
         # Prepare the payload for the data access service
         prepared_payload = {
@@ -148,24 +162,32 @@ class TransferEventService:
 
             # make sure that the from_operator and to_operator are different(we can't transfer operations within the same operator)
             if payload.from_operator == payload.to_operator:
-                raise UserError("Operations cannot be transferred within the same operator.")
+                raise UserError(
+                    "Operations cannot be transferred within the same operator."
+                )
 
             prepared_payload.update(
                 {
                     "operation_id": payload.operation,
                 }
             )
-            transfer_event = TransferEventDataAccessService.create_transfer_event(user_guid, prepared_payload)
+            transfer_event = TransferEventDataAccessService.create_transfer_event(
+                user_guid, prepared_payload
+            )
 
         elif payload.transfer_entity == "Facility":
-            if not all([payload.facilities, payload.from_operation, payload.to_operation]):
+            if not all(
+                [payload.facilities, payload.from_operation, payload.to_operation]
+            ):
                 raise UserError(
                     "Facilities, from_operation, and to_operation are required for facility transfer events."
                 )
 
             # make sure that the from_operation and to_operation are different(we can't transfer facilities within the same operation)
             if payload.from_operation == payload.to_operation:
-                raise UserError("Facilities cannot be transferred within the same operation.")
+                raise UserError(
+                    "Facilities cannot be transferred within the same operation."
+                )
 
             prepared_payload.update(
                 {
@@ -173,7 +195,9 @@ class TransferEventService:
                     "to_operation_id": payload.to_operation,
                 }
             )
-            transfer_event = TransferEventDataAccessService.create_transfer_event(user_guid, prepared_payload)
+            transfer_event = TransferEventDataAccessService.create_transfer_event(
+                user_guid, prepared_payload
+            )
 
             # doing a check just to make mypy happy
             payload_facilities = payload.facilities
@@ -216,7 +240,9 @@ class TransferEventService:
 
     @classmethod
     @transaction.atomic
-    def _process_single_event(cls, event: TransferEvent, user_guid: Optional[UUID] = None) -> None:
+    def _process_single_event(
+        cls, event: TransferEvent, user_guid: UUID | None = None
+    ) -> None:
         """
         Processes a single transfer event, delegating based on its type.
         """
@@ -234,7 +260,9 @@ class TransferEventService:
         event.save(update_fields=["status"])
 
     @classmethod
-    def _process_facilities_transfer(cls, event: TransferEvent, user_guid: UUID) -> None:
+    def _process_facilities_transfer(
+        cls, event: TransferEvent, user_guid: UUID
+    ) -> None:
         """
         Process a facility transfer event. Updates the timelines for all associated facilities.
         Creates a snapshot of each facility before the transfer to preserve data for the old operator.
@@ -248,7 +276,12 @@ class TransferEventService:
             )
 
             # get the current timeline for the facility and operation
-            current_timeline = FacilityDesignatedOperationTimelineService.get_current_timeline(event.from_operation.id, facility.id)  # type: ignore # we are sure that from_operation is not None
+            current_timeline = (
+                FacilityDesignatedOperationTimelineService.get_current_timeline(
+                    event.from_operation.id,  # type: ignore # we are sure that from_operation is not None
+                    facility.id,
+                )
+            )
 
             if current_timeline:
                 FacilityDesignatedOperationTimelineService.set_timeline_end_date(
@@ -266,7 +299,11 @@ class TransferEventService:
                 },
             )
             # update the facility's operation
-            FacilityService.update_operation_for_facility(user_guid=user_guid, facility=facility, operation_id=event.to_operation.id)  # type: ignore # we are sure that operation is not None
+            FacilityService.update_operation_for_facility(
+                user_guid=user_guid,
+                facility=facility,
+                operation_id=event.to_operation.id,  # type: ignore # we are sure that operation is not None
+            )
 
     @classmethod
     @transaction.atomic()
@@ -288,7 +325,12 @@ class TransferEventService:
             )
 
         # get the current timeline for the operation and operator
-        current_timeline = OperationDesignatedOperatorTimelineService.get_current_timeline(event.from_operator.id, event.operation.id)  # type: ignore # we are sure that operation is not None
+        current_timeline = (
+            OperationDesignatedOperatorTimelineService.get_current_timeline(
+                event.from_operator.id,
+                event.operation.id,  # type: ignore # we are sure that operation is not None
+            )
+        )
 
         if current_timeline:
             OperationDesignatedOperatorTimelineService.set_timeline_end_date(
@@ -297,7 +339,9 @@ class TransferEventService:
             )
 
         # remove contacts that belong to the original operator
-        operation_contacts = event.operation.contacts.filter(operator=event.from_operator)  # type: ignore # we are sure that operation is not None
+        operation_contacts = event.operation.contacts.filter(  # type: ignore # we are sure that operation is not None
+            operator=event.from_operator
+        )
         for contact in operation_contacts:
             # remove the contact from the operation (without deleting the contact - it might be used elsewhere)
             event.operation.contacts.remove(contact)  # type: ignore # we are sure that operation is not None
@@ -313,29 +357,41 @@ class TransferEventService:
         )
 
         # update the operation's operator
-        OperationService.update_operator(user_guid, event.operation, event.to_operator.id)  # type: ignore # we are sure that operation is not None
+        OperationService.update_operator(
+            user_guid,
+            event.operation,  # type: ignore # we are sure that operation is not None
+            event.to_operator.id,
+        )
 
     @classmethod
     def get_if_authorized(cls, user_guid: UUID, transfer_id: UUID) -> TransferEvent:
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if user.is_industry_user():
             raise Exception(UNAUTHORIZED_MESSAGE)
-        transfer_event: TransferEvent = TransferEventDataAccessService.get_by_id(transfer_id)
+        transfer_event: TransferEvent = TransferEventDataAccessService.get_by_id(
+            transfer_id
+        )
         return transfer_event
 
     @classmethod
-    def _get_and_validate_transfer_event_for_update(cls, transfer_id: UUID, user_guid: UUID) -> TransferEvent:
+    def _get_and_validate_transfer_event_for_update(
+        cls, transfer_id: UUID, user_guid: UUID
+    ) -> TransferEvent:
         user = UserDataAccessService.get_by_guid(user_guid)
         if not user.is_cas_analyst() and not user.is_cas_director():
             raise Exception(UNAUTHORIZED_MESSAGE)
         transfer_event = TransferEventDataAccessService.get_by_id(transfer_id)
         if transfer_event.status != TransferEvent.Statuses.TO_BE_TRANSFERRED:
-            raise UserError("Only transfer events with status 'To be transferred' can be modified.")
+            raise UserError(
+                "Only transfer events with status 'To be transferred' can be modified."
+            )
         return transfer_event
 
     @classmethod
     def delete_transfer_event(cls, user_guid: UUID, transfer_id: UUID) -> None:
-        transfer_event = cls._get_and_validate_transfer_event_for_update(transfer_id, user_guid)
+        transfer_event = cls._get_and_validate_transfer_event_for_update(
+            transfer_id, user_guid
+        )
         transfer_event.delete()
         return None
 
@@ -346,9 +402,13 @@ class TransferEventService:
         operation_id = payload.operation
         if not operation_id:
             raise UserError("Operation is required for operation transfer events.")
-        cls._validate_no_overlapping_transfer_events(operation_id=operation_id, current_transfer_id=transfer_id)
+        cls._validate_no_overlapping_transfer_events(
+            operation_id=operation_id, current_transfer_id=transfer_id
+        )
         TransferEventDataAccessService.update_transfer_event(
-            user_guid, transfer_id, {"operation_id": operation_id, "effective_date": payload.effective_date}  # type: ignore[attr-defined] # mypy not aware of model schema field
+            user_guid,
+            transfer_id,
+            {"operation_id": operation_id, "effective_date": payload.effective_date},  # type: ignore[attr-defined] # mypy not aware of model schema field
         )
 
     @classmethod
@@ -358,7 +418,9 @@ class TransferEventService:
         facility_ids = payload.facilities
         if not facility_ids:
             raise UserError("Facilities are required for facility transfer events.")
-        cls._validate_no_overlapping_transfer_events(facility_ids=facility_ids, current_transfer_id=transfer_id)
+        cls._validate_no_overlapping_transfer_events(
+            facility_ids=facility_ids, current_transfer_id=transfer_id
+        )
         updated_transfer_event = TransferEventDataAccessService.update_transfer_event(
             user_guid, transfer_id, payload.dict(include=["effective_date"])
         )
@@ -366,13 +428,15 @@ class TransferEventService:
 
     @classmethod
     @transaction.atomic
-    def update_transfer_event(cls, user_guid: UUID, transfer_id: UUID, payload: TransferEventUpdateIn) -> TransferEvent:
-        transfer_event = cls._get_and_validate_transfer_event_for_update(transfer_id, user_guid)
+    def update_transfer_event(
+        cls, user_guid: UUID, transfer_id: UUID, payload: TransferEventUpdateIn
+    ) -> TransferEvent:
+        transfer_event = cls._get_and_validate_transfer_event_for_update(
+            transfer_id, user_guid
+        )
         {
             "Operation": cls._update_operation_transfer_event,
             "Facility": cls._update_facility_transfer_event,
-        }[
-            payload.transfer_entity
-        ](user_guid, transfer_id, payload)
+        }[payload.transfer_entity](user_guid, transfer_id, payload)
         cls._process_event_if_effective(payload, transfer_event, user_guid)
         return transfer_event

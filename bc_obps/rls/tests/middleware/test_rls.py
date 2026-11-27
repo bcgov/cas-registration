@@ -1,6 +1,7 @@
-from unittest.mock import patch, MagicMock
-from django.test import TestCase, RequestFactory
+from unittest.mock import MagicMock, patch
+
 from django.http import HttpResponse
+from django.test import RequestFactory, TestCase
 from model_bakery import baker
 from rls.middleware.rls import RlsMiddleware
 
@@ -59,24 +60,32 @@ class TestRlsMiddleware(TestCase):
         self.assertEqual(response.content, b"OK")
 
     @patch("rls.middleware.rls.connection.cursor")
-    def test_set_user_context_executes_set_query_for_authenticated_user(self, mock_cursor):
+    def test_set_user_context_executes_set_query_for_authenticated_user(
+        self, mock_cursor
+    ):
         self.middleware._set_user_context(self.user)
 
         # Assert the database queries were executed with the correct parameters
         mock_cursor.assert_called_once()
         cursor_instance = mock_cursor().__enter__()
-        cursor_instance.execute.assert_any_call('set my.guid = %s', [str(self.user.user_guid)])
-        cursor_instance.execute.assert_any_call('set role %s', [self.user.app_role.role_name])
+        cursor_instance.execute.assert_any_call(
+            "set my.guid = %s", [str(self.user.user_guid)]
+        )
+        cursor_instance.execute.assert_any_call(
+            "set role %s", [self.user.app_role.role_name]
+        )
 
     @patch("rls.middleware.rls.connection.cursor")
-    def test_set_user_context_executes_reset_query_for_anonymous_user(self, mock_cursor):
+    def test_set_user_context_executes_reset_query_for_anonymous_user(
+        self, mock_cursor
+    ):
         self.middleware._set_user_context(None)
 
         # Assert the database reset queries were executed
         mock_cursor.assert_called_once()
         cursor_instance = mock_cursor().__enter__()
-        cursor_instance.execute.assert_any_call('reset my.guid')
-        cursor_instance.execute.assert_any_call('reset role')
+        cursor_instance.execute.assert_any_call("reset my.guid")
+        cursor_instance.execute.assert_any_call("reset role")
 
     @patch("rls.middleware.rls.connection.cursor")
     def test_set_user_context_logs_error_on_failure_authenticated(self, mock_cursor):

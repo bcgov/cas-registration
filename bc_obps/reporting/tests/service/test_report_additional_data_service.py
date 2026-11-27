@@ -7,12 +7,13 @@ from reporting.service.report_additional_data import ReportAdditionalDataService
 class TestReportAdditionalDataService(TestCase):
     def setUp(self):
         # Arrange: Create a report version and additional data
-        self.report_version = make_recipe('reporting.tests.utils.report_version')
+        self.report_version = make_recipe("reporting.tests.utils.report_version")
         self.report_additional_data = make_recipe(
-            'reporting.tests.utils.report_additional_data', report_version=self.report_version
+            "reporting.tests.utils.report_additional_data",
+            report_version=self.report_version,
         )
         self.report_operation = make_recipe(
-            'reporting.tests.utils.report_operation', report_version=self.report_version
+            "reporting.tests.utils.report_operation", report_version=self.report_version
         )
 
     def test_get_report_report_additional_data_returns_correct_instance(self):
@@ -62,14 +63,28 @@ class TestReportAdditionalDataService(TestCase):
             electricity_generated=50,
         )
 
-        report_additional_data = ReportAdditionalDataService.save_report_additional_data(
-            version_id=self.report_version.id,
-            data=data,
+        report_additional_data = (
+            ReportAdditionalDataService.save_report_additional_data(
+                version_id=self.report_version.id,
+                data=data,
+            )
         )
 
-        self.assertEqual(report_additional_data.emissions_on_site_use, data.emissions_on_site_use)
-        self.assertEqual(report_additional_data.emissions_on_site_sequestration, data.emissions_on_site_sequestration)
-        self.assertEqual(report_additional_data.capture_emissions, data.capture_emissions)
-        self.assertEqual(report_additional_data.emissions_off_site_transfer, data.emissions_off_site_transfer)
-        self.assertEqual(report_additional_data.electricity_generated, data.electricity_generated)
+        self.assertEqual(
+            report_additional_data.emissions_on_site_use, data.emissions_on_site_use
+        )
+        self.assertEqual(
+            report_additional_data.emissions_on_site_sequestration,
+            data.emissions_on_site_sequestration,
+        )
+        self.assertEqual(
+            report_additional_data.capture_emissions, data.capture_emissions
+        )
+        self.assertEqual(
+            report_additional_data.emissions_off_site_transfer,
+            data.emissions_off_site_transfer,
+        )
+        self.assertEqual(
+            report_additional_data.electricity_generated, data.electricity_generated
+        )
         self.assertEqual(report_additional_data.report_version, self.report_version)

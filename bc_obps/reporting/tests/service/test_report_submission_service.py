@@ -1,20 +1,30 @@
-from model_bakery.baker import make_recipe
-import pytest
-from unittest.mock import patch, MagicMock
-from reporting.service.report_submission_service import ReportSubmissionService
-from reporting.service.exceptions import ReportValidationException
-from reporting.models.report_version import ReportVersion
-from reporting.service.report_sign_off_service import ReportSignOffAcknowledgements, ReportSignOffData
 import uuid
+from unittest.mock import MagicMock, patch
 
-from reporting.service.report_validation.report_validation_error import ReportValidationError, Severity
+import pytest
+from model_bakery.baker import make_recipe
+from reporting.models.report_version import ReportVersion
+from reporting.service.exceptions import ReportValidationException
+from reporting.service.report_sign_off_service import (
+    ReportSignOffAcknowledgements,
+    ReportSignOffData,
+)
+from reporting.service.report_submission_service import ReportSubmissionService
+from reporting.service.report_validation.report_validation_error import (
+    ReportValidationError,
+    Severity,
+)
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 
 
 @pytest.mark.django_db
 class TestReportSubmissionService:
-    @patch("reporting.service.compliance_service.ComplianceService.save_compliance_data")
-    @patch("reporting.service.report_sign_off_service.ReportSignOffService.save_report_sign_off")
+    @patch(
+        "reporting.service.compliance_service.ComplianceService.save_compliance_data"
+    )
+    @patch(
+        "reporting.service.report_sign_off_service.ReportSignOffService.save_report_sign_off"
+    )
     @patch("reporting.service.report_submission_service.report_submitted.send")
     @patch("reporting.models.report_version.ReportVersion.objects.filter")
     @patch("reporting.models.report_version.ReportVersion.objects.get")
@@ -68,13 +78,19 @@ class TestReportSubmissionService:
         )
 
         # Act: Call submit_report.
-        result = ReportSubmissionService.submit_report(version_id, user_guid, fake_sign_off_data)
+        result = ReportSubmissionService.submit_report(
+            version_id, user_guid, fake_sign_off_data
+        )
 
         # Assert that validate_report was called.
-        mock_validate_report_version.assert_called_once_with(version_id=version_id, tag=ValidationTags.ON_SUBMIT)
+        mock_validate_report_version.assert_called_once_with(
+            version_id=version_id, tag=ValidationTags.ON_SUBMIT
+        )
 
         # Assert that save_report_sign_off was called with the correct parameters.
-        mock_save_report_sign_off.assert_called_once_with(version_id, fake_sign_off_data)
+        mock_save_report_sign_off.assert_called_once_with(
+            version_id, fake_sign_off_data
+        )
 
         # Assert that ReportVersion was fetched with the correct version_id.
         mock_get.assert_called_once_with(id=version_id)
@@ -107,15 +123,21 @@ class TestReportSubmissionService:
     @patch(
         "reporting.service.report_validation.report_validation_service.ReportValidationService.validate_report_version"
     )
-    def test_submit_report_throws_with_errors(self, mock_validate_report_version: MagicMock):
+    def test_submit_report_throws_with_errors(
+        self, mock_validate_report_version: MagicMock
+    ):
         mock_validate_report_version.return_value = {
-            "test_key": ReportValidationError(Severity.ERROR, "test message", key="test_key")
+            "test_key": ReportValidationError(
+                Severity.ERROR, "test message", key="test_key"
+            )
         }
 
         report_version = make_recipe("reporting.tests.utils.report_version")
 
         with pytest.raises(ReportValidationException) as exception:
-            ReportSubmissionService.submit_report(report_version.id, uuid.UUID(int=0), {})
+            ReportSubmissionService.submit_report(
+                report_version.id, uuid.UUID(int=0), {}
+            )
 
         assert "test_key" in exception.value.errors
         assert exception.value.errors["test_key"].message == "test message"

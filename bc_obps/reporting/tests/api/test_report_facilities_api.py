@@ -1,12 +1,17 @@
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
+
+from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
-from model_bakery.baker import make_recipe
+from reporting.tests.utils.report_access_validation import (
+    assert_report_version_ownership_is_validated,
+)
 
 
 class TestReportFacilityListEndpoint(CommonTestSetup):
-    @patch("reporting.service.report_facilities_service.ReportFacilitiesService.get_report_facility_list_by_version_id")
+    @patch(
+        "reporting.service.report_facilities_service.ReportFacilitiesService.get_report_facility_list_by_version_id"
+    )
     def test_returns_data_as_provided_by_the_service(
         self,
         mock_get_facility_list: MagicMock | AsyncMock,
@@ -20,15 +25,21 @@ class TestReportFacilityListEndpoint(CommonTestSetup):
         mock_get_facility_list.return_value = {"facilities": facilities}
 
         # Act: Mock the authorization and perform the request
-        report_version = make_recipe('reporting.tests.utils.report_version')
-        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        report_version = make_recipe("reporting.tests.utils.report_version")
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=report_version.report.operator, operations=[report_version.report.operation]
+            operator=report_version.report.operator,
+            operations=[report_version.report.operation],
         )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            custom_reverse_lazy("get_report_facility_list_by_version_id", kwargs={"version_id": report_version.id}),
+            custom_reverse_lazy(
+                "get_report_facility_list_by_version_id",
+                kwargs={"version_id": report_version.id},
+            ),
         )
 
         # Assert: Verify the response status
@@ -45,4 +56,6 @@ class TestReportFacilityListEndpoint(CommonTestSetup):
         assert response_json["facilities"][1] == "Facility 2"
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_report_facility_list_by_version_id")
+        assert_report_version_ownership_is_validated(
+            "get_report_facility_list_by_version_id"
+        )

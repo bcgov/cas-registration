@@ -10,7 +10,9 @@ from reporting.service.report_validation.report_validation_error import (
 from reporting.service.report_validation.validators.report_fuel_has_amount import (
     validate,
 )
-from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
+from reporting.tests.service.test_report_activity_save_service.infrastructure import (
+    TestInfrastructure,
+)
 
 
 @pytest.mark.django_db
@@ -40,7 +42,7 @@ class TestReportFuelHasAmountValidator(TestCase):
             activity=self.test_infrastructure.activity,
             activity_base_schema=self.test_infrastructure.activity_json_schema,
             facility_report=baker.make_recipe(
-                'reporting.tests.utils.facility_report',
+                "reporting.tests.utils.facility_report",
                 report_version=self.report_version,
                 facility_name="Test Facility 2",
             ),
@@ -56,7 +58,6 @@ class TestReportFuelHasAmountValidator(TestCase):
         )
 
     def test_validate_returns_empty_dict_when_all_fuels_have_amount(self):
-
         baker.make_recipe(
             "reporting.tests.utils.report_fuel",
             report_source_type=self.report_source_type,
@@ -69,7 +70,6 @@ class TestReportFuelHasAmountValidator(TestCase):
         assert result == {}
 
     def test_validate_returns_error_when_fuel_missing_amount(self):
-
         baker.make_recipe(
             "reporting.tests.utils.report_fuel",
             report_source_type=self.report_source_type,
@@ -90,7 +90,10 @@ class TestReportFuelHasAmountValidator(TestCase):
 
         assert isinstance(result["report_fuel_missing_amount"], ReportValidationError)
         assert result["report_fuel_missing_amount"].severity == Severity.ERROR
-        assert result["report_fuel_missing_amount"].key == ReportValidationErrorKey.REPORT_FUEL_MISSING_AMOUNT
+        assert (
+            result["report_fuel_missing_amount"].key
+            == ReportValidationErrorKey.REPORT_FUEL_MISSING_AMOUNT
+        )
         assert (
             result["report_fuel_missing_amount"].message
             == """Fuel amount values are missing for the following facilities and activities:

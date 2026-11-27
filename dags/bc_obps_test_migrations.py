@@ -16,7 +16,9 @@ SERVICE_ACCOUNT_NAME = "airflow-deployer"
 BCIERS_NAMESPACE = os.getenv("BCIERS_NAMESPACE")
 
 # Postgres operator chart
-POSTGRES_CHART_INSTANCE = os.getenv("POSTGRES_CHART_INSTANCE", "postgres-migration-test")
+POSTGRES_CHART_INSTANCE = os.getenv(
+    "POSTGRES_CHART_INSTANCE", "postgres-migration-test"
+)
 POSTGRES_CHART_SHORTNAME = os.getenv("POSTGRES_CHART_SHORTNAME", "pg-migration-test")
 POSTGRES_CHART = "cas-registration/cas-obps-postgres-migration-test"
 
@@ -98,17 +100,17 @@ def test_migrations(
         doc_md="""Waits for 8 minutes before checking if the postgres pod is ready.""",
     )
 
-    wait_for_postgres_restore = trigger_k8s_cronjob_with_params.override(task_id="wait-for-postgres-restore")(
-        "pg-migration-test-wait-for-postgres-restore-job"
-    )
+    wait_for_postgres_restore = trigger_k8s_cronjob_with_params.override(
+        task_id="wait-for-postgres-restore"
+    )("pg-migration-test-wait-for-postgres-restore-job")
 
-    postgres_check_backup_age = trigger_k8s_cronjob_with_params.override(task_id="check-backup-age")(
-        "pg-migration-test-check-backup-age-job"
-    )
+    postgres_check_backup_age = trigger_k8s_cronjob_with_params.override(
+        task_id="check-backup-age"
+    )("pg-migration-test-check-backup-age-job")
 
-    postgres_migration_test = trigger_k8s_cronjob_with_params.override(task_id="postgres-migration-test")(
-        "pg-migration-test-job"
-    )
+    postgres_migration_test = trigger_k8s_cronjob_with_params.override(
+        task_id="postgres-migration-test"
+    )("pg-migration-test-job")
 
     backend_helm_install = KubernetesJobOperator(
         task_id="install-cas-obps-backend-migration-test-chart",
@@ -140,13 +142,13 @@ def test_migrations(
         doc_md="""Waits for 150 seconds (based on the initial ready check time set in the backend) before checking if the backend pod is ready.""",
     )
 
-    wait_for_backend = trigger_k8s_cronjob_with_params.override(task_id="wait-for-backend")(
-        "be-migration-test-wait-for-backend-job"
-    )
+    wait_for_backend = trigger_k8s_cronjob_with_params.override(
+        task_id="wait-for-backend"
+    )("be-migration-test-wait-for-backend-job")
 
-    backend_migration_test = trigger_k8s_cronjob_with_params.override(task_id="backend-migration-test")(
-        "be-migration-test-job"
-    )
+    backend_migration_test = trigger_k8s_cronjob_with_params.override(
+        task_id="backend-migration-test"
+    )("be-migration-test-job")
 
     cleanup = TriggerDagRunOperator(
         task_id="trigger_cleanup_dag",

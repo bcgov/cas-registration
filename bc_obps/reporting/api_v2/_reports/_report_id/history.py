@@ -1,18 +1,23 @@
 from typing import Literal, Tuple
-from common.permissions import authorize, compose_auth
-from django.http import HttpRequest
 
+from common.permissions import authorize, compose_auth
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest
 from reporting.api.permissions import check_report_ownership_in_url
-from reporting.api_v2._reports._report_id.report_information_mixin import ReportInformationMixin
-from reporting.api_v2._reports._report_id.report_schema import ReportingReportResponseSchema
+from reporting.api_v2._reports._report_id.report_information_mixin import (
+    ReportInformationMixin,
+)
+from reporting.api_v2._reports._report_id.report_schema import (
+    ReportingReportResponseSchema,
+)
 from reporting.api_v2.response_builder import PaginatedResponseBuilder
 from reporting.api_v2.router import router
-
 from reporting.constants import EMISSIONS_REPORT_TAGS
-from reporting.schema.report_history import ReportHistoryResponse
 from reporting.schema.generic import Message
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from reporting.service.report_history_dashboard_service import ReportingHistoryDashboardService
+from reporting.schema.report_history import ReportHistoryResponse
+from reporting.service.report_history_dashboard_service import (
+    ReportingHistoryDashboardService,
+)
 
 
 class ReportHistoryResponseBuilder(PaginatedResponseBuilder, ReportInformationMixin):
@@ -21,17 +26,30 @@ class ReportHistoryResponseBuilder(PaginatedResponseBuilder, ReportInformationMi
 
 @router.get(
     "/report/{report_id}/history",
-    response={200: ReportingReportResponseSchema[ReportHistoryResponse], custom_codes_4xx: Message},
+    response={
+        200: ReportingReportResponseSchema[ReportHistoryResponse],
+        custom_codes_4xx: Message,
+    },
     tags=EMISSIONS_REPORT_TAGS,
     description="""Returns object with report_data and payload. Payload is a paginated list of report versions for the specified report.""",
-    auth=compose_auth(authorize("approved_authorized_roles"), check_report_ownership_in_url("report_id")),
+    auth=compose_auth(
+        authorize("approved_authorized_roles"),
+        check_report_ownership_in_url("report_id"),
+    ),
 )
-def get_report_history(request: HttpRequest, report_id: int) -> Tuple[Literal[200], dict]:
+def get_report_history(
+    request: HttpRequest, report_id: int
+) -> tuple[Literal[200], dict]:
     is_internal_user = request.current_user.is_irc_user()  # type: ignore
 
     report_versions = ReportingHistoryDashboardService.get_report_versions_for_report_history_dashboard(
         report_id, hide_draft_versions=is_internal_user
     )
 
-    response = ReportHistoryResponseBuilder(request).report(report_id).payload(report_versions).build()
+    response = (
+        ReportHistoryResponseBuilder(request)
+        .report(report_id)
+        .payload(report_versions)
+        .build()
+    )
     return 200, response

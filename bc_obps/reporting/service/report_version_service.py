@@ -1,23 +1,29 @@
-from django.db import transaction
+from dataclasses import dataclass
+from typing import Any
 
-from reporting.models.report_product import ReportProduct
+from django.db import transaction
+from django.db.models import F, Min, Prefetch
 from registration.models import Activity, Operation, RegulatedProduct
 from registration.models.contact import Contact
-from reporting.utils import CONTACT_HAS_COMPLETE_ADDRESS
-from reporting.models.report import Report
-from reporting.models.report_operation import ReportOperation
-from reporting.service.report_product_service import ReportProductService
-from registration.service.data_access_service.facility_service import FacilityDataAccessService
-from reporting.models import ReportOperationRepresentative
-from django.db.models import Min, F
-from dataclasses import dataclass
-from django.db.models import Prefetch
-from reporting.models import ReportVersion, FacilityReport, ReportActivity, ReportNonAttributableEmissions
-from typing import Union, List, Any
+from registration.service.data_access_service.facility_service import (
+    FacilityDataAccessService,
+)
 from registration.service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineService,
 )
 from registration.service.operation_service import OperationService
+from reporting.models import (
+    FacilityReport,
+    ReportActivity,
+    ReportNonAttributableEmissions,
+    ReportOperationRepresentative,
+    ReportVersion,
+)
+from reporting.models.report import Report
+from reporting.models.report_operation import ReportOperation
+from reporting.models.report_product import ReportProduct
+from reporting.service.report_product_service import ReportProductService
+from reporting.utils import CONTACT_HAS_COMPLETE_ADDRESS
 
 
 @dataclass
@@ -34,15 +40,24 @@ class ReportVersionService:
         registration_purpose: str | None = None,
     ) -> ReportVersion:
         # Creating draft version
-        report_version = ReportVersion.objects.create(report=report, report_type=report_type)
+        report_version = ReportVersion.objects.create(
+            report=report, report_type=report_type
+        )
         # Pre-populating data to the draft version
         operation = report.operation
         operator = report.operator
         effective_registration_purpose = (
-            registration_purpose or operation.registration_purpose or Operation.Purposes.OBPS_REGULATED_OPERATION
+            registration_purpose
+            or operation.registration_purpose
+            or Operation.Purposes.OBPS_REGULATED_OPERATION
         )
-        if effective_registration_purpose == Operation.Purposes.OPTED_IN_OPERATION and operation.opted_in_operation:
-            operation_opted_out_final_reporting_year = operation.opted_in_operation.final_reporting_year_id
+        if (
+            effective_registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
+            and operation.opted_in_operation
+        ):
+            operation_opted_out_final_reporting_year = (
+                operation.opted_in_operation.final_reporting_year_id
+            )
         else:
             operation_opted_out_final_reporting_year = None
 
@@ -53,7 +68,9 @@ class ReportVersionService:
             operation_type=operation.type,
             operation_bcghgid=operation.bcghg_id.id if operation.bcghg_id else None,
             bc_obps_regulated_operation_id=(
-                operation.bc_obps_regulated_operation.id if operation.bc_obps_regulated_operation else ""
+                operation.bc_obps_regulated_operation.id
+                if operation.bc_obps_regulated_operation
+                else ""
             ),
             report_version=report_version,
             registration_purpose=effective_registration_purpose,
@@ -65,14 +82,20 @@ class ReportVersionService:
         timeline = OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
             operation_id=report.operation.id, reporting_year=report.reporting_year_id
         )
-        use_transferred_operation_handling = timeline.has_been_transferred if timeline is not None else False
+        use_transferred_operation_handling = (
+            timeline.has_been_transferred if timeline is not None else False
+        )
 
         # All operator contacts are selectable; the operation's assigned representatives are pre-selected
         # (none are pre-selected for transferred operations)
         operation_contact_ids = (
-            set() if use_transferred_operation_handling else set(operation.contacts.values_list("id", flat=True))
+            set()
+            if use_transferred_operation_handling
+            else set(operation.contacts.values_list("id", flat=True))
         )
-        for contact in Contact.objects.filter(CONTACT_HAS_COMPLETE_ADDRESS, operator=operator):
+        for contact in Contact.objects.filter(
+            CONTACT_HAS_COMPLETE_ADDRESS, operator=operator
+        ):
             ReportOperationRepresentative.objects.create(
                 report_version=report_version,
                 representative_name=contact.get_full_name(),
@@ -80,10 +103,14 @@ class ReportVersionService:
             )
         report_operation.activities.add(*list(operation.activities.all()))
         report_operation.regulated_products.add(
-            *OperationService.get_valid_operation_regulated_products(operation, report.reporting_year.reporting_year)
+            *OperationService.get_valid_operation_regulated_products(
+                operation, report.reporting_year.reporting_year
+            )
         )
 
-        facilities = FacilityDataAccessService.get_current_facilities_by_operation(operation)
+        facilities = FacilityDataAccessService.get_current_facilities_by_operation(
+            operation
+        )
 
         for f in facilities:
             facility_report = FacilityReport.objects.create(
@@ -95,13 +122,17 @@ class ReportVersionService:
                 is_completed=False,
             )
             facility_report.activities.add(*list(operation.activities.all()))
-            ReportProductService.update_empty_records_for_unregulated_products(report_version.id, [facility_report.id])
+            ReportProductService.update_empty_records_for_unregulated_products(
+                report_version.id, [facility_report.id]
+            )
 
         return report_version
 
     @staticmethod
     @transaction.atomic
-    def save_report_version(report_version_id: int, data: ReportVersionData) -> ReportVersion:
+    def save_report_version(
+        report_version_id: int, data: ReportVersionData
+    ) -> ReportVersion:
         """
         Updates the given ReportVersion reason_for_change
 
@@ -113,7 +144,9 @@ class ReportVersionService:
             The updated ReportVersion instance.
         """
         # Load the version
-        report_version = ReportVersion.objects.select_for_update().get(id=report_version_id)
+        report_version = ReportVersion.objects.select_for_update().get(
+            id=report_version_id
+        )
 
         # Set and save the reason for change
         report_version.reason_for_change = data.reason_for_change
@@ -133,13 +166,17 @@ class ReportVersionService:
 
     @staticmethod
     @transaction.atomic
-    def change_report_version_type(report_version_id: int, new_report_type: str) -> ReportVersion:
+    def change_report_version_type(
+        report_version_id: int, new_report_type: str
+    ) -> ReportVersion:
         report_version = ReportVersion.objects.get(id=report_version_id)
         if report_version.report_type == new_report_type:
             return report_version
 
         ReportVersionService.delete_report_version(report_version.id)
-        new_report_version = ReportVersionService.create_report_version(report_version.report, new_report_type)
+        new_report_version = ReportVersionService.create_report_version(
+            report_version.report, new_report_type
+        )
 
         return new_report_version
 
@@ -169,7 +206,9 @@ class ReportVersionService:
         return is_initial_report_version
 
     @staticmethod
-    def fetch_full_report_version(version_id: int, prefetch_full_facility_report: bool) -> ReportVersion:
+    def fetch_full_report_version(
+        version_id: int, prefetch_full_facility_report: bool
+    ) -> ReportVersion:
         """
         Fetch a ReportVersion with related data for serialization.
 
@@ -190,29 +229,37 @@ class ReportVersionService:
             .get(id=version_id)
         )
         # Build prefetches
-        prefetches: List[Union[str, Prefetch[Any, Any, Any]]] = [
+        prefetches: list[str | Prefetch[Any, Any, Any]] = [
             "report_electricity_import_data",
             "report_new_entrant",
             "report_compliance_summary",
             "report_operation_representatives",
             Prefetch(
                 "report_non_attributable_emissions",
-                queryset=ReportNonAttributableEmissions.objects.select_related("emission_category").prefetch_related(
-                    "gas_type"
-                ),
+                queryset=ReportNonAttributableEmissions.objects.select_related(
+                    "emission_category"
+                ).prefetch_related("gas_type"),
             ),
             Prefetch(
                 "report_products",
                 queryset=ReportProduct.objects.select_related("product"),
             ),
-            Prefetch("report_operation__activities", queryset=Activity.objects.order_by("weight", "name")),
-            Prefetch("report_operation__regulated_products", queryset=RegulatedProduct.objects.order_by("name")),
+            Prefetch(
+                "report_operation__activities",
+                queryset=Activity.objects.order_by("weight", "name"),
+            ),
+            Prefetch(
+                "report_operation__regulated_products",
+                queryset=RegulatedProduct.objects.order_by("name"),
+            ),
         ]
         if operation_type == Operation.Types.LFO and not prefetch_full_facility_report:
             prefetches.append(
                 Prefetch(
                     "facility_reports",
-                    queryset=FacilityReport.objects.only("facility_id", "facility_name"),
+                    queryset=FacilityReport.objects.only(
+                        "facility_id", "facility_name"
+                    ),
                 )
             )
         elif operation_type != Operation.Types.EIO:
@@ -222,14 +269,19 @@ class ReportVersionService:
                     queryset=FacilityReport.objects.prefetch_related(
                         Prefetch(
                             "reportactivity_records",
-                            queryset=ReportActivity.objects.select_related("activity", "activity_base_schema"),
+                            queryset=ReportActivity.objects.select_related(
+                                "activity", "activity_base_schema"
+                            ),
                         ),
                     ),
                 )
             )
         report_version: ReportVersion = (
             ReportVersion.objects.select_related(
-                "report_operation", "report_verification", "report_additional_data", "report_person_responsible"
+                "report_operation",
+                "report_verification",
+                "report_additional_data",
+                "report_person_responsible",
             )
             .prefetch_related(*prefetches)
             .get(id=version_id)

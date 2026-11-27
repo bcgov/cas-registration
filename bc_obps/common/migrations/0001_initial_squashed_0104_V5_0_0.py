@@ -3,17 +3,17 @@
 import django.contrib.postgres.fields
 import django.db.migrations.operations.special
 import django.db.models.deletion
-from django.db import migrations, models
 from common.utils import reset_dashboard_data
+from django.db import migrations, models
 
 
 # common.migrations.0002_admin_access_request_email_templates
 def create_admin_access_request_email_notification_templates(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='Admin Access Request Confirmation',
-        subject='BCIERS Receipt Acknowledgement – Administrator access request to {{ operator_legal_name }}',
-        body='''
+        name="Admin Access Request Confirmation",
+        subject="BCIERS Receipt Acknowledgement – Administrator access request to {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -22,12 +22,12 @@ def create_admin_access_request_email_notification_templates(apps, schema_editor
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
     EmailNotificationTemplate.objects.create(
-        name='Admin Access Request Approved',
-        subject='BCIERS Approval Notification – Administrator access request to {{ operator_legal_name }}',
-        body='''
+        name="Admin Access Request Approved",
+        subject="BCIERS Approval Notification – Administrator access request to {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -36,12 +36,12 @@ def create_admin_access_request_email_notification_templates(apps, schema_editor
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
     EmailNotificationTemplate.objects.create(
-        name='Admin Access Request Declined',
-        subject='BCIERS Decline Notification – Administrator access request to {{ operator_legal_name }}',
-        body='''
+        name="Admin Access Request Declined",
+        subject="BCIERS Decline Notification – Administrator access request to {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -49,28 +49,30 @@ def create_admin_access_request_email_notification_templates(apps, schema_editor
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
 
 
-def reverse_create_admin_access_request_email_notification_templates(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+def reverse_create_admin_access_request_email_notification_templates(
+    apps, schema_editor
+):
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.filter(
         name__in=[
-            'Admin Access Request Confirmation',
-            'Admin Access Request Approved',
-            'Admin Access Request Declined',
+            "Admin Access Request Confirmation",
+            "Admin Access Request Approved",
+            "Admin Access Request Declined",
         ],
     ).delete()
 
 
 # common.migrations.0003_operator_access_request_email_templates
 def create_operator_access_request_email_notification_templates(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='Operator With Admin Access Request Confirmation',
-        subject='BCIERS Receipt Acknowledgement – Access request to {{ operator_legal_name }}',
-        body='''
+        name="Operator With Admin Access Request Confirmation",
+        subject="BCIERS Receipt Acknowledgement – Access request to {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -79,12 +81,12 @@ def create_operator_access_request_email_notification_templates(apps, schema_edi
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
     EmailNotificationTemplate.objects.create(
-        name='Operator With Admin Access Request Approved',
-        subject='BCIERS Approval Notification – Access request to {{ operator_legal_name }}',
-        body='''
+        name="Operator With Admin Access Request Approved",
+        subject="BCIERS Approval Notification – Access request to {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -93,12 +95,12 @@ def create_operator_access_request_email_notification_templates(apps, schema_edi
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
     EmailNotificationTemplate.objects.create(
-        name='Operator With Admin Access Request Declined',
-        subject='BCIERS Decline Notification – Access request to {{ operator_legal_name }}',
-        body='''
+        name="Operator With Admin Access Request Declined",
+        subject="BCIERS Decline Notification – Access request to {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -106,28 +108,32 @@ def create_operator_access_request_email_notification_templates(apps, schema_edi
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
 
 
-def reverse_create_operator_access_request_email_notification_templates(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+def reverse_create_operator_access_request_email_notification_templates(
+    apps, schema_editor
+):
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.filter(
         name__in=[
-            'Operator With Admin Access Request Confirmation',
-            'Operator With Admin Access Request Approved',
-            'Operator With Admin Access Request Declined',
+            "Operator With Admin Access Request Confirmation",
+            "Operator With Admin Access Request Approved",
+            "Operator With Admin Access Request Declined",
         ],
     ).delete()
 
 
 # common.migrations.0004_new_operator_and_admin_access_request_email_templates
-def create_new_operator_and_admin_access_request_email_notification_templates(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+def create_new_operator_and_admin_access_request_email_notification_templates(
+    apps, schema_editor
+):
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='New Operator And Admin Access Request Confirmation',
-        subject='BCIERS Receipt Acknowledgement – Addition of {{ operator_legal_name }} and administrator access request',
-        body='''
+        name="New Operator And Admin Access Request Confirmation",
+        subject="BCIERS Receipt Acknowledgement – Addition of {{ operator_legal_name }} and administrator access request",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -136,12 +142,12 @@ def create_new_operator_and_admin_access_request_email_notification_templates(ap
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
     EmailNotificationTemplate.objects.create(
-        name='New Operator And Admin Access Request Approved',
-        subject='BCIERS Approval Notification – Addition of {{ operator_legal_name }} and administrator access request',
-        body='''
+        name="New Operator And Admin Access Request Approved",
+        subject="BCIERS Approval Notification – Addition of {{ operator_legal_name }} and administrator access request",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -150,12 +156,12 @@ def create_new_operator_and_admin_access_request_email_notification_templates(ap
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
     EmailNotificationTemplate.objects.create(
-        name='New Operator And Admin Access Request Declined',
-        subject='BCIERS Decline Notification – Addition of {{ operator_legal_name }} and administrator access request',
-        body='''
+        name="New Operator And Admin Access Request Declined",
+        subject="BCIERS Decline Notification – Addition of {{ operator_legal_name }} and administrator access request",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -163,28 +169,30 @@ def create_new_operator_and_admin_access_request_email_notification_templates(ap
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
 
 
-def reverse_new_operator_and_admin_access_request_email_notification_templates(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+def reverse_new_operator_and_admin_access_request_email_notification_templates(
+    apps, schema_editor
+):
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.filter(
         name__in=[
-            'New Operator And Admin Access Request Confirmation',
-            'New Operator And Admin Access Request Approved',
-            'New Operator And Admin Access Request Declined',
+            "New Operator And Admin Access Request Confirmation",
+            "New Operator And Admin Access Request Approved",
+            "New Operator And Admin Access Request Declined",
         ],
     ).delete()
 
 
 # common.migrations.0007_operation_boro_id_email_templates
 def submit_operation_boro_id_email_notification_templates(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='BORO ID Application Confirmation',
-        subject='BCIERS Receipt Acknowledgement - BORO ID application for {{ operation_name }} of {{ operator_legal_name }}',
-        body='''
+        name="BORO ID Application Confirmation",
+        subject="BCIERS Receipt Acknowledgement - BORO ID application for {{ operation_name }} of {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -193,12 +201,12 @@ def submit_operation_boro_id_email_notification_templates(apps, schema_editor):
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
     EmailNotificationTemplate.objects.create(
-        name='BORO ID Application Approved',
-        subject='BCIERS Approval Notification – BORO ID application for {{ operation_name }} of {{ operator_legal_name }}',
-        body='''
+        name="BORO ID Application Approved",
+        subject="BCIERS Approval Notification – BORO ID application for {{ operation_name }} of {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -207,12 +215,12 @@ def submit_operation_boro_id_email_notification_templates(apps, schema_editor):
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
     EmailNotificationTemplate.objects.create(
-        name='BORO ID Application Declined',
-        subject='BCIERS Decline Notification – BORO ID application for {{ operation_name }} of {{ operator_legal_name }}',
-        body='''
+        name="BORO ID Application Declined",
+        subject="BCIERS Decline Notification – BORO ID application for {{ operation_name }} of {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -220,12 +228,12 @@ def submit_operation_boro_id_email_notification_templates(apps, schema_editor):
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
     EmailNotificationTemplate.objects.create(
-        name='BORO ID Application Changes Requested',
-        subject='BCIERS Changes Request – BORO ID application for {{ operation_name }} of {{ operator_legal_name }}',
-        body='''
+        name="BORO ID Application Changes Requested",
+        subject="BCIERS Changes Request – BORO ID application for {{ operation_name }} of {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -234,29 +242,31 @@ def submit_operation_boro_id_email_notification_templates(apps, schema_editor):
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
 
 
 def reverse_submit_operation_boro_id_email_notification_templates(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.filter(
         name__in=[
-            'BORO ID Application Confirmation',
-            'BORO ID Application Approved',
-            'BORO ID Application Declined',
-            'BORO ID Application Changes Requested',
+            "BORO ID Application Confirmation",
+            "BORO ID Application Approved",
+            "BORO ID Application Declined",
+            "BORO ID Application Changes Requested",
         ]
     ).delete()
 
 
 # common.migrations.0008_operation_opt_in_and_boro_id_email_templates
-def opt_in_and_submit_operation_boro_id_email_notification_templates(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+def opt_in_and_submit_operation_boro_id_email_notification_templates(
+    apps, schema_editor
+):
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='Opt-in And BORO ID Application Confirmation',
-        subject='BCIERS Receipt Acknowledgement - Opt-in and BORO ID application for {{ operation_name }} of {{ operator_legal_name }}',
-        body='''
+        name="Opt-in And BORO ID Application Confirmation",
+        subject="BCIERS Receipt Acknowledgement - Opt-in and BORO ID application for {{ operation_name }} of {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -266,13 +276,13 @@ def opt_in_and_submit_operation_boro_id_email_notification_templates(apps, schem
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
 
     EmailNotificationTemplate.objects.create(
-        name='Opt-in And BORO ID Application Approved',
-        subject='BCIERS Approval Notification – Opt-in and BORO ID application for {{ operation_name }} of {{ operator_legal_name }}',
-        body='''
+        name="Opt-in And BORO ID Application Approved",
+        subject="BCIERS Approval Notification – Opt-in and BORO ID application for {{ operation_name }} of {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -281,12 +291,12 @@ def opt_in_and_submit_operation_boro_id_email_notification_templates(apps, schem
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
     EmailNotificationTemplate.objects.create(
-        name='Opt-in And BORO ID Application Declined',
-        subject='BCIERS Decline Notification – Opt-in and BORO ID application for {{ operation_name }} of {{ operator_legal_name }}',
-        body='''
+        name="Opt-in And BORO ID Application Declined",
+        subject="BCIERS Decline Notification – Opt-in and BORO ID application for {{ operation_name }} of {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -294,12 +304,12 @@ def opt_in_and_submit_operation_boro_id_email_notification_templates(apps, schem
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
     EmailNotificationTemplate.objects.create(
-        name='Opt-in And BORO ID Application Changes Requested',
-        subject='BCIERS Changes Request – Opt-in and BORO ID application for {{ operation_name }} of {{ operator_legal_name }}',
-        body='''
+        name="Opt-in And BORO ID Application Changes Requested",
+        subject="BCIERS Changes Request – Opt-in and BORO ID application for {{ operation_name }} of {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -308,29 +318,31 @@ def opt_in_and_submit_operation_boro_id_email_notification_templates(apps, schem
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
 
 
-def reverse_opt_in_and_submit_operation_boro_id_email_notification_templates(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+def reverse_opt_in_and_submit_operation_boro_id_email_notification_templates(
+    apps, schema_editor
+):
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.filter(
         name_in=[
-            'Opt-in And BORO ID Application Confirmation',
-            'Opt-in And BORO ID Application Approval',
-            'Opt-in And BORO ID Application Declined',
-            'Opt-in And BORO ID Application Changes Requested',
+            "Opt-in And BORO ID Application Confirmation",
+            "Opt-in And BORO ID Application Approval",
+            "Opt-in And BORO ID Application Declined",
+            "Opt-in And BORO ID Application Changes Requested",
         ]
     ).delete()
 
 
 # common.migrations.0047_boro_id_issuance_email_template
 def create_boro_id_issuance_email_notification_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='BORO ID Issuance',
-        subject='BCIERS Notification - BORO ID issued for {{ operation_name }} of {{ operator_legal_name }}',
-        body='''
+        name="BORO ID Issuance",
+        subject="BCIERS Notification - BORO ID issued for {{ operation_name }} of {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -339,22 +351,24 @@ def create_boro_id_issuance_email_notification_template(apps, schema_editor):
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
 
 
 def reverse_create_boro_id_issuance_email_notification_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    EmailNotificationTemplate.objects.filter(name='BORO ID Issuance').delete()
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
+    EmailNotificationTemplate.objects.filter(name="BORO ID Issuance").delete()
 
 
 # common.migrations.0048_admin_access_request_emails
 def update_admin_access_request_email_notification_templates(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
 
-    EmailNotificationTemplate.objects.filter(name='Admin Access Request Confirmation').update(
-        subject='BCIERS Receipt Acknowledgement – Access Request to {{ operator_legal_name }}',
-        body='''
+    EmailNotificationTemplate.objects.filter(
+        name="Admin Access Request Confirmation"
+    ).update(
+        subject="BCIERS Receipt Acknowledgement – Access Request to {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -363,12 +377,14 @@ def update_admin_access_request_email_notification_templates(apps, schema_editor
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
 
-    EmailNotificationTemplate.objects.filter(name='Admin Access Request Approved').update(
-        subject='BCIERS Approval Notification – Access request to {{ operator_legal_name }}',
-        body='''
+    EmailNotificationTemplate.objects.filter(
+        name="Admin Access Request Approved"
+    ).update(
+        subject="BCIERS Approval Notification – Access request to {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -377,11 +393,13 @@ def update_admin_access_request_email_notification_templates(apps, schema_editor
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
-    EmailNotificationTemplate.objects.filter(name='Admin Access Request Declined').update(
-        subject='BCIERS Decline Notification – Access request to {{ operator_legal_name }}',
-        body='''
+    EmailNotificationTemplate.objects.filter(
+        name="Admin Access Request Declined"
+    ).update(
+        subject="BCIERS Decline Notification – Access request to {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -390,16 +408,18 @@ def update_admin_access_request_email_notification_templates(apps, schema_editor
             <p>f you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
 
 
 # common.migrations.0049_access_request_emails
 def update_operator_access_request_email_notification_templates(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    EmailNotificationTemplate.objects.filter(name='Operator With Admin Access Request Confirmation').update(
-        subject='BCIERS Receipt Acknowledgement – Access request to {{ operator_legal_name }}',
-        body='''
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
+    EmailNotificationTemplate.objects.filter(
+        name="Operator With Admin Access Request Confirmation"
+    ).update(
+        subject="BCIERS Receipt Acknowledgement – Access request to {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -408,11 +428,13 @@ def update_operator_access_request_email_notification_templates(apps, schema_edi
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
-    EmailNotificationTemplate.objects.filter(name='Operator With Admin Access Request Approved').update(
-        subject='BCIERS Approval Notification – Access request to {{ operator_legal_name }}',
-        body='''
+    EmailNotificationTemplate.objects.filter(
+        name="Operator With Admin Access Request Approved"
+    ).update(
+        subject="BCIERS Approval Notification – Access request to {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -421,11 +443,13 @@ def update_operator_access_request_email_notification_templates(apps, schema_edi
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
-    EmailNotificationTemplate.objects.filter(name='Operator With Admin Access Request Declined').update(
-        subject='BCIERS Decline Notification – Access request to {{ operator_legal_name }}',
-        body='''
+    EmailNotificationTemplate.objects.filter(
+        name="Operator With Admin Access Request Declined"
+    ).update(
+        subject="BCIERS Decline Notification – Access request to {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -434,17 +458,17 @@ def update_operator_access_request_email_notification_templates(apps, schema_edi
             <p>If you have any questions, please reach out to the individual that holds administrator access to {{ operator_legal_name }}.</p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
 
 
 # common.migrations.0050_registration_submitted_email_template
 def create_registration_submitted_email_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='Registration Submission Acknowledgement',
-        subject='BCIERS Receipt Acknowledgement – Registration Submitted for {{ operation_name }} of {{ operator_legal_name }}',
-        body='''
+        name="Registration Submission Acknowledgement",
+        subject="BCIERS Receipt Acknowledgement – Registration Submitted for {{ operation_name }} of {{ operator_legal_name }}",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
@@ -455,22 +479,24 @@ def create_registration_submitted_email_template(apps, schema_editor):
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
             <p>On behalf of the Climate Action Secretariat</p>
-        ''',
+        """,
     )
 
 
 def reverse_create_registration_submitted_email_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    EmailNotificationTemplate.objects.filter(name='Registration Submission Acknowledgement').delete()
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
+    EmailNotificationTemplate.objects.filter(
+        name="Registration Submission Acknowledgement"
+    ).delete()
 
 
 # common.migrations.0076_notice_of_earned_credits_generated_notification_email_template
 def create_earned_credit_notice_email_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='Notice of Earned Credits Generated',
-        subject='BCIERS Notification – Earned Credits Available to Request',
-        body='''
+        name="Notice of Earned Credits Generated",
+        subject="BCIERS Notification – Earned Credits Available to Request",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
             <br>
@@ -503,22 +529,24 @@ def create_earned_credit_notice_email_template(apps, schema_editor):
             <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
               Government Website Link</a>
             </p>
-        ''',
+        """,
     )
 
 
 def reverse_earned_credit_notice_email_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    EmailNotificationTemplate.objects.filter(name='Notice of Earned Credits Generated').delete()
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
+    EmailNotificationTemplate.objects.filter(
+        name="Notice of Earned Credits Generated"
+    ).delete()
 
 
 # common.migrations.0077_notice_of_no_obligation_no_credits_generated_notification_email_template
 def create_no_obligation_no_credits_notice_email_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='No Obligation No Earned Credits Generated',
-        subject='BCIERS Notification – Compliance Obligation Met',
-        body='''
+        name="No Obligation No Earned Credits Generated",
+        subject="BCIERS Notification – Compliance Obligation Met",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
             <br>
@@ -537,22 +565,24 @@ def create_no_obligation_no_credits_notice_email_template(apps, schema_editor):
             <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
               Government Website Link</a>
             </p>
-        ''',
+        """,
     )
 
 
 def reverse_no_obligation_no_credits_notice_email_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    EmailNotificationTemplate.objects.filter(name='No Obligation No Earned Credits Generated').delete()
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
+    EmailNotificationTemplate.objects.filter(
+        name="No Obligation No Earned Credits Generated"
+    ).delete()
 
 
 # common.migrations.0081_notice_of_obligation_generated_notification_email_template
 def create_obligation_notice_email_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='Notice of Obligation Generated',
-        subject='BCIERS Notification – Compliance Obligation Available to View',
-        body='''
+        name="Notice of Obligation Generated",
+        subject="BCIERS Notification – Compliance Obligation Available to View",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
             <br>
@@ -571,22 +601,24 @@ def create_obligation_notice_email_template(apps, schema_editor):
             <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
               Government Website Link</a>
             </p>
-        ''',
+        """,
     )
 
 
 def reverse_obligation_notice_email_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    EmailNotificationTemplate.objects.filter(name='Notice of Obligation Generated').delete()
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
+    EmailNotificationTemplate.objects.filter(
+        name="Notice of Obligation Generated"
+    ).delete()
 
 
 # common.migrations.0084_notice_of_credits_requested_notification_email_template
 def create_credits_requested_email_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='Notice of Credits Requested',
-        subject='BCIERS Notification – Earned Credits Requested ',
-        body='''
+        name="Notice of Credits Requested",
+        subject="BCIERS Notification – Earned Credits Requested ",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
             <br>
@@ -603,22 +635,24 @@ def create_credits_requested_email_template(apps, schema_editor):
             <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
               Government Website Link</a>
             </p>
-        ''',
+        """,
     )
 
 
 def reverse_credits_requested_email_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    EmailNotificationTemplate.objects.filter(name='Notice of Credits Requested').delete()
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
+    EmailNotificationTemplate.objects.filter(
+        name="Notice of Credits Requested"
+    ).delete()
 
 
 # common.migrations.0088_notice_of_obligation_due_email_template
 def create_obligation_due_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='Notice of Compliance Obligation Due',
-        subject='BCIERS Notification – Compliance Obligation Due',
-        body='''
+        name="Notice of Compliance Obligation Due",
+        subject="BCIERS Notification – Compliance Obligation Due",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
             <br>
@@ -651,22 +685,24 @@ def create_obligation_due_template(apps, schema_editor):
             <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
               Government Website Link</a>
             </p>
-        ''',
+        """,
     )
 
 
 def reverse_obligation_due_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    EmailNotificationTemplate.objects.filter(name='Notice of Compliance Obligation Due').delete()
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
+    EmailNotificationTemplate.objects.filter(
+        name="Notice of Compliance Obligation Due"
+    ).delete()
 
 
 # common.migrations.0091_reminder_of_obligation_due_email_template
 def create_obligation_reminder_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='Reminder of Compliance Obligation Due',
-        subject='BCIERS Reminder – Compliance Obligation Due on November 30th',
-        body='''
+        name="Reminder of Compliance Obligation Due",
+        subject="BCIERS Reminder – Compliance Obligation Due on November 30th",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
             <br/>
@@ -707,22 +743,24 @@ def create_obligation_reminder_template(apps, schema_editor):
             <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
               Government Website Link</a>
             </p>
-        ''',
+        """,
     )
 
 
 def reverse_obligation_reminder_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    EmailNotificationTemplate.objects.filter(name='Reminder of Compliance Obligation Due').delete()
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
+    EmailNotificationTemplate.objects.filter(
+        name="Reminder of Compliance Obligation Due"
+    ).delete()
 
 
 # common.migrations.0092_notice_of_obligation_met_email_template
 def create_obligation_met_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='Notice of Obligation Met',
-        subject='BCIERS Notification – Compliance Obligation Met',
-        body='''
+        name="Notice of Obligation Met",
+        subject="BCIERS Notification – Compliance Obligation Met",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
             <br/>
@@ -739,20 +777,20 @@ def create_obligation_met_template(apps, schema_editor):
             <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
               Government Website Link</a>
             </p>
-        ''',
+        """,
     )
 
 
 def reverse_obligation_met_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    EmailNotificationTemplate.objects.filter(name='Notice of Obligation Met').delete()
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
+    EmailNotificationTemplate.objects.filter(name="Notice of Obligation Met").delete()
 
 
 # common.migrations.0095_notice_of_penalty_now_accruing_email_template
 TEMPLATE_NAME = "Compliance Obligation Due Date Passed - Penalty now Accruing"
 TEMPLATE_SUBJECT = "BCIERS Notification – Compliance Obligation Unmet"
 
-TEMPLATE_BODY = '''
+TEMPLATE_BODY = """
     <p style="text-align: center;">Province of British Columbia</p>
     <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
     <br/>
@@ -820,11 +858,11 @@ TEMPLATE_BODY = '''
     <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">
         BC Government Website Link</a>
     </p>
-'''
+"""
 
 
 def create_penalty_accrual_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
         name=TEMPLATE_NAME,
         subject=TEMPLATE_SUBJECT,
@@ -833,17 +871,17 @@ def create_penalty_accrual_template(apps, schema_editor):
 
 
 def reverse_penalty_accrual_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.filter(name=TEMPLATE_NAME).delete()
 
 
 # common.migrations.0097_supplementary_report_submitted_after_deadline_template_template
 def supplementary_report_submitted_after_deadline_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
     EmailNotificationTemplate.objects.create(
-        name='Supplementary Report Submitted after Deadline',
-        subject='BCIERS Notification – Supplementary Report Submitted after Deadline',
-        body='''
+        name="Supplementary Report Submitted after Deadline",
+        subject="BCIERS Notification – Supplementary Report Submitted after Deadline",
+        body="""
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p>
             <br/>
@@ -871,13 +909,15 @@ def supplementary_report_submitted_after_deadline_template(apps, schema_editor):
             <p>Website: <a href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system">BC
               Government Website Link</a>
             </p>
-        ''',
+        """,
     )
 
 
 def reverse_supplementary_report_submitted_after_deadline_template(apps, schema_editor):
-    EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    EmailNotificationTemplate.objects.filter(name='Supplementary Report Submitted after Deadline').delete()
+    EmailNotificationTemplate = apps.get_model("common", "EmailNotificationTemplate")
+    EmailNotificationTemplate.objects.filter(
+        name="Supplementary Report Submitted after Deadline"
+    ).delete()
 
 
 # common.migrations.0099_update_dashboard_data
@@ -886,140 +926,163 @@ def reset_dashboard_data_fn(_, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     replaces = [
-        ('common', '0001_initial'),
-        ('common', '0002_admin_access_request_email_templates'),
-        ('common', '0003_operator_access_request_email_templates'),
-        ('common', '0004_new_operator_and_admin_access_request_email_templates'),
-        ('common', '0005_V1_5_0'),
-        ('common', '0006_V1_5_1'),
-        ('common', '0007_operation_boro_id_email_templates'),
-        ('common', '0008_operation_opt_in_and_boro_id_email_templates'),
-        ('common', '0009_V1_5_2'),
-        ('common', '0010_dashboarddata'),
-        ('common', '0011_V1_6_0'),
-        ('common', '0012_update_dashboard_data'),
-        ('common', '0013_V1_7_0'),
-        ('common', '0014_V1_8_0'),
-        ('common', '0015_V1_9_0'),
-        ('common', '0016_update_dashboard_data'),
-        ('common', '0017_update_dashboard_data'),
-        ('common', '0018_V1_10_0'),
-        ('common', '0019_V1_11_0'),
-        ('common', '0020_update_dashboard_data'),
-        ('common', '0021_V1_12_0'),
-        ('common', '0022_update_dashboard_data'),
-        ('common', '0023_V1_13_0'),
-        ('common', '0024_V1_14_0'),
-        ('common', '0025_V1_15_0'),
-        ('common', '0026_update_dashboard_data_20241206_1633'),
-        ('common', '0027_V1_16_0'),
-        ('common', '0028_V1_17_0'),
-        ('common', '0029_V1_17_1'),
-        ('common', '0030_V1_18_0'),
-        ('common', '0031_V1_19_0'),
-        ('common', '0032_V1_20_0'),
-        ('common', '0033_update_dashboard_data'),
-        ('common', '0034_V1_21_0'),
-        ('common', '0035_V1_22_0'),
-        ('common', '0036_V1_23_0'),
-        ('common', '0037_V1_23_1'),
-        ('common', '0038_V1_24_0'),
-        ('common', '0039_update_dashboard_data'),
-        ('common', '0040_V2_0_0'),
-        ('common', '0041_V2_0_1'),
-        ('common', '0042_V2_1_1'),
-        ('common', '0043_V2_2_0'),
-        ('common', '0044_update_dashboard_data'),
-        ('common', '0045_V2_3_0'),
-        ('common', '0046_V3_0_0'),
-        ('common', '0047_boro_id_issuance_email_template'),
-        ('common', '0048_admin_access_request_emails'),
-        ('common', '0049_access_request_emails'),
-        ('common', '0050_registration_submitted_email_template'),
-        ('common', '0051_auto_20250430_1758'),
-        ('common', '0052_V3_1_0'),
-        ('common', '0053_update_dashboard_data'),
-        ('common', '0054_V3_2_0'),
-        ('common', '0055_V3_2_1'),
-        ('common', '0056_update_dashboard_data'),
-        ('common', '0057_V3_3_0'),
-        ('common', '0058_V3_4_1'),
-        ('common', '0059_V3_5_0'),
-        ('common', '0060_V3_6_0'),
-        ('common', '0061_V3_7_0'),
-        ('common', '0062_V3_8_0'),
-        ('common', '0063_V3_8_1'),
-        ('common', '0064_V3_9_0'),
-        ('common', '0065_V3_10_0'),
-        ('common', '0066_V3_11_0'),
-        ('common', '0067_V3_12_0'),
-        ('common', '0068_V3_13_0'),
-        ('common', '0069_V3_14_0'),
-        ('common', '0070_V3_15_0'),
-        ('common', '0071_update_dashboard_data'),
-        ('common', '0072_V3_16_0'),
-        ('common', '0073_update_dashboard_data'),
-        ('common', '0074_V3_17_1'),
-        ('common', '0075_update_dashboard_data'),
-        ('common', '0076_notice_of_earned_credits_generated_notification_email_template'),
-        ('common', '0077_notice_of_no_obligation_no_credits_generated_notification_email_template'),
-        ('common', '0078_V3_18_0'),
-        ('common', '0079_update_internal_dashboard_data'),
-        ('common', '0080_V3_19_0'),
-        ('common', '0081_notice_of_obligation_generated_notification_email_template'),
-        ('common', '0082_V3_20_0'),
-        ('common', '0083_update_dashboard_data'),
-        ('common', '0084_notice_of_credits_requested_notification_email_template'),
-        ('common', '0085_V4_0_0'),
-        ('common', '0086_V4_0_1'),
-        ('common', '0087_V4_1_0'),
-        ('common', '0088_notice_of_obligation_due_email_template'),
-        ('common', '0089_update_dashboard_data'),
-        ('common', '0090_V4_2_0'),
-        ('common', '0091_reminder_of_obligation_due_email_template'),
-        ('common', '0092_notice_of_obligation_met_email_template'),
-        ('common', '0093_V4_3_0'),
-        ('common', '0094_update_dashboard_data'),
-        ('common', '0095_notice_of_penalty_now_accruing_email_template'),
-        ('common', '0096_V4_4_0'),
-        ('common', '0097_supplementary_report_submitted_after_deadline_template_template'),
-        ('common', '0098_V4_5_0'),
-        ('common', '0099_update_dashboard_data'),
-        ('common', '0100_V4_6_0'),
-        ('common', '0101_V4_6_1'),
-        ('common', '0102_V4_7_0'),
-        ('common', '0103_V4_7_1'),
-        ('common', '0104_V5_0_0'),
+        ("common", "0001_initial"),
+        ("common", "0002_admin_access_request_email_templates"),
+        ("common", "0003_operator_access_request_email_templates"),
+        ("common", "0004_new_operator_and_admin_access_request_email_templates"),
+        ("common", "0005_V1_5_0"),
+        ("common", "0006_V1_5_1"),
+        ("common", "0007_operation_boro_id_email_templates"),
+        ("common", "0008_operation_opt_in_and_boro_id_email_templates"),
+        ("common", "0009_V1_5_2"),
+        ("common", "0010_dashboarddata"),
+        ("common", "0011_V1_6_0"),
+        ("common", "0012_update_dashboard_data"),
+        ("common", "0013_V1_7_0"),
+        ("common", "0014_V1_8_0"),
+        ("common", "0015_V1_9_0"),
+        ("common", "0016_update_dashboard_data"),
+        ("common", "0017_update_dashboard_data"),
+        ("common", "0018_V1_10_0"),
+        ("common", "0019_V1_11_0"),
+        ("common", "0020_update_dashboard_data"),
+        ("common", "0021_V1_12_0"),
+        ("common", "0022_update_dashboard_data"),
+        ("common", "0023_V1_13_0"),
+        ("common", "0024_V1_14_0"),
+        ("common", "0025_V1_15_0"),
+        ("common", "0026_update_dashboard_data_20241206_1633"),
+        ("common", "0027_V1_16_0"),
+        ("common", "0028_V1_17_0"),
+        ("common", "0029_V1_17_1"),
+        ("common", "0030_V1_18_0"),
+        ("common", "0031_V1_19_0"),
+        ("common", "0032_V1_20_0"),
+        ("common", "0033_update_dashboard_data"),
+        ("common", "0034_V1_21_0"),
+        ("common", "0035_V1_22_0"),
+        ("common", "0036_V1_23_0"),
+        ("common", "0037_V1_23_1"),
+        ("common", "0038_V1_24_0"),
+        ("common", "0039_update_dashboard_data"),
+        ("common", "0040_V2_0_0"),
+        ("common", "0041_V2_0_1"),
+        ("common", "0042_V2_1_1"),
+        ("common", "0043_V2_2_0"),
+        ("common", "0044_update_dashboard_data"),
+        ("common", "0045_V2_3_0"),
+        ("common", "0046_V3_0_0"),
+        ("common", "0047_boro_id_issuance_email_template"),
+        ("common", "0048_admin_access_request_emails"),
+        ("common", "0049_access_request_emails"),
+        ("common", "0050_registration_submitted_email_template"),
+        ("common", "0051_auto_20250430_1758"),
+        ("common", "0052_V3_1_0"),
+        ("common", "0053_update_dashboard_data"),
+        ("common", "0054_V3_2_0"),
+        ("common", "0055_V3_2_1"),
+        ("common", "0056_update_dashboard_data"),
+        ("common", "0057_V3_3_0"),
+        ("common", "0058_V3_4_1"),
+        ("common", "0059_V3_5_0"),
+        ("common", "0060_V3_6_0"),
+        ("common", "0061_V3_7_0"),
+        ("common", "0062_V3_8_0"),
+        ("common", "0063_V3_8_1"),
+        ("common", "0064_V3_9_0"),
+        ("common", "0065_V3_10_0"),
+        ("common", "0066_V3_11_0"),
+        ("common", "0067_V3_12_0"),
+        ("common", "0068_V3_13_0"),
+        ("common", "0069_V3_14_0"),
+        ("common", "0070_V3_15_0"),
+        ("common", "0071_update_dashboard_data"),
+        ("common", "0072_V3_16_0"),
+        ("common", "0073_update_dashboard_data"),
+        ("common", "0074_V3_17_1"),
+        ("common", "0075_update_dashboard_data"),
+        (
+            "common",
+            "0076_notice_of_earned_credits_generated_notification_email_template",
+        ),
+        (
+            "common",
+            "0077_notice_of_no_obligation_no_credits_generated_notification_email_template",
+        ),
+        ("common", "0078_V3_18_0"),
+        ("common", "0079_update_internal_dashboard_data"),
+        ("common", "0080_V3_19_0"),
+        ("common", "0081_notice_of_obligation_generated_notification_email_template"),
+        ("common", "0082_V3_20_0"),
+        ("common", "0083_update_dashboard_data"),
+        ("common", "0084_notice_of_credits_requested_notification_email_template"),
+        ("common", "0085_V4_0_0"),
+        ("common", "0086_V4_0_1"),
+        ("common", "0087_V4_1_0"),
+        ("common", "0088_notice_of_obligation_due_email_template"),
+        ("common", "0089_update_dashboard_data"),
+        ("common", "0090_V4_2_0"),
+        ("common", "0091_reminder_of_obligation_due_email_template"),
+        ("common", "0092_notice_of_obligation_met_email_template"),
+        ("common", "0093_V4_3_0"),
+        ("common", "0094_update_dashboard_data"),
+        ("common", "0095_notice_of_penalty_now_accruing_email_template"),
+        ("common", "0096_V4_4_0"),
+        (
+            "common",
+            "0097_supplementary_report_submitted_after_deadline_template_template",
+        ),
+        ("common", "0098_V4_5_0"),
+        ("common", "0099_update_dashboard_data"),
+        ("common", "0100_V4_6_0"),
+        ("common", "0101_V4_6_1"),
+        ("common", "0102_V4_7_0"),
+        ("common", "0103_V4_7_1"),
+        ("common", "0104_V5_0_0"),
     ]
 
     dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='EmailNotificationTemplate',
+            name="EmailNotificationTemplate",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 (
-                    'name',
-                    models.CharField(
-                        db_comment='Name of the email template as a unique identifier', max_length=255, unique=True
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
                     ),
                 ),
-                ('subject', models.CharField(db_comment='Subject of the email template', max_length=255)),
-                ('body', models.TextField(db_comment='Body of the email template')),
+                (
+                    "name",
+                    models.CharField(
+                        db_comment="Name of the email template as a unique identifier",
+                        max_length=255,
+                        unique=True,
+                    ),
+                ),
+                (
+                    "subject",
+                    models.CharField(
+                        db_comment="Subject of the email template", max_length=255
+                    ),
+                ),
+                ("body", models.TextField(db_comment="Body of the email template")),
             ],
             options={
-                'db_table': 'common"."email_notification_template',
-                'db_table_comment': 'Stores email templates for notifications',
+                "db_table": 'common"."email_notification_template',
+                "db_table_comment": "Stores email templates for notifications",
             },
         ),
         migrations.CreateModel(
-            name='EmailNotification',
+            name="EmailNotification",
             fields=[
                 (
-                    'transaction_id',
+                    "transaction_id",
                     models.UUIDField(
                         db_comment="Transaction identifier for the email message in CHES (Common Hosted Email Service), BC government's shared email API",
                         editable=False,
@@ -1028,33 +1091,33 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    'message_id',
+                    "message_id",
                     models.UUIDField(
                         db_comment="Message identifier for the email message in CHES (Common Hosted Email Service), BC government's shared email API",
                         editable=False,
                     ),
                 ),
                 (
-                    'recipients_email',
+                    "recipients_email",
                     django.contrib.postgres.fields.ArrayField(
                         base_field=models.EmailField(max_length=255),
-                        db_comment='List of email addresses to send the email to',
+                        db_comment="List of email addresses to send the email to",
                         size=None,
                     ),
                 ),
                 (
-                    'template',
+                    "template",
                     models.ForeignKey(
-                        db_comment='Email template to use for the email notification',
+                        db_comment="Email template to use for the email notification",
                         on_delete=django.db.models.deletion.DO_NOTHING,
-                        related_name='email_notifications',
-                        to='common.emailnotificationtemplate',
+                        related_name="email_notifications",
+                        to="common.emailnotificationtemplate",
                     ),
                 ),
             ],
             options={
-                'db_table': 'common"."email_notification',
-                'db_table_comment': 'Stores email notifications after they have been sent',
+                "db_table": 'common"."email_notification',
+                "db_table_comment": "Stores email notifications after they have been sent",
             },
         ),
         migrations.RunPython(
@@ -1078,22 +1141,35 @@ class Migration(migrations.Migration):
             reverse_code=reverse_opt_in_and_submit_operation_boro_id_email_notification_templates,
         ),
         migrations.CreateModel(
-            name='DashboardData',
+            name="DashboardData",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 (
-                    'name',
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
                     models.CharField(
-                        db_comment='Name of the dashboard by app and ID type used as a friendly unique identifier.',
+                        db_comment="Name of the dashboard by app and ID type used as a friendly unique identifier.",
                         max_length=100,
                         unique=True,
                     ),
                 ),
-                ('data', models.JSONField(db_comment='JSON representation of dashboard navigation tiles.')),
+                (
+                    "data",
+                    models.JSONField(
+                        db_comment="JSON representation of dashboard navigation tiles."
+                    ),
+                ),
             ],
             options={
-                'db_table': 'common"."dashboard_data',
-                'db_table_comment': 'The JSON information for dashboard navigation tiles by app and ID type.',
+                "db_table": 'common"."dashboard_data',
+                "db_table_comment": "The JSON information for dashboard navigation tiles by app and ID type.",
             },
         ),
         migrations.RunPython(

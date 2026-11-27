@@ -1,38 +1,45 @@
+from model_bakery.baker import make, make_recipe
 from registration.models.activity import Activity
 from registration.models.user import User
 from reporting.models.activity_json_schema import ActivityJsonSchema
-from reporting.models.activity_source_type_json_schema import ActivitySourceTypeJsonSchema
+from reporting.models.activity_source_type_json_schema import (
+    ActivitySourceTypeJsonSchema,
+)
 from reporting.models.configuration import Configuration
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_activity import ReportActivity
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_unit import ReportUnit
-from model_bakery.baker import make_recipe, make
 from reporting.models.report_version import ReportVersion
 from reporting.service.utils import get_report_valid_date_from_version_id
 
 # String constants for deduplication
-REPORTING_FACILITY_REPORT_RECIPE_NAME = 'reporting.tests.utils.facility_report'
-REGISTRATION_INDUSTRY_OPERATOR_USER_RECIPE_NAME = 'registration.tests.utils.industry_operator_user'
+REPORTING_FACILITY_REPORT_RECIPE_NAME = "reporting.tests.utils.facility_report"
+REGISTRATION_INDUSTRY_OPERATOR_USER_RECIPE_NAME = (
+    "registration.tests.utils.industry_operator_user"
+)
 
 
 def get_report_unit_by_index(
     report_activity: ReportActivity, source_type_index: int, report_unit_index: int
 ) -> ReportUnit:
-    return report_activity.reportsourcetype_records.order_by('id')[source_type_index].reportunit_records.order_by("id")[
-        report_unit_index
-    ]
+    return report_activity.reportsourcetype_records.order_by("id")[
+        source_type_index
+    ].reportunit_records.order_by("id")[report_unit_index]
 
 
 def get_report_fuel_by_index(
-    report_activity: ReportActivity, source_type_index: int, report_unit_index: int | None, report_fuel_index: int
+    report_activity: ReportActivity,
+    source_type_index: int,
+    report_unit_index: int | None,
+    report_fuel_index: int,
 ) -> ReportFuel:
     has_fuel_data = (
         get_report_unit_by_index(report_activity, source_type_index, report_unit_index)
         if report_unit_index is not None
-        else report_activity.reportsourcetype_records.order_by('id')[source_type_index]
+        else report_activity.reportsourcetype_records.order_by("id")[source_type_index]
     )
-    return has_fuel_data.reportfuel_records.order_by('id')[report_fuel_index]
+    return has_fuel_data.reportfuel_records.order_by("id")[report_fuel_index]
 
 
 class TestInfrastructure:
@@ -56,8 +63,12 @@ class TestInfrastructure:
         t.report_version = t.facility_report.report_version
         t.user = make_recipe(REGISTRATION_INDUSTRY_OPERATOR_USER_RECIPE_NAME)
         valid_date = get_report_valid_date_from_version_id(t.report_version.id)
-        t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
-        t.activity = make_recipe("reporting.tests.utils.activity", name="Test Infrastructure Activity")
+        t.configuration = Configuration.objects.get(
+            valid_from__lte=valid_date, valid_to__gte=valid_date
+        )
+        t.activity = make_recipe(
+            "reporting.tests.utils.activity", name="Test Infrastructure Activity"
+        )
         t.activity_json_schema = make_recipe(
             "reporting.tests.utils.activity_json_schema",
             activity=t.activity,
@@ -84,7 +95,9 @@ class TestInfrastructure:
         t.report_version = t.facility_report.report_version
         t.user = make_recipe(REGISTRATION_INDUSTRY_OPERATOR_USER_RECIPE_NAME)
         valid_date = get_report_valid_date_from_version_id(t.report_version.id)
-        t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
+        t.configuration = Configuration.objects.get(
+            valid_from__lte=valid_date, valid_to__gte=valid_date
+        )
         t.activity = Activity.objects.get(slug=activity_slug)
         t.activity_json_schema = ActivityJsonSchema.objects.get(
             activity=t.activity,
@@ -105,7 +118,9 @@ class TestInfrastructure:
         t.report_version = report_version
         t.user = make_recipe(REGISTRATION_INDUSTRY_OPERATOR_USER_RECIPE_NAME)
         valid_date = get_report_valid_date_from_version_id(t.report_version.id)
-        t.configuration = Configuration.objects.get(valid_from__lte=valid_date, valid_to__gte=valid_date)
+        t.configuration = Configuration.objects.get(
+            valid_from__lte=valid_date, valid_to__gte=valid_date
+        )
         t.activity = Activity.objects.get(slug="gsc_non_compression_non_combustion")
         # Query using the configuration's date range to find schemas valid for this configuration period
         t.activity_json_schema = ActivityJsonSchema.objects.get(

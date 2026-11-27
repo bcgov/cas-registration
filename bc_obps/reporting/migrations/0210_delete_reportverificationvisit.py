@@ -4,17 +4,16 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('reporting', '0209_V5_19_1'),
+        ("reporting", "0209_V5_19_1"),
     ]
 
     operations = [
         migrations.RemoveConstraint(
-            model_name='reportverificationvisit',
-            name='other_facility_must_have_coordinates',
+            model_name="reportverificationvisit",
+            name="other_facility_must_have_coordinates",
         ),
         migrations.DeleteModel(
-            name='ReportVerificationVisit',
+            name="ReportVerificationVisit",
         ),
     ]

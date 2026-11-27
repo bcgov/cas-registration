@@ -1,12 +1,14 @@
-from django.http import HttpRequest, StreamingHttpResponse
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from compliance.api.permissions import (
+    approved_authorized_roles_compliance_report_version_composite_auth,
+)
+from compliance.api.router import router
+from compliance.constants import COMPLIANCE
 from compliance.service.elicensing.invoice_generation.elicensing_invoice_generator import (
     ElicensingInvoiceGeneratorService,
 )
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest, StreamingHttpResponse
 from registration.schema.generic import Message
-from compliance.api.router import router
-from compliance.constants import COMPLIANCE
-from compliance.api.permissions import approved_authorized_roles_compliance_report_version_composite_auth
 
 
 @router.get(
@@ -24,8 +26,10 @@ def generate_compliance_report_version_late_submission_penalty_invoice(
     Delegates context-building and error handling to ElicensingInvoiceGeneratorService.generate_late_submission_penalty_invoice_pdf.
     """
 
-    result = ElicensingInvoiceGeneratorService.generate_late_submission_penalty_invoice_pdf(
-        compliance_report_version_id
+    result = (
+        ElicensingInvoiceGeneratorService.generate_late_submission_penalty_invoice_pdf(
+            compliance_report_version_id
+        )
     )
 
     return ElicensingInvoiceGeneratorService.create_pdf_response(result)

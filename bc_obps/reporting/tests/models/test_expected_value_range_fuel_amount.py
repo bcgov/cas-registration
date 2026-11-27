@@ -1,6 +1,7 @@
+from decimal import Decimal
+
 from common.tests.utils.helpers import BaseTestCase
 from reporting.models import ExpectedValueRangeFuelAmount
-from decimal import Decimal
 
 
 class ExpecetedValueRangeFuelAmountTest(BaseTestCase):
@@ -8,10 +9,10 @@ class ExpecetedValueRangeFuelAmountTest(BaseTestCase):
     def setUpTestData(cls):
         cls.test_object = ExpectedValueRangeFuelAmount.objects.create(
             fuel_type_id=1,
-            lower_bound=Decimal('0'),
-            upper_bound=Decimal('10.0'),
-            valid_from='1999-01-01',
-            valid_to='1999-12-31',
+            lower_bound=Decimal("0"),
+            upper_bound=Decimal("10.0"),
+            valid_from="1999-01-01",
+            valid_to="1999-12-31",
         )
         cls.field_data = [
             ("id", "ID", None, None),

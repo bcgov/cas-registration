@@ -1,15 +1,17 @@
-from decimal import Decimal
-from django.utils import timezone
-import pytest
-from unittest.mock import patch
 from datetime import date
-from model_bakery.baker import make_recipe
+from decimal import Decimal
+from unittest.mock import patch
 
-from compliance.service.elicensing.invoice_generation.elicensing_invoice_context import ElicensingInvoiceContextService
-from compliance.service.elicensing.elicensing_invoice_service import STRFTIME_FORMAT
-from reporting.models.report_operation import ReportOperation
+import pytest
 from compliance.models.compliance_report_version import ComplianceReportVersion
+from compliance.service.elicensing.elicensing_invoice_service import STRFTIME_FORMAT
+from compliance.service.elicensing.invoice_generation.elicensing_invoice_context import (
+    ElicensingInvoiceContextService,
+)
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
+from django.utils import timezone
+from model_bakery.baker import make_recipe
+from reporting.models.report_operation import ReportOperation
 from reporting.service.reporting_year_service import ReportingYearService
 
 pytestmark = pytest.mark.django_db
@@ -31,7 +33,9 @@ class TestElicensingInvoiceContextService:
     def test_build_invoice_filename(self):
         expected_date = timezone.now().strftime("%Y%m%d")
         assert (
-            ElicensingInvoiceContextService.build_invoice_filename("OBPS Compliance Invoice", "OBI706800")
+            ElicensingInvoiceContextService.build_invoice_filename(
+                "OBPS Compliance Invoice", "OBI706800"
+            )
             == f"OBPS Compliance Invoice OBI706800_{expected_date}.pdf"
         )
 
@@ -57,14 +61,18 @@ class TestElicensingInvoiceContextService:
         # Arrange
         mock_format_operator_address.return_value = ("123 Main St", "City, BC  V1A 2B3")
         mock_calculate_invoice_amount_due.return_value = (
-            Decimal('263512.40'),
+            Decimal("263512.40"),
             [
                 {
-                    'date': 'Aug 8, 2025',
-                    'description': '2024 GGIRCA Automatic Penalty for Obligation ID 1',
-                    'amount': '$1,263,512.40',
+                    "date": "Aug 8, 2025",
+                    "description": "2024 GGIRCA Automatic Penalty for Obligation ID 1",
+                    "amount": "$1,263,512.40",
                 },
-                {'date': 'Aug 8, 2025', 'description': 'Payment 185262395', 'amount': '($1,000,000.00)'},
+                {
+                    "date": "Aug 8, 2025",
+                    "description": "Payment 185262395",
+                    "amount": "($1,000,000.00)",
+                },
             ],
             None,
             None,
@@ -91,22 +99,35 @@ class TestElicensingInvoiceContextService:
         assert context["operator_address_line2"] == "City, BC  V1A 2B3"
         assert (
             context["operation_name"]
-            == ReportOperation.objects.get(report_version=self.test_data.report_version).operation_name
+            == ReportOperation.objects.get(
+                report_version=self.test_data.report_version
+            ).operation_name
         )
-        assert context["invoice_number"] == self.test_data.compliance_obligation.elicensing_invoice.invoice_number
-        assert context["invoice_due_date"] == self.test_data.compliance_obligation.elicensing_invoice.due_date.strftime(
+        assert (
+            context["invoice_number"]
+            == self.test_data.compliance_obligation.elicensing_invoice.invoice_number
+        )
+        assert context[
+            "invoice_due_date"
+        ] == self.test_data.compliance_obligation.elicensing_invoice.due_date.strftime(
             STRFTIME_FORMAT
         )
-        assert context["invoice_printed_date"] == timezone.now().strftime(STRFTIME_FORMAT)
+        assert context["invoice_printed_date"] == timezone.now().strftime(
+            STRFTIME_FORMAT
+        )
         assert "logo_base64" in context
 
         assert context["billing_items"] == [
             {
-                'date': 'Aug 8, 2025',
-                'description': '2024 GGIRCA Automatic Penalty for Obligation ID 1',
-                'amount': '$1,263,512.40',
+                "date": "Aug 8, 2025",
+                "description": "2024 GGIRCA Automatic Penalty for Obligation ID 1",
+                "amount": "$1,263,512.40",
             },
-            {'date': 'Aug 8, 2025', 'description': 'Payment 185262395', 'amount': '($1,000,000.00)'},
+            {
+                "date": "Aug 8, 2025",
+                "description": "Payment 185262395",
+                "amount": "($1,000,000.00)",
+            },
         ]
-        assert context["total_amount_due"] == '$263,512.40'
+        assert context["total_amount_due"] == "$263,512.40"
         assert context["compliance_obligation_id"] == obligation_id

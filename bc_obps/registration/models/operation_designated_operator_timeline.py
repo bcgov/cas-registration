@@ -1,14 +1,15 @@
-from django.db import models
-
 from common.enums import Schemas
+from django.db import models
 from registration.enums.enums import RegistrationTableNames
 from registration.models import (
     Operation,
     Operator,
     TimeStampedModel,
 )
+from registration.models.rls_configs.operation_designated_operator_timeline import (
+    Rls as OperationDesignatedOperatorRls,
+)
 from simple_history.models import HistoricalRecords
-from registration.models.rls_configs.operation_designated_operator_timeline import Rls as OperationDesignatedOperatorRls
 
 
 class OperationDesignatedOperatorTimeline(TimeStampedModel):
@@ -44,9 +45,9 @@ class OperationDesignatedOperatorTimeline(TimeStampedModel):
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.OPERATION_DESIGNATED_OPERATOR_TIMELINE.value}'
         constraints = [
             models.UniqueConstraint(
-                fields=['operation'],
+                fields=["operation"],
                 condition=models.Q(end_date__isnull=True),
-                name='unique_active_designated_operator_per_operation',
+                name="unique_active_designated_operator_per_operation",
             )
         ]
 

@@ -1,29 +1,30 @@
-import requests
 import logging
-from django.utils import timezone
-from typing import Dict, Optional, Type, Any, Union, Literal
 from datetime import datetime, timedelta
-from django.conf import settings
-from pydantic import BaseModel, ValidationError
+from typing import Any, Dict, Literal, Optional, Type, Union
+
+import requests
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from compliance.service.bc_carbon_registry.schema import (
-    TokenResponse,
-    SearchFilter,
-    Pagination,
-    FilterModel,
+    AccountDetailsResponse,
     ColumnFilter,
     CommonFilterType,
-    AccountDetailsResponse,
-    UnitDetailsResponse,
+    FilterModel,
+    IssuancePayload,
+    Pagination,
     ProjectDetailsResponse,
     ProjectPayload,
-    TransferPayload,
-    IssuancePayload,
-    SubAccountPayload,
+    SearchFilter,
     SearchFilterWrapper,
+    SubAccountPayload,
+    TokenResponse,
+    TransferPayload,
+    UnitDetailsResponse,
 )
-from requests.exceptions import Timeout, ConnectionError, HTTPError, RequestException
 from compliance.service.bc_carbon_registry.utils import log_error_message
+from django.conf import settings
+from django.utils import timezone
+from pydantic import BaseModel, ValidationError
+from requests.exceptions import ConnectionError, HTTPError, RequestException, Timeout
 
 logger = logging.getLogger(__name__)
 
@@ -34,14 +35,16 @@ class BCCarbonRegistryAPIClient:
     """
 
     _instance = None
-    token: Optional[str]
-    api_url: Optional[str]
-    client_id: Optional[str]
-    client_secret: Optional[str]
+    token: str | None
+    api_url: str | None
+    client_id: str | None
+    client_secret: str | None
     _session: requests.Session
-    token_expiry: Optional[datetime] = None
+    token_expiry: datetime | None = None
     COMPLIANCE_ACCOUNT_TYPE_ID = 14
-    OPERATOR_OF_REGULATED_OPERATION_TYPE_ID = 11  # Only master accounts with this ID are allowed to request units
+    OPERATOR_OF_REGULATED_OPERATION_TYPE_ID = (
+        11  # Only master accounts with this ID are allowed to request units
+    )
 
     # API Endpoints
     AUTH_ENDPOINT = "/user-api/okta/token"
@@ -53,22 +56,28 @@ class BCCarbonRegistryAPIClient:
     ISSUANCE_SUBMIT_ENDPOINT = "/raas-credit-api/market-issuance-manager/doSubmit"
     ACCOUNT_SUBMIT_ENDPOINT = "/br-reg/rest/account-manager/doSubmit"
 
-    def __new__(cls) -> 'BCCarbonRegistryAPIClient':
+    def __new__(cls) -> "BCCarbonRegistryAPIClient":
         if cls._instance is None:
-            cls._instance = super(BCCarbonRegistryAPIClient, cls).__new__(cls)
-            cls._instance.api_url = settings.BCCR_API_URL.rstrip("/") if settings.BCCR_API_URL else None
+            cls._instance = super().__new__(cls)
+            cls._instance.api_url = (
+                settings.BCCR_API_URL.rstrip("/") if settings.BCCR_API_URL else None
+            )
             cls._instance.client_id = settings.BCCR_CLIENT_ID
             cls._instance.client_secret = settings.BCCR_CLIENT_SECRET
             cls._instance._session = requests.Session()
             logger.info(
-                f'Initializing BCCarbonRegistryAPIClient for clientID {cls._instance.client_id} to connect to {cls._instance.api_url}'
+                f"Initializing BCCarbonRegistryAPIClient for clientID {cls._instance.client_id} to connect to {cls._instance.api_url}"
             )
         return cls._instance
 
     def _validate_config(self) -> None:
         if not all([self.api_url, self.client_id, self.client_secret]):
-            logger.error("Cannot authenticate: missing base_url, client_id, or client_secret")
-            raise BCCarbonRegistryError("Authentication not possible due to missing configuration")
+            logger.error(
+                "Cannot authenticate: missing base_url, client_id, or client_secret"
+            )
+            raise BCCarbonRegistryError(
+                "Authentication not possible due to missing configuration"
+            )
 
     def _authenticate(self) -> None:
         """
@@ -79,7 +88,9 @@ class BCCarbonRegistryAPIClient:
 
         try:
             response = requests.post(
-                url, json={"clientId": self.client_id, "clientSecret": self.client_secret}, timeout=(3, 7)
+                url,
+                json={"clientId": self.client_id, "clientSecret": self.client_secret},
+                timeout=(3, 7),
             )  # 3s connect, 7s read
             response.raise_for_status()
             data = TokenResponse(**response.json())
@@ -87,21 +98,33 @@ class BCCarbonRegistryAPIClient:
             self.token_expiry = timezone.now() + timedelta(seconds=data.expires_in)
         except Timeout as e:
             logger.exception("Authentication timed out: %s", str(e))
-            raise BCCarbonRegistryError(f"Request timed out: {str(e)}", endpoint=url) from e
+            raise BCCarbonRegistryError(
+                f"Request timed out: {str(e)}", endpoint=url
+            ) from e
         except ConnectionError as e:
-            logger.exception("Authentication failed due to connection error: %s", str(e))
-            raise BCCarbonRegistryError(f"Connection error: {str(e)}", endpoint=url) from e
+            logger.exception(
+                "Authentication failed due to connection error: %s", str(e)
+            )
+            raise BCCarbonRegistryError(
+                f"Connection error: {str(e)}", endpoint=url
+            ) from e
         except HTTPError as e:
             response_text = (
-                getattr(e.response, 'text', 'No response text available')
-                if hasattr(e, 'response')
-                else 'No response available'
+                getattr(e.response, "text", "No response text available")
+                if hasattr(e, "response")
+                else "No response available"
             )
-            logger.exception("Authentication failed with HTTP error: %s, response: %s", str(e), response_text)
+            logger.exception(
+                "Authentication failed with HTTP error: %s, response: %s",
+                str(e),
+                response_text,
+            )
             raise BCCarbonRegistryError(f"HTTP error: {str(e)}", endpoint=url) from e
         except (ValidationError, RequestException) as e:
             logger.exception("Authentication failed: %s", str(e))
-            raise BCCarbonRegistryError(f"Invalid token response: {str(e)}", endpoint=url) from e
+            raise BCCarbonRegistryError(
+                f"Invalid token response: {str(e)}", endpoint=url
+            ) from e
 
     def _ensure_authenticated(self) -> None:
         """
@@ -112,7 +135,11 @@ class BCCarbonRegistryAPIClient:
         # Re-authenticate 60 seconds before expiry to avoid the race where the
         # client considers the token valid but the server rejects it as expired.
         reauth_advance_delay = timedelta(seconds=60)
-        if token is None or token_expiry is None or timezone.now() >= (token_expiry - reauth_advance_delay):
+        if (
+            token is None
+            or token_expiry is None
+            or timezone.now() >= (token_expiry - reauth_advance_delay)
+        ):
             logger.warning("Token missing or expired. Re-authenticating...")
             self._authenticate()
 
@@ -120,11 +147,11 @@ class BCCarbonRegistryAPIClient:
         self,
         method: str,
         endpoint: str,
-        data: Optional[BaseModel] = None,
-        params: Optional[Dict] = None,
-        response_model: Optional[type[BaseModel]] = None,
+        data: BaseModel | None = None,
+        params: dict | None = None,
+        response_model: type[BaseModel] | None = None,
         _retried: bool = False,
-    ) -> Dict:
+    ) -> dict:
         """
         Make an authenticated API request.
         :param method: HTTP method (GET, POST, etc.)
@@ -145,7 +172,9 @@ class BCCarbonRegistryAPIClient:
         # exclude_none=True to remove None values (Cause issues when sending None values when filtering)
         data_dict = data.model_dump(exclude_none=True) if data else None
         try:
-            response = self._session.request(method=method, url=url, headers=headers, json=data_dict, params=params)
+            response = self._session.request(
+                method=method, url=url, headers=headers, json=data_dict, params=params
+            )
             response.raise_for_status()
             response_json = response.json()
             if response_model:
@@ -155,33 +184,50 @@ class BCCarbonRegistryAPIClient:
             return validated_response
         except ValidationError as e:
             logger.exception("Invalid response from %s: %s", url, str(e))
-            raise BCCarbonRegistryError(f"Invalid response format: {str(e)}", endpoint=url) from e
+            raise BCCarbonRegistryError(
+                f"Invalid response format: {str(e)}", endpoint=url
+            ) from e
         except HTTPError as e:
             # The BCCR API uses session-based auth. A 401 does not always mean the token is invalid
             # it can mean the request landed on a node that has not yet received the session
             # Force a fresh re-auth and retry once to recover without surfacing the error to the caller
-            if e.response is not None and e.response.status_code == 401 and not _retried:
-                logger.warning("Received 401 from %s, forcing re-authentication and retrying...", url)
+            if (
+                e.response is not None
+                and e.response.status_code == 401
+                and not _retried
+            ):
+                logger.warning(
+                    "Received 401 from %s, forcing re-authentication and retrying...",
+                    url,
+                )
                 self.token = None
                 self.token_expiry = None
-                return self._make_request(method, endpoint, data, params, response_model, _retried=True)
+                return self._make_request(
+                    method, endpoint, data, params, response_model, _retried=True
+                )
             log_error_message(e)
             logger.exception("Request to %s failed: %s", url, str(e))
-            raise BCCarbonRegistryError(f"Request failed: {str(e)}", endpoint=url) from e
+            raise BCCarbonRegistryError(
+                f"Request failed: {str(e)}", endpoint=url
+            ) from e
         except Exception as e:
-            log_error_message(e)  # If BCCR API returns a valid error response, this will log it
+            log_error_message(
+                e
+            )  # If BCCR API returns a valid error response, this will log it
             logger.exception("Request to %s failed: %s", url, str(e))
-            raise BCCarbonRegistryError(f"Request failed: {str(e)}", endpoint=url) from e
+            raise BCCarbonRegistryError(
+                f"Request failed: {str(e)}", endpoint=url
+            ) from e
 
     def _submit_payload(
         self,
-        data: Dict,
+        data: dict,
         url: str,
-        payload_model: Type[Any],
+        payload_model: type[Any],
         method: Literal["POST", "PUT", "PATCH"] = "POST",
-        response_model: Optional[type[BaseModel]] = None,
+        response_model: type[BaseModel] | None = None,
         error_message: str = "Invalid payload",
-    ) -> Dict:
+    ) -> dict:
         """
         Validate a payload and submit it to the specified URL.
 
@@ -197,7 +243,9 @@ class BCCarbonRegistryAPIClient:
             payload = payload_model(**data)
         except ValidationError as e:
             raise BCCarbonRegistryError(f"{error_message}: {str(e)}") from e
-        return self._make_request(method, url, data=payload, response_model=response_model)
+        return self._make_request(
+            method, url, data=payload, response_model=response_model
+        )
 
     @staticmethod
     def _check_pagination_params(limit: int, start: int) -> None:
@@ -208,10 +256,14 @@ class BCCarbonRegistryAPIClient:
         :raises ValueError: If pagination parameters are invalid
         """
         if limit < 1 or start < 0:
-            logger.error("Invalid pagination parameters: limit=%s, start=%s", limit, start)
+            logger.error(
+                "Invalid pagination parameters: limit=%s, start=%s", limit, start
+            )
             raise ValueError("limit must be positive and start non-negative")
 
-    def get_account_details(self, account_id: Union[str, int], account_type_id: Optional[int] = None) -> Dict:
+    def get_account_details(
+        self, account_id: str | int, account_type_id: int | None = None
+    ) -> dict:
         """
         Retrieves account details for the given account ID. This endpoint works for both compliance and holding accounts.
         :param account_id: The ID of the account to retrieve.
@@ -229,12 +281,21 @@ class BCCarbonRegistryAPIClient:
         payload = SearchFilterWrapper(
             searchFilter=SearchFilter(
                 filterModel=FilterModel(
-                    entityId={"columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=account_id)]}
+                    entityId={
+                        "columnFilters": [
+                            ColumnFilter(
+                                filterType="Number", type="equals", filter=account_id
+                            )
+                        ]
+                    }
                 ),
             )
         )
         response = self._make_request(
-            "POST", self.ACCOUNT_SEARCH_ENDPOINT, data=payload, response_model=AccountDetailsResponse
+            "POST",
+            self.ACCOUNT_SEARCH_ENDPOINT,
+            data=payload,
+            response_model=AccountDetailsResponse,
         )
 
         # Validate the account type
@@ -246,7 +307,9 @@ class BCCarbonRegistryAPIClient:
                 from common.exceptions import UserError
 
                 logger.warning(
-                    "BCCR account type mismatch. Expected account type ID: %s, found: %s", account_type_id, account_type
+                    "BCCR account type mismatch. Expected account type ID: %s, found: %s",
+                    account_type_id,
+                    account_type,
                 )
                 # Shown to the user as is, so keep it user-facing
                 if account_type_id == self.OPERATOR_OF_REGULATED_OPERATION_TYPE_ID:
@@ -259,7 +322,7 @@ class BCCarbonRegistryAPIClient:
 
         return response
 
-    def list_all_accounts(self, limit: int = 20, start: int = 0) -> Dict:
+    def list_all_accounts(self, limit: int = 20, start: int = 0) -> dict:
         """
         List all accounts.
         :param limit: Number of accounts to retrieve.
@@ -268,20 +331,25 @@ class BCCarbonRegistryAPIClient:
         """
         self._check_pagination_params(limit, start)
 
-        payload = SearchFilterWrapper(searchFilter=SearchFilter(pagination=Pagination(start=start, limit=limit)))
+        payload = SearchFilterWrapper(
+            searchFilter=SearchFilter(pagination=Pagination(start=start, limit=limit))
+        )
         return self._make_request(
-            "POST", self.ACCOUNT_SEARCH_ENDPOINT, data=payload, response_model=AccountDetailsResponse
+            "POST",
+            self.ACCOUNT_SEARCH_ENDPOINT,
+            data=payload,
+            response_model=AccountDetailsResponse,
         )
 
     def list_all_units(
         self,
-        account_id: Union[str, int],
+        account_id: str | int,
         vintage_year: int,
         limit: int = 20,
         start: int = 0,
         account_type: Literal["holding_account", "sub_account"] = "holding_account",
         fetch_all_pages: bool = False,
-    ) -> Dict:
+    ) -> dict:
         """
         List compliance units for a given holding account or sub-account.
         Filters units by vintage year (units with vintage >= vintage_year).
@@ -306,14 +374,22 @@ class BCCarbonRegistryAPIClient:
 
         # Use the appropriate filter key, accountTypeCode, and state filter based on account type
         account_filter: CommonFilterType = {
-            "columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=account_id)]
+            "columnFilters": [
+                ColumnFilter(filterType="Number", type="equals", filter=account_id)
+            ]
         }
         if account_type == "sub_account":
             state_filter = "ACTIVE,RETIRED"
             filter_model = FilterModel(
                 subAccountId=account_filter,
                 accountTypeCode={
-                    "columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="COMPLIANCE_SUB_ACCOUNT")]
+                    "columnFilters": [
+                        ColumnFilter(
+                            filterType="Text",
+                            type="equals",
+                            filter="COMPLIANCE_SUB_ACCOUNT",
+                        )
+                    ]
                 },
             )
         else:
@@ -321,41 +397,66 @@ class BCCarbonRegistryAPIClient:
             filter_model = FilterModel(
                 accountId=account_filter,
                 accountTypeCode={
-                    "columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="REGULATED_OPERATION")]
+                    "columnFilters": [
+                        ColumnFilter(
+                            filterType="Text",
+                            type="equals",
+                            filter="REGULATED_OPERATION",
+                        )
+                    ]
                 },
             )
 
         filter_type: Literal["in", "equals"] = "in" if "," in state_filter else "equals"
         filter_model.stateCode = {
-            "columnFilters": [ColumnFilter(filterType="Text", type=filter_type, filter=state_filter)]
+            "columnFilters": [
+                ColumnFilter(filterType="Text", type=filter_type, filter=state_filter)
+            ]
         }
 
         # BCO (offsets): filter by vintage. BCE (earned credits): fetch all vintages.
         offset_filter = FilterModel(**filter_model.model_dump(exclude_none=True))
-        offset_filter.unitType = {"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="BCO")]}
+        offset_filter.unitType = {
+            "columnFilters": [
+                ColumnFilter(filterType="Text", type="equals", filter="BCO")
+            ]
+        }
         offset_filter.vintage = {
-            "columnFilters": [ColumnFilter(filterType="Number", type="greaterThanOrEqual", filter=vintage_year - 3)]
+            "columnFilters": [
+                ColumnFilter(
+                    filterType="Number",
+                    type="greaterThanOrEqual",
+                    filter=vintage_year - 3,
+                )
+            ]
         }
 
         earned_credit_filter = FilterModel(**filter_model.model_dump(exclude_none=True))
         earned_credit_filter.unitType = {
-            "columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="BCE")]
+            "columnFilters": [
+                ColumnFilter(filterType="Text", type="equals", filter="BCE")
+            ]
         }
 
-        def _fetch_page(f: FilterModel, page_start: int) -> Dict:
+        def _fetch_page(f: FilterModel, page_start: int) -> dict:
             pagination = Pagination(
                 start=page_start,
                 limit=limit,
-                sortOptions=[{"sort": "vintage.keyword", "dir": "DESC"}, {"sort": "entityId", "dir": "DESC"}],
+                sortOptions=[
+                    {"sort": "vintage.keyword", "dir": "DESC"},
+                    {"sort": "entityId", "dir": "DESC"},
+                ],
             )
             return self._make_request(
                 "POST",
                 self.UNIT_SEARCH_ENDPOINT,
-                data=SearchFilterWrapper(searchFilter=SearchFilter(pagination=pagination, filterModel=f)),
+                data=SearchFilterWrapper(
+                    searchFilter=SearchFilter(pagination=pagination, filterModel=f)
+                ),
                 response_model=UnitDetailsResponse,
             )
 
-        def _fetch(f: FilterModel) -> Dict:
+        def _fetch(f: FilterModel) -> dict:
             result = _fetch_page(f, start)
             if not fetch_all_pages:
                 return result
@@ -371,7 +472,9 @@ class BCCarbonRegistryAPIClient:
                 page = _fetch_page(f, page_start)
                 entities.extend(page.get("entities", []))
             # Safety net: never hand the grid the same unit twice
-            result["entities"] = list({entity["id"]: entity for entity in entities}.values())
+            result["entities"] = list(
+                {entity["id"]: entity for entity in entities}.values()
+            )
             result["numberOfElements"] = len(result["entities"])
             return result
 
@@ -383,24 +486,30 @@ class BCCarbonRegistryAPIClient:
         # (newest vintage first, then newest entityId); otherwise all offsets would come before all earned credits
         # Vintage is compared as text, like BCCR's vintage.keyword sort, since it can be a range (e.g. "2024 - 2025")
         merged["entities"] = sorted(
-            offset_result.get("entities", []) + earned_credit_result.get("entities", []),
-            key=lambda unit: (str(unit.get("vintage") or ""), int(unit.get("entityId") or 0)),
+            offset_result.get("entities", [])
+            + earned_credit_result.get("entities", []),
+            key=lambda unit: (
+                str(unit.get("vintage") or ""),
+                int(unit.get("entityId") or 0),
+            ),
             reverse=True,
         )
-        merged["totalEntities"] = offset_result.get("totalEntities", 0) + earned_credit_result.get("totalEntities", 0)
-        merged["numberOfElements"] = offset_result.get("numberOfElements", 0) + earned_credit_result.get(
+        merged["totalEntities"] = offset_result.get(
+            "totalEntities", 0
+        ) + earned_credit_result.get("totalEntities", 0)
+        merged["numberOfElements"] = offset_result.get(
             "numberOfElements", 0
-        )
+        ) + earned_credit_result.get("numberOfElements", 0)
         return merged
 
-    def get_project_details(self, project_id: Union[str, int]) -> Dict:
+    def get_project_details(self, project_id: str | int) -> dict:
         if isinstance(project_id, str) and not project_id.isdigit():
             logger.error("Invalid project_id: %s", project_id)
             raise ValueError("project_id must be a numeric string")
         url = f"{self.PROJECT_DETAILS_ENDPOINT}/{project_id}"
         return self._make_request("GET", url, response_model=ProjectDetailsResponse)
 
-    def create_project(self, project_data: Dict) -> Dict:
+    def create_project(self, project_data: dict) -> dict:
         """
         Example payload: (default values not included)
         {
@@ -429,7 +538,7 @@ class BCCarbonRegistryAPIClient:
             error_message="Invalid project payload",
         )
 
-    def transfer_compliance_units(self, transfer_data: Dict) -> Dict:
+    def transfer_compliance_units(self, transfer_data: dict) -> dict:
         """
         Transfers compliance units from a holding account to a compliance account.
 
@@ -462,7 +571,7 @@ class BCCarbonRegistryAPIClient:
             error_message="Invalid transfer payload",
         )
 
-    def create_issuance(self, issuance_data: Dict) -> Dict:
+    def create_issuance(self, issuance_data: dict) -> dict:
         """
         Create an issuance.
         An issuance record is created in Draft status along with units are created with the holding_quantity mentioned in payload in NEW status.
@@ -502,7 +611,7 @@ class BCCarbonRegistryAPIClient:
             error_message="Invalid issuance payload",
         )
 
-    def create_sub_account(self, sub_account_data: Dict) -> Dict:
+    def create_sub_account(self, sub_account_data: dict) -> dict:
         """
         Create a subaccount for holding account
 
@@ -529,7 +638,9 @@ class BCCarbonRegistryAPIClient:
             error_message="Invalid sub account payload",
         )
 
-    def get_compliance_account(self, master_account_id: Union[str, int], compliance_year: int, boro_id: str) -> Dict:
+    def get_compliance_account(
+        self, master_account_id: str | int, compliance_year: int, boro_id: str
+    ) -> dict:
         """
         Get compliance account(Sub Account) filtered by master account ID, compliance year, and BORO ID.
 
@@ -555,20 +666,51 @@ class BCCarbonRegistryAPIClient:
                 filterModel=FilterModel(
                     accountTypeId={
                         "columnFilters": [
-                            ColumnFilter(filterType="Number", type="equals", filter=self.COMPLIANCE_ACCOUNT_TYPE_ID)
+                            ColumnFilter(
+                                filterType="Number",
+                                type="equals",
+                                filter=self.COMPLIANCE_ACCOUNT_TYPE_ID,
+                            )
                         ]
                     },
                     masterAccountId={
-                        "columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=master_account_id)]
+                        "columnFilters": [
+                            ColumnFilter(
+                                filterType="Number",
+                                type="equals",
+                                filter=master_account_id,
+                            )
+                        ]
                     },
-                    stateCode={"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="ACTIVE")]},
+                    stateCode={
+                        "columnFilters": [
+                            ColumnFilter(
+                                filterType="Text", type="equals", filter="ACTIVE"
+                            )
+                        ]
+                    },
                     complianceYear={
-                        "columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=compliance_year)]
+                        "columnFilters": [
+                            ColumnFilter(
+                                filterType="Number",
+                                type="equals",
+                                filter=compliance_year,
+                            )
+                        ]
                     },
-                    boroId={"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter=boro_id)]},
+                    boroId={
+                        "columnFilters": [
+                            ColumnFilter(
+                                filterType="Text", type="equals", filter=boro_id
+                            )
+                        ]
+                    },
                 ),
             )
         )
         return self._make_request(
-            "POST", self.ACCOUNT_SEARCH_ENDPOINT, data=payload, response_model=AccountDetailsResponse
+            "POST",
+            self.ACCOUNT_SEARCH_ENDPOINT,
+            data=payload,
+            response_model=AccountDetailsResponse,
         )

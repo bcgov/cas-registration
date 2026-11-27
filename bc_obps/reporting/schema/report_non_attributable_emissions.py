@@ -1,8 +1,9 @@
 from typing import List, Optional
-from ninja import ModelSchema, Schema, Field
+
 from common.exceptions import UserError
+from ninja import Field, ModelSchema, Schema
+from pydantic import ValidationInfo, alias_generators, field_validator, model_validator
 from reporting.models import ReportNonAttributableEmissions
-from pydantic import alias_generators, field_validator, model_validator, ValidationInfo
 
 
 class ReportNonAttributableActivityOut(ModelSchema):
@@ -11,16 +12,16 @@ class ReportNonAttributableActivityOut(ModelSchema):
     """
 
     emission_category: str = Field(..., alias="emission_category.category_name")
-    gas_type: List[str]
+    gas_type: list[str]
 
     class Meta:
         alias_generator = alias_generators.to_snake
         model = ReportNonAttributableEmissions
-        fields = ['id', 'activity', 'source_type']
+        fields = ["id", "activity", "source_type"]
 
     @staticmethod
-    def resolve_gas_type(obj: ReportNonAttributableEmissions) -> List[str]:
-        return list(obj.gas_type.values_list('chemical_formula', flat=True))
+    def resolve_gas_type(obj: ReportNonAttributableEmissions) -> list[str]:
+        return list(obj.gas_type.values_list("chemical_formula", flat=True))
 
 
 class ReportNonAttributableOut(Schema):
@@ -29,7 +30,7 @@ class ReportNonAttributableOut(Schema):
     """
 
     emissions_exceeded: bool
-    activities: List[ReportNonAttributableActivityOut]
+    activities: list[ReportNonAttributableActivityOut]
 
 
 class ReportNonAttributableIn(ModelSchema):
@@ -37,14 +38,14 @@ class ReportNonAttributableIn(ModelSchema):
     Schema for the save report operation endpoint request input
     """
 
-    id: Optional[int] = Field(None)
+    id: int | None = Field(None)
     emission_category: str
-    gas_type: List[str] = Field(min_length=1)
+    gas_type: list[str] = Field(min_length=1)
 
     class Meta:
         alias_generator = alias_generators.to_snake
         model = ReportNonAttributableEmissions
-        fields = ['id', 'activity', 'source_type']
+        fields = ["id", "activity", "source_type"]
 
 
 class ReportNonAttributableSchema(Schema):
@@ -52,8 +53,12 @@ class ReportNonAttributableSchema(Schema):
     Schema for the payload of the "save report" operation.
     """
 
-    emissions_exceeded: bool = Field(..., description="Indicates if emissions exceeded the threshold.")
-    activities: List[ReportNonAttributableIn] = Field(default=[], description="List of activities in the report.")
+    emissions_exceeded: bool = Field(
+        ..., description="Indicates if emissions exceeded the threshold."
+    )
+    activities: list[ReportNonAttributableIn] = Field(
+        default=[], description="List of activities in the report."
+    )
 
     @field_validator("activities", mode="before")
     @classmethod
@@ -63,7 +68,11 @@ class ReportNonAttributableSchema(Schema):
         return v
 
     @model_validator(mode="after")
-    def activities_required_when_emissions_exceeded(self) -> "ReportNonAttributableSchema":
+    def activities_required_when_emissions_exceeded(
+        self,
+    ) -> "ReportNonAttributableSchema":
         if self.emissions_exceeded and not self.activities:
-            raise UserError("At least one activity is required when emissions are exceeded.")
+            raise UserError(
+                "At least one activity is required when emissions are exceeded."
+            )
         return self

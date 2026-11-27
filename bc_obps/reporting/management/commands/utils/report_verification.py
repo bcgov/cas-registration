@@ -10,6 +10,6 @@ def create_report_verification(report_version: ReportVersion):
     ReportVerificationService.save_report_verification(
         report_version.id,
         ReportVerificationIn(
-            verification_conclusion='conclude',
+            verification_conclusion="conclude",
         ),
     )

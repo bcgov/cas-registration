@@ -8,7 +8,7 @@ class IdPs(Enum):
 
 class EmailTemplateNames(Enum):
     REGISTRATION_CONFIRMATION = "Registration Submission Acknowledgement"
-    BORO_ID_ISSUANCE = 'BORO ID Issuance'
+    BORO_ID_ISSUANCE = "BORO ID Issuance"
 
 
 class AccessRequestStates(Enum):

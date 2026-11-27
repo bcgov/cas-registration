@@ -1,13 +1,14 @@
 import logging
 from datetime import timedelta
-from typing import Any, List, Optional, Union, cast
+from typing import Any, cast
+
 from django.utils import timezone
-from task_scheduler.models import ScheduledTask, RetryTask
+from task_scheduler.models import RetryTask, ScheduledTask
 from task_scheduler.utils.paths import resolve_function_from_path
 
 logger = logging.getLogger(__name__)
 
-Task = Union[ScheduledTask, RetryTask]
+Task = ScheduledTask | RetryTask
 
 
 class TaskService:
@@ -46,11 +47,11 @@ class TaskService:
 
         finally:
             task.next_run_time = task.calculate_next_run_time()
-            task.save(update_fields=['next_run_time'])
+            task.save(update_fields=["next_run_time"])
             task.release_lock()
 
     @classmethod
-    def get_due_tasks(cls, tag: Optional[str] = None) -> List[Task]:
+    def get_due_tasks(cls, tag: str | None = None) -> list[Task]:
         now = timezone.now()
         scheduled_tasks = ScheduledTask.objects.filter(
             status__in=[
@@ -69,7 +70,7 @@ class TaskService:
             scheduled_tasks = scheduled_tasks.filter(tag=tag)
             retry_tasks = retry_tasks.filter(tag=tag)
 
-        due_tasks: List[Task] = []
+        due_tasks: list[Task] = []
 
         for scheduled_task in scheduled_tasks:
             due_tasks.append(cast(Task, scheduled_task))

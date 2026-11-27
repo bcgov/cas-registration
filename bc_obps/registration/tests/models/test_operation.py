@@ -1,20 +1,22 @@
-from django.utils import timezone
+from itertools import cycle
+
 from common.tests.utils.helpers import BaseTestCase
+from django.core.exceptions import ValidationError
+from django.db import ProgrammingError, transaction
+from django.utils import timezone
+from model_bakery import baker
 from registration.models import (
-    BcObpsRegulatedOperation,
     Activity,
+    BcObpsRegulatedOperation,
     Operation,
     User,
 )
-from model_bakery import baker
-from django.core.exceptions import ValidationError
-from django.db import ProgrammingError, transaction
 from registration.models.business_role import BusinessRole
 from registration.models.contact import Contact
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
-    BC_OBPS_REGULATED_OPERATION_FIXTURE,
     BC_GREENHOUSE_GAS_ID_FIXTURE,
+    BC_OBPS_REGULATED_OPERATION_FIXTURE,
     CONTACT_FIXTURE,
     DOCUMENT_FIXTURE,
     OPERATION_FIXTURE,
@@ -23,9 +25,10 @@ from registration.tests.constants import (
     USER_FIXTURE,
 )
 from registration.tests.utils.bakers import operation_baker
-from itertools import cycle
-
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class OperationModelTest(BaseTestCase):
@@ -44,7 +47,9 @@ class OperationModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_object = baker.make_recipe(
-            'registration.tests.utils.operation', swrs_facility_id=6565, status=Operation.Statuses.REGISTERED
+            "registration.tests.utils.operation",
+            swrs_facility_id=6565,
+            status=Operation.Statuses.REGISTERED,
         )
         Operation.objects.filter(swrs_facility_id__isnull=False).first()
 
@@ -69,10 +74,16 @@ class OperationModelTest(BaseTestCase):
         cls.test_object.regulated_products.set(
             [
                 baker.make_recipe(
-                    'registration.tests.utils.regulated_product', name="test", unit="test unit", is_regulated=True
+                    "registration.tests.utils.regulated_product",
+                    name="test",
+                    unit="test unit",
+                    is_regulated=True,
                 ),
                 baker.make_recipe(
-                    'registration.tests.utils.regulated_product', name="test2", unit="test2 unit2", is_regulated=False
+                    "registration.tests.utils.regulated_product",
+                    name="test2",
+                    unit="test2 unit2",
+                    is_regulated=False,
                 ),
             ]
         )
@@ -94,9 +105,19 @@ class OperationModelTest(BaseTestCase):
             ("operator", "operator", None, None),
             ("status", "status", 1000, None),
             ("multiple_operators", "multiple operator", None, None),
-            ("facility_designated_operations", "facility designated operation timeline", None, None),
+            (
+                "facility_designated_operations",
+                "facility designated operation timeline",
+                None,
+                None,
+            ),
             ("facility_snapshot", "facility snapshot", None, None),
-            ("designated_operators", "operation designated operator timeline", None, None),
+            (
+                "designated_operators",
+                "operation designated operator timeline",
+                None,
+                None,
+            ),
             ("facilities", "facility", None, None),
             ("report", "report", None, None),
             ("registration_purpose", "registration purpose", 1000, None),
@@ -112,34 +133,41 @@ class OperationModelTest(BaseTestCase):
         ]
 
     def test_unique_boro_id_per_operation(self):
-        boro_id_instance = baker.make(BcObpsRegulatedOperation, id='22-0001')
+        boro_id_instance = baker.make(BcObpsRegulatedOperation, id="22-0001")
         operation_instance: Operation = baker.make_recipe(
-            'registration.tests.utils.operation', status=Operation.Statuses.REGISTERED
+            "registration.tests.utils.operation", status=Operation.Statuses.REGISTERED
         )
 
         operation_instance.bc_obps_regulated_operation = boro_id_instance
-        operation_instance.save(update_fields=['bc_obps_regulated_operation'])
+        operation_instance.save(update_fields=["bc_obps_regulated_operation"])
 
-        with self.assertRaises(ValidationError, msg="Operation with this Bc obps regulated operation already exists."):
+        with self.assertRaises(
+            ValidationError,
+            msg="Operation with this Bc obps regulated operation already exists.",
+        ):
             baker.make_recipe(
-                'registration.tests.utils.operation',
+                "registration.tests.utils.operation",
                 bc_obps_regulated_operation=boro_id_instance,
                 status=Operation.Statuses.REGISTERED,
             )
 
     def test_generate_unique_boro_id_existing_id(self):
-        existing_id = baker.make(BcObpsRegulatedOperation, id='22-0001')  # Example existing ID for the current year
+        existing_id = baker.make(
+            BcObpsRegulatedOperation, id="22-0001"
+        )  # Example existing ID for the current year
         self.test_object.bc_obps_regulated_operation = existing_id
-        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+        cas_director = baker.make_recipe("registration.tests.utils.cas_director")
         self.test_object.generate_unique_boro_id(user_guid=cas_director.user_guid)
         self.assertEqual(
-            self.test_object.bc_obps_regulated_operation, existing_id, "Should not change the existing ID."
+            self.test_object.bc_obps_regulated_operation,
+            existing_id,
+            "Should not change the existing ID.",
         )
 
     def test_generate_unique_boro_id_no_existing_id(self):
         # Case: No existing BORO ID
         self.test_object.bc_obps_regulated_operation = None
-        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+        cas_director = baker.make_recipe("registration.tests.utils.cas_director")
         self.test_object.generate_unique_boro_id(user_guid=cas_director.user_guid)
         current_year = timezone.now().year % 100
         expected_id = f"{current_year:02d}-0001"  # Assuming the first ID for the year
@@ -151,16 +179,22 @@ class OperationModelTest(BaseTestCase):
     def test_generate_unique_boro_id_multiple_existing_ids_same_year(self):
         current_year = timezone.now().year % 100
         # Case: Multiple existing BORO IDs for the current year
-        existing_ids = [f"{current_year:02d}-0002", f"{current_year:02d}-0003", f"{current_year:02d}-0001"]
+        existing_ids = [
+            f"{current_year:02d}-0002",
+            f"{current_year:02d}-0003",
+            f"{current_year:02d}-0001",
+        ]
         for existing_id in existing_ids:
             baker.make_recipe(
-                'registration.tests.utils.operation',
-                bc_obps_regulated_operation=baker.make(BcObpsRegulatedOperation, id=existing_id),
+                "registration.tests.utils.operation",
+                bc_obps_regulated_operation=baker.make(
+                    BcObpsRegulatedOperation, id=existing_id
+                ),
                 status=Operation.Statuses.REGISTERED,
             )
 
         self.test_object.bc_obps_regulated_operation = None
-        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+        cas_director = baker.make_recipe("registration.tests.utils.cas_director")
         self.test_object.generate_unique_boro_id(user_guid=cas_director.user_guid)
         expected_id = f"{current_year:02d}-0004"
         self.assertEqual(
@@ -173,13 +207,15 @@ class OperationModelTest(BaseTestCase):
         existing_ids = ["22-0001", "22-0002", "22-0003"]
         for existing_id in existing_ids:
             baker.make_recipe(
-                'registration.tests.utils.operation',
-                bc_obps_regulated_operation=baker.make(BcObpsRegulatedOperation, id=existing_id),
+                "registration.tests.utils.operation",
+                bc_obps_regulated_operation=baker.make(
+                    BcObpsRegulatedOperation, id=existing_id
+                ),
                 status=Operation.Statuses.REGISTERED,
             )
 
         self.test_object.bc_obps_regulated_operation = None
-        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+        cas_director = baker.make_recipe("registration.tests.utils.cas_director")
         self.test_object.generate_unique_boro_id(user_guid=cas_director.user_guid)
         current_year = timezone.now().year % 100
         expected_id = f"{current_year:02d}-0001"
@@ -193,27 +229,36 @@ class OperationModelTest(BaseTestCase):
         invalid_operation = operation_baker()
         invalid_operation.swrs_facility_id = self.test_object.swrs_facility_id
 
-        with self.assertRaises(ValidationError, msg="Operation with this Swrs facility id already exists."):
+        with self.assertRaises(
+            ValidationError, msg="Operation with this Swrs facility id already exists."
+        ):
             invalid_operation.save()
 
     def test_user_has_access_to_operation(self):
-        random_user_operator = baker.make_recipe('registration.tests.utils.user_operator')
+        random_user_operator = baker.make_recipe(
+            "registration.tests.utils.user_operator"
+        )
         operation_for_random_user_operator = baker.make_recipe(
-            'registration.tests.utils.operation', operator=random_user_operator.operator
+            "registration.tests.utils.operation", operator=random_user_operator.operator
         )
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator', user=User.objects.first()
+            "registration.tests.utils.approved_user_operator", user=User.objects.first()
         )
 
         operation_for_approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.operation', operator=approved_user_operator.operator
+            "registration.tests.utils.operation",
+            operator=approved_user_operator.operator,
         )
         self.assertFalse(
-            operation_for_random_user_operator.user_has_access(approved_user_operator.user.user_guid),
+            operation_for_random_user_operator.user_has_access(
+                approved_user_operator.user.user_guid
+            ),
             "There is no approved user-operator association.",
         )
         self.assertTrue(
-            operation_for_approved_user_operator.user_has_access(approved_user_operator.user.user_guid),
+            operation_for_approved_user_operator.user_has_access(
+                approved_user_operator.user.user_guid
+            ),
             "There is an approved user-operator association.",
         )
 
@@ -221,18 +266,25 @@ class OperationModelTest(BaseTestCase):
         # a senior officer for this operation
         officer = baker.make(
             Contact,
-            business_role=BusinessRole.objects.get(role_name='Senior Officer'),
+            business_role=BusinessRole.objects.get(role_name="Senior Officer"),
         )
         # operation rep for this operation
         operation_rep = baker.make(
             Contact,
-            business_role=BusinessRole.objects.get(role_name='Operation Representative'),
+            business_role=BusinessRole.objects.get(
+                role_name="Operation Representative"
+            ),
         )
         # set contacts for the operation
         self.test_object.contacts.set([officer, operation_rep])
 
         # someone else's operation rep
-        baker.make(Contact, business_role=BusinessRole.objects.get(role_name='Operation Representative'))
+        baker.make(
+            Contact,
+            business_role=BusinessRole.objects.get(
+                role_name="Operation Representative"
+            ),
+        )
 
         result = self.test_object.get_operation_representatives()
         assert result.count() == 1
@@ -278,8 +330,12 @@ class OperationTriggerTests(BaseTestCase):
             )
 
     def test_assign_both_ids_with_registered_status_succeeds(self):
-        self.registered_operation.bcghg_id = baker.make_recipe("registration.tests.utils.bcghg_id")
-        self.registered_operation.bc_obps_regulated_operation = baker.make_recipe("registration.tests.utils.boro_id")
+        self.registered_operation.bcghg_id = baker.make_recipe(
+            "registration.tests.utils.bcghg_id"
+        )
+        self.registered_operation.bc_obps_regulated_operation = baker.make_recipe(
+            "registration.tests.utils.boro_id"
+        )
         self.registered_operation.save()
         self.assertIsNotNone(self.registered_operation.bcghg_id)
         self.assertIsNotNone(self.registered_operation.bc_obps_regulated_operation)
@@ -287,7 +343,9 @@ class OperationTriggerTests(BaseTestCase):
     def test_change_status_then_assign_id_succeeds(self):
         self.non_registered_operation.status = Operation.Statuses.REGISTERED
         self.non_registered_operation.save()
-        self.non_registered_operation.bcghg_id = baker.make_recipe("registration.tests.utils.bcghg_id")
+        self.non_registered_operation.bcghg_id = baker.make_recipe(
+            "registration.tests.utils.bcghg_id"
+        )
         self.non_registered_operation.save()
         self.assertIsNotNone(self.non_registered_operation.bcghg_id)
 
@@ -308,15 +366,20 @@ class OperationTriggerTests(BaseTestCase):
 #  RLS tests
 class TestOperationRls(BaseTestCase):
     def test_operation_rls_industry_user(self):
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        approved_user_operator = baker.make_recipe(
+            "registration.tests.utils.approved_user_operator"
+        )
         # operation belonging to the approved user operator
         approved_operation = baker.make_recipe(
-            'registration.tests.utils.operation', operator=approved_user_operator.operator
+            "registration.tests.utils.operation",
+            operator=approved_user_operator.operator,
         )
 
-        random_operator = baker.make_recipe('registration.tests.utils.operator')
+        random_operator = baker.make_recipe("registration.tests.utils.operator")
         # operation belonging to a random operator
-        random_operation = baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
+        random_operation = baker.make_recipe(
+            "registration.tests.utils.operation", operator=random_operator
+        )
 
         assert Operation.objects.count() == 2  # Two operations created
 
@@ -328,10 +391,10 @@ class TestOperationRls(BaseTestCase):
 
         def insert_function(cursor):
             Operation.objects.create(
-                name='Sample Operation Name',
+                name="Sample Operation Name",
                 type=Operation.Types.LFO,
                 operator=approved_user_operator.operator,
-                status='Not Started',
+                status="Not Started",
             )
 
         def forbidden_insert_function(cursor):
@@ -352,19 +415,23 @@ class TestOperationRls(BaseTestCase):
                     )
                 """,
                 (
-                    '7f83c2a1-56f4-4bc5-b4ce-bc1f18a72e03',
-                    'Sample Operation Name',
-                    'LFO',
+                    "7f83c2a1-56f4-4bc5-b4ce-bc1f18a72e03",
+                    "Sample Operation Name",
+                    "LFO",
                     random_operator.id,
-                    'Not Started',
+                    "Not Started",
                 ),
             )
 
         def update_function(cursor):
-            return Operation.objects.filter(id=approved_operation.id).update(name='name updated')
+            return Operation.objects.filter(id=approved_operation.id).update(
+                name="name updated"
+            )
 
         def forbidden_update_function(cursor):
-            return Operation.objects.filter(id=random_operation.id).update(name='name updated')
+            return Operation.objects.filter(id=random_operation.id).update(
+                name="name updated"
+            )
 
         assert_policies_for_industry_user(
             Operation,
@@ -378,26 +445,26 @@ class TestOperationRls(BaseTestCase):
         )
 
     def test_operation_rls_cas_users(self):
-
         baker.make_recipe(
-            'registration.tests.utils.operation',
+            "registration.tests.utils.operation",
             _quantity=5,
-            operator=baker.make_recipe('registration.tests.utils.operator'),
+            operator=baker.make_recipe("registration.tests.utils.operator"),
             status=Operation.Statuses.REGISTERED,
         )
 
         # we have to create up here because in the update_function, the role is cas, and they don't have permission to create bcghg ids
-        bcghg_id = baker.make_recipe('registration.tests.utils.bcghg_id')
+        bcghg_id = baker.make_recipe("registration.tests.utils.bcghg_id")
 
         def select_function(cursor):
             assert Operation.objects.count() == 5
 
         def update_function(cursor):
-
             updated_operation = Operation.objects.first()
             updated_operation.bcghg_id = bcghg_id
             updated_operation.save()
 
             assert Operation.objects.filter(bcghg_id__isnull=False).count() == 1
 
-        assert_policies_for_cas_roles(Operation, select_function=select_function, update_function=update_function)
+        assert_policies_for_cas_roles(
+            Operation, select_function=select_function, update_function=update_function
+        )

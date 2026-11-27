@@ -1,7 +1,10 @@
-from django.test import SimpleTestCase
 import pgtrigger
 import pytest
-from reporting.models.triggers import immutable_report_version_trigger, no_overlapping_configuration_records_trigger
+from django.test import SimpleTestCase
+from reporting.models.triggers import (
+    immutable_report_version_trigger,
+    no_overlapping_configuration_records_trigger,
+)
 
 
 class ImmutableReportVersionTriggerTest(SimpleTestCase):
@@ -9,7 +12,11 @@ class ImmutableReportVersionTriggerTest(SimpleTestCase):
         trigger = immutable_report_version_trigger()
 
         assert trigger.name == "immutable_report_version"
-        assert trigger.operation.operations == (pgtrigger.Update, pgtrigger.Insert, pgtrigger.Delete)
+        assert trigger.operation.operations == (
+            pgtrigger.Update,
+            pgtrigger.Insert,
+            pgtrigger.Delete,
+        )
         assert trigger.when == pgtrigger.Before
         assert (
             trigger.func.func
@@ -32,10 +39,16 @@ class ImmutableReportVersionTriggerTest(SimpleTestCase):
         )
 
     def test_generates_sql_properly_for_custom_relation_path(self):
-        trigger = immutable_report_version_trigger("some_intermediate_model__report_version")
+        trigger = immutable_report_version_trigger(
+            "some_intermediate_model__report_version"
+        )
 
         assert trigger.name == "immutable_report_version"
-        assert trigger.operation.operations == (pgtrigger.Update, pgtrigger.Insert, pgtrigger.Delete)
+        assert trigger.operation.operations == (
+            pgtrigger.Update,
+            pgtrigger.Insert,
+            pgtrigger.Delete,
+        )
         assert trigger.when == pgtrigger.Before
         assert (
             trigger.func.func
@@ -143,7 +156,8 @@ class NoOverlappingConfigurationRecordsTriggerTest(SimpleTestCase):
 
     def test_generates_sql_with_multiple_additional_filters(self):
         trigger = no_overlapping_configuration_records_trigger(
-            message="test message", additional_filters=["source_type", "gas_type", "methodology"]
+            message="test message",
+            additional_filters=["source_type", "gas_type", "methodology"],
         )
 
         assert trigger.func.func == (

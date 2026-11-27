@@ -1,10 +1,16 @@
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from typing import Any, Dict
+
+from compliance.models import (
+    ComplianceObligation,
+    ComplianceReportVersion,
+    ElicensingInterestRate,
+)
 from django.http import HttpRequest
 from django.utils import timezone
-from compliance.models import ComplianceObligation, ComplianceReportVersion, ElicensingInterestRate
 from rls.utils.manager import RlsManager
+
 from ..schemas import ScenarioPayload
 from .base import ScenarioHandler
 
@@ -27,10 +33,12 @@ class MakeObligationOverdueScenario(ScenarioHandler):
     LATE_SUPPLEMENTARY_PAYMENT_DAYS = 30
     DEFAULT_INTEREST_RATE = Decimal("0.0625")
 
-    def execute(self, request: HttpRequest, data: ScenarioPayload) -> Dict[str, Any]:
+    def execute(self, request: HttpRequest, data: ScenarioPayload) -> dict[str, Any]:
         payload = data.payload or {}
         if payload.get("report_version_id") is None:
-            raise ValueError("report_version_id is required for make_obligation_overdue")
+            raise ValueError(
+                "report_version_id is required for make_obligation_overdue"
+            )
         report_version_id = int(payload["report_version_id"])
         days_overdue = int(payload.get("days_overdue", self.DEFAULT_DAYS_OVERDUE))
         days_after_deadline = payload.get("days_after_deadline")
@@ -47,7 +55,9 @@ class MakeObligationOverdueScenario(ScenarioHandler):
             original_compliance_deadline = compliance_period.compliance_deadline
 
             if restore_compliance_deadline is not None:
-                compliance_period.compliance_deadline = date.fromisoformat(restore_compliance_deadline)
+                compliance_period.compliance_deadline = date.fromisoformat(
+                    restore_compliance_deadline
+                )
                 compliance_period.save(update_fields=["compliance_deadline"])
                 return {
                     "compliance_report_version_id": crv.id,
@@ -56,17 +66,27 @@ class MakeObligationOverdueScenario(ScenarioHandler):
 
             obligation = getattr(crv, "obligation", None)
             if obligation is None or obligation.elicensing_invoice is None:
-                raise ValueError(f"Compliance report version {crv.id} has no invoiced obligation")
+                raise ValueError(
+                    f"Compliance report version {crv.id} has no invoiced obligation"
+                )
 
             compliance_period.compliance_deadline = compliance_deadline
             compliance_period.save(update_fields=["compliance_deadline"])
 
-            updates: Dict[str, Any] = {"penalty_status": ComplianceObligation.PenaltyStatus.ACCRUING}
+            updates: dict[str, Any] = {
+                "penalty_status": ComplianceObligation.PenaltyStatus.ACCRUING
+            }
             invoice_due_date = compliance_deadline
             if days_after_deadline is not None:
-                submitted_on = compliance_deadline + timedelta(days=int(days_after_deadline))
-                updates["created_at"] = timezone.make_aware(datetime.combine(submitted_on, time(12, 0)))
-                invoice_due_date = submitted_on + timedelta(days=self.LATE_SUPPLEMENTARY_PAYMENT_DAYS)
+                submitted_on = compliance_deadline + timedelta(
+                    days=int(days_after_deadline)
+                )
+                updates["created_at"] = timezone.make_aware(
+                    datetime.combine(submitted_on, time(12, 0))
+                )
+                invoice_due_date = submitted_on + timedelta(
+                    days=self.LATE_SUPPLEMENTARY_PAYMENT_DAYS
+                )
             ComplianceObligation.objects.filter(pk=obligation.pk).update(**updates)
 
             invoice = obligation.elicensing_invoice

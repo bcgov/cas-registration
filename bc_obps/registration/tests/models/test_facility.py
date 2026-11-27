@@ -1,21 +1,22 @@
 from itertools import cycle
-from django.db.utils import ProgrammingError
-from common.tests.utils.helpers import BaseTestCase
+
 from common.lib import pgtrigger
-from registration.models import Facility, Operation
+from common.tests.utils.helpers import BaseTestCase
+from django.db.utils import ProgrammingError
 from model_bakery import baker
+from registration.models import Facility, Operation
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
-    BC_OBPS_REGULATED_OPERATION_FIXTURE,
     BC_GREENHOUSE_GAS_ID_FIXTURE,
+    BC_OBPS_REGULATED_OPERATION_FIXTURE,
     CONTACT_FIXTURE,
     DOCUMENT_FIXTURE,
-    WELL_AUTHORIZATION_NUMBER_FIXTURE,
     FACILITY_FIXTURE,
     OPERATION_FIXTURE,
     OPERATOR_FIXTURE,
     TIMESTAMP_COMMON_FIELDS,
     USER_FIXTURE,
+    WELL_AUTHORIZATION_NUMBER_FIXTURE,
 )
 
 
@@ -42,12 +43,27 @@ class FacilityModelTest(BaseTestCase):
             ("name", "name", 1000, None),
             ("type", "type", 100, None),
             ("address", "address", None, None),
-            ("latitude_of_largest_emissions", "latitude of largest emissions", None, None),
-            ("longitude_of_largest_emissions", "longitude of largest emissions", None, None),
+            (
+                "latitude_of_largest_emissions",
+                "latitude of largest emissions",
+                None,
+                None,
+            ),
+            (
+                "longitude_of_largest_emissions",
+                "longitude of largest emissions",
+                None,
+                None,
+            ),
             ("well_authorization_numbers", "well authorization numbers", None, None),
             ("swrs_facility_id", "swrs facility id", None, None),
             ("bcghg_id", "bcghg id", None, None),
-            ("designated_operations", "facility designated operation timeline", None, None),
+            (
+                "designated_operations",
+                "facility designated operation timeline",
+                None,
+                None,
+            ),
             ("facility_snapshot", "facility snapshot", None, None),
             ("operation", "operation", None, None),
             ("is_current_year", "is current year", None, None),
@@ -68,7 +84,13 @@ class FacilityTriggerTests(BaseTestCase):
         )
         self.non_registered_operation = baker.make_recipe(
             "registration.tests.utils.operation",
-            status=cycle([Operation.Statuses.DRAFT, Operation.Statuses.NOT_STARTED, Operation.Statuses.DECLINED]),
+            status=cycle(
+                [
+                    Operation.Statuses.DRAFT,
+                    Operation.Statuses.NOT_STARTED,
+                    Operation.Statuses.DECLINED,
+                ]
+            ),
         )
         self.facility_with_registered_op = baker.make_recipe(
             "registration.tests.utils.facility", operation=self.registered_operation
@@ -85,7 +107,9 @@ class FacilityTriggerTests(BaseTestCase):
     def test_insert_bcghg_id_with_non_registered_operation(self):
         # Test that setting bcghg_id fails if the related Operation isn't Registered
         with self.assertRaises(ProgrammingError) as cm:
-            self.facility_with_non_registered_op.bcghg_id = baker.make_recipe("registration.tests.utils.bcghg_id")
+            self.facility_with_non_registered_op.bcghg_id = baker.make_recipe(
+                "registration.tests.utils.bcghg_id"
+            )
             self.facility_with_non_registered_op.save()
         self.assertIn(
             "Cannot assign bcghg_id to Facility unless the related Operation status is Registered",
@@ -94,7 +118,9 @@ class FacilityTriggerTests(BaseTestCase):
 
     def test_insert_bcghg_id_with_registered_operation(self):
         # Test that setting bcghg_id succeeds if the related Operation is Registered
-        self.facility_with_registered_op.bcghg_id = baker.make_recipe("registration.tests.utils.bcghg_id")
+        self.facility_with_registered_op.bcghg_id = baker.make_recipe(
+            "registration.tests.utils.bcghg_id"
+        )
         self.facility_with_registered_op.save()
         self.assertIsNotNone(self.facility_with_registered_op.bcghg_id)
 
@@ -115,7 +141,9 @@ class FacilityTriggerTests(BaseTestCase):
         # Test that changing the Operation status to Registered allows assigning bcghg_id
         self.non_registered_operation.status = Operation.Statuses.REGISTERED
         self.non_registered_operation.save()
-        self.facility_with_non_registered_op.bcghg_id = baker.make_recipe("registration.tests.utils.bcghg_id")
+        self.facility_with_non_registered_op.bcghg_id = baker.make_recipe(
+            "registration.tests.utils.bcghg_id"
+        )
         self.facility_with_non_registered_op.save()
         self.assertIsNotNone(self.facility_with_non_registered_op.bcghg_id)
 
@@ -124,14 +152,21 @@ class FacilityTriggerTests(BaseTestCase):
 
         # temporarily disable the trigger so that we can insert a mock facility into the test DB
         facility_bcghgid = baker.make_recipe("registration.tests.utils.bcghg_id")
-        with pgtrigger.ignore("registration.Facility:restrict_bcghg_id_unless_operation_registered"):
+        with pgtrigger.ignore(
+            "registration.Facility:restrict_bcghg_id_unless_operation_registered"
+        ):
             self.facility_with_non_registered_op.bcghg_id = facility_bcghgid
             self.facility_with_non_registered_op.save()
 
-        self.facility_with_non_registered_op.operation.status = Operation.Statuses.REGISTERED
+        self.facility_with_non_registered_op.operation.status = (
+            Operation.Statuses.REGISTERED
+        )
         self.facility_with_non_registered_op.save()
 
-        assert self.facility_with_non_registered_op.operation.status == Operation.Statuses.REGISTERED
+        assert (
+            self.facility_with_non_registered_op.operation.status
+            == Operation.Statuses.REGISTERED
+        )
         assert self.facility_with_non_registered_op.bcghg_id == facility_bcghgid
 
     def test_facility_with_preexisting_bcghg_id_allows_facility_update(self):
@@ -139,7 +174,9 @@ class FacilityTriggerTests(BaseTestCase):
 
         # temporarily disable the trigger so that we can insert a mock facility into the test DB
         facility_bcghgid = baker.make_recipe("registration.tests.utils.bcghg_id")
-        with pgtrigger.ignore("registration.Facility:restrict_bcghg_id_unless_operation_registered"):
+        with pgtrigger.ignore(
+            "registration.Facility:restrict_bcghg_id_unless_operation_registered"
+        ):
             self.facility_with_non_registered_op.bcghg_id = facility_bcghgid
             self.facility_with_non_registered_op.save()
 

@@ -1,31 +1,36 @@
 import logging
 import os
 import traceback
-from typing import Union, Optional, Any, Callable
+from collections.abc import Callable
 from dataclasses import dataclass
-from django.conf import settings
-from django.http import HttpRequest
-from django.db.utils import InternalError, ProgrammingError, DatabaseError
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from ninja.responses import Response
-from sentry_sdk import set_tag, capture_exception, set_user
-from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
-from registration.utils import generate_useful_error
-from registration.constants import UNAUTHORIZED_MESSAGE
+from typing import Any, Optional, Union
+
 from common.exceptions import UserError
+from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from compliance.service.exceptions import ComplianceInvoiceError
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.utils import DatabaseError, InternalError, ProgrammingError
+from django.http import HttpRequest
+from ninja.responses import Response
+from registration.constants import UNAUTHORIZED_MESSAGE
+from registration.utils import generate_useful_error
 from reporting.service.exceptions import ReportValidationException
-from reporting.service.report_validation.report_validation_error import ReportValidationErrorKey, Severity
+from reporting.service.report_validation.report_validation_error import (
+    ReportValidationErrorKey,
+    Severity,
+)
+from sentry_sdk import capture_exception, set_tag, set_user
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
 class ExceptionResponse:
-    message: Optional[Union[str, Callable[[Any], Optional[str]]]]
+    message: str | Callable[[Any], str | None] | None
     status: int
-    sentry_tag: Optional[str] = None
-    payload_builder: Optional[Callable[[Any], dict[str, Any]]] = None
+    sentry_tag: str | None = None
+    payload_builder: Callable[[Any], dict[str, Any]] | None = None
     key: str = "generic_error"
 
 
@@ -45,7 +50,9 @@ class ExceptionHandler:
         # are shown to the user without being reported to Sentry
         (UserError,): ExceptionResponse(lambda exc: str(exc), 400, key="user_error"),
         (ObjectDoesNotExist,): ExceptionResponse("Not Found", 404),
-        (ValidationError,): ExceptionResponse(lambda exc: generate_useful_error(exc), 422),
+        (ValidationError,): ExceptionResponse(
+            lambda exc: generate_useful_error(exc), 422
+        ),
         (PermissionError,): ExceptionResponse(
             "Permission denied.",
             403,
@@ -64,13 +71,23 @@ class ExceptionHandler:
                 "errors": [
                     {
                         "key": (
-                            e.key.value if isinstance(e.key, ReportValidationErrorKey) else e.key
+                            e.key.value
+                            if isinstance(e.key, ReportValidationErrorKey)
+                            else e.key
                         ),  # This could be the actual error key, supporting static or dynamic keys
                         "error": {  # and then there could be a 'type' field, which would be consumed by the frontend to determine how to display the error
-                            "severity": e.severity.value if hasattr(e, "severity") else "error",
+                            "severity": e.severity.value
+                            if hasattr(e, "severity")
+                            else "error",
                             "message": e.message,
                             **(
-                                {"context": e.context.model_dump(by_alias=True, exclude_none=True)} if e.context else {}
+                                {
+                                    "context": e.context.model_dump(
+                                        by_alias=True, exclude_none=True
+                                    )
+                                }
+                                if e.context
+                                else {}
                             ),
                         },
                     }
@@ -109,8 +126,8 @@ class ExceptionHandler:
 
     @staticmethod
     def capture_sentry_exception(
-        exc: Any, tag: Optional[str] = None, request: Optional[HttpRequest] = None
-    ) -> Optional[str]:
+        exc: Any, tag: str | None = None, request: HttpRequest | None = None
+    ) -> str | None:
         """Capture exception in Sentry."""
         if not settings.ENABLE_SENTRY:
             return None
@@ -127,7 +144,9 @@ class ExceptionHandler:
         return event_id
 
     @classmethod
-    def get_response_body(cls, exc: BaseException, response_config: ExceptionResponse) -> dict[str, Any]:
+    def get_response_body(
+        cls, exc: BaseException, response_config: ExceptionResponse
+    ) -> dict[str, Any]:
         """Generate response body based on exception and config."""
         if response_config.payload_builder:
             return response_config.payload_builder(exc)
@@ -138,7 +157,9 @@ class ExceptionHandler:
         return {"message": message}
 
     @staticmethod
-    def build_error_response_body(message: str, key: str = "generic_error") -> dict[str, Any]:
+    def build_error_response_body(
+        message: str, key: str = "generic_error"
+    ) -> dict[str, Any]:
         return {
             "message": message,
             "errors": [
@@ -162,7 +183,9 @@ class ExceptionHandler:
         body = cls.get_response_body(exc, response_config)
         # Handle Sentry for specific cases
         if response_config.sentry_tag:
-            event_id = cls.capture_sentry_exception(exc, response_config.sentry_tag, request)
+            event_id = cls.capture_sentry_exception(
+                exc, response_config.sentry_tag, request
+            )
             if event_id:
                 body["message"] += f" Reference ID: {event_id}"
                 logger.critical(body["message"], exc_info=True)
@@ -179,7 +202,9 @@ class ExceptionHandler:
         )
 
     @classmethod
-    def handle(cls, request: HttpRequest, exc: Union[BaseException, type[BaseException]]) -> Response:
+    def handle(
+        cls, request: HttpRequest, exc: BaseException | type[BaseException]
+    ) -> Response:
         """Handle exceptions and return appropriate API response."""
         cls.debug_log_exception()
 
@@ -198,10 +223,13 @@ class ExceptionHandler:
         # Default: unexpected error
         event_id = cls.capture_sentry_exception(exc, "unexpected_error", request)
         if event_id:
-            logger.critical(f"Unexpected error. Sentry Reference ID: {event_id}", exc_info=True)
+            logger.critical(
+                f"Unexpected error. Sentry Reference ID: {event_id}", exc_info=True
+            )
 
-        message = "An internal server error has occurred. Please contact ghgregulator@gov.bc.ca for help" + (
-            f" and include the reference code: {event_id}" if event_id else "."
+        message = (
+            "An internal server error has occurred. Please contact ghgregulator@gov.bc.ca for help"
+            + (f" and include the reference code: {event_id}" if event_id else ".")
         )
 
         return Response(
@@ -210,6 +238,8 @@ class ExceptionHandler:
         )
 
 
-def handle_exception(request: HttpRequest, exc: Union[BaseException, type[BaseException]]) -> Response:
+def handle_exception(
+    request: HttpRequest, exc: BaseException | type[BaseException]
+) -> Response:
     """Global exception handler for Django Ninja API."""
     return ExceptionHandler.handle(request, exc)

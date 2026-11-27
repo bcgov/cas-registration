@@ -1,17 +1,18 @@
-from typing import Callable, Dict, Literal, Optional, List, Union
-from django.core.cache import cache
-from django.http import HttpRequest
+from collections.abc import Callable
+from typing import Dict, List, Literal, Optional, Union
 
 from common.constants import PERMISSION_CONFIGS_CACHE_KEY
-from registration.constants import UNAUTHORIZED_MESSAGE
+from django.core.cache import cache
+from django.http import HttpRequest
 from ninja.errors import HttpError
-from registration.models import AppRole, UserOperator, User
+from registration.constants import UNAUTHORIZED_MESSAGE
+from registration.models import AppRole, User, UserOperator
 
 
 def raise_401_if_user_not_authorized(
     request: HttpRequest,
-    authorized_app_roles: List[str],
-    authorized_user_operator_roles: Optional[List[str]] = None,
+    authorized_app_roles: list[str],
+    authorized_user_operator_roles: list[str] | None = None,
     industry_user_must_be_approved: bool = True,
 ) -> None:
     """
@@ -28,19 +29,23 @@ def raise_401_if_user_not_authorized(
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     if user.is_industry_user():
-        _check_industry_user_authorization(user, authorized_user_operator_roles, industry_user_must_be_approved)
+        _check_industry_user_authorization(
+            user, authorized_user_operator_roles, industry_user_must_be_approved
+        )
 
 
 def _check_industry_user_authorization(
     user: User,
-    authorized_user_operator_roles: Optional[List[str]],
+    authorized_user_operator_roles: list[str] | None,
     industry_user_must_be_approved: bool,
 ) -> None:
     if not authorized_user_operator_roles:
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
     if industry_user_must_be_approved:
-        approved_user_operator = user.user_operators.filter(status=UserOperator.Statuses.APPROVED).exists()
+        approved_user_operator = user.user_operators.filter(
+            status=UserOperator.Statuses.APPROVED
+        ).exists()
         if not approved_user_operator:
             raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
@@ -51,12 +56,17 @@ def _check_industry_user_authorization(
     user_operator_role = None
     try:
         user_operator = (
-            UserOperator.objects.exclude(status=UserOperator.Statuses.DECLINED).only("role").get(user=user.user_guid)
+            UserOperator.objects.exclude(status=UserOperator.Statuses.DECLINED)
+            .only("role")
+            .get(user=user.user_guid)
         )
         user_operator_role = user_operator.role
     except UserOperator.DoesNotExist:
         pass
-    if not user_operator_role or user_operator_role not in authorized_user_operator_roles:
+    if (
+        not user_operator_role
+        or user_operator_role not in authorized_user_operator_roles
+    ):
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
 
 
@@ -68,7 +78,7 @@ and this is the reason why it is not included in some of the permission configur
 
 def get_permission_configs(
     permission: str,
-) -> Optional[Union[Dict[str, List[str]], Dict[str, bool]]]:
+) -> dict[str, list[str]] | dict[str, bool] | None:
     """
     Returns the permission configurations for the specified permission.
     :param permission: The permission to get the configuration for.
@@ -76,13 +86,15 @@ def get_permission_configs(
 
     NOTE: We must make this a function so we don't hit database when collecting tests.(we don't have access to DB during collection)
     """
-    cached_result: Optional[Dict[str, Dict]] = cache.get(PERMISSION_CONFIGS_CACHE_KEY)
+    cached_result: dict[str, dict] | None = cache.get(PERMISSION_CONFIGS_CACHE_KEY)
     if cached_result is not None:
         return cached_result.get(permission)
 
     all_authorized_app_roles = AppRole.get_all_authorized_app_roles()
-    all_industry_user_operator_roles = UserOperator.get_all_industry_user_operator_roles()
-    permission_configs: Dict[str, Dict] = {
+    all_industry_user_operator_roles = (
+        UserOperator.get_all_industry_user_operator_roles()
+    )
+    permission_configs: dict[str, dict] = {
         "all_roles": {
             "authorized_app_roles": AppRole.get_all_app_roles(),
             "authorized_user_operator_roles": all_industry_user_operator_roles,
@@ -119,7 +131,9 @@ def get_permission_configs(
         },
         "cas_director": {
             "authorized_app_roles": list(
-                AppRole.objects.filter(role_name="cas_director").values_list("role_name", flat=True)
+                AppRole.objects.filter(role_name="cas_director").values_list(
+                    "role_name", flat=True
+                )
             )
         },
         "cas_director_analyst": {
@@ -135,12 +149,16 @@ def get_permission_configs(
         },
         "cas_analyst": {
             "authorized_app_roles": list(
-                AppRole.objects.filter(role_name="cas_analyst").values_list("role_name", flat=True)
+                AppRole.objects.filter(role_name="cas_analyst").values_list(
+                    "role_name", flat=True
+                )
             ),
         },
         "cas_admin": {
             "authorized_app_roles": list(
-                AppRole.objects.filter(role_name="cas_admin").values_list("role_name", flat=True)
+                AppRole.objects.filter(role_name="cas_admin").values_list(
+                    "role_name", flat=True
+                )
             ),
         },
     }
@@ -198,10 +216,14 @@ def authorize(
     return check_permission
 
 
-def validate_all(request: HttpRequest, funcs: tuple[Callable[[HttpRequest], bool], ...]) -> bool:
+def validate_all(
+    request: HttpRequest, funcs: tuple[Callable[[HttpRequest], bool], ...]
+) -> bool:
     # This function is separated from compose_auth to allow for testing.(e.g. mocking)
     return all(func(request) for func in funcs)
 
 
-def compose_auth(*funcs: Callable[[HttpRequest], bool]) -> Callable[[HttpRequest], bool]:
+def compose_auth(
+    *funcs: Callable[[HttpRequest], bool],
+) -> Callable[[HttpRequest], bool]:
     return lambda request: validate_all(request, funcs)

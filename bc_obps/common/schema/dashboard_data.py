@@ -5,4 +5,4 @@ from ninja import ModelSchema
 class DashboardDataSchemaOut(ModelSchema):
     class Meta:
         model = DashboardData
-        fields = ['data']
+        fields = ["data"]

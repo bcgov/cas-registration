@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock, patch
+
 from model_bakery import baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
@@ -19,7 +20,8 @@ class TestProductionDataApi(CommonTestSetup):
             operator=self.report_version.report.operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator,
+            operations=[self.report_version.report.operation],
         )
 
     @patch("reporting.api.production_data.ReportProductService.save_production_data")
