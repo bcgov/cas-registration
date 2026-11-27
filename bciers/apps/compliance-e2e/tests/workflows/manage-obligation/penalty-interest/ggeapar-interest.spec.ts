@@ -104,6 +104,15 @@ test.describe("GGEAPAR interest flow - CAS analyst", () => {
     await analyzeAccessibility(page, "Penalty calculator - GGEAPAR accruing");
 
     await penaltyCalculator.hideDateInputFromScreenshot();
+    // The dates are relative to today and GGEAPAR compounds on the 1st of each month, so the amounts
+    // change from day to day
+    await penaltyCalculator.hideGridColumnsFromScreenshot([
+      "Daily Penalty",
+      "Daily compounded",
+      "Accumulated penalty",
+      "Accumulated compounded",
+    ]);
+    await penaltyCalculator.hideTotalPenaltyAmountFromScreenshot();
     await takeStabilizedScreenshot(happoScreenshot, page, {
       component: "Penalty calculator",
       variant: `GGEAPAR - accruing (supplementary, ${daysOverdue} days overdue)`,
