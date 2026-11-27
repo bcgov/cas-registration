@@ -4,8 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("reporting", "0220_commentthread_resolved"),
+        ('reporting', '0220_commentthread_resolved'),
     ]
 
     operations = []

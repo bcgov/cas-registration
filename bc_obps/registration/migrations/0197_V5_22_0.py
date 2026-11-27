@@ -4,8 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("registration", "0196_V5_21_0"),
+        ('registration', '0196_V5_21_0'),
     ]
 
     operations = []

@@ -4,8 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("compliance", "0070_alter_compliancereportversionmanualhandling_context"),
+        ('compliance', '0070_alter_compliancereportversionmanualhandling_context'),
     ]
 
     operations = []

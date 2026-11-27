@@ -4,8 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("mocks", "0002_mock_now_method"),
+        ('mocks', '0002_mock_now_method'),
     ]
 
     operations = [

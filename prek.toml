@@ -163,7 +163,10 @@ args = [
     "--fix",
 ]
 files = "^bc_obps/"
-exclude = "^bc_obps/common/lib/pgtrigger/"
+exclude = { glob = [
+    "bc_obps/common/lib/pgtrigger/**",
+    "bc_obps/*/migrations/*.py",
+] }
 priority = 3
 
 [[repos.hooks]]

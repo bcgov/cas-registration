@@ -4,8 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("task_scheduler", "0043_V5_20_1"),
+        ('task_scheduler', '0043_V5_20_1'),
     ]
 
     operations = []

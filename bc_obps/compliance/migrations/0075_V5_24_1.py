@@ -4,8 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("compliance", "0074_alter_elicensinglineitem_guid_and_more"),
+        ('compliance', '0074_alter_elicensinglineitem_guid_and_more'),
     ]
 
     operations = []

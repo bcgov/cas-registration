@@ -4,8 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("registration", "0193_alter_closureevent_status_and_more"),
+        ('registration', '0193_alter_closureevent_status_and_more'),
     ]
 
     operations = []

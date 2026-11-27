@@ -4,8 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("reporting", "0224_add_biocarbon"),
+        ('reporting', '0224_add_biocarbon'),
     ]
 
     operations = []

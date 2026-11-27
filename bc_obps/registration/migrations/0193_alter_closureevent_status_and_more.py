@@ -4,68 +4,69 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("registration", "0192_V5_19_1"),
+        ('registration', '0192_V5_19_1'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name="closureevent",
-            name="status",
+            model_name='closureevent',
+            name='status',
             field=models.CharField(
-                choices=[("Closed", "Closed")],
-                db_comment="Status of the closure event.",
-                default="Closed",
+                choices=[('Closed', 'Closed')],
+                db_comment='Status of the closure event.',
+                default='Closed',
                 max_length=100,
             ),
         ),
         migrations.AlterField(
-            model_name="historicalclosureevent",
-            name="status",
+            model_name='historicalclosureevent',
+            name='status',
             field=models.CharField(
-                choices=[("Closed", "Closed")],
-                db_comment="Status of the closure event.",
-                default="Closed",
+                choices=[('Closed', 'Closed')],
+                db_comment='Status of the closure event.',
+                default='Closed',
                 max_length=100,
             ),
         ),
         migrations.AlterField(
-            model_name="historicalrestartevent",
-            name="status",
+            model_name='historicalrestartevent',
+            name='status',
             field=models.CharField(
-                choices=[("Restarted", "Restarted")],
-                db_comment="Status of the restart event.",
-                default="Restarted",
+                choices=[('Restarted', 'Restarted')],
+                db_comment='Status of the restart event.',
+                default='Restarted',
                 max_length=100,
             ),
         ),
         migrations.AlterField(
-            model_name="historicaltemporaryshutdownevent",
-            name="status",
+            model_name='historicaltemporaryshutdownevent',
+            name='status',
             field=models.CharField(
-                choices=[("Temporarily Shutdown", "Temporarily Shutdown")],
-                db_comment="Status of the temporary shutdown event.",
-                default="Temporarily Shutdown",
+                choices=[('Temporarily Shutdown', 'Temporarily Shutdown')],
+                db_comment='Status of the temporary shutdown event.',
+                default='Temporarily Shutdown',
                 max_length=100,
             ),
         ),
         migrations.AlterField(
-            model_name="restartevent",
-            name="status",
+            model_name='restartevent',
+            name='status',
             field=models.CharField(
-                choices=[("Restarted", "Restarted")],
-                db_comment="Status of the restart event.",
-                default="Restarted",
+                choices=[('Restarted', 'Restarted')],
+                db_comment='Status of the restart event.',
+                default='Restarted',
                 max_length=100,
             ),
         ),
         migrations.AlterField(
-            model_name="temporaryshutdownevent",
-            name="status",
+            model_name='temporaryshutdownevent',
+            name='status',
             field=models.CharField(
-                choices=[("Temporarily Shutdown", "Temporarily Shutdown")],
-                db_comment="Status of the temporary shutdown event.",
-                default="Temporarily Shutdown",
+                choices=[('Temporarily Shutdown', 'Temporarily Shutdown')],
+                db_comment='Status of the temporary shutdown event.',
+                default='Temporarily Shutdown',
                 max_length=100,
             ),
         ),

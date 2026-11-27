@@ -4,22 +4,19 @@ from django.db import migrations
 
 
 def add_biocarbon(apps, schema_editor):
-    FuelType = apps.get_model("reporting", "FuelType")
-    FuelType.objects.create(
-        name="Biocarbon", unit="bone dry tonnes", classification="Woody Biomass"
-    )
+    FuelType = apps.get_model('reporting', 'FuelType')
+    FuelType.objects.create(name="Biocarbon", unit="bone dry tonnes", classification="Woody Biomass")
 
 
 def reverse_add_biocarbon(apps, schema_editor):
-    FuelType = apps.get_model("reporting", "FuelType")
+    FuelType = apps.get_model('reporting', 'FuelType')
     FuelType.objects.filter(name="Biocarbon", unit="bone dry tonnes").delete()
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ("reporting", "0223_V5_25_2"),
+        ('reporting', '0223_V5_25_2'),
     ]
 
-    operations = [
-        migrations.RunPython(code=add_biocarbon, reverse_code=reverse_add_biocarbon)
-    ]
+    operations = [migrations.RunPython(code=add_biocarbon, reverse_code=reverse_add_biocarbon)]
