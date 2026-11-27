@@ -1,7 +1,7 @@
 from django.db import transaction
 
 from reporting.models.report_product import ReportProduct
-from registration.models import Operation
+from registration.models import Activity, Operation, RegulatedProduct
 from registration.models.contact import Contact
 from reporting.utils import CONTACT_HAS_COMPLETE_ADDRESS
 from reporting.models.report import Report
@@ -205,8 +205,8 @@ class ReportVersionService:
                 "report_products",
                 queryset=ReportProduct.objects.select_related("product"),
             ),
-            "report_operation__activities",
-            "report_operation__regulated_products",
+            Prefetch("report_operation__activities", queryset=Activity.objects.order_by("weight", "name")),
+            Prefetch("report_operation__regulated_products", queryset=RegulatedProduct.objects.order_by("name")),
         ]
         if operation_type == Operation.Types.LFO and not prefetch_full_facility_report:
             prefetches.append(

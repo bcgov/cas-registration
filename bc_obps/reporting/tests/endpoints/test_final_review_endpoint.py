@@ -20,8 +20,8 @@ class TestReportFinalReview(CommonTestSetup):
         self.emission_category = EmissionCategory.objects.get(
             category_name="Stationary fuel combustion emissions", category_type="basic"
         )
-        self.activity_1 = make_recipe("reporting.tests.utils.activity", name="very fake activity")
-        self.activity_2 = make_recipe("reporting.tests.utils.activity", name="fake activity")
+        self.activity_1 = make_recipe("reporting.tests.utils.activity", name="very fake activity", weight=1)
+        self.activity_2 = make_recipe("reporting.tests.utils.activity", name="fake activity", weight=2)
         self.regulated_product_1 = make_recipe(
             "registration.tests.utils.regulated_product", name='Test Cement equivalent'
         )
