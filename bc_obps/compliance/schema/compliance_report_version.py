@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any
 
 from compliance.models import CompliancePenalty
 from compliance.models.compliance_report_version import ComplianceReportVersion

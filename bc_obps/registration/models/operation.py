@@ -1,6 +1,5 @@
 import re
 import uuid
-from typing import Optional
 from uuid import UUID
 
 import pgtrigger

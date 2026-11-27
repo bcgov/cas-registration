@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from common.permissions import authorize
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest

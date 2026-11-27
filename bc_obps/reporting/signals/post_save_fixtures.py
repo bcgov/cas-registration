@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Type
+from typing import Any
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage

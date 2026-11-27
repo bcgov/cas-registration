@@ -1,5 +1,3 @@
-from typing import Dict
-
 from common.exceptions import UserError
 from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
 from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import (

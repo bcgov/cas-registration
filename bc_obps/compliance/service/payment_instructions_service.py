@@ -1,6 +1,6 @@
 import logging
 from collections.abc import Generator
-from typing import Any, Dict, Tuple
+from typing import Any
 
 from common.service.pdf.pdf_generator_service import PDFGeneratorService
 from compliance.constants import CLEAN_BC_LOGO_COMPLIANCE_INVOICE

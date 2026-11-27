@@ -1,4 +1,4 @@
-from typing import Dict, Literal, Optional
+from typing import Literal
 from uuid import UUID
 
 from django.db import transaction

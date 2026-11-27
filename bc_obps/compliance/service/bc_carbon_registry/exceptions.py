@@ -1,6 +1,3 @@
-from typing import Optional
-
-
 class BCCarbonRegistryError(Exception):
     def __init__(
         self,

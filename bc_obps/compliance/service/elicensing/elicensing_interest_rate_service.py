@@ -1,7 +1,6 @@
 import logging
 from datetime import date, timedelta
 from decimal import Decimal
-from typing import List, Optional
 
 from compliance.models.elicensing_interest_rate import ElicensingInterestRate
 from compliance.service.elicensing.elicensing_api_client import elicensing_api_client

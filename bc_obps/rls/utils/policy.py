@@ -1,5 +1,5 @@
 import re
-from typing import Literal, Optional
+from typing import Literal
 
 from django.db.backends.utils import CursorWrapper
 from rls.enums import RlsRoles

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from ninja.types import DictStrAny
 from registration.models import Address
 

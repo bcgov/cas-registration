@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 from model_bakery import baker
 from registration.models.app_role import AppRole

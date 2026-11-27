@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import List, Optional
 
 from compliance.service.bc_carbon_registry.schema import FifteenDigitString
 from ninja import Schema

@@ -158,12 +158,8 @@ id = "ruff-check"
 alias = "ruff-lint-obps"
 name = "ruff linter"
 args = [
-    "--select",
-    "I,UP",
-    "--extend-select",
-    "RUF100",
     "--ignore",
-    "F401,F403,E712,E731,UP035",
+    "F401,F403,E712,E731,UP035,B,TRY,SIM,BLE,RUF,PLC,PGH,PLW,LOG,PIE,PYI,G,C,ISC,FURB,PLR,RET",
     "--fix",
 ]
 files = "^bc_obps/"

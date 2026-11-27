@@ -1,5 +1,5 @@
 import logging
-from typing import Any, List
+from typing import Any
 
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (

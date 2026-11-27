@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Literal, Tuple
+from typing import Literal
 
 from common.permissions import authorize
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx

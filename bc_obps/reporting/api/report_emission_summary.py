@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import List, Tuple
 from uuid import UUID
 
 from common.permissions import authorize

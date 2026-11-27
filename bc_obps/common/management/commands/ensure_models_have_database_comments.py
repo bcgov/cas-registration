@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-from typing import Any, List, Type
+from typing import Any
 
 from django.apps import apps
 from django.conf import settings

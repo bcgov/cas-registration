@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from common.exceptions import UserError
 from compliance.models.compliance_report_version import ComplianceReportVersion

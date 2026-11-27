@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal
 
 from compliance.models.compliance_report_version_manual_handling import (
     ComplianceReportVersionManualHandling,

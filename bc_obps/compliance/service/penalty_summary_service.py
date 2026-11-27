@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, Dict
+from typing import Any
 
 from compliance.enums import ComplianceInvoiceTypes
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService

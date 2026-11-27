@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any
 from uuid import UUID
 
 from common.exceptions import UserError

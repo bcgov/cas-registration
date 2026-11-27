@@ -1,5 +1,5 @@
 import json
-from typing import Literal, Union
+from typing import Literal
 
 from common.api.utils import get_current_user_guid
 from common.permissions import authorize

@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Literal
 from uuid import UUID
 
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx

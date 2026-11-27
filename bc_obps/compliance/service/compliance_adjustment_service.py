@@ -1,7 +1,6 @@
 import logging
 import uuid
 from decimal import Decimal
-from typing import Optional
 
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.elicensing_adjustment import ElicensingAdjustment

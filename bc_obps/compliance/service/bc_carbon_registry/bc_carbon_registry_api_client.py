@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, Literal, Optional, Type, Union
+from typing import Any, Literal
 
 import requests
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError

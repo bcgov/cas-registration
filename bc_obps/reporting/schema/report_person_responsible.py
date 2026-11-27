@@ -1,5 +1,3 @@
-from typing import Optional
-
 from ninja import Field, ModelSchema
 from pydantic import ConfigDict, alias_generators
 from reporting.models import ReportPersonResponsible

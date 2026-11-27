@@ -1,4 +1,4 @@
-from typing import Any, Literal, Tuple
+from typing import Any, Literal
 
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest

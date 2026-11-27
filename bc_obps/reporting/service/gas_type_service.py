@@ -1,5 +1,3 @@
-from typing import List
-
 from reporting.models import GasType
 
 

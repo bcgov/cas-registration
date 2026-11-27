@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import List
 
 from django.db.models import F, Q, Sum
 from reporting.constants import (

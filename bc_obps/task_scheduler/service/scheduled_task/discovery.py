@@ -1,7 +1,7 @@
 import importlib
 import logging
 import os
-from typing import Any, Dict
+from typing import Any
 
 from django.conf import settings
 from task_scheduler.utils.paths import get_function_path

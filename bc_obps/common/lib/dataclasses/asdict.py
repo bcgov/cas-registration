@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Any, Optional
+from typing import Any
 
 from .dict_factory import dict_factory
 

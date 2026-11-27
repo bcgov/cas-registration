@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal
 
 from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
 from compliance.service.bc_carbon_registry.schema import FifteenDigitString

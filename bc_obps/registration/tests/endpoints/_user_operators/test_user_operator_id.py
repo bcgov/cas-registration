@@ -1,5 +1,3 @@
-from typing import List
-
 from model_bakery import baker
 from registration.models import (
     BusinessStructure,

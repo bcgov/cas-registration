@@ -2,7 +2,7 @@ import base64
 import logging
 from collections.abc import Generator
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.template.exceptions import TemplateDoesNotExist

@@ -1,6 +1,6 @@
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
-from typing import Any, Dict
+from typing import Any
 
 from compliance.models import (
     ComplianceObligation,

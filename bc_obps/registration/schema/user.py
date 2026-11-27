@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated
 from uuid import UUID
 
 from django.core.exceptions import ValidationError as DjangoValidationError

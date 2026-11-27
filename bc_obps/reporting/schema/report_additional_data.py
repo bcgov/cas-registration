@@ -1,5 +1,3 @@
-from typing import Optional
-
 from ninja import ModelSchema
 from pydantic import alias_generators
 from reporting.models import ReportAdditionalData

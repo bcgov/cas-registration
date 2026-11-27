@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 from common.tests.utils.helpers import assert_error_response

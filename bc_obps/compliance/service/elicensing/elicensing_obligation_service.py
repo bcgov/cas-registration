@@ -1,7 +1,7 @@
 import logging
 import uuid
 from datetime import date, timedelta
-from typing import Any, Dict
+from typing import Any
 from zoneinfo import ZoneInfo
 
 from compliance.models import (

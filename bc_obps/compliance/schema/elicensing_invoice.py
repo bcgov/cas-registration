@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Annotated, Optional
+from typing import Annotated
 
 from compliance.enums import ComplianceInvoiceTypes
 from compliance.models.elicensing_invoice import ElicensingInvoice

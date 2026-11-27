@@ -1,6 +1,6 @@
 from decimal import Decimal
 from enum import Enum
-from typing import Dict, Tuple, cast
+from typing import cast
 
 
 class ProductionPeriod(Enum):

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from compliance.models import ComplianceReport, ComplianceReportVersion
 from compliance.models.compliance_report_version_manual_handling import (
     ComplianceReportVersionManualHandling,

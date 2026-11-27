@@ -2,7 +2,6 @@ import random
 import string
 import uuid
 from itertools import cycle
-from typing import List, Union
 
 from model_bakery import baker
 from model_bakery.recipe import seq

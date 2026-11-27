@@ -1,6 +1,6 @@
 import logging
 from collections.abc import Callable
-from typing import Any, Dict
+from typing import Any
 
 from task_scheduler.models import RetryTask
 from task_scheduler.utils.parameters import extract_function_parameters

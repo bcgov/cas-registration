@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Literal
 from uuid import UUID
 
 from common.api.utils.current_user_utils import get_current_user_guid

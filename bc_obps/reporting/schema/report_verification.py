@@ -1,5 +1,3 @@
-from typing import Optional
-
 from ninja import ModelSchema
 from reporting.models import ReportVerification
 

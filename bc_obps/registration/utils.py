@@ -1,6 +1,6 @@
 import logging
 from collections.abc import Iterable
-from typing import Any, TypeVar, Union
+from typing import Any, TypeVar
 
 from django.conf import settings
 from django.core.exceptions import ValidationError

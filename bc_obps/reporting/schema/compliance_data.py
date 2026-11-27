@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Literal
 
 from ninja import Schema
 from reporting.service.compliance_service.compliance_service import ComplianceData

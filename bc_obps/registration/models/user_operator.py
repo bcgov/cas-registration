@@ -1,6 +1,5 @@
 import typing
 import uuid
-from typing import List
 
 from common.constants import PERMISSION_CONFIGS_CACHE_KEY
 from common.enums import Schemas

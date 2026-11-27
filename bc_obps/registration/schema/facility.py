@@ -1,5 +1,4 @@
 import decimal
-from typing import List, Optional
 from uuid import UUID
 
 from ninja import Field, ModelSchema

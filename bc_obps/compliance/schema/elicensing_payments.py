@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from compliance.models.elicensing_payment import ElicensingPayment
 from ninja import ModelSchema, Schema
 

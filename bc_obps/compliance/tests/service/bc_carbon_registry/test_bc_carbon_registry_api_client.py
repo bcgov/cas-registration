@@ -1,7 +1,6 @@
 import logging
 import zlib
 from datetime import datetime, timedelta
-from typing import Optional
 from unittest.mock import Mock
 
 import pytest

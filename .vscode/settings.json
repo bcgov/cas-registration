@@ -1,5 +1,5 @@
 {
-  "ruff.lint.select": ["I", "UP", "RUF100"],
+  "ruff.importStrategy": "fromEnvironment",
   "[python]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "charliermarsh.ruff",

@@ -1,4 +1,4 @@
-from typing import Generic, List, TypeVar
+from typing import Generic, TypeVar
 
 from ninja import Schema
 

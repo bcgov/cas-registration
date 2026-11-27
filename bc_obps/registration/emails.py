@@ -1,5 +1,4 @@
 import logging
-from typing import List, Optional
 
 from common.service.data_access_service.email_template_service import (
     EmailNotificationTemplateService,

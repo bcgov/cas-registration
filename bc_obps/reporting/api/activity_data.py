@@ -1,4 +1,3 @@
-from typing import Tuple
 from uuid import UUID
 
 from common.permissions import authorize

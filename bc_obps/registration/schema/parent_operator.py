@@ -1,5 +1,3 @@
-from typing import Optional
-
 from ninja import Field, ModelSchema
 from pydantic import ConfigDict, field_validator
 from registration.constants import CRA_BUSINESS_NUMBER_REGEX

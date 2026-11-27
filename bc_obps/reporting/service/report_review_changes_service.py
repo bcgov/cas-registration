@@ -1,7 +1,7 @@
 import logging
 import re
 from collections import namedtuple
-from typing import Any, Dict, List, Optional, Tuple, TypedDict
+from typing import Any, TypedDict
 
 from deepdiff import DeepDiff
 

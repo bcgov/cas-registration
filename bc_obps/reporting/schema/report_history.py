@@ -1,5 +1,3 @@
-from typing import Optional
-
 from ninja import ModelSchema
 from registration.models import Operation
 from reporting.models import ReportVersion

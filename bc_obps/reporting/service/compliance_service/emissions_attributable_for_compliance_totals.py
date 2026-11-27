@@ -2,7 +2,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import Dict, List, NamedTuple
+from typing import NamedTuple
 
 from django.db.models import Exists, F, OuterRef, Sum
 from reporting.constants import (

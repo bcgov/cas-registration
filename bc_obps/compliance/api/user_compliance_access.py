@@ -1,5 +1,3 @@
-from typing import Optional
-
 from common.api.utils import get_current_user_guid
 from common.permissions import authorize
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx

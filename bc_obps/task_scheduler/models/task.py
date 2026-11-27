@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, timedelta
-from typing import Optional
 
 from django.db import models, transaction
 from django.utils import timezone

@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from ninja import Field, ModelSchema, Schema
 from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.schema.report_product_emission_allocation import (

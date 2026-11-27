@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import Dict, List
 
 from django.db.models import OuterRef, Subquery, Sum
 from reporting.constants import (

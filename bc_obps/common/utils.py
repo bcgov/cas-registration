@@ -1,7 +1,5 @@
 from datetime import UTC, datetime
-from datetime import timezone as dt_timezone
 from decimal import Decimal
-from typing import List, Optional
 from zoneinfo import ZoneInfo
 
 from django.apps import apps

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.conf import settings
 from django.core.cache import cache
 from django.core.management import call_command

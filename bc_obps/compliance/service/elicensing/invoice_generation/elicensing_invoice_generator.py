@@ -1,7 +1,7 @@
 import json
 from collections.abc import Generator
 from decimal import Decimal
-from typing import Any, Dict, Tuple
+from typing import Any
 
 from common.service.pdf.pdf_generator_service import PDFGeneratorService
 from compliance.dataclass import (

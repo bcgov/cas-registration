@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from ninja import Field, ModelSchema, Schema
 from registration.schema import RegulatedProductSchema
 from reporting.models.report_product import ReportProduct

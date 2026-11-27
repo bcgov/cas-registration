@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import Optional
 from uuid import UUID
 
 from compliance.enums import ComplianceInvoiceTypes

@@ -1,5 +1,4 @@
 import logging
-from typing import Dict, Optional
 
 from common.exceptions import UserError
 from compliance.dataclass import ManualHandlingUpdate

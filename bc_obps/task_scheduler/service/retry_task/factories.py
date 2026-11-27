@@ -1,5 +1,4 @@
 from collections.abc import Callable
-from typing import Optional
 
 from task_scheduler.config.settings import TASK_SCHEDULER_CONFIG
 from task_scheduler.service.retry_task.retryable import RetryableFunction

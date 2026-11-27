@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Dict, List, Optional, cast
+from typing import cast
 
 from compliance.dataclass import AdjustmentStrategy, InvoiceAdjustment
 from compliance.models import (

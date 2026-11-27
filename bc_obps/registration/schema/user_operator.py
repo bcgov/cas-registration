@@ -1,4 +1,4 @@
-from typing import Annotated, List, Optional
+from typing import Annotated
 from uuid import UUID
 
 from ninja import Field, FilterSchema, ModelSchema, Schema

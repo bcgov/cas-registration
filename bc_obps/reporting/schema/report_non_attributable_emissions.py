@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from common.exceptions import UserError
 from ninja import Field, ModelSchema, Schema
 from pydantic import ValidationInfo, alias_generators, field_validator, model_validator

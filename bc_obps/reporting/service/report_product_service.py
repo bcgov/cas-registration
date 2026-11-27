@@ -1,5 +1,4 @@
 from collections.abc import Iterable
-from typing import List
 from uuid import UUID
 
 from django.db import transaction

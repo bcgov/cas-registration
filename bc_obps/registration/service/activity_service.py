@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List
+from typing import Any
 from uuid import UUID
 
 from registration.models import Activity

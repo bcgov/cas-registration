@@ -1,4 +1,4 @@
-from typing import Any, Optional, cast
+from typing import Any, cast
 from uuid import UUID
 
 from django import forms

@@ -2,7 +2,6 @@ import logging
 import os
 import random
 import subprocess
-from typing import Optional
 
 from django.core.management.base import BaseCommand
 from django.db import connections

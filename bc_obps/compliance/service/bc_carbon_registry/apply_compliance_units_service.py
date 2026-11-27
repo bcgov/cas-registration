@@ -1,6 +1,6 @@
 from dataclasses import asdict
 from decimal import Decimal
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from common.exceptions import UserError
 from compliance.dataclass import (

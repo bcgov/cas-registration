@@ -1,7 +1,6 @@
 import json
 import logging
 from collections.abc import Callable
-from typing import Optional
 from uuid import UUID
 
 from django.core.cache import cache

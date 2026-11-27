@@ -1,6 +1,5 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Optional
 
 from ninja import ModelSchema, Schema
 from registration.models.regulated_product import RegulatedProduct

@@ -1,4 +1,3 @@
-from typing import List
 from uuid import UUID
 
 from common.api.utils import get_current_user_guid

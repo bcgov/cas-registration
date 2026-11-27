@@ -1,7 +1,7 @@
 import inspect
 import json
 from collections.abc import Callable
-from typing import Any, Dict, Tuple
+from typing import Any
 
 from django.core.serializers.json import DjangoJSONEncoder
 

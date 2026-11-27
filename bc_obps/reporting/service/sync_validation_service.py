@@ -1,4 +1,3 @@
-from typing import Optional, Tuple
 from uuid import UUID
 
 from registration.models import Facility, Operation

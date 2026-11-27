@@ -1,6 +1,5 @@
 import logging
 from collections.abc import Callable
-from typing import Optional
 
 from django.conf import settings
 from django.db import connection

@@ -1,6 +1,6 @@
 import json
 from collections.abc import Sequence
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from django.core.cache import caches
 from django.db.models import Prefetch, QuerySet

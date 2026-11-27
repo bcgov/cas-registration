@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Union
+from typing import Any
 
 from django.core.exceptions import ValidationError
 from django.db.models.signals import m2m_changed, pre_save

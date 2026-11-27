@@ -1,4 +1,4 @@
-from typing import Annotated, List, Optional
+from typing import Annotated
 
 from ninja import Field, FilterSchema, ModelSchema, Schema
 from reporting.models.report_attachment import ReportAttachment

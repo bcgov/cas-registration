@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any
 
 from common.enums import Schemas
 from django.db.backends.utils import CursorWrapper

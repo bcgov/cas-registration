@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import List, Literal, Optional, TypedDict
+from typing import Literal, TypedDict
 
 from compliance.models import ElicensingInvoice
 

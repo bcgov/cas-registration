@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Protocol
+from typing import Protocol
 
 from common.service.error_service.handle_exception import ExceptionHandler
 from compliance.models import ComplianceReport, ComplianceReportVersion

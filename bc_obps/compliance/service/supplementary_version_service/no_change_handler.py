@@ -1,5 +1,3 @@
-from typing import Optional
-
 from compliance.models import ComplianceReport, ComplianceReportVersion
 from compliance.service.supplementary_version_service.helpers import (
     get_previous_compliance_version_by_report_and_summary,

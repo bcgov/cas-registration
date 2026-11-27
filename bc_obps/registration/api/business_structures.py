@@ -1,4 +1,4 @@
-from typing import List, Literal, Tuple
+from typing import Literal
 
 from common.permissions import authorize
 from django.db.models import QuerySet

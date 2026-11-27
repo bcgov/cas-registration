@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Type
+from typing import Any
 
 from django.db.models import F
 from django.dispatch import receiver

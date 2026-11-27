@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum, StrEnum
-from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict

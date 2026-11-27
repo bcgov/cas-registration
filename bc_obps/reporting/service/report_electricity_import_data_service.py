@@ -1,6 +1,5 @@
 from dataclasses import asdict, dataclass
 from decimal import Decimal
-from typing import Optional
 
 from reporting.models import ReportElectricityImportData, ReportVersion
 

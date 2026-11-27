@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, Optional
+from typing import Any
 
 from compliance.schema.elicensing_payments import ElicensingPaymentListOut
 from ninja import Schema

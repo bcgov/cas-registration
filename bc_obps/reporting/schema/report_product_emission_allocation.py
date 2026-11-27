@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, List
+from typing import Any
 
 from ninja import ModelSchema, Schema
 from reporting.models.report_product_emission_allocation import (

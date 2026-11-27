@@ -1,5 +1,3 @@
-from typing import Optional
-
 from ninja import ModelSchema, Schema
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 

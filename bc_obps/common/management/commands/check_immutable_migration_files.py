@@ -1,7 +1,6 @@
 import logging
 import re
 import sys
-from typing import Optional
 
 from bc_obps.settings import LOCAL_APPS
 from django.core.management.base import BaseCommand

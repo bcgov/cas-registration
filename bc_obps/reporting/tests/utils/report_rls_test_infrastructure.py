@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from model_bakery.baker import make_recipe
 from registration.models.user_operator import UserOperator

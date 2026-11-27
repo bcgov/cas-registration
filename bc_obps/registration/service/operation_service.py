@@ -1,6 +1,5 @@
 from collections.abc import Callable, Generator
 from datetime import date, datetime
-from typing import List, Optional, Tuple
 from uuid import UUID
 from zoneinfo import ZoneInfo
 

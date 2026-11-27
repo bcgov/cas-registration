@@ -1,5 +1,3 @@
-from typing import Optional
-
 from compliance.models import ComplianceReport, ComplianceReportVersion
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.elicensing.elicensing_obligation_service import (

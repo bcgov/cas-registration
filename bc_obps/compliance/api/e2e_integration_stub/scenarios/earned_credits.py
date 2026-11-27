@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from common.api.utils.current_user_utils import get_current_user
 from compliance.models import ComplianceEarnedCredit

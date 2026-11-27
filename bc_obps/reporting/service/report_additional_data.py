@@ -1,5 +1,3 @@
-from typing import Optional
-
 from reporting.models import ReportAdditionalData, ReportVersion
 from reporting.schema.report_additional_data import (
     ReportAdditionalDataIn,

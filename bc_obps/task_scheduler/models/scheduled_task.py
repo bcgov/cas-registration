@@ -1,6 +1,5 @@
 from collections.abc import Callable
 from datetime import datetime, time, timedelta
-from typing import Dict, Optional
 from zoneinfo import ZoneInfo
 
 from django.db import models

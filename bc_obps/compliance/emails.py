@@ -1,5 +1,4 @@
 import logging
-from typing import Dict, List
 
 from common.models.email_notification_template import EmailNotificationTemplate
 from common.service.data_access_service.email_template_service import (

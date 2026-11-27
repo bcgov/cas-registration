@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.core.cache import cache
 from django.db.models import QuerySet
 from registration.models import BusinessStructure

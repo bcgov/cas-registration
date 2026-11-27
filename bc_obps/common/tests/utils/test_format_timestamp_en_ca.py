@@ -1,5 +1,5 @@
 # tests/test_format_timestamp_en_ca.py
-from datetime import UTC, datetime, timezone
+from datetime import UTC, datetime
 from zoneinfo import ZoneInfo
 
 import pytest

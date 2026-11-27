@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List, Optional
 
 from django.core.files.uploadedfile import UploadedFile
 from registration.models.operation import Operation

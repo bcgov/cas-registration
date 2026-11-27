@@ -1,4 +1,3 @@
-from typing import List, Optional, Union
 from uuid import UUID
 
 from common.exceptions import UserError

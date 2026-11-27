@@ -1,5 +1,4 @@
 import re
-from typing import Optional
 
 
 def validate_cra_business_number(value: str) -> str | None:

@@ -1,5 +1,3 @@
-from typing import Optional, Tuple
-
 from common.api.utils.current_user_utils import get_current_user
 from common.permissions import authorize
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx

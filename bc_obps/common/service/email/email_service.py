@@ -1,7 +1,7 @@
 import logging
 import typing
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, TypedDict, Union
+from typing import Any, TypedDict
 from uuid import UUID
 
 import requests

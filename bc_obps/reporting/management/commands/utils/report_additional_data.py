@@ -1,5 +1,4 @@
 from dataclasses import asdict, dataclass
-from typing import Optional
 
 from reporting.models.report_additional_data import ReportAdditionalData
 from reporting.models.report_version import ReportVersion

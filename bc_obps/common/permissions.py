@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Dict, List, Literal, Optional, Union
+from typing import Literal
 
 from common.constants import PERMISSION_CONFIGS_CACHE_KEY
 from django.core.cache import cache

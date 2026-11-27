@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import Optional
 
 from django.db import transaction
 from registration.models import Operation

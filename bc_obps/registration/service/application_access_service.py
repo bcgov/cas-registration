@@ -1,4 +1,3 @@
-from typing import Dict, Optional
 from uuid import UUID
 
 from common.exceptions import UserError

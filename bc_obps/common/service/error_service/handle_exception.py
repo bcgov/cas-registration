@@ -3,7 +3,7 @@ import os
 import traceback
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Optional, Union
+from typing import Any
 
 from common.exceptions import UserError
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
