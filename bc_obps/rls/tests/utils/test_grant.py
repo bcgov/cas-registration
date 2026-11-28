@@ -1,17 +1,20 @@
 from unittest import TestCase
 from unittest.mock import patch
-from psycopg.sql import SQL, Identifier
+
 from common.enums import Schemas
+from psycopg.sql import SQL, Identifier
 from registration.enums.enums import RegistrationTableNames
-from rls.enums import RlsRoles, RlsOperations
+from rls.enums import RlsOperations, RlsRoles
 from rls.utils.grant import RlsGrant
 
 
 class TestRlsGrant(TestCase):
-    @patch('django.db.connection.cursor')
+    @patch("django.db.connection.cursor")
     def test_apply_grant(self, mock_cursor):
         grant = RlsGrant(
-            RlsRoles.INDUSTRY_USER, [RlsOperations.SELECT, RlsOperations.INSERT], RegistrationTableNames.CONTACT
+            RlsRoles.INDUSTRY_USER,
+            [RlsOperations.SELECT, RlsOperations.INSERT],
+            RegistrationTableNames.CONTACT,
         )
 
         grant.apply_grant(mock_cursor)
@@ -23,10 +26,14 @@ class TestRlsGrant(TestCase):
         )
         mock_cursor.execute.assert_called_once_with(expected_query)
 
-    @patch('django.db.connection.cursor')
+    @patch("django.db.connection.cursor")
     def test_apply_grant_failure(self, mock_cursor):
         mock_cursor.execute.side_effect = Exception("SQL error")
-        grant = RlsGrant(RlsRoles.INDUSTRY_USER, [RlsOperations.SELECT], RegistrationTableNames.CONTACT)
+        grant = RlsGrant(
+            RlsRoles.INDUSTRY_USER,
+            [RlsOperations.SELECT],
+            RegistrationTableNames.CONTACT,
+        )
 
         with self.assertRaises(RuntimeError) as context:
             grant.apply_grant(mock_cursor)

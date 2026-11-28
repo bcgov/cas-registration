@@ -14,7 +14,7 @@ if DJANGO_VERSION >= "5.1":
 
     OPERATION_DEPENDENCY_CREATE = OperationDependency.Type.CREATE
 else:
-    OperationDependency = lambda *args: tuple((args))  # noqa: E731
+    OperationDependency = lambda *args: tuple(args)
     OPERATION_DEPENDENCY_CREATE = True
 
 
@@ -44,8 +44,11 @@ class TriggerOperationMixin:
         """
         The check for determinig if a trigger is migrated
         """
-        return schema_editor.connection.vendor == "postgresql" and self.allow_migrate_model(
-            schema_editor.connection.alias, model._meta.concrete_model
+        return (
+            schema_editor.connection.vendor == "postgresql"
+            and self.allow_migrate_model(
+                schema_editor.connection.alias, model._meta.concrete_model
+            )
         )
 
 
@@ -58,7 +61,9 @@ class AddTrigger(TriggerOperationMixin, IndexOperation):
 
     def state_forwards(self, app_label, state):
         model_state = state.models[app_label, self.model_name]
-        model_state.options["triggers"] = model_state.options.get("triggers", []) + [self.trigger]
+        model_state.options["triggers"] = model_state.options.get("triggers", []) + [
+            self.trigger
+        ]
         state.reload_model(app_label, self.model_name, delay=True)
 
     def database_forwards(self, app_label, schema_editor, from_state, to_state):
@@ -94,7 +99,9 @@ def _get_trigger_by_name(model_state, name):
         if trigger.name == name:
             return trigger
 
-    raise ValueError(f"No trigger named {name} on model {model_state.name}")  # pragma: no cover
+    raise ValueError(
+        f"No trigger named {name} on model {model_state.name}"
+    )  # pragma: no cover
 
 
 class RemoveTrigger(TriggerOperationMixin, IndexOperation):
@@ -187,14 +194,21 @@ class MigrationAutodetectorMixin:
         Piggyback off of constraint generation hooks to generate
         trigger migration operations
         """
-        for app_label, model_name in sorted(self.kept_model_keys | self.kept_proxy_keys):
-            old_model_name = self.renamed_models.get((app_label, model_name), model_name)
+        for app_label, model_name in sorted(
+            self.kept_model_keys | self.kept_proxy_keys
+        ):
+            old_model_name = self.renamed_models.get(
+                (app_label, model_name), model_name
+            )
             old_model_state = self.from_state.models[app_label, old_model_name]
             new_model_state = self.to_state.models[app_label, model_name]
             new_model = self.to_state.apps.get_model(app_label, model_name)
 
             old_triggers = old_model_state.options.get("triggers", [])
-            new_triggers = [trigger.compile(new_model) for trigger in new_model_state.options.get("triggers", [])]
+            new_triggers = [
+                trigger.compile(new_model)
+                for trigger in new_model_state.options.get("triggers", [])
+            ]
             add_triggers = [c for c in new_triggers if c not in old_triggers]
             rem_triggers = [c for c in old_triggers if c not in new_triggers]
 
@@ -213,14 +227,18 @@ class MigrationAutodetectorMixin:
         for (app_label, model_name), alt_triggers in self.altered_triggers.items():
             model = self.to_state.apps.get_model(app_label, model_name)
             for trigger in alt_triggers["added_triggers"]:
-                self.add_operation(app_label, self._get_add_trigger_op(model=model, trigger=trigger))
+                self.add_operation(
+                    app_label, self._get_add_trigger_op(model=model, trigger=trigger)
+                )
 
         return super().generate_added_constraints()
 
     def generate_removed_constraints(self):
         for (app_label, model_name), alt_triggers in self.altered_triggers.items():
             for trigger in alt_triggers["removed_triggers"]:
-                self.add_operation(app_label, RemoveTrigger(model_name=model_name, name=trigger.name))
+                self.add_operation(
+                    app_label, RemoveTrigger(model_name=model_name, name=trigger.name)
+                )
 
         return super().generate_removed_constraints()
 
@@ -244,11 +262,17 @@ class MigrationAutodetectorMixin:
             }
 
             related_dependencies = [
-                OperationDependency(app_label, model_name, name, OPERATION_DEPENDENCY_CREATE)
+                OperationDependency(
+                    app_label, model_name, name, OPERATION_DEPENDENCY_CREATE
+                )
                 for name in sorted(related_fields)
             ]
             # Depend on the model being created
-            related_dependencies.append(OperationDependency(app_label, model_name, None, OPERATION_DEPENDENCY_CREATE))
+            related_dependencies.append(
+                OperationDependency(
+                    app_label, model_name, None, OPERATION_DEPENDENCY_CREATE
+                )
+            )
 
             for trigger in model_state.options.pop("triggers", []):
                 self.add_operation(
@@ -267,7 +291,9 @@ class MigrationAutodetectorMixin:
             # Inject an additional dependency for created proxies to
             # avoid this
             for op in self.generated_operations.get(app_label, []):
-                if isinstance(op, CreateModel) and op.options.get("proxy", False):  # pragma: no branch
+                if isinstance(op, CreateModel) and op.options.get(
+                    "proxy", False
+                ):  # pragma: no branch
                     _inject_m2m_dependency_in_proxy(op)
 
             model = self.to_state.apps.get_model(app_label, model_name)
@@ -278,7 +304,11 @@ class MigrationAutodetectorMixin:
                 self.add_operation(
                     app_label,
                     self._get_add_trigger_op(model=model, trigger=trigger),
-                    dependencies=[OperationDependency(app_label, model_name, None, OPERATION_DEPENDENCY_CREATE)],
+                    dependencies=[
+                        OperationDependency(
+                            app_label, model_name, None, OPERATION_DEPENDENCY_CREATE
+                        )
+                    ],
                 )
 
     def generate_deleted_proxies(self):
@@ -291,7 +321,11 @@ class MigrationAutodetectorMixin:
                 self.add_operation(
                     app_label,
                     RemoveTrigger(model_name=model_name, name=trigger.name),
-                    dependencies=[OperationDependency(app_label, model_name, None, OPERATION_DEPENDENCY_CREATE)],
+                    dependencies=[
+                        OperationDependency(
+                            app_label, model_name, None, OPERATION_DEPENDENCY_CREATE
+                        )
+                    ],
                 )
 
         super().generate_deleted_proxies()
@@ -343,7 +377,11 @@ class DatabaseSchemaEditorMixin:
         """
         Detects that a field type is being altered and sets the appropriate state
         """
-        context = self.alter_field_type() if old_type != new_type else contextlib.nullcontext()
+        context = (
+            self.alter_field_type()
+            if old_type != new_type
+            else contextlib.nullcontext()
+        )
 
         with context:
             return super()._alter_field(
@@ -366,7 +404,10 @@ class DatabaseSchemaEditorMixin:
         self.temporarily_dropped_triggers.add((trigger, table))
 
         try:
-            with transaction.atomic(self.connection.alias), self.connection.cursor() as cursor:
+            with (
+                transaction.atomic(self.connection.alias),
+                self.connection.cursor() as cursor,
+            ):
                 cursor.execute(
                     f"""
                     SELECT pg_get_triggerdef(oid) FROM pg_trigger
@@ -405,7 +446,10 @@ class DatabaseSchemaEditorMixin:
                     # In practice we should never receive the same error message for
                     # the same trigger/table, but check anyways to avoid infinite
                     # recursion
-                    if trigger.startswith("pgtrigger_") and (table, trigger) not in self.temporarily_dropped_triggers:
+                    if (
+                        trigger.startswith("pgtrigger_")
+                        and (table, trigger) not in self.temporarily_dropped_triggers
+                    ):
                         with self.temporarily_drop_trigger(trigger, table):
                             return self.execute(*args, **kwargs)
 

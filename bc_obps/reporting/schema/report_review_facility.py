@@ -1,5 +1,5 @@
-from typing import Optional
 from uuid import UUID
+
 from ninja import Schema
 
 
@@ -20,5 +20,5 @@ class ReportReviewFacilitySchemaOut(Schema):
 
     current_facilities: list[FacilityForReview]
     past_facilities: list[FacilityForReview]
-    operation_id: Optional[UUID] = None
+    operation_id: UUID | None = None
     is_sync_allowed: bool = True

@@ -1,11 +1,15 @@
 import json
-from django.http import HttpRequest, StreamingHttpResponse
-from compliance.service.payment_instructions_service import PaymentInstructionsService
+
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.schema.generic import Message
+from compliance.api.permissions import (
+    approved_industry_user_compliance_report_version_composite_auth,
+)
 from compliance.enums import ComplianceInvoiceTypes
+from compliance.service.payment_instructions_service import PaymentInstructionsService
+from django.http import HttpRequest, StreamingHttpResponse
+from registration.schema.generic import Message
+
 from ...router import router
-from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth
 
 
 @router.get(
@@ -47,7 +51,9 @@ def generate_payment_instructions(
     # Otherwise, unpack the PDF generator, filename, and total size
     pdf_generator, filename, total_size = result
 
-    response = StreamingHttpResponse(streaming_content=pdf_generator, content_type="application/pdf")
+    response = StreamingHttpResponse(
+        streaming_content=pdf_generator, content_type="application/pdf"
+    )
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
     response["Content-Length"] = str(total_size)
     return response

@@ -1,36 +1,43 @@
-from datetime import date, timedelta
-from django.utils import timezone
 import calendar
-from decimal import Decimal, ROUND_HALF_UP
-from typing import Any, Dict, Tuple
-from compliance.schema.calculated_penalty import CalculatedPenaltyOut, PenaltyAccrual, PenaltyTypeStatus
-from compliance.service.compliance_penalty_rate_service import CompliancePenaltyRateService
-from compliance.service.elicensing.elicensing_data_refresh_service import (
-    ElicensingDataRefreshService,
-    ElicensingInvoice,
-)
-from django.db.models import Sum
+import uuid
+from dataclasses import asdict, dataclass
+from datetime import date, timedelta
+from decimal import ROUND_HALF_UP, Decimal
+from typing import Any
+
+from compliance.enums import ComplianceInvoiceTypes
 from compliance.models import (
-    ElicensingLineItem,
-    ElicensingPayment,
-    ElicensingAdjustment,
     ComplianceObligation,
     CompliancePenalty,
     CompliancePenaltyAccrual,
     ComplianceReportVersion,
+    ElicensingAdjustment,
     ElicensingClientOperator,
     ElicensingInterestRate,
+    ElicensingLineItem,
+    ElicensingPayment,
 )
-import uuid
+from compliance.schema.calculated_penalty import (
+    CalculatedPenaltyOut,
+    PenaltyAccrual,
+    PenaltyTypeStatus,
+)
+from compliance.service.compliance_penalty_rate_service import (
+    CompliancePenaltyRateService,
+)
 from compliance.service.elicensing.elicensing_api_client import (
     ELicensingAPIClient,
     FeeCreationRequest,
     InvoiceCreationRequest,
 )
+from compliance.service.elicensing.elicensing_data_refresh_service import (
+    ElicensingDataRefreshService,
+    ElicensingInvoice,
+)
 from compliance.service.elicensing.schema import FeeCreationItem
-from compliance.enums import ComplianceInvoiceTypes
 from django.db import transaction
-from dataclasses import asdict, dataclass
+from django.db.models import Sum
+from django.utils import timezone
 
 elicensing_api_client = ELicensingAPIClient()
 
@@ -79,7 +86,7 @@ class PenaltyCalculationService:
         cls,
         obligation: ComplianceObligation,
         penalty_accrual_context: PenaltyAccrualContext,
-    ) -> Tuple[PenaltyTypeStatus, PenaltyTypeStatus]:
+    ) -> tuple[PenaltyTypeStatus, PenaltyTypeStatus]:
         automatic_overdue_penalty_status = PenaltyTypeStatus.NONE
 
         if penalty_accrual_context.effective_deadline < timezone.now().date():
@@ -108,18 +115,22 @@ class PenaltyCalculationService:
             # after the invoice due date. get_penalty_accrual_context has already resolved which applies.
             return cls.calculate_penalty(
                 obligation=obligation,
-                accrual_start_date=penalty_accrual_context.effective_deadline + timedelta(days=1),
+                accrual_start_date=penalty_accrual_context.effective_deadline
+                + timedelta(days=1),
                 final_accrual_date=final_accrual_date,
             )
 
         return cls.calculate_late_submission_penalty(
             obligation=obligation,
-            accrual_start_date=penalty_accrual_context.compliance_deadline + timedelta(days=1),
+            accrual_start_date=penalty_accrual_context.compliance_deadline
+            + timedelta(days=1),
             final_accrual_date=final_accrual_date,
         )
 
     @classmethod
-    def get_penalty_accrual_context(cls, obligation: ComplianceObligation) -> PenaltyAccrualContext:
+    def get_penalty_accrual_context(
+        cls, obligation: ComplianceObligation
+    ) -> PenaltyAccrualContext:
         """
         Determine the deadlines that govern when penalties begin accruing for an obligation.
 
@@ -134,10 +145,16 @@ class PenaltyCalculationService:
         Returns:
             PenaltyAccrualContext Dataclass
         """
-        compliance_period = obligation.compliance_report_version.compliance_report.compliance_period
+        compliance_period = (
+            obligation.compliance_report_version.compliance_report.compliance_period
+        )
         compliance_deadline = compliance_period.compliance_deadline
-        submission_date = obligation.created_at.date() if obligation.created_at else None
-        has_late_submission = submission_date is not None and submission_date > compliance_deadline
+        submission_date = (
+            obligation.created_at.date() if obligation.created_at else None
+        )
+        has_late_submission = (
+            submission_date is not None and submission_date > compliance_deadline
+        )
 
         effective_deadline = compliance_deadline
         if (
@@ -154,7 +171,9 @@ class PenaltyCalculationService:
         )
 
     @classmethod
-    def get_accruing_penalty_data(cls, compliance_report_version_id: int) -> Dict[str, Any]:
+    def get_accruing_penalty_data(
+        cls, compliance_report_version_id: int
+    ) -> dict[str, Any]:
         """
         Get the penalty amounts an unpaid obligation has accrued as of today. These are calculated live
         because no CompliancePenalty record exists until the obligation has been fully paid.
@@ -169,14 +188,14 @@ class PenaltyCalculationService:
             compliance_report_version_id=compliance_report_version_id
         )
         obligation = ComplianceObligation.objects.select_related(
-            'compliance_report_version__compliance_report__compliance_period',
-            'elicensing_invoice',
+            "compliance_report_version__compliance_report__compliance_period",
+            "elicensing_invoice",
         ).get(compliance_report_version_id=compliance_report_version_id)
 
-        result: Dict[str, Any] = {
+        result: dict[str, Any] = {
             "faa_interest": refresh_result.invoice.invoice_interest_balance,
-            "automatic_overdue_penalty_amount": Decimal('0.00'),
-            "ggeapar_interest_amount": Decimal('0.00'),
+            "automatic_overdue_penalty_amount": Decimal("0.00"),
+            "ggeapar_interest_amount": Decimal("0.00"),
         }
 
         # An automatic overdue penalty that maxed out at 3x the obligation has stopped accruing and
@@ -185,7 +204,10 @@ class PenaltyCalculationService:
         # interest is unaffected by the cap and keeps accruing
         maximum_penalty: CompliancePenalty | None = None
 
-        if obligation.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET:
+        if (
+            obligation.compliance_report_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        ):
             try:
                 maximum_penalty = CompliancePenalty.objects.get(
                     compliance_obligation=obligation,
@@ -195,7 +217,10 @@ class PenaltyCalculationService:
                 # No penalty has been created yet, so there is no maximum to report
                 pass
 
-        if obligation.penalty_status != ComplianceObligation.PenaltyStatus.ACCRUING and not maximum_penalty:
+        if (
+            obligation.penalty_status != ComplianceObligation.PenaltyStatus.ACCRUING
+            and not maximum_penalty
+        ):
             return result
 
         penalty_accrual_context = cls.get_penalty_accrual_context(obligation)
@@ -205,14 +230,19 @@ class PenaltyCalculationService:
         elif penalty_accrual_context.effective_deadline < timezone.now().date():
             overdue_penalty = cls.calculate_penalty(
                 obligation=obligation,
-                accrual_start_date=penalty_accrual_context.effective_deadline + timedelta(days=1),
+                accrual_start_date=penalty_accrual_context.effective_deadline
+                + timedelta(days=1),
             )
             result["automatic_overdue_penalty_amount"] = overdue_penalty.total_penalty
 
-        if obligation.compliance_report_version.is_supplementary and penalty_accrual_context.has_late_submission:
+        if (
+            obligation.compliance_report_version.is_supplementary
+            and penalty_accrual_context.has_late_submission
+        ):
             ggeapar_interest = cls.calculate_late_submission_penalty(
                 obligation=obligation,
-                accrual_start_date=penalty_accrual_context.compliance_deadline + timedelta(days=1),
+                accrual_start_date=penalty_accrual_context.compliance_deadline
+                + timedelta(days=1),
                 final_accrual_date=None,
             )
             result["ggeapar_interest_amount"] = ggeapar_interest.total_penalty
@@ -220,7 +250,9 @@ class PenaltyCalculationService:
         return result
 
     @classmethod
-    def get_automatic_overdue_penalty_data(cls, compliance_report_version_id: int) -> Dict[str, Any]:
+    def get_automatic_overdue_penalty_data(
+        cls, compliance_report_version_id: int
+    ) -> dict[str, Any]:
         """
         Get automatic overdue penalty data for a compliance obligation.
 
@@ -234,20 +266,35 @@ class PenaltyCalculationService:
             compliance_report_version_id=compliance_report_version_id,
             invoice_type=ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
         )
-        current_compliance_penalty_rate = CompliancePenaltyRateService.get_current_compliance_penalty_rate()
+        current_compliance_penalty_rate = (
+            CompliancePenaltyRateService.get_current_compliance_penalty_rate()
+        )
         daily_penalty_rate = current_compliance_penalty_rate.rate
-        obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
+        obligation = ComplianceObligation.objects.get(
+            compliance_report_version_id=compliance_report_version_id
+        )
         penalty = CompliancePenalty.objects.select_related("elicensing_invoice").get(
-            compliance_obligation=obligation, penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
+            compliance_obligation=obligation,
+            penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
         )
         invoice = penalty.elicensing_invoice
-        faa_interest = refresh_result.invoice.invoice_interest_balance if refresh_result.invoice else Decimal('0.00')
-        total_amount = penalty.penalty_amount + faa_interest if faa_interest else penalty.penalty_amount
+        faa_interest = (
+            refresh_result.invoice.invoice_interest_balance
+            if refresh_result.invoice
+            else Decimal("0.00")
+        )
+        total_amount = (
+            penalty.penalty_amount + faa_interest
+            if faa_interest
+            else penalty.penalty_amount
+        )
 
         return {
             "penalty_status": penalty.status,
             "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-            "penalty_charge_rate": (daily_penalty_rate * 100).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+            "penalty_charge_rate": (daily_penalty_rate * 100).quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            ),
             "total_penalty": penalty.penalty_amount,
             "total_amount": total_amount,
             "invoice_number": invoice.invoice_number if invoice else None,
@@ -255,7 +302,9 @@ class PenaltyCalculationService:
         }
 
     @classmethod
-    def get_late_submission_penalty_data(cls, compliance_report_version_id: int) -> Dict[str, Any]:
+    def get_late_submission_penalty_data(
+        cls, compliance_report_version_id: int
+    ) -> dict[str, Any]:
         """
         Get late submission penalty data for a compliance obligation.
         Returns late submission penalty data calculated using prime + 3% rate, accrued monthly.
@@ -278,12 +327,17 @@ class PenaltyCalculationService:
             compliance_report_version_id=compliance_report_version_id,
             invoice_type=ComplianceInvoiceTypes.LATE_SUBMISSION_PENALTY,
         )
-        obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
+        obligation = ComplianceObligation.objects.get(
+            compliance_report_version_id=compliance_report_version_id
+        )
 
         # Check if late submission penalty exists
         late_submission_penalty = (
             CompliancePenalty.objects.select_related("elicensing_invoice")
-            .filter(compliance_obligation=obligation, penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION)
+            .filter(
+                compliance_obligation=obligation,
+                penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
+            )
             .first()
         )
 
@@ -292,13 +346,21 @@ class PenaltyCalculationService:
                 "has_penalty": False,
                 "penalty_status": CompliancePenalty.Status.NOT_PAID,
                 "penalty_type": CompliancePenalty.PenaltyType.LATE_SUBMISSION,
-                "penalty_amount": Decimal('0.00'),
-                "total_amount": Decimal('0.00'),
+                "penalty_amount": Decimal("0.00"),
+                "total_amount": Decimal("0.00"),
             }
 
         penalty_amount = late_submission_penalty.penalty_amount
-        faa_interest = refresh_result.invoice.invoice_interest_balance if refresh_result.invoice else Decimal('0.00')
-        total_amount = penalty_amount + faa_interest if faa_interest else late_submission_penalty.penalty_amount
+        faa_interest = (
+            refresh_result.invoice.invoice_interest_balance
+            if refresh_result.invoice
+            else Decimal("0.00")
+        )
+        total_amount = (
+            penalty_amount + faa_interest
+            if faa_interest
+            else late_submission_penalty.penalty_amount
+        )
         invoice_number, due_date = None, None
         if late_submission_penalty.elicensing_invoice:
             invoice_number = late_submission_penalty.elicensing_invoice.invoice_number
@@ -315,7 +377,9 @@ class PenaltyCalculationService:
         }
 
     @classmethod
-    def sum_payments_before_date(cls, invoice: ElicensingInvoice, cutoff_date: date) -> Decimal:
+    def sum_payments_before_date(
+        cls, invoice: ElicensingInvoice, cutoff_date: date
+    ) -> Decimal:
         """
         Calculate the sum of all payments received on or before the given date.
 
@@ -328,15 +392,18 @@ class PenaltyCalculationService:
         """
         # Get line items for this invoice and sum payments received on or before date
         line_items = ElicensingLineItem.objects.filter(
-            elicensing_invoice=invoice, line_item_type=ElicensingLineItem.LineItemType.FEE
+            elicensing_invoice=invoice,
+            line_item_type=ElicensingLineItem.LineItemType.FEE,
         )
 
         return ElicensingPayment.objects.filter(
             elicensing_line_item__in=line_items, received_date__lt=cutoff_date
-        ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+        ).aggregate(total=Sum("amount"))["total"] or Decimal("0.00")
 
     @classmethod
-    def sum_adjustments_before_date(cls, invoice: ElicensingInvoice, cutoff_date: date) -> Decimal:
+    def sum_adjustments_before_date(
+        cls, invoice: ElicensingInvoice, cutoff_date: date
+    ) -> Decimal:
         """
         Calculate the sum of all adjustments made on or before the given date.
 
@@ -349,12 +416,13 @@ class PenaltyCalculationService:
         """
         # Get line items for this invoice and sum adjustments made on or before date
         line_items = ElicensingLineItem.objects.filter(
-            elicensing_invoice=invoice, line_item_type=ElicensingLineItem.LineItemType.FEE
+            elicensing_invoice=invoice,
+            line_item_type=ElicensingLineItem.LineItemType.FEE,
         )
 
         return ElicensingAdjustment.objects.filter(
             elicensing_line_item__in=line_items, adjustment_date__lt=cutoff_date
-        ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+        ).aggregate(total=Sum("amount"))["total"] or Decimal("0.00")
 
     @staticmethod
     def create_penalty_invoice(
@@ -379,13 +447,14 @@ class PenaltyCalculationService:
         )
 
         penalty_description = (
-            'GGEAPAR Interest'
-            if compliance_penalty.penalty_type == CompliancePenalty.PenaltyType.LATE_SUBMISSION
-            else 'Automatic Overdue Penalty'
+            "GGEAPAR Interest"
+            if compliance_penalty.penalty_type
+            == CompliancePenalty.PenaltyType.LATE_SUBMISSION
+            else "Automatic Overdue Penalty"
         )
 
         # Compose the fee data for the penalty fee
-        fee_data: Dict[str, Any] = {
+        fee_data: dict[str, Any] = {
             "businessAreaCode": "OBPS",
             "feeGUID": str(uuid.uuid4()),
             "feeProfileGroupName": "OBPS Administrative Penalty",
@@ -396,11 +465,12 @@ class PenaltyCalculationService:
 
         # Create fee in eLicensing
         fee_response = elicensing_api_client.create_fees(
-            client_operator.client_object_id, FeeCreationRequest(fees=[FeeCreationItem(**fee_data)])
+            client_operator.client_object_id,
+            FeeCreationRequest(fees=[FeeCreationItem(**fee_data)]),
         )
 
         # Compose the invoice data for the penalty invoice
-        invoice_data: Dict[str, Any] = {
+        invoice_data: dict[str, Any] = {
             "paymentDueDate": (timezone.now().date() + timedelta(days=30)).strftime(
                 "%Y-%m-%d"
             ),  # 30 days after creating the invoice
@@ -456,20 +526,24 @@ class PenaltyCalculationService:
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
-        current_compliance_penalty_rate = CompliancePenaltyRateService.get_current_compliance_penalty_rate()
+        current_compliance_penalty_rate = (
+            CompliancePenaltyRateService.get_current_compliance_penalty_rate()
+        )
         daily_penalty_rate = current_compliance_penalty_rate.rate
 
         invoice = refresh_result.invoice
 
-        last_calculation_day = final_accrual_date if final_accrual_date else timezone.now().date()
+        last_calculation_day = (
+            final_accrual_date if final_accrual_date else timezone.now().date()
+        )
 
         # Initialize variables
-        base = obligation.fee_amount_dollars or Decimal('0.00')
-        accumulated_penalty = Decimal('0.00')
-        accumulated_compounding = Decimal('0.00')
+        base = obligation.fee_amount_dollars or Decimal("0.00")
+        accumulated_penalty = Decimal("0.00")
+        accumulated_compounding = Decimal("0.00")
         days_late = max(0, (last_calculation_day - accrual_start_date).days + 1)
         current_date = accrual_start_date
-        total_penalty = Decimal('0.00')
+        total_penalty = Decimal("0.00")
 
         # The penalty stops accruing once it reaches 3x the obligation, at which point the penalty
         # becomes payable even if the obligation itself is still outstanding
@@ -483,19 +557,26 @@ class PenaltyCalculationService:
             payments = cls.sum_payments_before_date(invoice, current_date)
             adjustments = cls.sum_adjustments_before_date(invoice, current_date)
             penalty_amount = max(
-                Decimal('0'), (base - payments + adjustments) * daily_penalty_rate
+                Decimal("0"), (base - payments + adjustments) * daily_penalty_rate
             )  # max of 0 to prevent negative penalty accrual edge case
-            daily_compounding = (accumulated_penalty + accumulated_compounding) * daily_penalty_rate
+            daily_compounding = (
+                accumulated_penalty + accumulated_compounding
+            ) * daily_penalty_rate
             accumulated_penalty += penalty_amount
             accumulated_compounding += daily_compounding
             days_accrued += 1
 
-            if maximum_penalty is not None and accumulated_penalty + accumulated_compounding >= maximum_penalty:
+            if (
+                maximum_penalty is not None
+                and accumulated_penalty + accumulated_compounding >= maximum_penalty
+            ):
                 # Trim the overshoot off this final day so the accrual records still reconcile to the
                 # capped penalty that gets invoiced. Compounding is the derived component, so absorb the
                 # overshoot there first and only reduce the day's penalty with whatever remains.
                 cap_reached_date = current_date
-                overshoot = accumulated_penalty + accumulated_compounding - maximum_penalty
+                overshoot = (
+                    accumulated_penalty + accumulated_compounding - maximum_penalty
+                )
                 compounding_reduction = min(overshoot, daily_compounding)
                 daily_compounding -= compounding_reduction
                 accumulated_compounding -= compounding_reduction
@@ -509,10 +590,18 @@ class PenaltyCalculationService:
                 CalculatedPenaltyAccrualData(
                     date=current_date.strftime("%Y-%m-%d"),
                     interest_rate=daily_penalty_rate,
-                    daily_penalty=penalty_amount.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-                    daily_compounded=daily_compounding.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-                    accumulated_penalty=accumulated_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-                    accumulated_compounded=accumulated_compounding.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+                    daily_penalty=penalty_amount.quantize(
+                        Decimal("0.01"), rounding=ROUND_HALF_UP
+                    ),
+                    daily_compounded=daily_compounding.quantize(
+                        Decimal("0.01"), rounding=ROUND_HALF_UP
+                    ),
+                    accumulated_penalty=accumulated_penalty.quantize(
+                        Decimal("0.01"), rounding=ROUND_HALF_UP
+                    ),
+                    accumulated_compounded=accumulated_compounding.quantize(
+                        Decimal("0.01"), rounding=ROUND_HALF_UP
+                    ),
                 )
             )
 
@@ -521,18 +610,24 @@ class PenaltyCalculationService:
 
             current_date += timedelta(days=1)
 
-        faa_interest = invoice.invoice_interest_balance or Decimal('0.00')
+        faa_interest = invoice.invoice_interest_balance or Decimal("0.00")
         total_amount = total_penalty + faa_interest
 
         result = CalculatedPenaltyData(
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             penalty_charge_rate=daily_penalty_rate * 100,
             days_late=days_accrued,
-            accumulated_penalty=accumulated_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-            accumulated_compounding=accumulated_compounding.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-            total_penalty=total_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-            faa_interest=faa_interest.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-            total_amount=total_amount.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+            accumulated_penalty=accumulated_penalty.quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            ),
+            accumulated_compounding=accumulated_compounding.quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            ),
+            total_penalty=total_penalty.quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            ),
+            faa_interest=faa_interest.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+            total_amount=total_amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
             daily_accumulated_list=accumulated_penalty_list,
             cap_reached_date=cap_reached_date,
         )
@@ -540,7 +635,9 @@ class PenaltyCalculationService:
         return result
 
     @staticmethod
-    def determine_last_transaction_date(obligation: ComplianceObligation) -> date | None:
+    def determine_last_transaction_date(
+        obligation: ComplianceObligation,
+    ) -> date | None:
         # Determine the last date that reduced the triggering obligation to 0.
         fee_line_item = ElicensingLineItem.objects.get(
             elicensing_invoice=obligation.elicensing_invoice,
@@ -548,18 +645,29 @@ class PenaltyCalculationService:
         )
 
         last_payment = (
-            ElicensingPayment.objects.filter(elicensing_line_item=fee_line_item).order_by('-received_date').first()
-        )
-        last_payment_received_date = last_payment.received_date if last_payment else None
-
-        last_adjustment = (
-            ElicensingAdjustment.objects.filter(elicensing_line_item=fee_line_item, adjustment_date__isnull=False)
-            .order_by('-adjustment_date')
+            ElicensingPayment.objects.filter(elicensing_line_item=fee_line_item)
+            .order_by("-received_date")
             .first()
         )
-        last_adjustment_date = last_adjustment.adjustment_date if last_adjustment else None
+        last_payment_received_date = (
+            last_payment.received_date if last_payment else None
+        )
 
-        return max(filter(None, [last_payment_received_date, last_adjustment_date]), default=None)
+        last_adjustment = (
+            ElicensingAdjustment.objects.filter(
+                elicensing_line_item=fee_line_item, adjustment_date__isnull=False
+            )
+            .order_by("-adjustment_date")
+            .first()
+        )
+        last_adjustment_date = (
+            last_adjustment.adjustment_date if last_adjustment else None
+        )
+
+        return max(
+            filter(None, [last_payment_received_date, last_adjustment_date]),
+            default=None,
+        )
 
     @staticmethod
     def perform_idempotent_penalty_creation(
@@ -609,7 +717,8 @@ class PenaltyCalculationService:
         # Create the invoice in elicensing if not previously created, otherwise skip invoice creation
         if not compliance_penalty_record.invoice_number:
             PenaltyCalculationService.create_penalty_invoice(
-                compliance_penalty=compliance_penalty_record, total_penalty=penalty_data.total_penalty
+                compliance_penalty=compliance_penalty_record,
+                total_penalty=penalty_data.total_penalty,
             )
 
         compliance_penalty_record.refresh_from_db()
@@ -646,8 +755,9 @@ class PenaltyCalculationService:
         )
 
         penalty_accrual_start_date = effective_deadline + timedelta(days=1)
-        final_transaction_date = final_accrual_date or PenaltyCalculationService.determine_last_transaction_date(
-            obligation
+        final_transaction_date = (
+            final_accrual_date
+            or PenaltyCalculationService.determine_last_transaction_date(obligation)
         )
         if final_transaction_date is None:
             raise ValueError(
@@ -668,15 +778,19 @@ class PenaltyCalculationService:
                 final_accrual_date=final_transaction_date,
             )
         else:
-            raise ValueError('Unrecognized PenaltyType. Must be one of CompliancePenalty.PenaltyType options')
+            raise ValueError(
+                "Unrecognized PenaltyType. Must be one of CompliancePenalty.PenaltyType options"
+            )
 
         # Create the CompliancePenalty object if it does not exist & create invoice in elicensing if not previously created
-        compliance_penalty_record = PenaltyCalculationService.perform_idempotent_penalty_creation(
-            obligation=obligation,
-            penalty_type=penalty_type,
-            penalty_data=penalty_data,
-            penalty_accrual_start_date=penalty_accrual_start_date,
-            final_transaction_date=final_transaction_date,
+        compliance_penalty_record = (
+            PenaltyCalculationService.perform_idempotent_penalty_creation(
+                obligation=obligation,
+                penalty_type=penalty_type,
+                penalty_data=penalty_data,
+                penalty_accrual_start_date=penalty_accrual_start_date,
+                final_transaction_date=final_transaction_date,
+            )
         )
 
         # Get the client_operator record for the responsible operator
@@ -685,20 +799,25 @@ class PenaltyCalculationService:
         )
         # Create penalty invoice data in BCIERS database
         ElicensingDataRefreshService.refresh_data_by_invoice(
-            client_operator_id=client_operator.id, invoice_number=compliance_penalty_record.invoice_number  # type: ignore[arg-type]
+            client_operator_id=client_operator.id,
+            invoice_number=compliance_penalty_record.invoice_number,  # type: ignore[arg-type]
         )
         # Set fkey to invoice
-        invoice_record = ElicensingInvoice.objects.get(invoice_number=compliance_penalty_record.invoice_number)
+        invoice_record = ElicensingInvoice.objects.get(
+            invoice_number=compliance_penalty_record.invoice_number
+        )
         compliance_penalty_record.elicensing_invoice = invoice_record
         compliance_penalty_record.save()
         # Set obligation penalty status
         obligation.penalty_status = ComplianceObligation.PenaltyStatus.NOT_PAID
-        obligation.save(update_fields=['penalty_status'])
+        obligation.save(update_fields=["penalty_status"])
 
         # Everything above is safe to re-run, so a retry can resume a partially created penalty. Writing
         # the accrual records and notifying the operator are not, so they only happen the first time
         # through. This also stops a second create_penalty call for an already maxed out penalty from duplicating
-        if not CompliancePenaltyAccrual.objects.filter(compliance_penalty=compliance_penalty_record).exists():
+        if not CompliancePenaltyAccrual.objects.filter(
+            compliance_penalty=compliance_penalty_record
+        ).exists():
             with transaction.atomic():
                 # Create compliance_penalty_accrual records for audit purposes
                 for acc in penalty_data.daily_accumulated_list:
@@ -738,7 +857,9 @@ class PenaltyCalculationService:
             end_date__gte=reference_date,
         ).interest_rate
 
-        days_in_year = Decimal("366") if calendar.isleap(date_to_check.year) else Decimal("365")
+        days_in_year = (
+            Decimal("366") if calendar.isleap(date_to_check.year) else Decimal("365")
+        )
 
         return annual_rate / days_in_year
 
@@ -766,14 +887,16 @@ class PenaltyCalculationService:
             compliance_report_version_id=obligation.compliance_report_version_id
         )
 
-        last_calculation_day = final_accrual_date if final_accrual_date else timezone.now().date()
+        last_calculation_day = (
+            final_accrual_date if final_accrual_date else timezone.now().date()
+        )
 
         # Initialize variables
-        base = obligation.fee_amount_dollars or Decimal('0.00')
-        accumulated_penalty = Decimal('0.00')
-        accumulated_compounding = Decimal('0.00')
-        uncompounded_penalty = Decimal('0.00')
-        total_penalty = Decimal('0.00')
+        base = obligation.fee_amount_dollars or Decimal("0.00")
+        accumulated_penalty = Decimal("0.00")
+        accumulated_compounding = Decimal("0.00")
+        uncompounded_penalty = Decimal("0.00")
+        total_penalty = Decimal("0.00")
         invoice = refresh_result.invoice
         days_late = max(0, (last_calculation_day - accrual_start_date).days + 1)
         current_date = accrual_start_date
@@ -782,12 +905,12 @@ class PenaltyCalculationService:
 
         # Daily accrual with monthly compounding on the 1st of each month
         for _ in range(1, days_late + 1):
-            monthly_compounding = Decimal('0.00')
+            monthly_compounding = Decimal("0.00")
             # On the 1st of each month, compound interest accrued
             if current_date.day == 1 and current_date != accrual_start_date:
                 monthly_compounding = uncompounded_penalty
                 accumulated_compounding += monthly_compounding
-                uncompounded_penalty = Decimal('0.00')
+                uncompounded_penalty = Decimal("0.00")
 
             daily_rate = cls._get_rate_for_date(current_date)
             payments = cls.sum_payments_before_date(invoice, current_date)
@@ -796,7 +919,7 @@ class PenaltyCalculationService:
             outstanding_base = base - payments + adjustments
             principal_for_interest = outstanding_base + accumulated_compounding
             penalty_amount = max(
-                Decimal('0'), principal_for_interest * daily_rate
+                Decimal("0"), principal_for_interest * daily_rate
             )  # max of 0 to prevent negative penalty accrual edge case
             uncompounded_penalty += penalty_amount
             accumulated_penalty += penalty_amount
@@ -805,28 +928,44 @@ class PenaltyCalculationService:
             accumulated_penalty_list.append(
                 CalculatedPenaltyAccrualData(
                     date=current_date.strftime("%Y-%m-%d"),
-                    interest_rate=daily_rate.quantize(Decimal('0.0000000001'), rounding=ROUND_HALF_UP),
-                    daily_penalty=penalty_amount.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-                    daily_compounded=monthly_compounding.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-                    accumulated_penalty=accumulated_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-                    accumulated_compounded=accumulated_compounding.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+                    interest_rate=daily_rate.quantize(
+                        Decimal("0.0000000001"), rounding=ROUND_HALF_UP
+                    ),
+                    daily_penalty=penalty_amount.quantize(
+                        Decimal("0.01"), rounding=ROUND_HALF_UP
+                    ),
+                    daily_compounded=monthly_compounding.quantize(
+                        Decimal("0.01"), rounding=ROUND_HALF_UP
+                    ),
+                    accumulated_penalty=accumulated_penalty.quantize(
+                        Decimal("0.01"), rounding=ROUND_HALF_UP
+                    ),
+                    accumulated_compounded=accumulated_compounding.quantize(
+                        Decimal("0.01"), rounding=ROUND_HALF_UP
+                    ),
                 )
             )
 
             current_date += timedelta(days=1)
 
-        faa_interest = invoice.invoice_interest_balance or Decimal('0.00')
+        faa_interest = invoice.invoice_interest_balance or Decimal("0.00")
         total_amount = total_penalty + faa_interest
 
         result = CalculatedPenaltyData(
             penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
             penalty_charge_rate="PRIME +3%",
             days_late=days_late,
-            accumulated_penalty=accumulated_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-            accumulated_compounding=accumulated_compounding.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-            total_penalty=total_penalty.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-            faa_interest=faa_interest.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
-            total_amount=total_amount.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP),
+            accumulated_penalty=accumulated_penalty.quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            ),
+            accumulated_compounding=accumulated_compounding.quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            ),
+            total_penalty=total_penalty.quantize(
+                Decimal("0.01"), rounding=ROUND_HALF_UP
+            ),
+            faa_interest=faa_interest.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+            total_amount=total_amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
             daily_accumulated_list=accumulated_penalty_list,
         )
 
@@ -852,13 +991,16 @@ class PenaltyCalculationService:
             CalculatedPenaltyOut
         """
         obligation = ComplianceObligation.objects.select_related(
-            'compliance_report_version__compliance_report__compliance_period', 'elicensing_invoice'
+            "compliance_report_version__compliance_report__compliance_period",
+            "elicensing_invoice",
         ).get(compliance_report_version_id=compliance_report_version_id)
         penalty_accrual_context = cls.get_penalty_accrual_context(obligation=obligation)
 
-        automatic_overdue_penalty_status, ggeapar_interest_status = cls._get_penalty_statuses(
-            obligation,
-            penalty_accrual_context,
+        automatic_overdue_penalty_status, ggeapar_interest_status = (
+            cls._get_penalty_statuses(
+                obligation,
+                penalty_accrual_context,
+            )
         )
 
         if (
@@ -885,6 +1027,7 @@ class PenaltyCalculationService:
             days_late=calculated_penalty.days_late,
             total_penalty=calculated_penalty.total_penalty,
             daily_accumulated_list=[
-                PenaltyAccrual(**asdict(accrual)) for accrual in calculated_penalty.daily_accumulated_list
+                PenaltyAccrual(**asdict(accrual))
+                for accrual in calculated_penalty.daily_accumulated_list
             ],
         )

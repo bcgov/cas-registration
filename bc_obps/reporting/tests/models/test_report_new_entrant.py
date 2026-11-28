@@ -1,15 +1,18 @@
+from common.lib import pgtrigger
 from common.tests.utils.helpers import BaseTestCase
+from django.utils import timezone
+from model_bakery.baker import make_recipe
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from reporting.models import ReportNewEntrant
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
 from reporting.tests.utils.report_data_bakers import report_new_entrant_baker
-from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
-from reporting.models import ReportNewEntrant
 from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsTestSetup
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from common.lib import pgtrigger
-from model_bakery.baker import make_recipe
-from django.utils import timezone
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ReportNewEntrantModelTest(BaseTestCase):
@@ -33,7 +36,6 @@ class ReportNewEntrantModelTest(BaseTestCase):
 
 
 class ReportNewEntrantRlsTest(BaseTestCase):
-
     def test_report_new_entrant_rls_industry_user(self):
         # Common Test Setup
         t = ReportRlsTestSetup()
@@ -42,15 +44,17 @@ class ReportNewEntrantRlsTest(BaseTestCase):
         # Inside access bounds
         with pgtrigger.ignore("reporting.ReportNewEntrant:immutable_report_version"):
             report_new_entrant_2010_submitted = make_recipe(
-                'reporting.tests.utils.report_new_entrant',
+                "reporting.tests.utils.report_new_entrant",
                 report_version=t.report_version_2010_submitted,
             )
         report_new_entrant_2010_draft = make_recipe(
-            'reporting.tests.utils.report_new_entrant', report_version=t.report_version_2010_draft
+            "reporting.tests.utils.report_new_entrant",
+            report_version=t.report_version_2010_draft,
         )
         # Outside access bounds
         report_new_entrant_2013_draft = make_recipe(
-            'reporting.tests.utils.report_new_entrant', report_version=t.report_version_2013_draft
+            "reporting.tests.utils.report_new_entrant",
+            report_version=t.report_version_2013_draft,
         )
 
         def select_function(cursor):
@@ -84,7 +88,7 @@ class ReportNewEntrantRlsTest(BaseTestCase):
                     SET assertion_statement = %s
                     WHERE id = %s
                 """,
-                ('false', report_new_entrant_2010_draft.id),
+                ("false", report_new_entrant_2010_draft.id),
             )
             return cursor.rowcount
 
@@ -95,7 +99,7 @@ class ReportNewEntrantRlsTest(BaseTestCase):
                     SET assertion_statement = %s
                     WHERE id = %s
                 """,
-                ('false', report_new_entrant_2013_draft.id),
+                ("false", report_new_entrant_2013_draft.id),
             )
             return cursor.rowcount
 
@@ -117,7 +121,10 @@ class ReportNewEntrantRlsTest(BaseTestCase):
                     DELETE from "erc"."report_new_entrant"
                     WHERE id in (%s,%s)
                 """,
-                (report_new_entrant_2010_submitted.id, report_new_entrant_2013_draft.id),
+                (
+                    report_new_entrant_2010_submitted.id,
+                    report_new_entrant_2013_draft.id,
+                ),
             )
             return cursor.rowcount
 

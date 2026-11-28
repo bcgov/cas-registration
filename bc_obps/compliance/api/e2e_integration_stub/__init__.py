@@ -1,6 +1,7 @@
+from compliance.api.router import router
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from compliance.api.router import router
+
 from .mocking import e2e_sandbox
 from .scenarios import SCENARIO_HANDLERS
 from .schemas import ScenarioPayload
@@ -13,7 +14,9 @@ from .schemas import ScenarioPayload
         "outbound HTTP to external systems (eLicensing/BCCR). Only available in local/CI environments."
     ),
 )
-def run_e2e_integration_stub(request: HttpRequest, data: ScenarioPayload) -> HttpResponse:
+def run_e2e_integration_stub(
+    request: HttpRequest, data: ScenarioPayload
+) -> HttpResponse:
     if settings.CI != "true" and settings.ENVIRONMENT != "local":
         return HttpResponse(
             "This endpoint only exists in the local/CI environments.",

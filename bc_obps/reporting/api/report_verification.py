@@ -1,26 +1,35 @@
-from typing import Literal, Optional
-from reporting.models.report_verification import ReportVerification
-from django.http import HttpRequest
-from reporting.constants import EMISSIONS_REPORT_TAGS
-from reporting.schema.generic import Message
+from typing import Literal
+
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from .router import router
-from reporting.schema.report_verification import ReportVerificationIn, ReportVerificationOut
+from django.http import HttpRequest
+from reporting.api.permissions import (
+    approved_industry_user_report_version_composite_auth,
+)
+from reporting.constants import EMISSIONS_REPORT_TAGS
+from reporting.models.report_verification import ReportVerification
+from reporting.schema.generic import Message
+from reporting.schema.report_verification import (
+    ReportVerificationIn,
+    ReportVerificationOut,
+)
 from reporting.service.report_verification_service import ReportVerificationService
-from reporting.api.permissions import approved_industry_user_report_version_composite_auth
+
+from .router import router
 
 
 @router.get(
     "/report-version/{version_id}/report-verification",
-    response={200: Optional[ReportVerificationOut], custom_codes_4xx: Message},
+    response={200: ReportVerificationOut | None, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Fetches the Verification data associated with the given report version ID.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
 def get_report_verification_by_version_id(
     request: HttpRequest, version_id: int
-) -> tuple[Literal[200], Optional[ReportVerification]]:
-    return 200, ReportVerificationService.get_report_verification_by_version_id(version_id)
+) -> tuple[Literal[200], ReportVerification | None]:
+    return 200, ReportVerificationService.get_report_verification_by_version_id(
+        version_id
+    )
 
 
 @router.get(
@@ -30,7 +39,9 @@ def get_report_verification_by_version_id(
     description="""Checks if a report needs verification data based on its purpose and attributable emissions.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_report_verification_status(request: HttpRequest, version_id: int) -> tuple[Literal[200], dict]:
+def get_report_verification_status(
+    request: HttpRequest, version_id: int
+) -> tuple[Literal[200], dict]:
     return 200, ReportVerificationService.get_report_verification_status(version_id)
 
 
@@ -44,5 +55,7 @@ def get_report_verification_status(request: HttpRequest, version_id: int) -> tup
 def save_report_verification(
     request: HttpRequest, version_id: int, payload: ReportVerificationIn
 ) -> tuple[Literal[200], ReportVerification]:
-    report_verification = ReportVerificationService.save_report_verification(version_id, payload)
+    report_verification = ReportVerificationService.save_report_verification(
+        version_id, payload
+    )
     return 200, report_verification

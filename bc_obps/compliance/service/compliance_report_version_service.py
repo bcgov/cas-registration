@@ -1,26 +1,37 @@
-from registration.models.operator import Operator
-from reporting.models.report_compliance_summary import ReportComplianceSummary
-from compliance.service.compliance_obligation_service import ComplianceObligationService
-from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
-from django.db import transaction
-from decimal import Decimal
-from compliance.models import ComplianceReport, ComplianceReportVersion, ComplianceObligation
 import logging
+from decimal import Decimal
 from uuid import UUID
-from django.db.models import QuerySet, Q
-from reporting.models.report_operation import ReportOperation
+
+from compliance.models import (
+    ComplianceObligation,
+    ComplianceReport,
+    ComplianceReportVersion,
+)
+from compliance.service.compliance_charge_rate_service import (
+    ComplianceChargeRateService,
+)
+from compliance.service.compliance_obligation_service import ComplianceObligationService
+from compliance.service.elicensing.elicensing_obligation_service import (
+    ElicensingObligationService,
+)
+from compliance.tasks import (
+    retryable_send_notice_of_no_obligation_no_earned_credits_email,
+)
+from django.db import transaction
+from django.db.models import Q, QuerySet
+from registration.models.operator import Operator
 from registration.service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
-from registration.service.user_operator_service import UserOperatorService
 from registration.service.data_access_service.user_service import UserDataAccessService
-from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
-from compliance.tasks import retryable_send_notice_of_no_obligation_no_earned_credits_email
+from registration.service.user_operator_service import UserOperatorService
+from reporting.models.report_compliance_summary import ReportComplianceSummary
+from reporting.models.report_operation import ReportOperation
 
 logger = logging.getLogger(__name__)
 
-ZERO_DECIMAL = Decimal('0')
-ONE_DECIMAL = Decimal('1')
+ZERO_DECIMAL = Decimal("0")
+ONE_DECIMAL = Decimal("1")
 
 
 class ComplianceReportVersionService:
@@ -34,18 +45,29 @@ class ComplianceReportVersionService:
         obligation = ComplianceObligationService.create_compliance_obligation(
             compliance_report_version.id, excess_emissions
         )
-        ElicensingObligationService.handle_obligation_integration(obligation.id, compliance_report.compliance_period)
+        ElicensingObligationService.handle_obligation_integration(
+            obligation.id, compliance_report.compliance_period
+        )
 
     @classmethod
-    def _handle_earned_credits(cls, compliance_report_version: ComplianceReportVersion) -> None:
-        from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
+    def _handle_earned_credits(
+        cls, compliance_report_version: ComplianceReportVersion
+    ) -> None:
+        from compliance.service.earned_credits_service import (
+            ComplianceEarnedCreditsService,
+        )
 
-        ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
+        ComplianceEarnedCreditsService.create_earned_credits_record(
+            compliance_report_version
+        )
 
     @classmethod
-    def _handle_no_obligation_or_credits(cls, compliance_report_version: ComplianceReportVersion) -> None:
-
-        retryable_send_notice_of_no_obligation_no_earned_credits_email.execute(compliance_report_version.id)
+    def _handle_no_obligation_or_credits(
+        cls, compliance_report_version: ComplianceReportVersion
+    ) -> None:
+        retryable_send_notice_of_no_obligation_no_earned_credits_email.execute(
+            compliance_report_version.id
+        )
 
     @classmethod
     @transaction.atomic
@@ -65,11 +87,15 @@ class ComplianceReportVersionService:
         Raises:
             ReportVersion.DoesNotExist: If report version doesn't exist
         """
-        report_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=report_version_id)
+        report_compliance_summary = ReportComplianceSummary.objects.get(
+            report_version_id=report_version_id
+        )
 
         credited_emissions = report_compliance_summary.credited_emissions
         excess_emissions = report_compliance_summary.excess_emissions
-        status = ComplianceReportVersionService._determine_compliance_status(excess_emissions, credited_emissions)
+        status = ComplianceReportVersionService._determine_compliance_status(
+            excess_emissions, credited_emissions
+        )
 
         # Create compliance report version
         compliance_report_version = ComplianceReportVersion.objects.create(
@@ -81,14 +107,16 @@ class ComplianceReportVersionService:
         # Handle post-creation actions based on status
         compliance_report = ComplianceReport.objects.get(id=compliance_report_id)
         status_handlers = {
-            ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET: lambda: cls._handle_obligation_not_met(
-                compliance_report_version, excess_emissions, compliance_report
+            ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET: lambda: (
+                cls._handle_obligation_not_met(
+                    compliance_report_version, excess_emissions, compliance_report
+                )
             ),
-            ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS: lambda: cls._handle_earned_credits(
-                compliance_report_version
+            ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS: lambda: (
+                cls._handle_earned_credits(compliance_report_version)
             ),
-            ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS: lambda: cls._handle_no_obligation_or_credits(
-                compliance_report_version
+            ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS: lambda: (
+                cls._handle_no_obligation_or_credits(compliance_report_version)
             ),
         }
 
@@ -99,7 +127,9 @@ class ComplianceReportVersionService:
         return compliance_report_version
 
     @classmethod
-    def get_compliance_report_version(cls, compliance_report_version_id: int) -> ComplianceReportVersion:
+    def get_compliance_report_version(
+        cls, compliance_report_version_id: int
+    ) -> ComplianceReportVersion:
         """
         Gets a compliance compliance_report_version by ID
 
@@ -113,13 +143,13 @@ class ComplianceReportVersionService:
             ComplianceReportVersion.DoesNotExist: If the compliance report version doesn't exist
         """
         return ComplianceReportVersion.objects.select_related(
-            'compliance_report',
-            'report_compliance_summary',
-            'obligation',
-            'compliance_report__compliance_period',
-            'compliance_report__report__operator',
-            'compliance_report__report__operation',
-            'compliance_report__report__operation__bc_obps_regulated_operation',
+            "compliance_report",
+            "report_compliance_summary",
+            "obligation",
+            "compliance_report__compliance_period",
+            "compliance_report__report__operator",
+            "compliance_report__report__operation",
+            "compliance_report__report__operation__bc_obps_regulated_operation",
         ).get(id=compliance_report_version_id)
 
     @staticmethod
@@ -141,19 +171,31 @@ class ComplianceReportVersionService:
         elif int(credited_emissions) >= ONE_DECIMAL:
             return ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
         else:
-            return ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+            return (
+                ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+            )
 
     @classmethod
-    def update_compliance_status(cls, compliance_report_version: ComplianceReportVersion) -> None:
+    def update_compliance_status(
+        cls, compliance_report_version: ComplianceReportVersion
+    ) -> None:
         """Updates the compliance status of a compliance report version using _determine_compliance_status."""
-        excess_emissions = compliance_report_version.report_compliance_summary.excess_emissions
-        credited_emissions = compliance_report_version.report_compliance_summary.credited_emissions
-        proper_status = cls._determine_compliance_status(excess_emissions, credited_emissions)
+        excess_emissions = (
+            compliance_report_version.report_compliance_summary.excess_emissions
+        )
+        credited_emissions = (
+            compliance_report_version.report_compliance_summary.credited_emissions
+        )
+        proper_status = cls._determine_compliance_status(
+            excess_emissions, credited_emissions
+        )
         compliance_report_version.status = proper_status
         compliance_report_version.save(update_fields=["status"])
 
     @staticmethod
-    def calculate_outstanding_balance_tco2e(compliance_report_version: ComplianceReportVersion) -> Decimal:
+    def calculate_outstanding_balance_tco2e(
+        compliance_report_version: ComplianceReportVersion,
+    ) -> Decimal:
         """
         Calculates the outstanding balance in tonnes of CO₂ equivalent (tCO₂e) for a given compliance report version.
 
@@ -168,14 +210,26 @@ class ComplianceReportVersionService:
             return Decimal("0")
         if not obligation.elicensing_invoice:
             if compliance_report_version.is_supplementary:
-                if ComplianceReportVersion.objects.get(id=compliance_report_version.previous_version_id).status == ComplianceReportVersion.ComplianceStatus.SUPERCEDED:  # type: ignore[misc]
+                if (
+                    ComplianceReportVersion.objects.get(
+                        id=compliance_report_version.previous_version_id  # type: ignore[misc]
+                    ).status
+                    == ComplianceReportVersion.ComplianceStatus.SUPERCEDED
+                ):
                     return compliance_report_version.report_compliance_summary.excess_emissions
                 else:
-                    return compliance_report_version.excess_emissions_delta_from_previous
+                    return (
+                        compliance_report_version.excess_emissions_delta_from_previous
+                    )
             else:
-                return compliance_report_version.report_compliance_summary.excess_emissions
+                return (
+                    compliance_report_version.report_compliance_summary.excess_emissions
+                )
 
-        invoice_fee_balance = max(obligation.elicensing_invoice.invoice_fee_balance or Decimal("0"), Decimal("0"))
+        invoice_fee_balance = max(
+            obligation.elicensing_invoice.invoice_fee_balance or Decimal("0"),
+            Decimal("0"),
+        )
 
         charge_rate = ComplianceChargeRateService.get_rate_for_year(
             compliance_report_version.compliance_report.compliance_period.reporting_year
@@ -186,7 +240,9 @@ class ComplianceReportVersionService:
         return (invoice_fee_balance / charge_rate).quantize(Decimal("0.0001"))
 
     @staticmethod
-    def calculate_computed_value_excess_emissions(compliance_report_version: ComplianceReportVersion) -> Decimal:
+    def calculate_computed_value_excess_emissions(
+        compliance_report_version: ComplianceReportVersion,
+    ) -> Decimal:
         """
         Get the computed value of excess emissions for a report or supplementary report. Initial reports show
         compliance_report_version.report_compliance_summary.excess_emissions, and supplementary reports show the delta between the supplementary report and the previous version.
@@ -207,21 +263,33 @@ class ComplianceReportVersionService:
         ):
             return compliance_report_version.report_compliance_summary.excess_emissions
 
-        return Decimal(max(compliance_report_version.excess_emissions_delta_from_previous or 0, 0))
+        return Decimal(
+            max(compliance_report_version.excess_emissions_delta_from_previous or 0, 0)
+        )
 
     @staticmethod
-    def get_operator_by_compliance_report_version(compliance_report_version_id: int) -> Operator:
-        return ComplianceReportVersion.objects.get(id=compliance_report_version_id).compliance_report.report.operator
+    def get_operator_by_compliance_report_version(
+        compliance_report_version_id: int,
+    ) -> Operator:
+        return ComplianceReportVersion.objects.get(
+            id=compliance_report_version_id
+        ).compliance_report.report.operator
 
     @staticmethod
-    def get_report_operation_by_compliance_report_version(compliance_report_version_id: int) -> ReportOperation:
+    def get_report_operation_by_compliance_report_version(
+        compliance_report_version_id: int,
+    ) -> ReportOperation:
         return ComplianceReportVersion.objects.get(
             id=compliance_report_version_id
         ).report_compliance_summary.report_version.report_operation
 
     @staticmethod
-    def get_obligation_by_compliance_report_version(compliance_report_version_id: int) -> ComplianceObligation:
-        return ComplianceObligation.objects.get(compliance_report_version__id=compliance_report_version_id)
+    def get_obligation_by_compliance_report_version(
+        compliance_report_version_id: int,
+    ) -> ComplianceObligation:
+        return ComplianceObligation.objects.get(
+            compliance_report_version__id=compliance_report_version_id
+        )
 
     @classmethod
     def get_compliance_report_versions_for_previously_owned_operations(
@@ -231,11 +299,13 @@ class ComplianceReportVersionService:
         Fetches all compliance report versions that a user should have access to based on historical operator -> operation ownership relationships
         """
         user = UserDataAccessService.get_by_guid(user_guid)
-        operator_id = UserOperatorService.get_current_user_approved_user_operator_or_raise(user).operator_id
-        previously_owned_operations = (
-            OperationDesignatedOperatorTimelineDataAccessService.get_previously_owned_operations_by_operator(
-                operator_id=operator_id
-            )
+        operator_id = (
+            UserOperatorService.get_current_user_approved_user_operator_or_raise(
+                user
+            ).operator_id
+        )
+        previously_owned_operations = OperationDesignatedOperatorTimelineDataAccessService.get_previously_owned_operations_by_operator(
+            operator_id=operator_id
         )
 
         if not previously_owned_operations:
@@ -244,17 +314,23 @@ class ComplianceReportVersionService:
         query = Q()
         for operation_ownership in previously_owned_operations:
             query |= (
-                Q(compliance_report__report__operation_id=operation_ownership.operation_id)
-                & Q(compliance_report__compliance_period__end_date__lt=operation_ownership.end_date)
-                & Q(compliance_report__compliance_period__end_date__gte=operation_ownership.start_date)
+                Q(
+                    compliance_report__report__operation_id=operation_ownership.operation_id
+                )
+                & Q(
+                    compliance_report__compliance_period__end_date__lt=operation_ownership.end_date
+                )
+                & Q(
+                    compliance_report__compliance_period__end_date__gte=operation_ownership.start_date
+                )
             )
 
         return ComplianceReportVersion.objects.filter(query).select_related(
-            'compliance_report__report__operation',
-            'compliance_report__compliance_period',
-            'compliance_earned_credit',
-            'report_compliance_summary__report_version__report__operator',
-            'report_compliance_summary__report_version__report__operation',
-            'report_compliance_summary__report_version__report__reporting_year',
-            'report_compliance_summary__report_version__report_operation',
+            "compliance_report__report__operation",
+            "compliance_report__compliance_period",
+            "compliance_earned_credit",
+            "report_compliance_summary__report_version__report__operator",
+            "report_compliance_summary__report_version__report__operation",
+            "report_compliance_summary__report_version__report__reporting_year",
+            "report_compliance_summary__report_version__report_operation",
         )

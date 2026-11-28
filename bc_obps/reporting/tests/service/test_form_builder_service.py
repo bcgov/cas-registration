@@ -1,19 +1,20 @@
 import json
 import uuid
 from unittest.mock import MagicMock, patch
+
+import pytest
 from django.core.cache import caches
 from django.core.cache.backends.locmem import LocMemCache
 from model_bakery.baker import prepare_recipe
-import pytest
 from registration.models.activity import Activity
 from reporting.models import ActivityJsonSchema
 from reporting.models.configuration import Configuration
 from reporting.models.source_type import SourceType
 from reporting.service.form_builder_service import (
-    build_source_type_schema,
-    handle_source_type_schema,
     build_schema,
+    build_source_type_schema,
     handle_gas_types,
+    handle_source_type_schema,
 )
 
 pytestmark = pytest.mark.django_db
@@ -32,7 +33,9 @@ class TestHandleSourceTypeMethod:
                             "fuels": {
                                 "items": {
                                     "properties": {
-                                        "fuelType": {"properties": {"fuelName": {"enum": []}}},
+                                        "fuelType": {
+                                            "properties": {"fuelName": {"enum": []}}
+                                        },
                                         "emissions": {
                                             "items": {
                                                 "properties": {"gasType": {"enum": []}},
@@ -54,26 +57,28 @@ class TestHandleSourceTypeMethod:
             has_fuel=True,
         )
 
-        returned_schema = handle_source_type_schema(source_type_schema, self.gas_type_enum, self.gas_type_one_of)
+        returned_schema = handle_source_type_schema(
+            source_type_schema, self.gas_type_enum, self.gas_type_one_of
+        )
 
         assert (
             len(
-                returned_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"][
-                    "fuelType"
-                ]["properties"]["fuelName"]["enum"]
+                returned_schema["properties"]["units"]["items"]["properties"]["fuels"][
+                    "items"
+                ]["properties"]["fuelType"]["properties"]["fuelName"]["enum"]
             )
             > 0
         )
         assert (
-            returned_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["emissions"][
+            returned_schema["properties"]["units"]["items"]["properties"]["fuels"][
                 "items"
-            ]["properties"]["gasType"]["enum"]
+            ]["properties"]["emissions"]["items"]["properties"]["gasType"]["enum"]
             == self.gas_type_enum
         )
         assert (
-            returned_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["emissions"][
+            returned_schema["properties"]["units"]["items"]["properties"]["fuels"][
                 "items"
-            ]["dependencies"]
+            ]["properties"]["emissions"]["items"]["dependencies"]
             == self.gas_type_one_of
         )
 
@@ -102,16 +107,20 @@ class TestHandleSourceTypeMethod:
             has_fuel=False,
         )
 
-        returned_schema = handle_source_type_schema(source_type_schema, self.gas_type_enum, self.gas_type_one_of)
+        returned_schema = handle_source_type_schema(
+            source_type_schema, self.gas_type_enum, self.gas_type_one_of
+        )
 
         assert (
-            returned_schema["properties"]["units"]["items"]["properties"]["emissions"]["items"]["properties"][
-                "gasType"
-            ]["enum"]
+            returned_schema["properties"]["units"]["items"]["properties"]["emissions"][
+                "items"
+            ]["properties"]["gasType"]["enum"]
             == self.gas_type_enum
         )
         assert (
-            returned_schema["properties"]["units"]["items"]["properties"]["emissions"]["items"]["dependencies"]
+            returned_schema["properties"]["units"]["items"]["properties"]["emissions"][
+                "items"
+            ]["dependencies"]
             == self.gas_type_one_of
         )
 
@@ -140,24 +149,28 @@ class TestHandleSourceTypeMethod:
             has_fuel=True,
         )
 
-        returned_schema = handle_source_type_schema(source_type_schema, self.gas_type_enum, self.gas_type_one_of)
+        returned_schema = handle_source_type_schema(
+            source_type_schema, self.gas_type_enum, self.gas_type_one_of
+        )
 
         assert (
             len(
-                returned_schema["properties"]["fuels"]["items"]["properties"]["fuelType"]["properties"]["fuelName"][
-                    "enum"
-                ]
+                returned_schema["properties"]["fuels"]["items"]["properties"][
+                    "fuelType"
+                ]["properties"]["fuelName"]["enum"]
             )
             > 0
         )
         assert (
-            returned_schema["properties"]["fuels"]["items"]["properties"]["emissions"]["items"]["properties"][
-                "gasType"
-            ]["enum"]
+            returned_schema["properties"]["fuels"]["items"]["properties"]["emissions"][
+                "items"
+            ]["properties"]["gasType"]["enum"]
             == self.gas_type_enum
         )
         assert (
-            returned_schema["properties"]["fuels"]["items"]["properties"]["emissions"]["items"]["dependencies"]
+            returned_schema["properties"]["fuels"]["items"]["properties"]["emissions"][
+                "items"
+            ]["dependencies"]
             == self.gas_type_one_of
         )
 
@@ -179,12 +192,20 @@ class TestHandleSourceTypeMethod:
             has_fuel=False,
         )
 
-        returned_schema = handle_source_type_schema(source_type_schema, self.gas_type_enum, self.gas_type_one_of)
+        returned_schema = handle_source_type_schema(
+            source_type_schema, self.gas_type_enum, self.gas_type_one_of
+        )
 
         assert (
-            returned_schema["properties"]["emissions"]["items"]["properties"]["gasType"]["enum"] == self.gas_type_enum
+            returned_schema["properties"]["emissions"]["items"]["properties"][
+                "gasType"
+            ]["enum"]
+            == self.gas_type_enum
         )
-        assert returned_schema["properties"]["emissions"]["items"]["dependencies"] == self.gas_type_one_of
+        assert (
+            returned_schema["properties"]["emissions"]["items"]["dependencies"]
+            == self.gas_type_one_of
+        )
 
     def test_form_builder_uses_cache(self):
         mock_cache = MagicMock()
@@ -199,7 +220,9 @@ class TestHandleSourceTypeMethod:
         build_source_type_schema(config_id, activity_id, source_type_id, False)
 
         assert len(mock_cache.get.mock_calls) == 1
-        mock_cache.get.assert_called_once_with(f"{config_id}-{activity_id}-{source_type_id}-False")
+        mock_cache.get.assert_called_once_with(
+            f"{config_id}-{activity_id}-{source_type_id}-False"
+        )
         assert len(mock_cache.set.mock_calls) == 1
 
         mock_cache.reset_mock()
@@ -207,7 +230,9 @@ class TestHandleSourceTypeMethod:
         # Something in cache, so the 'set' method is not called
         # And we return the cached value
         mock_cache.get.return_value = "cached"
-        return_value = build_source_type_schema(config_id, activity_id, source_type_id, False)
+        return_value = build_source_type_schema(
+            config_id, activity_id, source_type_id, False
+        )
         assert return_value == "cached"
         assert len(mock_cache.get.mock_calls) == 1
         assert len(mock_cache.set.mock_calls) == 0
@@ -223,7 +248,11 @@ class TestHandleSourceTypeMethod:
 
             results = {}
             for flag in [first_flag, not first_flag]:
-                results[flag] = json.dumps(build_source_type_schema(config_id, activity_id, source_type_id, flag))
+                results[flag] = json.dumps(
+                    build_source_type_schema(
+                        config_id, activity_id, source_type_id, flag
+                    )
+                )
 
             assert "Not Applicable" in results[True]
             assert "Not Applicable" not in results[False]
@@ -240,12 +269,16 @@ class TestHandleSourceTypeMethod:
         facility_id = str(uuid.uuid4())
         report_version_id = 1
 
-        activity, _ = Activity.objects.update_or_create(id=activity_id, defaults={"name": "Test Activity"})
+        activity, _ = Activity.objects.update_or_create(
+            id=activity_id, defaults={"name": "Test Activity"}
+        )
 
         ActivityJsonSchema.objects.filter(activity_id=activity_id).delete()
 
         mock_cache.get.return_value = None
-        result = build_schema(config_id, activity_id, source_types, facility_id, report_version_id)
+        result = build_schema(
+            config_id, activity_id, source_types, facility_id, report_version_id
+        )
         result_schema = json.loads(result)
 
         # Assertions for fallback schema
@@ -286,7 +319,9 @@ class TestHandleGasTypes:
         gas_type_one_of: dict = {"gasType": {"oneOf": []}}
 
         with (
-            patch("reporting.service.form_builder_service.ConfigurationElement") as mock_ce,
+            patch(
+                "reporting.service.form_builder_service.ConfigurationElement"
+            ) as mock_ce,
             patch("reporting.service.form_builder_service.handle_methodologies"),
         ):
             mock_ce.objects.select_related.return_value.prefetch_related.return_value.filter.return_value = [

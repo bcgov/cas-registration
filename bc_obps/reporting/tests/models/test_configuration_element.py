@@ -1,19 +1,26 @@
+import pytest
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import Activity
-from reporting.models import ConfigurationElement, SourceType, GasType, Methodology, CustomMethodologySchema
+from reporting.models import (
+    ConfigurationElement,
+    CustomMethodologySchema,
+    GasType,
+    Methodology,
+    SourceType,
+)
 from reporting.tests.utils.bakers import (
     configuration_baker,
     gas_type_baker,
     methodology_baker,
 )
-import pytest
 
 
 class ConfigurationElementTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-
-        config = configuration_baker({'slug': '5025', 'valid_from': '5025-01-01', 'valid_to': '5025-12-31'})
+        config = configuration_baker(
+            {"slug": "5025", "valid_from": "5025-01-01", "valid_to": "5025-12-31"}
+        )
         cls.custom_methodology_schema = CustomMethodologySchema.objects.create(
             activity=Activity.objects.get(pk=1),
             source_type=SourceType.objects.get(pk=1),
@@ -38,7 +45,7 @@ class ConfigurationElementTest(BaseTestCase):
             ("source_type", "source type", None, None),
             ("gas_type", "gas type", None, None),
             ("methodology", "methodology", None, None),
-            ('custom_methodology_schema', "custom methodology schema", None, None),
+            ("custom_methodology_schema", "custom methodology schema", None, None),
             ("valid_from", "valid from", None, None),
             ("valid_to", "valid to", None, None),
             ("reporting_fields", "reporting fields", None, None),
@@ -57,7 +64,9 @@ class ConfigurationElementTest(BaseTestCase):
 
         with pytest.raises(Exception) as exc:
             invalid_record.save()
-        assert exc.match(r"^This record will result in duplicate configuration elements")
+        assert exc.match(
+            r"^This record will result in duplicate configuration elements"
+        )
 
     def test_different_gas_type_and_methodology_on_same_date_range(self):
         # Same activity, source_type, and date range but different gas_type and methodology
@@ -74,7 +83,9 @@ class ConfigurationElementTest(BaseTestCase):
         valid_record.save()
 
     def test_valid_insert(self):
-        config = configuration_baker({'slug': '5026', 'valid_from': '5026-01-01', 'valid_to': '5026-12-31'})
+        config = configuration_baker(
+            {"slug": "5026", "valid_from": "5026-01-01", "valid_to": "5026-12-31"}
+        )
         valid_record = ConfigurationElement(
             activity=self.test_object.activity,
             source_type=self.test_object.source_type,

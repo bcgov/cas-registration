@@ -1,15 +1,20 @@
-from typing import Literal, Optional, Tuple
+from typing import Literal
+
+from common.api.utils import get_current_user_guid
 from common.permissions import authorize
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
+from ninja.types import DictStrAny
+from registration.api.router import router
 from registration.constants import CONTACT_TAGS
 from registration.models.contact import Contact
-from registration.schema import ContactIn, ContactOut, Message
-from common.api.utils import get_current_user_guid
-from registration.api.router import router
+from registration.schema import (
+    ContactIn,
+    ContactOut,
+    ContactWithPlacesAssigned,
+    Message,
+)
 from registration.service.contact_service import ContactService
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.schema import ContactWithPlacesAssigned
-from ninja.types import DictStrAny
 
 
 @router.get(
@@ -21,8 +26,12 @@ from ninja.types import DictStrAny
     exclude_none=True,  # To exclude None values from the response(used for address fields)
     auth=authorize("approved_authorized_roles"),
 )
-def get_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], Optional[ContactWithPlacesAssigned]]:
-    return 200, ContactService.get_with_places_assigned(get_current_user_guid(request), contact_id)
+def get_contact(
+    request: HttpRequest, contact_id: int
+) -> tuple[Literal[200], ContactWithPlacesAssigned | None]:
+    return 200, ContactService.get_with_places_assigned(
+        get_current_user_guid(request), contact_id
+    )
 
 
 @router.put(
@@ -32,8 +41,12 @@ def get_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], Op
     description="""Updates the details of a specific contact by its ID. The endpoint checks if the current user is authorized to access the contact.""",
     auth=authorize("approved_industry_user"),
 )
-def update_contact(request: HttpRequest, contact_id: int, payload: ContactIn) -> Tuple[Literal[200], Contact]:
-    return 200, ContactService.update_contact(get_current_user_guid(request), contact_id, payload)
+def update_contact(
+    request: HttpRequest, contact_id: int, payload: ContactIn
+) -> tuple[Literal[200], Contact]:
+    return 200, ContactService.update_contact(
+        get_current_user_guid(request), contact_id, payload
+    )
 
 
 @router.patch(
@@ -43,6 +56,8 @@ def update_contact(request: HttpRequest, contact_id: int, payload: ContactIn) ->
     description="""Archives a contact by its ID. The user must be authorized to perform this action.""",
     auth=authorize("approved_industry_admin_user"),
 )
-def archive_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], DictStrAny]:
+def archive_contact(
+    request: HttpRequest, contact_id: int
+) -> tuple[Literal[200], DictStrAny]:
     ContactService.archive_contact(get_current_user_guid(request), contact_id)
     return 200, {"success": True}

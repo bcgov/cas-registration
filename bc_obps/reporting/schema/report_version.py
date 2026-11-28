@@ -1,7 +1,4 @@
-from typing import Optional
-from ninja import ModelSchema, Schema
-from ninja import Field
-
+from ninja import Field, ModelSchema, Schema
 from reporting.models import ReportVersion
 
 
@@ -10,7 +7,7 @@ class ReportingVersionOut(ModelSchema):
     Schema for Report Version output
     """
 
-    reason_for_change: Optional[str] = None
+    reason_for_change: str | None = None
     reporting_year: int
     version_number: int
     operation_name: str = Field(..., alias="report_operation.operation_name")

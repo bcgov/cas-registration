@@ -1,6 +1,7 @@
 from unittest import TestCase
-from unittest.mock import patch, MagicMock
-from psycopg.sql import Composed, SQL, Identifier
+from unittest.mock import MagicMock, patch
+
+from psycopg.sql import SQL, Composed, Identifier
 from rls.utils.manager import RlsManager
 
 
@@ -9,21 +10,21 @@ class TestRlsManager(TestCase):
     def _get_composed_role_identifiers(cls):
         return Composed(
             [
-                Identifier('industry_user'),
-                SQL(', '),
-                Identifier('cas_director'),
-                SQL(', '),
-                Identifier('cas_admin'),
-                SQL(', '),
-                Identifier('cas_analyst'),
-                SQL(', '),
-                Identifier('cas_pending'),
-                SQL(', '),
-                Identifier('cas_view_only'),
+                Identifier("industry_user"),
+                SQL(", "),
+                Identifier("cas_director"),
+                SQL(", "),
+                Identifier("cas_admin"),
+                SQL(", "),
+                Identifier("cas_analyst"),
+                SQL(", "),
+                Identifier("cas_pending"),
+                SQL(", "),
+                Identifier("cas_view_only"),
             ]
         )
 
-    @patch('django.db.connection.cursor')
+    @patch("django.db.connection.cursor")
     def test_reset_privileges_for_roles(self, mock_cursor):
         mock_cursor_instance = mock_cursor.return_value.__enter__.return_value
         RlsManager.reset_privileges_for_roles()
@@ -35,7 +36,7 @@ class TestRlsManager(TestCase):
         mock_cursor_instance.execute.assert_any_call(
             Composed(
                 [
-                    SQL('revoke all privileges on all tables in schema erc from '),
+                    SQL("revoke all privileges on all tables in schema erc from "),
                     self._get_composed_role_identifiers(),
                 ]
             )
@@ -43,7 +44,7 @@ class TestRlsManager(TestCase):
         mock_cursor_instance.execute.assert_any_call(
             Composed(
                 [
-                    SQL('grant usage on schema erc to '),
+                    SQL("grant usage on schema erc to "),
                     self._get_composed_role_identifiers(),
                 ]
             )
@@ -51,7 +52,7 @@ class TestRlsManager(TestCase):
         mock_cursor_instance.execute.assert_any_call(
             Composed(
                 [
-                    SQL('grant usage on schema erc_history to '),
+                    SQL("grant usage on schema erc_history to "),
                     self._get_composed_role_identifiers(),
                 ]
             )
@@ -59,7 +60,7 @@ class TestRlsManager(TestCase):
         mock_cursor_instance.execute.assert_any_call(
             Composed(
                 [
-                    SQL('grant usage on schema public to '),
+                    SQL("grant usage on schema public to "),
                     self._get_composed_role_identifiers(),
                 ]
             )
@@ -67,7 +68,7 @@ class TestRlsManager(TestCase):
         mock_cursor_instance.execute.assert_any_call(
             Composed(
                 [
-                    SQL('grant usage on schema common to '),
+                    SQL("grant usage on schema common to "),
                     self._get_composed_role_identifiers(),
                 ]
             )
@@ -75,7 +76,7 @@ class TestRlsManager(TestCase):
         mock_cursor_instance.execute.assert_any_call(
             Composed(
                 [
-                    SQL('grant select, insert on all tables in schema common to '),
+                    SQL("grant select, insert on all tables in schema common to "),
                     self._get_composed_role_identifiers(),
                 ]
             )
@@ -83,7 +84,7 @@ class TestRlsManager(TestCase):
         mock_cursor_instance.execute.assert_any_call(
             Composed(
                 [
-                    SQL('grant select on public.django_content_type to '),
+                    SQL("grant select on public.django_content_type to "),
                     self._get_composed_role_identifiers(),
                 ]
             )
@@ -93,10 +94,10 @@ class TestRlsManager(TestCase):
         # These are the tables that have historical records for m2m relationships
         # At the time of writing this, there is no way to specify the schema for these tables in Django model field
         tables = [
-            'registration_historicalfacility_well_authorization_numbers',
-            'registration_historicaloperation_contacts',
-            'registration_historicaloperation_activities',
-            'registration_historicaloperation_regulated_products',
+            "registration_historicalfacility_well_authorization_numbers",
+            "registration_historicaloperation_contacts",
+            "registration_historicaloperation_activities",
+            "registration_historicaloperation_regulated_products",
         ]
         for table in tables:
             mock_cursor_instance.execute.assert_any_call(
@@ -105,10 +106,10 @@ class TestRlsManager(TestCase):
                 )
             )
         sequences = [
-            'registration_historicalfacility_well_authori_m2m_history_id_seq',
-            'registration_historicaloperation_contacts_m2m_history_id_seq',
-            'registration_historicaloperation_activities_m2m_history_id_seq',
-            'registration_historicaloperation_regulated_p_m2m_history_id_seq',
+            "registration_historicalfacility_well_authori_m2m_history_id_seq",
+            "registration_historicaloperation_contacts_m2m_history_id_seq",
+            "registration_historicaloperation_activities_m2m_history_id_seq",
+            "registration_historicaloperation_regulated_p_m2m_history_id_seq",
         ]
         for sequence in sequences:
             mock_cursor_instance.execute.assert_any_call(
@@ -117,71 +118,83 @@ class TestRlsManager(TestCase):
                 )
             )
 
-    @patch('rls.utils.manager.settings')
-    @patch('rls.utils.manager.apps.all_models')
-    @patch.object(RlsManager, 'apply_rls_for_model')
+    @patch("rls.utils.manager.settings")
+    @patch("rls.utils.manager.apps.all_models")
+    @patch.object(RlsManager, "apply_rls_for_model")
     def test_apply_rls(self, mock_apply_rls_for_model, mock_all_models, mock_settings):
-        mock_settings.RLS_GRANT_APPS = ['app1', 'app2']
+        mock_settings.RLS_GRANT_APPS = ["app1", "app2"]
         mock_all_models.__getitem__.side_effect = lambda app_name: (
-            {'contact': MagicMock()} if app_name == 'app1' else {}
+            {"contact": MagicMock()} if app_name == "app1" else {}
         )
         RlsManager.apply_rls()
 
         # Ensure apply_rls_for_model is called for eligible models
-        mock_apply_rls_for_model.assert_called_once_with('app1', 'contact')
+        mock_apply_rls_for_model.assert_called_once_with("app1", "contact")
 
-    @patch('rls.utils.manager.settings')
-    @patch('rls.utils.manager.apps.all_models')
-    @patch.object(RlsManager, 'drop_policies_for_model')
-    def test_drop_policies(self, mock_drop_policies_for_model, mock_all_models, mock_settings):
-        mock_settings.RLS_GRANT_APPS = ['app1', 'app2']
+    @patch("rls.utils.manager.settings")
+    @patch("rls.utils.manager.apps.all_models")
+    @patch.object(RlsManager, "drop_policies_for_model")
+    def test_drop_policies(
+        self, mock_drop_policies_for_model, mock_all_models, mock_settings
+    ):
+        mock_settings.RLS_GRANT_APPS = ["app1", "app2"]
         mock_all_models.__getitem__.side_effect = lambda app_name: (
-            {'contact': MagicMock()} if app_name == 'app1' else {}
+            {"contact": MagicMock()} if app_name == "app1" else {}
         )
         RlsManager.drop_policies()
 
         # Ensure drop_policies_for_model is called for eligible models
-        mock_drop_policies_for_model.assert_called_once_with('app1', 'contact')
+        mock_drop_policies_for_model.assert_called_once_with("app1", "contact")
 
     @patch(
-        'django.apps.apps.all_models',
-        new_callable=lambda: {'app1': {'contact': MagicMock(Rls=MagicMock(grants=[], policies=[], enable_rls=False))}},
+        "django.apps.apps.all_models",
+        new_callable=lambda: {
+            "app1": {
+                "contact": MagicMock(
+                    Rls=MagicMock(grants=[], policies=[], enable_rls=False)
+                )
+            }
+        },
     )
-    @patch('django.db.connection.cursor')
+    @patch("django.db.connection.cursor")
     def test_apply_rls_for_model(self, mock_cursor, mock_all_models):
         mock_cursor_instance = mock_cursor.return_value.__enter__.return_value
-        RlsManager.apply_rls_for_model('app1', 'contact')
+        RlsManager.apply_rls_for_model("app1", "contact")
 
         # Ensure no grants or policies were executed since the list is empty
         mock_cursor_instance.execute.assert_not_called()
 
     @patch(
-        'django.apps.apps.all_models',
+        "django.apps.apps.all_models",
         new_callable=lambda: {
-            'app1': {
-                'contact': MagicMock(Rls=MagicMock(policies=[], enable_rls=True))  # Placeholder, will replace below
+            "app1": {
+                "contact": MagicMock(
+                    Rls=MagicMock(policies=[], enable_rls=True)
+                )  # Placeholder, will replace below
             }
         },
     )
-    @patch('django.db.connection.cursor')
+    @patch("django.db.connection.cursor")
     def test_drop_policies_for_model(self, mock_cursor, mock_all_models):
         mock_cursor_instance = mock_cursor.return_value.__enter__.return_value
 
         mock_policy = MagicMock()
         mock_m2m_policy = MagicMock()
         mock_m2m_rls = MagicMock(policies=[mock_m2m_policy])
-        mock_all_models['app1']['contact'].Rls.policies = [mock_policy]
-        mock_all_models['app1']['contact'].Rls.m2m_rls_list = [mock_m2m_rls]
+        mock_all_models["app1"]["contact"].Rls.policies = [mock_policy]
+        mock_all_models["app1"]["contact"].Rls.m2m_rls_list = [mock_m2m_rls]
 
-        RlsManager.drop_policies_for_model('app1', 'contact')
+        RlsManager.drop_policies_for_model("app1", "contact")
 
         mock_policy.drop_policy.assert_called_once_with(mock_cursor_instance)
         mock_m2m_policy.drop_policy.assert_called_once_with(mock_cursor_instance)
 
-    @patch.object(RlsManager, 'drop_policies')
-    @patch.object(RlsManager, 'reset_privileges_for_roles')
-    @patch.object(RlsManager, 'apply_rls')
-    def test_re_apply_rls(self, mock_apply_rls, mock_reset_privileges_for_roles, mock_drop_policies):
+    @patch.object(RlsManager, "drop_policies")
+    @patch.object(RlsManager, "reset_privileges_for_roles")
+    @patch.object(RlsManager, "apply_rls")
+    def test_re_apply_rls(
+        self, mock_apply_rls, mock_reset_privileges_for_roles, mock_drop_policies
+    ):
         RlsManager.re_apply_rls()
 
         # Ensure methods are called in order
@@ -189,13 +202,13 @@ class TestRlsManager(TestCase):
         mock_reset_privileges_for_roles.assert_called_once()
         mock_apply_rls.assert_called_once()
 
-    @patch('rls.utils.manager.settings')
-    @patch('django.db.connection.cursor')
+    @patch("rls.utils.manager.settings")
+    @patch("django.db.connection.cursor")
     def test_bypass_rls(self, mock_cursor, mock_settings):
-        mock_settings.DB_USER = 'db_user'
+        mock_settings.DB_USER = "db_user"
         mock_cursor_instance = mock_cursor.return_value.__enter__.return_value
         # Mock the fetchone to return the original role
-        mock_cursor_instance.fetchone.return_value = ['original_user']
+        mock_cursor_instance.fetchone.return_value = ["original_user"]
 
         # Test that bypass_rls works as a context manager
         with RlsManager.bypass_rls():
@@ -204,6 +217,10 @@ class TestRlsManager(TestCase):
         # Verify that SELECT current_user was called first
         mock_cursor_instance.execute.assert_any_call("SELECT current_user")
         # Verify that set role was called with DB_USER
-        mock_cursor_instance.execute.assert_any_call(SQL("set role {}").format(Identifier('db_user')))
+        mock_cursor_instance.execute.assert_any_call(
+            SQL("set role {}").format(Identifier("db_user"))
+        )
         # Verify that set role was called to restore original role
-        mock_cursor_instance.execute.assert_any_call(SQL("set role {}").format(Identifier('original_user')))
+        mock_cursor_instance.execute.assert_any_call(
+            SQL("set role {}").format(Identifier("original_user"))
+        )

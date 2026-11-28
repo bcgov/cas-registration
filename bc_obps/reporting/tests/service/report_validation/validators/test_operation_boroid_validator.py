@@ -1,5 +1,5 @@
-from model_bakery.baker import make_recipe
 import pytest
+from model_bakery.baker import make_recipe
 from registration.models.operation import Operation
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
@@ -10,7 +10,6 @@ from reporting.service.report_validation.report_validation_error import (
 from reporting.service.report_validation.validators import (
     operation_boroid_presence,
 )
-
 
 boro_required_purposes = [
     Operation.Purposes.OBPS_REGULATED_OPERATION,
@@ -29,7 +28,9 @@ boro_not_required_purposes = [
 class TestOperationBoroIdValidator:
     def test_all_purposes_are_evaluated(self):
         # Ensure we cover all the registration purposes
-        assert set(boro_required_purposes).union(boro_not_required_purposes) == set(Operation.Purposes)
+        assert set(boro_required_purposes).union(boro_not_required_purposes) == set(
+            Operation.Purposes
+        )
 
     @pytest.mark.parametrize(
         "reg_purpose",
@@ -48,7 +49,9 @@ class TestOperationBoroIdValidator:
                 Severity.ERROR,
                 "Missing BORO ID: A BORO ID is required to submit this report. If you do not have a BORO ID, please wait for it to be issued. If you have been issued a BORO ID, return to Review Operation Information and click 'Sync latest changes from administration' to resolve this error.",
                 key=ReportValidationErrorKey.OPERATION_BORO_ID,
-                context=ErrorContext(report_version_id=report_operation.report_version.id),
+                context=ErrorContext(
+                    report_version_id=report_operation.report_version.id
+                ),
             )
         }
 
@@ -69,7 +72,9 @@ class TestOperationBoroIdValidator:
                 Severity.ERROR,
                 "Missing BORO ID: A BORO ID is required to submit this report. If you do not have a BORO ID, please wait for it to be issued. If you have been issued a BORO ID, return to Review Operation Information and click 'Sync latest changes from administration' to resolve this error.",
                 key=ReportValidationErrorKey.OPERATION_BORO_ID,
-                context=ErrorContext(report_version_id=report_operation.report_version.id),
+                context=ErrorContext(
+                    report_version_id=report_operation.report_version.id
+                ),
             )
         }
 

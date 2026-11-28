@@ -1,6 +1,5 @@
 import pytest
 from model_bakery import baker
-
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
     ReportValidationError,
@@ -19,9 +18,7 @@ pytestmark = pytest.mark.django_db
 SECTION = RequiredFieldsElectricityImportDataValidator.SECTION
 SECTION_TITLE = RequiredFieldsElectricityImportDataValidator.SECTION_TITLE
 
-BASE_PATH = (
-    "reporting.service.report_validation.validators.required_fields.required_fields_report_electricity_import_data"
-)
+BASE_PATH = "reporting.service.report_validation.validators.required_fields.required_fields_report_electricity_import_data"
 APPLIES_TO_SECTION_PATH = f"{BASE_PATH}.applies_to_section"
 
 

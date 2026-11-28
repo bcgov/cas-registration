@@ -1,12 +1,15 @@
-from typing import Literal, Tuple
-from django.http import HttpRequest
-from compliance.constants import COMPLIANCE
+from typing import Literal
+
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from compliance.service.compliance_dashboard_service import ComplianceDashboardService
-from registration.schema.generic import Message
+from compliance.api.permissions import (
+    approved_industry_user_compliance_report_version_composite_auth,
+)
 from compliance.api.router import router
+from compliance.constants import COMPLIANCE
 from compliance.schema.elicensing_payments import ElicensingPaymentListOut
-from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth
+from compliance.service.compliance_dashboard_service import ComplianceDashboardService
+from django.http import HttpRequest
+from registration.schema.generic import Message
 
 
 @router.get(
@@ -18,11 +21,14 @@ from compliance.api.permissions import approved_industry_user_compliance_report_
 )
 def get_compliance_obligation_payments_by_compliance_report_version_id(
     request: HttpRequest, compliance_report_version_id: int
-) -> Tuple[Literal[200], ElicensingPaymentListOut]:
-    payment_data = ComplianceDashboardService.get_compliance_obligation_payments_by_compliance_report_version_id(
-        compliance_report_version_id=compliance_report_version_id
+) -> tuple[Literal[200], dict]:
+    payment_data = list(
+        ComplianceDashboardService.get_compliance_obligation_payments_by_compliance_report_version_id(
+            compliance_report_version_id=compliance_report_version_id
+        )
     )
-    response = ElicensingPaymentListOut(
-        rows=list(payment_data), row_count=len(payment_data)  # type: ignore [arg-type] # Mypy does not recognize queryset as iterable. Function is working as expected
-    )
+    response = {
+        "rows": payment_data,
+        "row_count": len(payment_data),
+    }
     return 200, response

@@ -9,10 +9,30 @@ class OptedInOperationDetailModelTest(BaseTestCase):
         cls.field_data = [
             ("id", "ID", None, None),
             ("operation", "operation", None, None),
-            ("meets_section_3_emissions_requirements", "meets section 3 emissions requirements", None, None),
-            ("meets_electricity_import_operation_criteria", "meets electricity import operation criteria", None, None),
-            ("meets_entire_operation_requirements", "meets entire operation requirements", None, None),
-            ("meets_section_6_emissions_requirements", "meets section 6 emissions requirements", None, None),
+            (
+                "meets_section_3_emissions_requirements",
+                "meets section 3 emissions requirements",
+                None,
+                None,
+            ),
+            (
+                "meets_electricity_import_operation_criteria",
+                "meets electricity import operation criteria",
+                None,
+                None,
+            ),
+            (
+                "meets_entire_operation_requirements",
+                "meets entire operation requirements",
+                None,
+                None,
+            ),
+            (
+                "meets_section_6_emissions_requirements",
+                "meets section 6 emissions requirements",
+                None,
+                None,
+            ),
             (
                 "meets_naics_code_11_22_562_classification_requirements",
                 "meets naics code 11 22 562 classification requirements",
@@ -25,7 +45,12 @@ class OptedInOperationDetailModelTest(BaseTestCase):
                 None,
                 None,
             ),
-            ("meets_reporting_and_regulated_obligations", "meets reporting and regulated obligations", None, None),
+            (
+                "meets_reporting_and_regulated_obligations",
+                "meets reporting and regulated obligations",
+                None,
+                None,
+            ),
             (
                 "meets_notification_to_director_on_criteria_change",
                 "meets notification to director on criteria change",

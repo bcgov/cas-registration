@@ -1,7 +1,7 @@
-from django.conf import settings
-from django.db.models.signals import pre_migrate
 from django.apps import AppConfig
+from django.conf import settings
 from django.db import connection
+from django.db.models.signals import pre_migrate
 
 
 def create_erc_schemas(sender, app_config, **kwargs):
@@ -16,7 +16,10 @@ class RegistrationConfig(AppConfig):
 
     def ready(self):
         pre_migrate.connect(create_erc_schemas, sender=self)
-        from .signals import signals, consumers  # noqa: F401
+        from importlib import import_module
 
-        if settings.ENVIRONMENT != 'prod':
-            from .signals import post_save_fixtures  # noqa: F401
+        import_module("registration.signals.consumers")
+        import_module("registration.signals.signals")
+
+        if settings.ENVIRONMENT != "prod":
+            import_module("registration.signals.post_save_fixtures")

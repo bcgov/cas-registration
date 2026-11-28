@@ -1,5 +1,6 @@
 from decimal import Decimal
 from unittest.mock import patch
+
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
@@ -13,7 +14,9 @@ class TestAccruingPenaltiesEndpoint(CommonTestSetup):
             kwargs={"compliance_report_version_id": compliance_report_version_id},
         )
 
-    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.get_accruing_penalty_data")
+    @patch(
+        "compliance.service.penalty_calculation_service.PenaltyCalculationService.get_accruing_penalty_data"
+    )
     def test_get_accruing_penalties_success(self, mock_get_accruing_penalty_data):
         # Arrange
         mock_get_accruing_penalty_data.return_value = {
@@ -30,7 +33,8 @@ class TestAccruingPenaltiesEndpoint(CommonTestSetup):
             compliance_report__report__operation__operator=operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=operator, operations=[compliance_report_version.compliance_report.report.operation]
+            operator=operator,
+            operations=[compliance_report_version.compliance_report.report.operation],
         )
 
         # Act
@@ -50,8 +54,12 @@ class TestAccruingPenaltiesEndpoint(CommonTestSetup):
         # The daily accrual breakdown is internal-only and must not be exposed to external users
         assert "daily_accumulated_list" not in response_data
 
-    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.get_accruing_penalty_data")
-    def test_get_accruing_penalties_when_nothing_accruing(self, mock_get_accruing_penalty_data):
+    @patch(
+        "compliance.service.penalty_calculation_service.PenaltyCalculationService.get_accruing_penalty_data"
+    )
+    def test_get_accruing_penalties_when_nothing_accruing(
+        self, mock_get_accruing_penalty_data
+    ):
         # Arrange
         mock_get_accruing_penalty_data.return_value = {
             "faa_interest": Decimal("0.00"),
@@ -67,7 +75,8 @@ class TestAccruingPenaltiesEndpoint(CommonTestSetup):
             compliance_report__report__operation__operator=operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=operator, operations=[compliance_report_version.compliance_report.report.operation]
+            operator=operator,
+            operations=[compliance_report_version.compliance_report.report.operation],
         )
 
         # Act

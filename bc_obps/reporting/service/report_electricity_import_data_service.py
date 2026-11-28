@@ -1,8 +1,7 @@
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from decimal import Decimal
-from typing import Optional
 
-from reporting.models import ReportVersion, ReportElectricityImportData
+from reporting.models import ReportElectricityImportData, ReportVersion
 
 
 @dataclass
@@ -23,8 +22,10 @@ class ElectricityImportDataService:
     @staticmethod
     def get_electricity_import_data(
         report_version_id: int,
-    ) -> Optional[ReportElectricityImportData]:
-        return ReportElectricityImportData.objects.filter(report_version__id=report_version_id).first()
+    ) -> ReportElectricityImportData | None:
+        return ReportElectricityImportData.objects.filter(
+            report_version__id=report_version_id
+        ).first()
 
     @staticmethod
     def save_electricity_import_data(
@@ -32,8 +33,10 @@ class ElectricityImportDataService:
     ) -> ReportElectricityImportData:
         report_version = ReportVersion.objects.get(pk=version_id)
         payload_dict = asdict(payload)
-        electricity_import_data, _ = ReportElectricityImportData.objects.update_or_create(
-            report_version=report_version,
-            defaults=payload_dict,
+        electricity_import_data, _ = (
+            ReportElectricityImportData.objects.update_or_create(
+                report_version=report_version,
+                defaults=payload_dict,
+            )
         )
         return electricity_import_data

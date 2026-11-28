@@ -1,8 +1,11 @@
-from typing import Annotated, List, Optional
+from typing import Annotated
 from uuid import UUID
 
 from ninja import Field, FilterSchema, ModelSchema, Schema
-from registration.constants import BC_CORPORATE_REGISTRY_REGEX, CRA_BUSINESS_NUMBER_REGEX
+from registration.constants import (
+    BC_CORPORATE_REGISTRY_REGEX,
+    CRA_BUSINESS_NUMBER_REGEX,
+)
 from registration.models import UserOperator
 from registration.models.partner_operator import PartnerOperator
 from registration.schema import (
@@ -12,7 +15,6 @@ from registration.schema import (
     PartnerOperatorOut,
     UserExternalDashboardUsersTileData,
 )
-
 
 user_alias = {
     "first_name": "user.first_name",
@@ -32,14 +34,22 @@ class UserOperatorOperatorOut(Schema):
 
 
 class UserOperatorFilterSchema(FilterSchema):
-    user_friendly_id: Annotated[str | None, Field(q='user_friendly_id__icontains')] = None
+    user_friendly_id: Annotated[str | None, Field(q="user_friendly_id__icontains")] = (
+        None
+    )
     status: str | None = None
-    user__first_name: Annotated[str | None, Field(q='user__first_name__icontains')] = None
-    user__last_name: Annotated[str | None, Field(q='user__last_name__icontains')] = None
-    user__email: Annotated[str | None, Field(q='user__email__icontains')] = None
-    user__bceid_business_name: Annotated[str | None, Field(q='user__bceid_business_name__icontains')] = None
-    operator__legal_name: Annotated[str | None, Field(q='operator__legal_name__icontains')] = None
-    role: Annotated[str | None, Field(q='role__icontains')] = None
+    user__first_name: Annotated[str | None, Field(q="user__first_name__icontains")] = (
+        None
+    )
+    user__last_name: Annotated[str | None, Field(q="user__last_name__icontains")] = None
+    user__email: Annotated[str | None, Field(q="user__email__icontains")] = None
+    user__bceid_business_name: Annotated[
+        str | None, Field(q="user__bceid_business_name__icontains")
+    ] = None
+    operator__legal_name: Annotated[
+        str | None, Field(q="operator__legal_name__icontains")
+    ] = None
+    role: Annotated[str | None, Field(q="role__icontains")] = None
 
 
 class UserOperatorListOut(ModelSchema):
@@ -51,7 +61,7 @@ class UserOperatorListOut(ModelSchema):
 
     class Meta:
         model = UserOperator
-        fields = ['id', 'user_friendly_id', 'role']
+        fields = ["id", "user_friendly_id", "role"]
 
 
 class UserOperatorOut(ModelSchema):
@@ -60,31 +70,39 @@ class UserOperatorOut(ModelSchema):
     """
 
     legal_name: str = Field(..., alias=operator_alias["legal_name"])
-    trade_name: Optional[str] = Field("", alias="operator.trade_name")
-    cra_business_number: Optional[str] = Field(
+    trade_name: str | None = Field("", alias="operator.trade_name")
+    cra_business_number: str | None = Field(
         None, pattern=CRA_BUSINESS_NUMBER_REGEX, alias="operator.cra_business_number"
     )
-    bc_corporate_registry_number: Optional[str] = Field(
-        None, pattern=BC_CORPORATE_REGISTRY_REGEX, alias="operator.bc_corporate_registry_number"
+    bc_corporate_registry_number: str | None = Field(
+        None,
+        pattern=BC_CORPORATE_REGISTRY_REGEX,
+        alias="operator.bc_corporate_registry_number",
     )
-    business_structure: Optional[str] = Field(None, alias="operator.business_structure.name")
-    street_address: str = Field('', alias="operator.mailing_address.street_address")
-    municipality: str = Field('', alias="operator.mailing_address.municipality")
-    province: str = Field('', alias="operator.mailing_address.province")
-    postal_code: str = Field('', alias="operator.mailing_address.postal_code")
+    business_structure: str | None = Field(
+        None, alias="operator.business_structure.name"
+    )
+    street_address: str = Field("", alias="operator.mailing_address.street_address")
+    municipality: str = Field("", alias="operator.mailing_address.municipality")
+    province: str = Field("", alias="operator.mailing_address.province")
+    postal_code: str = Field("", alias="operator.mailing_address.postal_code")
 
     operator_has_parent_operators: bool
-    parent_operators_array: Optional[List[ParentOperatorOut]] = Field(None, alias="operator.parent_operators")
+    parent_operators_array: list[ParentOperatorOut] | None = Field(
+        None, alias="operator.parent_operators"
+    )
 
     operator_has_partner_operators: bool
-    partner_operators_array: Optional[List[PartnerOperatorOut]] = Field(None, alias="operator.partner_operators")
+    partner_operators_array: list[PartnerOperatorOut] | None = Field(
+        None, alias="operator.partner_operators"
+    )
 
     first_name: str = Field(..., alias=user_alias["first_name"])
     last_name: str = Field(..., alias=user_alias["last_name"])
     email: str = Field(..., alias=user_alias["email"])
     phone_number: str = str(Field(None, alias="user.phone_number"))
     position_title: str = Field(..., alias="user.position_title")
-    bceid_business_name: Optional[str] = Field(None, alias="user.bceid_business_name")
+    bceid_business_name: str | None = Field(None, alias="user.bceid_business_name")
 
     @staticmethod
     def resolve_phone_number(obj: UserOperator) -> str:
@@ -95,10 +113,15 @@ class UserOperatorOut(ModelSchema):
         return obj.operator.parent_operators.exists()
 
     @staticmethod
-    def resolve_parent_operators_array(obj: UserOperator) -> Optional[List[ParentOperator]]:
+    def resolve_parent_operators_array(
+        obj: UserOperator,
+    ) -> list[ParentOperator] | None:
         if obj.operator.parent_operators.exists():
             return [
-                parent_operator for parent_operator in obj.operator.parent_operators.select_related("mailing_address")
+                parent_operator
+                for parent_operator in obj.operator.parent_operators.select_related(
+                    "mailing_address"
+                )
             ]
         return None
 
@@ -107,11 +130,15 @@ class UserOperatorOut(ModelSchema):
         return obj.operator.partner_operators.exists()
 
     @staticmethod
-    def resolve_partner_operators_array(obj: UserOperator) -> Optional[List[PartnerOperator]]:
+    def resolve_partner_operators_array(
+        obj: UserOperator,
+    ) -> list[PartnerOperator] | None:
         if obj.operator.partner_operators.exists():
             return [
                 partner_operator
-                for partner_operator in obj.operator.partner_operators.select_related("business_structure")
+                for partner_operator in obj.operator.partner_operators.select_related(
+                    "business_structure"
+                )
             ]
         return None
 
@@ -119,7 +146,7 @@ class UserOperatorOut(ModelSchema):
     def resolve_role(obj: UserOperator) -> str:
         role = obj.role
         if role == UserOperator.Roles.ADMIN:
-            return 'Administrator'
+            return "Administrator"
         return obj.role.capitalize()
 
     class Meta:
@@ -138,7 +165,7 @@ class CurrentUserOperatorOut(ModelSchema):
 
 
 class UserOperatorStatusUpdate(ModelSchema):
-    role: Optional[str] = None
+    role: str | None = None
 
     class Meta:
         model = UserOperator

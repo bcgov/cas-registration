@@ -2,8 +2,8 @@ import typing
 
 from common.lib import pgtrigger
 from django.core.files import File
-from django.db import models
 from django.core.files.storage import default_storage
+from django.db import models
 from django.db.models.fields.files import FieldFile
 
 
@@ -62,8 +62,10 @@ class ScannedFileStorageMixin(models.Model):
             raise FileNotFoundError(f"File {file_name} not found in storage.")
 
         # Ignore the audit columns triggers, we're not changing anything about the document itself
-        with pgtrigger.ignore(f"{self._meta.app_label}.{self._meta.object_name}:set_updated_audit_columns"):
-            self.save(update_fields=['status'])
+        with pgtrigger.ignore(
+            f"{self._meta.app_label}.{self._meta.object_name}:set_updated_audit_columns"
+        ):
+            self.save(update_fields=["status"])
         return self.status
 
     # Django method overrides

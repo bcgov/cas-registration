@@ -1,7 +1,8 @@
 import json
 from unittest.mock import ANY, patch
-from model_bakery.baker import make_recipe
+
 import pytest
+from model_bakery.baker import make_recipe
 from registration.models.activity import Activity
 from reporting.models.reporting_year import ReportingYear
 from reporting.service.report_validation.report_validation_error import (
@@ -47,9 +48,9 @@ class TestReportActivityJsonValidator:
 
         assert not schema["unevaluatedProperties"]
         assert not schema["properties"]["test_prop"]["unevaluatedProperties"]
-        assert not schema["properties"]["test_prop"]["dependentSchemas"]["test_prop_1"]["properties"]["test_prop_2"][
-            "unevaluatedProperties"
-        ]
+        assert not schema["properties"]["test_prop"]["dependentSchemas"]["test_prop_1"][
+            "properties"
+        ]["test_prop_2"]["unevaluatedProperties"]
 
         assert "dependentSchemas" in schema and "dependencies" not in schema
         assert (
@@ -57,7 +58,9 @@ class TestReportActivityJsonValidator:
             and "dependencies" not in schema["properties"]["test_prop"]
         )
 
-    @patch("reporting.service.form_builder_service.FormBuilderService.build_form_schema")
+    @patch(
+        "reporting.service.form_builder_service.FormBuilderService.build_form_schema"
+    )
     def test_validate_with_extra_field(self, mock_build_form_schema):
         mock_build_form_schema.return_value = json.dumps(
             {
@@ -126,7 +129,9 @@ class TestReportActivityJsonValidator:
             )
         }
 
-    @patch("reporting.service.form_builder_service.FormBuilderService.build_form_schema")
+    @patch(
+        "reporting.service.form_builder_service.FormBuilderService.build_form_schema"
+    )
     def test_validate_with_nested_dependent_schema(self, mock_build_form_schema):
         mock_build_form_schema.return_value = json.dumps(
             {
@@ -281,9 +286,13 @@ class TestReportActivityJsonValidator:
 
         raw_activity_data = make_recipe(
             "reporting.tests.utils.report_raw_activity_data",
-            report_version__report__reporting_year=ReportingYear.objects.get(reporting_year=2024),
+            report_version__report__reporting_year=ReportingYear.objects.get(
+                reporting_year=2024
+            ),
             facility_report__facility__id="00000000-0000-0000-0000-000000000014",
-            facility_report__report_version__report__reporting_year=ReportingYear.objects.get(reporting_year=2024),
+            facility_report__report_version__report__reporting_year=ReportingYear.objects.get(
+                reporting_year=2024
+            ),
             activity=Activity.objects.get(slug="electricity_generation"),
             json_data=test_data,
         )
@@ -301,7 +310,10 @@ class TestReportActivityJsonValidator:
                     "type": "object",
                     "properties": {
                         "test_prop_1": {"type": "string"},
-                        "test_prop_2": {"type": "object", "properties": {"test_prop_3": {"type": "string"}}},
+                        "test_prop_2": {
+                            "type": "object",
+                            "properties": {"test_prop_3": {"type": "string"}},
+                        },
                     },
                     "dependencies": {
                         "test_prop_1": {
@@ -324,9 +336,13 @@ class TestReportActivityJsonValidator:
         assert "unevaluatedProperties" not in schema["properties"]["test_prop"]
         assert (
             "unevaluatedProperties"
-            not in schema["properties"]["test_prop"]["properties"]["test_prop_2"]["properties"]["test_prop_3"]
+            not in schema["properties"]["test_prop"]["properties"]["test_prop_2"][
+                "properties"
+            ]["test_prop_3"]
         )
         assert (
             "unevaluatedProperties"
-            not in schema["properties"]["test_prop"]["dependentSchemas"]["test_prop_1"]["properties"]["test_prop_2"]
+            not in schema["properties"]["test_prop"]["dependentSchemas"]["test_prop_1"][
+                "properties"
+            ]["test_prop_2"]
         )

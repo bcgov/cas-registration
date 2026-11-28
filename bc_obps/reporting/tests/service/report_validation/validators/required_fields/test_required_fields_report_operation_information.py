@@ -1,7 +1,7 @@
-import pytest
-from model_bakery import baker
 from unittest.mock import patch
 
+import pytest
+from model_bakery import baker
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
     ReportValidationError,
@@ -15,12 +15,9 @@ from reporting.service.report_validation.validators.required_fields.required_fie
 )
 from reporting.service.reporting_flow_service import ReportingFlow
 
-
 pytestmark = pytest.mark.django_db
 
-BASE_PATH = (
-    "reporting.service.report_validation.validators.required_fields.required_fields_report_operation_information"
-)
+BASE_PATH = "reporting.service.report_validation.validators.required_fields.required_fields_report_operation_information"
 RESOLVE_FLOW_PATH = f"{BASE_PATH}.resolve_flow"
 
 SECTION = RequiredFieldsReportOperationInformationValidator.SECTION

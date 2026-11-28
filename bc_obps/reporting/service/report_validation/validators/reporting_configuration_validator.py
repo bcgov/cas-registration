@@ -4,7 +4,9 @@ from django.db.models import OuterRef, QuerySet
 from reporting.models.configuration_element import ConfigurationElement
 from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_version import ReportVersion
-from reporting.service.report_validation.report_validation_error import ReportValidationError
+from reporting.service.report_validation.report_validation_error import (
+    ReportValidationError,
+)
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 
 TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
@@ -12,12 +14,18 @@ TAGS = [ValidationTags.REPORT_VALIDATION, ValidationTags.ON_SUBMIT]
 
 def annotated_report_methodology(report_version_id: int) -> QuerySet[ReportMethodology]:
     config_element = ConfigurationElement.objects.filter(
-        activity_id=OuterRef("report_emission__report_source_type__report_activity__activity_id"),
+        activity_id=OuterRef(
+            "report_emission__report_source_type__report_activity__activity_id"
+        ),
         source_type_id=OuterRef("report_emission__report_source_type__source_type_id"),
         gas_type_id=OuterRef("report_emission__gas_type_id"),
         methodology_id=OuterRef("methodology_id"),
-        valid_from__valid_from__year__lte=OuterRef("report_version__report__reporting_year_id"),
-        valid_to__valid_to__year__gte=OuterRef("report_version__report__reporting_year_id"),
+        valid_from__valid_from__year__lte=OuterRef(
+            "report_version__report__reporting_year_id"
+        ),
+        valid_to__valid_to__year__gte=OuterRef(
+            "report_version__report__reporting_year_id"
+        ),
     ).values("id")[:1]
 
     return ReportMethodology.objects.filter(
@@ -27,10 +35,13 @@ def annotated_report_methodology(report_version_id: int) -> QuerySet[ReportMetho
     )
 
 
-def validate_configuration_elements_present(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-
+def validate_configuration_elements_present(
+    report_version: ReportVersion,
+) -> dict[str, ReportValidationError]:
     missing_config = (
-        annotated_report_methodology(report_version.id).filter(matching_config_id__isnull=True).values("id")  # type: ignore
+        annotated_report_methodology(report_version.id)
+        .filter(matching_config_id__isnull=True)  # type: ignore
+        .values("id")
     )
 
     if missing_config.exists():
@@ -41,7 +52,9 @@ def validate_configuration_elements_present(report_version: ReportVersion) -> di
     return {}
 
 
-def validate_reporting_fields(report_version: ReportVersion) -> dict[str, ReportValidationError]:
+def validate_reporting_fields(
+    report_version: ReportVersion,
+) -> dict[str, ReportValidationError]:
     """
     Validate that for each ReportMethodology record, the reported fields are
     - either listed in its configuration ConfigurationElementReportingField models

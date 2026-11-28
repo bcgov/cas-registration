@@ -1,23 +1,27 @@
+from decimal import Decimal
+
+from common.lib import pgtrigger
 from common.tests.utils.helpers import BaseTestCase
+from model_bakery import baker
+from model_bakery.baker import make_recipe
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models import ReportComplianceSummaryProduct
-from model_bakery import baker
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
-from decimal import Decimal
-from model_bakery.baker import make_recipe
 from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsTestSetup
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from common.lib import pgtrigger
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ReportComplianceSummaryModelProductTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        rv = baker.make_recipe('reporting.tests.utils.report_version')
-        rcs = baker.make_recipe('reporting.tests.utils.report_compliance_summary')
-        p = baker.make_recipe('registration.tests.utils.regulated_product')
+        rv = baker.make_recipe("reporting.tests.utils.report_version")
+        rcs = baker.make_recipe("reporting.tests.utils.report_compliance_summary")
+        p = baker.make_recipe("registration.tests.utils.regulated_product")
 
         cls.test_object = ReportComplianceSummaryProduct.objects.create(
             report_version=rv,
@@ -40,8 +44,18 @@ class ReportComplianceSummaryModelProductTest(BaseTestCase):
             ("jan_mar_production", "jan mar production", None, None),
             ("apr_dec_production", "apr dec production", None, None),
             ("emission_intensity", "emission intensity", None, None),
-            ("allocated_industrial_process_emissions", "allocated industrial process emissions", None, None),
-            ("allocated_compliance_emissions", "allocated compliance emissions", None, None),
+            (
+                "allocated_industrial_process_emissions",
+                "allocated industrial process emissions",
+                None,
+                None,
+            ),
+            (
+                "allocated_compliance_emissions",
+                "allocated compliance emissions",
+                None,
+                None,
+            ),
             ("reduction_factor_override", "reduction factor override", None, None),
             ("tightening_rate_override", "tightening rate override", None, None),
         ]
@@ -50,32 +64,35 @@ class ReportComplianceSummaryModelProductTest(BaseTestCase):
         assert_immutable_report_version(
             "reporting.tests.utils.report_compliance_summary_product",
             "annual_production",
-            decimal_value_to_update=Decimal('444.0'),
+            decimal_value_to_update=Decimal("444.0"),
         )
 
 
 class ReportComplianceSummarProductyRlsTest(BaseTestCase):
-
     def test_report_compliance_summary_product_rls_industry_user(self):
         # Common Test Setup
-        t = ReportRlsTestSetup(parent_object='report_compliance_summary')
+        t = ReportRlsTestSetup(parent_object="report_compliance_summary")
 
         # ReportComplianceSummaryProduct Setup
         # Inside access bounds
-        with pgtrigger.ignore("reporting.ReportComplianceSummaryProduct:immutable_report_version"):
+        with pgtrigger.ignore(
+            "reporting.ReportComplianceSummaryProduct:immutable_report_version"
+        ):
             report_compliance_summary_product_2010_submitted = make_recipe(
-                'reporting.tests.utils.report_compliance_summary_product',
+                "reporting.tests.utils.report_compliance_summary_product",
                 report_version=t.report_version_2010_submitted,
             )
         report_compliance_summary_product_2010_draft = make_recipe(
-            'reporting.tests.utils.report_compliance_summary_product', report_version=t.report_version_2010_draft
+            "reporting.tests.utils.report_compliance_summary_product",
+            report_version=t.report_version_2010_draft,
         )
         # Outside access bounds
         report_compliance_summary_product_2013_draft = make_recipe(
-            'reporting.tests.utils.report_compliance_summary_product', report_version=t.report_version_2013_draft
+            "reporting.tests.utils.report_compliance_summary_product",
+            report_version=t.report_version_2013_draft,
         )
 
-        regulated_product = make_recipe('registration.tests.utils.regulated_product')
+        regulated_product = make_recipe("registration.tests.utils.regulated_product")
 
         # Additional report_version needed for insert test: 2012 - Within access bounds
         # reporting_year_2012 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2012)
@@ -90,21 +107,25 @@ class ReportComplianceSummarProductyRlsTest(BaseTestCase):
         # )
 
         def select_function(cursor):
-            ReportComplianceSummaryProduct.objects.get(id=report_compliance_summary_product_2010_submitted.id)
+            ReportComplianceSummaryProduct.objects.get(
+                id=report_compliance_summary_product_2010_submitted.id
+            )
 
         def forbidden_select_function(cursor):
-            ReportComplianceSummaryProduct.objects.get(id=report_compliance_summary_product_2013_draft.id)
+            ReportComplianceSummaryProduct.objects.get(
+                id=report_compliance_summary_product_2013_draft.id
+            )
 
         def insert_function(cursor):
             ReportComplianceSummaryProduct.objects.create(
                 report_version=t.report_version_2010_draft,
                 report_compliance_summary=t.parent_object_2010_draft,
                 product=regulated_product,
-                annual_production=Decimal('100.00'),
-                apr_dec_production=Decimal('100.00'),
-                emission_intensity=Decimal('1.00'),
-                allocated_industrial_process_emissions=Decimal('0.00'),
-                allocated_compliance_emissions=Decimal('0.00'),
+                annual_production=Decimal("100.00"),
+                apr_dec_production=Decimal("100.00"),
+                emission_intensity=Decimal("1.00"),
+                allocated_industrial_process_emissions=Decimal("0.00"),
+                allocated_compliance_emissions=Decimal("0.00"),
             )
 
         def forbidden_insert_function(cursor):
@@ -156,7 +177,10 @@ class ReportComplianceSummarProductyRlsTest(BaseTestCase):
                     DELETE from "erc"."report_compliance_summary_product"
                     WHERE id in (%s,%s)
                 """,
-                (report_compliance_summary_product_2010_submitted.id, report_compliance_summary_product_2013_draft.id),
+                (
+                    report_compliance_summary_product_2010_submitted.id,
+                    report_compliance_summary_product_2013_draft.id,
+                ),
             )
             return cursor.rowcount
 

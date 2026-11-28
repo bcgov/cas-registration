@@ -1,9 +1,10 @@
+from compliance.models.compliance_report_version import ComplianceReportVersion
+from compliance.models.elicensing_invoice import ElicensingInvoice
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from simple_history.models import HistoricalRecords
-from compliance.models.compliance_report_version import ComplianceReportVersion
+
 from .rls_configs.compliance_obligation import Rls as ComplianceObligationRls
-from compliance.models.elicensing_invoice import ElicensingInvoice
 
 
 class ComplianceObligation(TimeStampedModel):
@@ -56,7 +57,9 @@ class ComplianceObligation(TimeStampedModel):
         db_comment="The fee amount in CAD dollars. This value is calculated by multiplying the amount of tCO2e by the charge rate per tonne for the reporting year. https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01",
     )
 
-    fee_date = models.DateField(null=True, blank=True, db_comment="The date the fee was created")
+    fee_date = models.DateField(
+        null=True, blank=True, db_comment="The date the fee was created"
+    )
 
     penalty_status = models.CharField(
         max_length=50,

@@ -1,31 +1,48 @@
 from datetime import datetime
-from pydantic import BaseModel, Field, PositiveInt, PositiveFloat, model_validator, NonNegativeInt, ConfigDict
-from typing import List, Dict, Optional, Annotated, Union, Literal
+from typing import Annotated, Literal
+
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    NonNegativeInt,
+    PositiveFloat,
+    PositiveInt,
+    model_validator,
+)
 
 ########## REUSABLE TYPES ##########
-FifteenDigitString = Annotated[str, Field(pattern=r'^\d{15}$')]
-DateStringField = Annotated[str, Field(pattern=r"^\d{4}-\d{2}-\d{2}$|^\d{2}/\d{2}/\d{4}$")]  # YYYY-MM-DD or DD/MM/YYYY
+FifteenDigitString = Annotated[str, Field(pattern=r"^\d{15}$")]
+DateStringField = Annotated[
+    str, Field(pattern=r"^\d{4}-\d{2}-\d{2}$|^\d{2}/\d{2}/\d{4}$")
+]  # YYYY-MM-DD or DD/MM/YYYY
 DateTimeStringField = Annotated[
     str, Field(pattern=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$")
 ]  # YYYY-MM-DDTHH:MM:SS.sssZ
 
 
 class Pagination(BaseModel):
-    model_config = ConfigDict(from_attributes=True)  # to build models and look up discriminators using python object
-    start: Optional[NonNegativeInt] = 0
-    limit: Optional[NonNegativeInt] = 20
+    model_config = ConfigDict(
+        from_attributes=True
+    )  # to build models and look up discriminators using python object
+    start: NonNegativeInt | None = 0
+    limit: NonNegativeInt | None = 20
     # For sorting, use `.keyword` if the field is a text field otherwise use the field name directly
-    sortOptions: Optional[List[Dict[str, str]]] = [{"sort": "accountName.keyword", "dir": "ASC"}]
+    sortOptions: list[dict[str, str]] | None = [
+        {"sort": "accountName.keyword", "dir": "ASC"}
+    ]
 
 
 class ColumnFilter(BaseModel):
-    model_config = ConfigDict(from_attributes=True)  # to build models and look up discriminators using python object
+    model_config = ConfigDict(
+        from_attributes=True
+    )  # to build models and look up discriminators using python object
     filterType: Literal["Number", "Text"]
     type: Literal["equals", "in", "greaterThanOrEqual", "lessThanOrEqual"]
-    filter: Union[str, int]
+    filter: str | int
 
 
-CommonFilterType = Optional[Dict[Literal["columnFilters"], List[ColumnFilter]]]
+CommonFilterType = dict[Literal["columnFilters"], list[ColumnFilter]] | None
 
 
 class FilterModel(BaseModel):
@@ -47,9 +64,9 @@ class FilterModel(BaseModel):
 
 class SearchFilter(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    pagination: Optional[Pagination] = Pagination()
-    filterModel: Optional[Union[FilterModel, Dict]] = {}
-    groupKeys: Optional[List[str]] = []
+    pagination: Pagination | None = Pagination()
+    filterModel: FilterModel | dict | None = {}
+    groupKeys: list[str] | None = []
 
 
 class SearchFilterWrapper(BaseModel):
@@ -67,8 +84,8 @@ class PaginatedResponse(BaseModel):
     model_config = ConfigDict(extra="allow")  # Allow extra fields for API flexibility
     totalEntities: NonNegativeInt
     totalPages: NonNegativeInt
-    start: Optional[NonNegativeInt] = None
-    limit: Optional[NonNegativeInt] = None
+    start: NonNegativeInt | None = None
+    limit: NonNegativeInt | None = None
     numberOfElements: NonNegativeInt
     first: bool
     last: bool
@@ -83,11 +100,13 @@ class AccountDetailEntity(BaseModel):
     standardName: str  # "BC Carbon Registry"
     accountId: NonNegativeInt  # 103100000028577
     accountName: str  # "General Participant Admin Test"
-    mainContactName: Optional[str] = None  # "Kelly Konrad"
-    accountTypeName: Optional[str] = None  # "General Participant"
-    accountTypeId: Optional[NonNegativeInt] = None  # 10
-    type_of_account_holder: Optional[str] = None  # "Corporation"
-    masterAccountId: Optional[PositiveInt] = None  # 102000000001000 - Needed for ownership validation
+    mainContactName: str | None = None  # "Kelly Konrad"
+    accountTypeName: str | None = None  # "General Participant"
+    accountTypeId: NonNegativeInt | None = None  # 10
+    type_of_account_holder: str | None = None  # "Corporation"
+    masterAccountId: PositiveInt | None = (
+        None  # 102000000001000 - Needed for ownership validation
+    )
     # Below fields are also part of the response, but we are not interested in them for now except masterAccountId
     # masterAccountName: Optional[str] = None  # "British Columbia Government Account"
     # billingContactEmail: Optional[str] = None  # "someone.email@gov.bc.ca"
@@ -110,7 +129,7 @@ class AccountDetailEntity(BaseModel):
 
 class AccountDetailsResponse(PaginatedResponse):
     model_config = ConfigDict(extra="allow")  # Allow extra fields for API flexibility
-    entities: List[AccountDetailEntity]
+    entities: list[AccountDetailEntity]
 
 
 ########## Units ##########
@@ -152,33 +171,33 @@ class UnitEntity(BaseModel):
 
 class UnitDetailsResponse(PaginatedResponse):
     model_config = ConfigDict(extra="allow")  # Allow extra fields for API flexibility
-    entities: List[UnitEntity]
+    entities: list[UnitEntity]
 
 
 ########## Projects ##########
 class ProjectPayloadMixedUnit(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
-    city: Optional[str] = None  # "City"
-    address_line_1: Optional[str] = None  # "Line 1"
-    zipcode: Optional[str] = None  # "H0H0H0"
-    province: Optional[str] = None  # "BC"
-    latitude: Optional[str] = None  # Latitude of the largest emissions (for SFO)
-    longitude: Optional[str] = None  # Longitude of the largest emissions (for SFO)
+    city: str | None = None  # "City"
+    address_line_1: str | None = None  # "Line 1"
+    zipcode: str | None = None  # "H0H0H0"
+    province: str | None = None  # "BC"
+    latitude: str | None = None  # Latitude of the largest emissions (for SFO)
+    longitude: str | None = None  # Longitude of the largest emissions (for SFO)
     period_start_date: DateStringField  # "2025-01-01"
     period_end_date: DateStringField  # "2025-01-31"
     # Optional fields (Default based on the S&P API documentation)
-    country_id: Optional[FifteenDigitString] = "100000000000003"  # Canada
-    environmental_category_id: Optional[FifteenDigitString] = "100000000000001"  # Carbon
-    project_type_id: Optional[FifteenDigitString] = "140000000000002"  # OBPS
-    standard_id: Optional[FifteenDigitString] = "140000000000001"  # BCE
-    newRecord: Optional[bool] = True
+    country_id: FifteenDigitString | None = "100000000000003"  # Canada
+    environmental_category_id: FifteenDigitString | None = "100000000000001"  # Carbon
+    project_type_id: FifteenDigitString | None = "140000000000002"  # OBPS
+    standard_id: FifteenDigitString | None = "140000000000001"  # BCE
+    newRecord: bool | None = True
 
-    @model_validator(mode='after')
-    def end_date_after_start_date(self) -> 'ProjectPayloadMixedUnit':
+    @model_validator(mode="after")
+    def end_date_after_start_date(self) -> "ProjectPayloadMixedUnit":
         start = datetime.strptime(self.period_start_date, "%Y-%m-%d")
         end = datetime.strptime(self.period_end_date, "%Y-%m-%d")
         if end.date() < start.date():
-            raise ValueError('period_end_date must be on or after period_start_date')
+            raise ValueError("period_end_date must be on or after period_start_date")
         return self
 
 
@@ -187,11 +206,11 @@ class ProjectPayload(BaseModel):
     account_id: FifteenDigitString  # "103100000028575"
     project_name: str  # "Test BC Project"
     project_description: str  # "Test BC Project Description" - 2000 characters max
-    mixedUnitList: List[ProjectPayloadMixedUnit]
+    mixedUnitList: list[ProjectPayloadMixedUnit]
     # Optional fields (Default based on the S&P API documentation)
-    newRecord: Optional[bool] = True
-    saveAsDraft: Optional[bool] = False
-    project_public_visibility: Optional[bool] = True
+    newRecord: bool | None = True
+    saveAsDraft: bool | None = False
+    project_public_visibility: bool | None = True
 
 
 class ProjectDetailsResponse(BaseModel):
@@ -209,39 +228,55 @@ class TransferMixedUnit(BaseModel):
     serial_no: str  # "BC-BCE-IN-104000000037027 - 01032025-30032025-16414-16752-SPG"
     new_quantity: PositiveInt  # 1
     id: FifteenDigitString  # "103200000396923" - entityId of the unit
-    do_action: Optional[bool] = True  # Always true
+    do_action: bool | None = True  # Always true
 
 
 class TransferPayload(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
-    destination_account_id: FifteenDigitString  # "103000000036531" - Receiving account ID
-    mixedUnitList: List[TransferMixedUnit]
+    destination_account_id: (
+        FifteenDigitString  # "103000000036531" - Receiving account ID
+    )
+    mixedUnitList: list[TransferMixedUnit]
 
 
 ######## Issuance ##########
 class IssuancePayloadMixedUnit(BaseModel):
     holding_quantity: PositiveInt  # 100
-    vintage_start: DateTimeStringField  # "2025-01-01T00:00:00Z" - CompliancePeriod start date
-    vintage_end: DateTimeStringField  # "2025-01-31T00:00:00Z" - CompliancePeriod end date
-    city: Optional[str] = None  # "City" - from project->mixedUnitList[0].city
-    address_line_1: Optional[str] = None  # "Line 1" - from project->mixedUnitList[0].address_line_1
-    zipcode: Optional[str] = None  # "H0H0H0" - from project->mixedUnitList[0].zipcode
-    latitude: Optional[str] = None  # "49.2827" - from project->mixedUnitList[0].latitude
-    longitude: Optional[str] = None  # "-123.1207" - from project->mixedUnitList[0].longitude
-    defined_unit_id: FifteenDigitString  # "103000000392535" - project->mixedUnitList[0].id
+    vintage_start: (
+        DateTimeStringField  # "2025-01-01T00:00:00Z" - CompliancePeriod start date
+    )
+    vintage_end: (
+        DateTimeStringField  # "2025-01-31T00:00:00Z" - CompliancePeriod end date
+    )
+    city: str | None = None  # "City" - from project->mixedUnitList[0].city
+    address_line_1: str | None = (
+        None  # "Line 1" - from project->mixedUnitList[0].address_line_1
+    )
+    zipcode: str | None = None  # "H0H0H0" - from project->mixedUnitList[0].zipcode
+    latitude: str | None = None  # "49.2827" - from project->mixedUnitList[0].latitude
+    longitude: str | None = (
+        None  # "-123.1207" - from project->mixedUnitList[0].longitude
+    )
+    defined_unit_id: (
+        FifteenDigitString  # "103000000392535" - project->mixedUnitList[0].id
+    )
     project_type_id: FifteenDigitString  # "140000000000002"  # project->mixedUnitList[0].project_type_id
     # Default Fields (based on the S&P API documentation)
-    state_name: Optional[str] = "NEW"
-    public_visibility: Optional[bool] = False
-    standard_id: Optional[FifteenDigitString] = "140000000000001"  # BC
-    country_id: Optional[FifteenDigitString] = "100000000000003"  # Canada
+    state_name: str | None = "NEW"
+    public_visibility: bool | None = False
+    standard_id: FifteenDigitString | None = "140000000000001"  # BC
+    country_id: FifteenDigitString | None = "100000000000003"  # Canada
 
 
 class IssuancePayloadVerification(BaseModel):
-    verificationStartDate: DateStringField  # "2025-01-01" - when director clicks approve
+    verificationStartDate: (
+        DateStringField  # "2025-01-01" - when director clicks approve
+    )
     verificationEndDate: DateStringField  # "2025-01-31" - when director clicks approve
-    monitoringPeriod: str  # "01/01/2025 - 31/01/2025" - (verificationStartDate - verificationEndDate)
-    mixedUnits: List[IssuancePayloadMixedUnit]
+    monitoringPeriod: (
+        str  # "01/01/2025 - 31/01/2025" - (verificationStartDate - verificationEndDate)
+    )
+    mixedUnits: list[IssuancePayloadMixedUnit]
 
 
 class IssuancePayload(BaseModel):
@@ -249,11 +284,13 @@ class IssuancePayload(BaseModel):
     account_id: FifteenDigitString  # "103100000028575"
     issuance_requested_date: DateTimeStringField  # "2025-01-24T13:13:28.547Z" - as soon as user request the issuance
     project_id: FifteenDigitString  # "104000000036500"
-    verifications: List[IssuancePayloadVerification]
+    verifications: list[IssuancePayloadVerification]
     # Hardcoded fields based on the S&P API documentation
-    unit_type_id: Optional[FifteenDigitString] = "140000000000001"  # "140000000000001" - BCE
-    system_state: Optional[str] = "CUSTOMER_INITIATED"
-    newRecord: Optional[bool] = True
+    unit_type_id: FifteenDigitString | None = (
+        "140000000000001"  # "140000000000001" - BCE
+    )
+    system_state: str | None = "CUSTOMER_INITIATED"
+    newRecord: bool | None = True
 
 
 ####### SubAccount ########
@@ -261,25 +298,25 @@ class SubAccountPayload(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     master_account_id: FifteenDigitString  # "103000000037199"
     compliance_year: PositiveInt  # 2025
-    organization_classification_id: (
-        FifteenDigitString  # "100000000000096" - organizationClassificationId from account details
-    )
+    organization_classification_id: FifteenDigitString  # "100000000000096" - organizationClassificationId from account details
     type_of_organization: Literal[
         "140000000000001", "140000000000002", "140000000000003"
     ]  # type_of_account_holder from master account (Corporation)
     registered_name: str  # Operation name + BORO ID + " - " + compliance year
     boro_id: str = Field(pattern=r"^\d{2}-\d{4}$")
     # Optional fields (Default based on the S&P API documentation)
-    account_type_id: Optional[PositiveInt] = 14  # Compliance
-    country_id: Optional[FifteenDigitString] = "100000000000003"  # Canada
-    indicatedStandardList: Optional[List[Dict[str, PositiveInt]]] = [{"id": 140000000000001}]  # BC
-    public_visibility: Optional[bool] = True
-    make_projects_public: Optional[bool] = True
-    make_issuances_public: Optional[bool] = True
-    make_holdings_public: Optional[bool] = True
-    make_retirements_public: Optional[bool] = True
-    make_cancellations_public: Optional[bool] = True
-    transfer_approval_required: Optional[bool] = True
-    disable_outgoing_transfer: Optional[bool] = False
-    terms_conditions: Optional[bool] = True
-    newRecord: Optional[bool] = True
+    account_type_id: PositiveInt | None = 14  # Compliance
+    country_id: FifteenDigitString | None = "100000000000003"  # Canada
+    indicatedStandardList: list[dict[str, PositiveInt]] | None = [
+        {"id": 140000000000001}
+    ]  # BC
+    public_visibility: bool | None = True
+    make_projects_public: bool | None = True
+    make_issuances_public: bool | None = True
+    make_holdings_public: bool | None = True
+    make_retirements_public: bool | None = True
+    make_cancellations_public: bool | None = True
+    transfer_approval_required: bool | None = True
+    disable_outgoing_transfer: bool | None = False
+    terms_conditions: bool | None = True
+    newRecord: bool | None = True

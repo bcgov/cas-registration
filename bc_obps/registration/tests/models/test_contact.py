@@ -1,16 +1,17 @@
-from django.db import ProgrammingError, transaction, IntegrityError
-from django.test import TestCase
+from datetime import UTC, datetime
+
 from common.tests.utils.helpers import BaseTestCase
-from registration.models import Contact, BusinessRole
+from django.db import IntegrityError, ProgrammingError, transaction
+from django.test import TestCase
+from model_bakery import baker
+from registration.models import BusinessRole, Contact
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
-    OPERATOR_FIXTURE,
     CONTACT_FIXTURE,
-    USER_FIXTURE,
+    OPERATOR_FIXTURE,
     TIMESTAMP_COMMON_FIELDS,
+    USER_FIXTURE,
 )
-from model_bakery import baker
-from datetime import datetime, timezone
 
 
 class ContactModelTest(BaseTestCase):
@@ -46,12 +47,17 @@ class ContactTriggerTests(TestCase):
     def setUp(self):
         self.op_rep_contact = baker.make_recipe(
             "registration.tests.utils.contact",
-            business_role=BusinessRole.objects.get(role_name='Operation Representative'),
+            business_role=BusinessRole.objects.get(
+                role_name="Operation Representative"
+            ),
         )
         self.senior_officer_contact = baker.make_recipe(
-            "registration.tests.utils.contact", business_role=BusinessRole.objects.get(role_name='Senior Officer')
+            "registration.tests.utils.contact",
+            business_role=BusinessRole.objects.get(role_name="Senior Officer"),
         )
-        self.null_address_contact = baker.make_recipe("registration.tests.utils.contact", address=None)
+        self.null_address_contact = baker.make_recipe(
+            "registration.tests.utils.contact", address=None
+        )
 
     def test_prevent_address_null_for_op_rep(self):
         """Test that updating address to NULL fails for Operation Representative."""
@@ -61,12 +67,16 @@ class ContactTriggerTests(TestCase):
                 self.op_rep_contact.save()
 
             self.assertIn(
-                "Cannot set address to NULL for a contact with role Operation Representative", str(cm.exception)
+                "Cannot set address to NULL for a contact with role Operation Representative",
+                str(cm.exception),
             )
 
         # Verify the address wasn’t changed
         self.op_rep_contact.refresh_from_db()
-        self.assertIsNotNone(self.op_rep_contact.address, "Address was set to NULL for Operation Representative")
+        self.assertIsNotNone(
+            self.op_rep_contact.address,
+            "Address was set to NULL for Operation Representative",
+        )
 
     def test_allow_address_null_for_non_op_rep(self):
         """Test that updating address to NULL succeeds for non-Operation Representative."""
@@ -105,7 +115,9 @@ class ContactTriggerTests(TestCase):
 
         # Verify the update succeeded and address is still NULL
         self.null_address_contact.refresh_from_db()
-        self.assertEqual(self.null_address_contact.email, "updated_null_op_rep@example.com")
+        self.assertEqual(
+            self.null_address_contact.email, "updated_null_op_rep@example.com"
+        )
         self.assertIsNone(self.null_address_contact.address)
 
     def test_duplicate_email_for_same_operator_not_allowed(self):
@@ -121,7 +133,7 @@ class ContactTriggerTests(TestCase):
     def test_duplicate_email_for_same_operator_when_contact_archived(self):
         """Test that can create a new contact for an operator when an archived contact with the same email address already exists"""
         # First archive the existing contact
-        self.senior_officer_contact.archived_at = datetime.now(timezone.utc)
+        self.senior_officer_contact.archived_at = datetime.now(UTC)
         self.senior_officer_contact.save(update_fields=["archived_at"])
         self.senior_officer_contact.refresh_from_db()
 

@@ -1,8 +1,8 @@
-import pytest
-from unittest.mock import patch, MagicMock
-from model_bakery.baker import make_recipe
-from django.core.exceptions import ObjectDoesNotExist
+from unittest.mock import MagicMock, patch
 
+import pytest
+from django.core.exceptions import ObjectDoesNotExist
+from model_bakery.baker import make_recipe
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
     ReportValidationError,
@@ -16,8 +16,12 @@ from reporting.service.report_validation.validators.supplementary_report_attachm
 
 @pytest.mark.django_db
 class TestSupplementaryReportAttachmentConfirmationValidator:
-    @patch("reporting.service.report_version_service.ReportVersionService.is_initial_report_version")
-    @patch("reporting.models.report_attachment_confirmation.ReportAttachmentConfirmation.objects.get")
+    @patch(
+        "reporting.service.report_version_service.ReportVersionService.is_initial_report_version"
+    )
+    @patch(
+        "reporting.models.report_attachment_confirmation.ReportAttachmentConfirmation.objects.get"
+    )
     def test_initial_version_skips_validation(self, mock_get, mock_initial):
         # Initial version should bypass all checks
         mock_initial.return_value = True
@@ -28,8 +32,12 @@ class TestSupplementaryReportAttachmentConfirmationValidator:
         mock_initial.assert_called_once_with(version.id)
         assert result == {}
 
-    @patch("reporting.service.report_version_service.ReportVersionService.is_initial_report_version")
-    @patch("reporting.models.report_attachment_confirmation.ReportAttachmentConfirmation.objects.get")
+    @patch(
+        "reporting.service.report_version_service.ReportVersionService.is_initial_report_version"
+    )
+    @patch(
+        "reporting.models.report_attachment_confirmation.ReportAttachmentConfirmation.objects.get"
+    )
     def test_missing_confirmation_entry(self, mock_get, mock_initial):
         # Non-initial version with no confirmation record
         mock_initial.return_value = False
@@ -68,8 +76,12 @@ class TestSupplementaryReportAttachmentConfirmationValidator:
             ),
         ],
     )
-    @patch("reporting.service.report_version_service.ReportVersionService.is_initial_report_version")
-    @patch("reporting.models.report_attachment_confirmation.ReportAttachmentConfirmation.objects.get")
+    @patch(
+        "reporting.service.report_version_service.ReportVersionService.is_initial_report_version"
+    )
+    @patch(
+        "reporting.models.report_attachment_confirmation.ReportAttachmentConfirmation.objects.get"
+    )
     def test_partial_confirmations(
         self,
         mock_get,
@@ -82,8 +94,12 @@ class TestSupplementaryReportAttachmentConfirmationValidator:
     ):
         mock_initial.return_value = False
         confirmation = MagicMock()
-        confirmation.confirm_supplementary_required_attachments_uploaded = required_uploaded
-        confirmation.confirm_supplementary_existing_attachments_relevant = existing_relevant
+        confirmation.confirm_supplementary_required_attachments_uploaded = (
+            required_uploaded
+        )
+        confirmation.confirm_supplementary_existing_attachments_relevant = (
+            existing_relevant
+        )
         mock_get.return_value = confirmation
         version = make_recipe("reporting.tests.utils.report_version")
 
@@ -99,8 +115,12 @@ class TestSupplementaryReportAttachmentConfirmationValidator:
             context=ErrorContext(report_version_id=version.id),
         )
 
-    @patch("reporting.service.report_version_service.ReportVersionService.is_initial_report_version")
-    @patch("reporting.models.report_attachment_confirmation.ReportAttachmentConfirmation.objects.get")
+    @patch(
+        "reporting.service.report_version_service.ReportVersionService.is_initial_report_version"
+    )
+    @patch(
+        "reporting.models.report_attachment_confirmation.ReportAttachmentConfirmation.objects.get"
+    )
     def test_all_confirmations_present(self, mock_get, mock_initial):
         # Both flags true should produce no errors
         mock_initial.return_value = False

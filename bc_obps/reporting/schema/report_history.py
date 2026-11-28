@@ -1,6 +1,4 @@
 from ninja import ModelSchema
-from typing import Optional
-
 from registration.models import Operation
 from reporting.models import ReportVersion
 
@@ -10,11 +8,11 @@ class ReportHistoryResponse(ModelSchema):
         model = ReportVersion
         fields = ["id", "updated_at", "status", "report_type", "is_latest_submitted"]
 
-    submitted_by: Optional[str] = None
-    version: Optional[str] = None
+    submitted_by: str | None = None
+    version: str | None = None
 
     @staticmethod
-    def resolve_submitted_by(obj: ReportVersion) -> Optional[str]:
+    def resolve_submitted_by(obj: ReportVersion) -> str | None:
         return obj.updated_by.get_full_name() if obj.updated_by else None
 
 

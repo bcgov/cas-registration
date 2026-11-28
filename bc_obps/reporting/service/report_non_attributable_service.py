@@ -1,7 +1,13 @@
-from typing import List
 from uuid import UUID
+
 from django.db.models import QuerySet
-from reporting.models import ReportNonAttributableEmissions, EmissionCategory, ReportVersion, FacilityReport, GasType
+from reporting.models import (
+    EmissionCategory,
+    FacilityReport,
+    GasType,
+    ReportNonAttributableEmissions,
+    ReportVersion,
+)
 from reporting.schema.report_non_attributable_emissions import ReportNonAttributableIn
 
 
@@ -17,13 +23,17 @@ class ReportNonAttributableService:
 
     @classmethod
     def save_report_non_attributable_emissions(
-        cls, version_id: int, facility_id: UUID, data: List[ReportNonAttributableIn]
-    ) -> List[ReportNonAttributableEmissions]:
+        cls, version_id: int, facility_id: UUID, data: list[ReportNonAttributableIn]
+    ) -> list[ReportNonAttributableEmissions]:
         report_version = ReportVersion.objects.get(pk=version_id)
-        facility_report = FacilityReport.objects.get(report_version=report_version, facility_id=facility_id)
+        facility_report = FacilityReport.objects.get(
+            report_version=report_version, facility_id=facility_id
+        )
 
         # Prepare a list of incoming activity IDs from the payload
-        incoming_ids = [item.id for item in data if item.id]  # Access attributes directly
+        incoming_ids = [
+            item.id for item in data if item.id
+        ]  # Access attributes directly
 
         # Delete any existing records that are not in the incoming data list
         ReportNonAttributableEmissions.objects.filter(
@@ -35,21 +45,27 @@ class ReportNonAttributableService:
         for activity_data in data:
             # Access attributes directly from the object
             emission_category_name = activity_data.emission_category
-            emission_category = EmissionCategory.objects.get(category_name=emission_category_name)
+            emission_category = EmissionCategory.objects.get(
+                category_name=emission_category_name
+            )
 
             # Using the object attributes instead of .get()
-            report_non_attributable, _ = ReportNonAttributableEmissions.objects.update_or_create(
-                # A None id is the intentional "create" path; django-stubs 6.0 rejects None in lookups.
-                id=activity_data.id,  # type: ignore[misc]
-                defaults={
-                    "report_version": report_version,
-                    "facility_report": facility_report,
-                    "activity": activity_data.activity,  # type: ignore[attr-defined] # mypy not aware of model schema field
-                    "source_type": activity_data.source_type,  # type: ignore[attr-defined] # mypy not aware of model schema field
-                    "emission_category": emission_category,
-                },
+            report_non_attributable, _ = (
+                ReportNonAttributableEmissions.objects.update_or_create(
+                    # A None id is the intentional "create" path; django-stubs 6.0 rejects None in lookups.
+                    id=activity_data.id,  # type: ignore[misc]
+                    defaults={
+                        "report_version": report_version,
+                        "facility_report": facility_report,
+                        "activity": activity_data.activity,  # type: ignore[attr-defined] # mypy not aware of model schema field
+                        "source_type": activity_data.source_type,  # type: ignore[attr-defined] # mypy not aware of model schema field
+                        "emission_category": emission_category,
+                    },
+                )
             )
-            gas_types = GasType.objects.filter(chemical_formula__in=activity_data.gas_type)
+            gas_types = GasType.objects.filter(
+                chemical_formula__in=activity_data.gas_type
+            )
             report_non_attributable.gas_type.set(gas_types)
             report_non_attributable.save()
 
@@ -64,7 +80,9 @@ class ReportNonAttributableService:
         """
         # Get the report version and facility report to identify the records to delete
         report_version = ReportVersion.objects.get(pk=version_id)
-        facility_report = FacilityReport.objects.get(report_version=report_version, facility_id=facility_id)
+        facility_report = FacilityReport.objects.get(
+            report_version=report_version, facility_id=facility_id
+        )
 
         # Delete the reports related to this version and facility
         ReportNonAttributableEmissions.objects.filter(

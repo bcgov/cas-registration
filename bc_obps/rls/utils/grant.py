@@ -1,8 +1,9 @@
-from typing import List, Any
+from typing import Any
+
+from common.enums import Schemas
 from django.db.backends.utils import CursorWrapper
 from psycopg.sql import SQL, Identifier
-from common.enums import Schemas
-from rls.enums import RlsRoles, RlsOperations
+from rls.enums import RlsOperations, RlsRoles
 
 
 class RlsGrant:
@@ -19,7 +20,7 @@ class RlsGrant:
     def __init__(
         self,
         role: RlsRoles,
-        grants: List[RlsOperations],
+        grants: list[RlsOperations],
         table: Any,
         schema: Schemas = Schemas.ERC,
     ):
@@ -44,4 +45,6 @@ class RlsGrant:
         try:
             cursor.execute(query)
         except Exception as e:
-            raise RuntimeError(f"Failed to apply grant for {self.role} on {self.table}: {e}")
+            raise RuntimeError(
+                f"Failed to apply grant for {self.role} on {self.table}: {e}"
+            )

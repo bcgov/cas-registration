@@ -1,25 +1,32 @@
-from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
-from compliance.service.elicensing.elicensing_interest_rate_service import ElicensingInterestRateService
-from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
-from compliance.service.automated_process.automated_process_service import AutomatedProcessService
+import logging
+
+from common.service.email.email_service import EmailService
 from compliance.emails import (
     send_notice_of_credits_requested_generated_email,
     send_notice_of_earned_credits_generated_email,
     send_notice_of_no_obligation_no_credits_generated_email,
     send_notice_of_obligation_due_email,
     send_notice_of_obligation_generated_email,
+    send_notice_of_obligation_met_email,
+    send_notice_of_obligation_met_penalty_due_email,
     send_notice_of_penalty_accrual_email,
     send_notice_of_penalty_paid_email,
     send_reminder_of_obligation_due_email,
-    send_notice_of_obligation_met_email,
-    send_notice_of_obligation_met_penalty_due_email,
     send_supplementary_report_submitted_after_deadline,
 )
+from compliance.service.automated_process.automated_process_service import (
+    AutomatedProcessService,
+)
+from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
+from compliance.service.elicensing.elicensing_interest_rate_service import (
+    ElicensingInterestRateService,
+)
+from compliance.service.elicensing.elicensing_obligation_service import (
+    ElicensingObligationService,
+)
+from compliance.service.penalty_calculation_service import PenaltyCalculationService
 from task_scheduler.service.retry_task.factories import create_retryable
 from task_scheduler.service.scheduled_task.dataclass import ScheduledTaskConfig
-from common.service.email.email_service import EmailService
-from compliance.service.penalty_calculation_service import PenaltyCalculationService
-import logging
 
 logger = logging.getLogger(__name__)
 email_service = EmailService()
@@ -105,11 +112,13 @@ retryable_send_notice_of_penalty_paid_email = create_retryable(
     retry_delay_minutes=10,
 )
 
-retryable_notice_of_supplementary_report_post_deadline_increases_emissions = create_retryable(
-    func=send_supplementary_report_submitted_after_deadline,
-    tag="past_deadline_increased_emissions_email_notifications",
-    max_retries=5,
-    retry_delay_minutes=10,
+retryable_notice_of_supplementary_report_post_deadline_increases_emissions = (
+    create_retryable(
+        func=send_supplementary_report_submitted_after_deadline,
+        tag="past_deadline_increased_emissions_email_notifications",
+        max_retries=5,
+        retry_delay_minutes=10,
+    )
 )
 
 retryable_create_penalty = create_retryable(

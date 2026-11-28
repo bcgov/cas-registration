@@ -1,26 +1,25 @@
 from dataclasses import asdict, dataclass
-from typing import Optional
 
-from reporting.models.report_version import ReportVersion
 from reporting.models.report_additional_data import ReportAdditionalData
+from reporting.models.report_version import ReportVersion
 
 
 @dataclass
 class ReportAdditionalDataPayload:
     capture_emissions: bool = False
-    emissions_on_site_use: Optional[int] = None
-    emissions_on_site_sequestration: Optional[int] = None
-    emissions_off_site_transfer: Optional[int] = None
-    electricity_generated: Optional[int] = None
+    emissions_on_site_use: int | None = None
+    emissions_on_site_sequestration: int | None = None
+    emissions_off_site_transfer: int | None = None
+    electricity_generated: int | None = None
 
 
 def build_report_additional_data_payload(
     *,
     capture_emissions: bool = False,
-    emissions_on_site_use: Optional[int] = None,
-    emissions_on_site_sequestration: Optional[int] = None,
-    emissions_off_site_transfer: Optional[int] = None,
-    electricity_generated: Optional[int] = None,
+    emissions_on_site_use: int | None = None,
+    emissions_on_site_sequestration: int | None = None,
+    emissions_off_site_transfer: int | None = None,
+    electricity_generated: int | None = None,
 ) -> dict:
     return asdict(
         ReportAdditionalDataPayload(

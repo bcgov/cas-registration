@@ -1,16 +1,20 @@
 from datetime import datetime
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
+
+from django.db.models import F
 from django.test import Client
+from model_bakery.baker import make_recipe
 from registration.models.operation import Operation
-from registration.tests.utils.bakers import operation_baker, user_baker
+from registration.tests.utils.bakers import operation_baker, operator_baker, user_baker
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from reporting.models.report import Report
 from reporting.models.reporting_year import ReportingYear
-from reporting.tests.utils.bakers import report_baker, report_version_baker, reporting_year_baker
-from registration.tests.utils.bakers import operator_baker
-from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from django.db.models import F
-from model_bakery.baker import make_recipe
+from reporting.tests.utils.bakers import (
+    report_baker,
+    report_version_baker,
+    reporting_year_baker,
+)
 
 
 class TestReportingDashboardEndpoints(CommonTestSetup):
@@ -20,7 +24,9 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
         "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_operations_for_reporting_dashboard"
     )
     @patch("common.api.utils.get_current_user_guid")
-    @patch("reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year")
+    @patch(
+        "reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year"
+    )
     def test_returns_data_as_provided_by_the_service(
         self,
         mock_get_current_year: MagicMock | AsyncMock,
@@ -36,50 +42,57 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         operations = operation_baker(operator_id=operator.id, _quantity=5)
-        TestUtils.generate_operation_operator_timeline(operator=operator, operations=operations)
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=operations
+        )
 
         # The return value needs empty query sets of the right type for the annotations
         mock_get_operations.return_value = Operation.objects.annotate(
-            report_id=Report.objects.values('id'),
-            report_version_id=Report.objects.values('report_versions__id'),
-            report_status=Report.objects.values('report_versions__status'),
+            report_id=Report.objects.values("id"),
+            report_version_id=Report.objects.values("report_versions__id"),
+            report_status=Report.objects.values("report_versions__status"),
         )
 
         mock_get_current_year.return_value = reporting_year_baker(reporting_year=1234)
         mock_get_current_user.return_value = user_baker()
 
-        response_json = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint_under_test).json()
+        response_json = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", endpoint_under_test
+        ).json()
 
-        assert response_json['count'] == 5
-        assert len(response_json['items']) == 5
-        for _, item in enumerate(response_json['items']):
-            operation = next(op for op in operations if str(op.id) == item['id'])
+        assert response_json["count"] == 5
+        assert len(response_json["items"]) == 5
+        for _, item in enumerate(response_json["items"]):
+            operation = next(op for op in operations if str(op.id) == item["id"])
 
-            assert item['id'] == str(operation.id)
-            assert item['bcghg_id'] == operation.bcghg_id
-            assert item['name'] == operation.name
+            assert item["id"] == str(operation.id)
+            assert item["bcghg_id"] == operation.bcghg_id
+            assert item["name"] == operation.name
             # The non-none test cases were handled in the service test
-            assert item['report_id'] is None
-            assert item['report_version_id'] is None
-            assert item['report_status'] is None
+            assert item["report_id"] is None
+            assert item["report_version_id"] is None
+            assert item["report_status"] is None
 
     @patch(
         "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_reports_for_reporting_dashboard"
     )
     @patch("common.api.utils.get_current_user_guid")
-    @patch("reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year")
+    @patch(
+        "reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year"
+    )
     def test_returns_report_data_as_provided_by_the_service(
         self,
         mock_get_current_year: MagicMock | AsyncMock,
         mock_get_current_user: MagicMock | AsyncMock,
         mock_get_past_reports: MagicMock | AsyncMock,
     ):
-
         endpoint_under_test = custom_reverse_lazy("get_dashboard_reports_list")
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         operations = operation_baker(operator_id=operator.id, _quantity=3)
-        TestUtils.generate_operation_operator_timeline(operator=operator, operations=operations)
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=operations
+        )
         current_year = reporting_year_baker(reporting_year=1994)
         last_year = reporting_year_baker(reporting_year=1993)
         laster_year = reporting_year_baker(reporting_year=1992)
@@ -87,56 +100,74 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
 
         for operation in operations:
             for year in years:
-                r = report_baker(operator_id=operator.id, operation_id=operation.id, reporting_year=year)
+                r = report_baker(
+                    operator_id=operator.id,
+                    operation_id=operation.id,
+                    reporting_year=year,
+                )
                 report_version_baker(report=r)
         reports = Report.objects.filter(
-            operator_id=operator.id, reporting_year__reporting_year__lt=current_year.reporting_year
+            operator_id=operator.id,
+            reporting_year__reporting_year__lt=current_year.reporting_year,
         )
 
         mock_get_current_year.return_value = current_year
         mock_get_current_user.return_value = user_baker()
-        mock_get_past_reports.return_value = Report.objects.filter(operator_id=operator.id).annotate(
-            report_id=F('id'),
-            operation_name=F('operation__name'),
-            report_version_id=F('report_versions__id'),
-            report_status=F('report_versions__status'),
+        mock_get_past_reports.return_value = Report.objects.filter(
+            operator_id=operator.id
+        ).annotate(
+            report_id=F("id"),
+            operation_name=F("operation__name"),
+            report_version_id=F("report_versions__id"),
+            report_status=F("report_versions__status"),
         )
-        response_json = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint_under_test).json()
+        response_json = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", endpoint_under_test
+        ).json()
 
-        assert response_json['count'] == 6
-        assert len(response_json['items']) == 6
-        for _, item in enumerate(response_json['items']):
-            report = next(rep for rep in reports if rep.id == item['id'])
-            assert item['id'] == report.id
-            assert item['operation_id'] == str(report.operation.id)
-            assert item['operation_name'] == report.operation.name
-            assert item['report_id'] == report.id
-            assert item['report_version_id'] == report.report_versions.first().id
-            assert item['report_status'] == report.report_versions.first().status
+        assert response_json["count"] == 6
+        assert len(response_json["items"]) == 6
+        for _, item in enumerate(response_json["items"]):
+            report = next(rep for rep in reports if rep.id == item["id"])
+            assert item["id"] == report.id
+            assert item["operation_id"] == str(report.operation.id)
+            assert item["operation_name"] == report.operation.name
+            assert item["report_id"] == report.id
+            assert item["report_version_id"] == report.report_versions.first().id
+            assert item["report_status"] == report.report_versions.first().status
 
     @patch(
         "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_operations_for_reporting_dashboard"
     )
     @patch("common.api.utils.get_current_user_guid")
-    @patch("reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year")
+    @patch(
+        "reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year"
+    )
     def test_returns_operations_data_as_provided_by_the_service(
         self,
         mock_get_current_year: MagicMock | AsyncMock,
         mock_get_current_user: MagicMock | AsyncMock,
         mock_get_operations: MagicMock | AsyncMock,
     ):
-
         endpoint_under_test = custom_reverse_lazy("get_dashboard_operations_list")
-        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
-        TestUtils.authorize_current_user_as_operator_user(self, operator=approved_user_operator.operator)
+        approved_user_operator = make_recipe(
+            "registration.tests.utils.approved_user_operator"
+        )
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=approved_user_operator.operator
+        )
 
         mock_get_current_year.return_value = ReportingYear.objects.first()
         mock_get_current_user.return_value = approved_user_operator.user
 
         operations = make_recipe(
-            'registration.tests.utils.operation', _quantity=6, operator=approved_user_operator.operator
+            "registration.tests.utils.operation",
+            _quantity=6,
+            operator=approved_user_operator.operator,
         )
-        TestUtils.generate_operation_operator_timeline(operator=approved_user_operator.operator, operations=operations)
+        TestUtils.generate_operation_operator_timeline(
+            operator=approved_user_operator.operator, operations=operations
+        )
         for operation in operations:
             _id_counter = 0
             operation.report_id = _id_counter
@@ -151,6 +182,8 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
             _id_counter += 1
         mock_get_operations.return_value = operations
 
-        response_json = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint_under_test).json()
-        assert response_json['count'] == 6
-        assert len(response_json['items']) == 6
+        response_json = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", endpoint_under_test
+        ).json()
+        assert response_json["count"] == 6
+        assert len(response_json["items"]) == 6

@@ -1,14 +1,15 @@
-from typing import Literal, Optional, Tuple
+from typing import Literal
 from uuid import UUID
-from django.http import HttpRequest
-from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
-from registration.service.facility_service import FacilityService
-from registration.schema import Message, BcghgIdIn, BcghgIdOut
-from registration.constants import FACILITY_TAGS
-from common.permissions import authorize
+
 from common.api.utils import get_current_user_guid
+from common.permissions import authorize
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest
 from registration.api.router import router
+from registration.constants import FACILITY_TAGS
+from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
+from registration.schema import BcghgIdIn, BcghgIdOut, Message
+from registration.service.facility_service import FacilityService
 
 
 @router.patch(
@@ -16,11 +17,11 @@ from registration.api.router import router
     response={200: BcghgIdOut, custom_codes_4xx: Message},
     tags=FACILITY_TAGS,
     description="""Generates and returns a BCGHG ID for the facility if the facility doesn't already have a BCGHG ID.""",
-    auth=authorize('cas_director'),
+    auth=authorize("cas_director"),
 )
 def facility_bcghg_id(
-    request: HttpRequest, facility_id: UUID, payload: Optional[BcghgIdIn]
-) -> Tuple[Literal[200], BcGreenhouseGasId]:
+    request: HttpRequest, facility_id: UUID, payload: BcghgIdIn | None
+) -> tuple[Literal[200], BcGreenhouseGasId]:
     return 200, FacilityService.generate_bcghg_id(
         get_current_user_guid(request),
         facility_id,
@@ -33,7 +34,7 @@ def facility_bcghg_id(
     response={200: int, custom_codes_4xx: Message},
     tags=FACILITY_TAGS,
     description="""Clears the BCGHG ID for the facility if it is already set.""",
-    auth=authorize('cas_director'),
+    auth=authorize("cas_director"),
 )
 def delete_facility_bcghg_id(request: HttpRequest, facility_id: UUID) -> Literal[200]:
     FacilityService.clear_bcghg_id(

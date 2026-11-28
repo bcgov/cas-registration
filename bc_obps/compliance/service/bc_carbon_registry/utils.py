@@ -12,14 +12,14 @@ def log_error_message(exception: Exception) -> None:
         exception: The exception object to extract and log error message from
     """
     try:
-        if not hasattr(exception, 'response'):
+        if not hasattr(exception, "response"):
             logger.info("Exception has no response attribute")
             return
-        response = getattr(exception, 'response', None)
-        if not hasattr(response, '_content'):
+        response = getattr(exception, "response", None)
+        if not hasattr(response, "_content"):
             logger.info("Response has no _content attribute")
             return
-        content = getattr(response, '_content', None)
+        content = getattr(response, "_content", None)
         if not content:
             logger.info("Response content is empty or None")
             return
@@ -35,7 +35,7 @@ def log_error_message(exception: Exception) -> None:
             logger.info("First error item is not a dictionary")
             return
 
-        error_message = first_error.get('errorMessage')
+        error_message = first_error.get("errorMessage")
         if error_message:
             logger.error("BCCR Error message from response: %s", error_message)
         else:

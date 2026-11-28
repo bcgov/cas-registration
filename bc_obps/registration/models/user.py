@@ -1,13 +1,14 @@
 import typing
-from django.db import models
+
 from common.enums import Schemas
+from django.core.cache import cache
+from django.db import models
 from registration.constants import USER_CACHE_PREFIX
 from registration.enums.enums import RegistrationTableNames
-from registration.models import UserAndContactCommonInfo, AppRole
+from registration.models import AppRole, UserAndContactCommonInfo
+from registration.models.rls_configs.user import Rls as UserRls
 from registration.models.time_stamped_model import TimeStampedModel
 from simple_history.models import HistoricalRecords
-from django.core.cache import cache
-from registration.models.rls_configs.user import Rls as UserRls
 
 
 class User(UserAndContactCommonInfo, TimeStampedModel):

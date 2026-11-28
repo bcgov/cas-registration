@@ -1,9 +1,9 @@
 import logging
-from typing import Optional
 from uuid import UUID
-from django.db.models import QuerySet, Q
+
 from common.models import DashboardData
 from common.schema import DashboardDataSchemaOut
+from django.db.models import Q, QuerySet
 from registration.service.data_access_service.user_service import UserDataAccessService
 
 logger = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class DashboardDataService:
     @classmethod
     def get_dashboard_data_by_name_for_role(
-        cls, dashboard: str, user_guid: UUID, role: Optional[str] = None
+        cls, dashboard: str, user_guid: UUID, role: str | None = None
     ) -> QuerySet[DashboardData]:
         """
         Fetches dashboard data filtered by dashboard name and user role.
@@ -33,15 +33,21 @@ class DashboardDataService:
             else:
                 # Check if the user is an approved admin user operator
                 if role == "industry_user":
-                    approved_admin: bool = UserDataAccessService.is_user_an_approved_admin_user_operator(user_guid)[
-                        "approved"
-                    ]
+                    approved_admin: bool = (
+                        UserDataAccessService.is_user_an_approved_admin_user_operator(
+                            user_guid
+                        )["approved"]
+                    )
                     role = "industry_user_admin" if approved_admin else "industry_user"
-                query = query.filter(Q(data__dashboard=dashboard) & Q(data__access_roles__contains=role))
+                query = query.filter(
+                    Q(data__dashboard=dashboard) & Q(data__access_roles__contains=role)
+                )
 
             return query
 
         except Exception as exc:
             # Log the exception if needed
-            logger.error(f'Logger: Exception in get_dashboard_data_by_name_for_role {str(exc)}')
+            logger.error(
+                f"Logger: Exception in get_dashboard_data_by_name_for_role {str(exc)}"
+            )
             return DashboardData.objects.none()

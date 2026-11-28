@@ -1,4 +1,5 @@
 from unittest.mock import patch
+
 from django.http import HttpRequest
 from django.test import SimpleTestCase
 from reporting.api_v2._reports._report_id.history import ReportHistoryResponseBuilder
@@ -23,13 +24,18 @@ class TestReportHistoryResponseBuilder(SimpleTestCase):
 
         builder = ReportHistoryResponseBuilder(HttpRequest())
         result = builder.report(456).payload(mocked_qs).build()
-        assert result["report_data"] == {"reporting_year": 2023, "operation_name": "Another Operation"}
+        assert result["report_data"] == {
+            "reporting_year": 2023,
+            "operation_name": "Another Operation",
+        }
         # The payload should be the list of mocked ReportVersion objects
-        assert result["payload"] == {'count': 2, 'items': mocked_qs}
+        assert result["payload"] == {"count": 2, "items": mocked_qs}
 
     @patch("reporting.api_v2._reports._report_id.report_information_mixin.Report")
     @patch("reporting.models.report_version.ReportVersion")
-    def test_chaining_report_and_payload_order_independence(self, MockReportVersion, MockReport):
+    def test_chaining_report_and_payload_order_independence(
+        self, MockReportVersion, MockReport
+    ):
         mocked_report = MockReport.objects.select_related.return_value.get.return_value
         mocked_report.reporting_year_id = 2024
         mocked_report.operation.name = "Chain Operation"
@@ -51,8 +57,11 @@ class TestReportHistoryResponseBuilder(SimpleTestCase):
         result2 = builder2.payload(mocked_qs).report(789).build()
 
         expected = {
-            "report_data": {"reporting_year": 2024, "operation_name": "Chain Operation"},
-            "payload": {'count': 2, 'items': mocked_qs},
+            "report_data": {
+                "reporting_year": 2024,
+                "operation_name": "Chain Operation",
+            },
+            "payload": {"count": 2, "items": mocked_qs},
         }
         assert result1 == expected
         assert result2 == expected

@@ -1,4 +1,5 @@
 from decimal import Decimal
+
 from django.db import transaction
 from registration.models import Operation
 from reporting.constants import (
@@ -205,7 +206,9 @@ def _seed_report_7(rv: ReportVersion, fr) -> None:
         gas_type_id=1,
         json_data={"emission": 3000, "equivalentEmission": 3000.0},
     )
-    re_cto.emission_categories.add(STATIONARY_COMBUSTION_CATEGORY_ID, FUEL_EXCLUDED_BIOMASS_CATEGORY_ID)
+    re_cto.emission_categories.add(
+        STATIONARY_COMBUSTION_CATEGORY_ID, FUEL_EXCLUDED_BIOMASS_CATEGORY_ID
+    )
 
     rf_diesel = ReportFuel.objects.create(
         report_version=rv,

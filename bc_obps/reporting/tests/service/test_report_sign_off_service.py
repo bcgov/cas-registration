@@ -1,11 +1,10 @@
-from django.test import TestCase
-from reporting.models.report_sign_off import ReportSignOff
 import pytest
+from django.test import TestCase
 from model_bakery.baker import make_recipe
-
+from reporting.models.report_sign_off import ReportSignOff
 from reporting.service.report_sign_off_service import (
-    ReportSignOffData,
     ReportSignOffAcknowledgements,
+    ReportSignOffData,
     ReportSignOffService,
 )
 
@@ -28,7 +27,7 @@ class TestReportSignOffService(TestCase):
             signature="signature",
         )
         report_version = make_recipe(
-            'reporting.tests.utils.report_version',
+            "reporting.tests.utils.report_version",
             report__reporting_year_id=2025,
         )
 

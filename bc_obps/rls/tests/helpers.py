@@ -1,15 +1,14 @@
+import pytest
 from django.apps import apps
 from django.conf import settings
-from django.db import connection
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import connection, transaction
+from django.db.utils import ProgrammingError
+from model_bakery import baker
 from registration.models.app_role import AppRole
 from registration.models.user import User
-from model_bakery import baker
 from rls.enums import RlsOperations, RlsRoles
 from rls.middleware.rls import RlsMiddleware
-from django.db import transaction
-import pytest
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.utils import ProgrammingError
 
 
 def get_models_for_rls(app_name=None):
@@ -19,7 +18,8 @@ def get_models_for_rls(app_name=None):
         for model in apps.get_models()
         # modules that don't have `models` in their path are excluded
         # These modules are for historical data models, and we don't need to apply RLS on them
-        if model.__module__.startswith(app_name if app_name else rls_apps_tuple) and ".models." in model.__module__
+        if model.__module__.startswith(app_name if app_name else rls_apps_tuple)
+        and ".models." in model.__module__
     ]
 
 
@@ -70,7 +70,7 @@ def assert_policies_for_cas_roles(
 
     """
 
-    user = baker.make_recipe('registration.tests.utils.cas_admin')
+    user = baker.make_recipe("registration.tests.utils.cas_admin")
 
     with connection.cursor() as cursor:
         for role, operations in model.Rls.role_grants_mapping.items():
@@ -84,22 +84,30 @@ def assert_policies_for_cas_roles(
 
             if RlsOperations.SELECT in operations:
                 if select_function is noop:
-                    raise ValueError("SELECT operation granted, but no select_function provided.")
+                    raise ValueError(
+                        "SELECT operation granted, but no select_function provided."
+                    )
                 run_with_rollback(cursor, select_function)
 
             if RlsOperations.INSERT in operations:
                 if insert_function is noop:
-                    raise ValueError(f"INSERT operation granted for role {role}, but no insert_function provided.")
+                    raise ValueError(
+                        f"INSERT operation granted for role {role}, but no insert_function provided."
+                    )
                 run_with_rollback(cursor, insert_function)
 
             if RlsOperations.UPDATE in operations:
                 if update_function is noop:
-                    raise ValueError(f"UPDATE operation granted for role {role}, but no update_function provided.")
+                    raise ValueError(
+                        f"UPDATE operation granted for role {role}, but no update_function provided."
+                    )
                 run_with_rollback(cursor, update_function)
 
             if RlsOperations.DELETE in operations:
                 if delete_function is noop:
-                    raise ValueError(f"DELETE operation granted for role {role}, but no delete_function provided.")
+                    raise ValueError(
+                        f"DELETE operation granted for role {role}, but no delete_function provided."
+                    )
                 run_with_rollback(cursor, delete_function)
 
 
@@ -120,7 +128,7 @@ def assert_policies_for_industry_user(
     If we forget to test an operation that RLS applies to, this function will raise a ValueError. It rolls back the changes after each operation to ensure the database state remains unchanged for subsequent tests.
 
     """
-    if not hasattr(model_name.Rls, 'enable_rls') or not model_name.Rls.enable_rls:
+    if not hasattr(model_name.Rls, "enable_rls") or not model_name.Rls.enable_rls:
         return
 
     rls_operation_to_functions_map = {
@@ -159,20 +167,24 @@ def assert_policies_for_industry_user(
                     run_with_rollback(cursor, forbidden_function)
             elif operation == RlsOperations.UPDATE:
                 permitted_updated_records_count = run_with_rollback(cursor, function)
-                assert (
-                    permitted_updated_records_count == 1
-                ), f"Expected 1 updated record, but got {permitted_updated_records_count} (did you remember to return in the update function?)"
+                assert permitted_updated_records_count == 1, (
+                    f"Expected 1 updated record, but got {permitted_updated_records_count} (did you remember to return in the update function?)"
+                )
 
-                forbidden_updated_records_count = run_with_rollback(cursor, forbidden_function)
-                assert (
-                    forbidden_updated_records_count == 0
-                ), f"Expected 0 updated records, but got {forbidden_updated_records_count} (did you remember to return in the update function?)"
+                forbidden_updated_records_count = run_with_rollback(
+                    cursor, forbidden_function
+                )
+                assert forbidden_updated_records_count == 0, (
+                    f"Expected 0 updated records, but got {forbidden_updated_records_count} (did you remember to return in the update function?)"
+                )
             elif operation == RlsOperations.DELETE:
                 permitted_deleted_records_count = run_with_rollback(cursor, function)
-                assert (
-                    permitted_deleted_records_count == 1
-                ), f"Expected 1 deleted record, but got {permitted_deleted_records_count} (did you remember to return in the delete function?)"
-                forbidden_deleted_records_count = run_with_rollback(cursor, forbidden_function)
-                assert (
-                    forbidden_deleted_records_count == 0
-                ), f"Expected 0 deleted records, but got {forbidden_deleted_records_count} (did you remember to return in the delete function?)"
+                assert permitted_deleted_records_count == 1, (
+                    f"Expected 1 deleted record, but got {permitted_deleted_records_count} (did you remember to return in the delete function?)"
+                )
+                forbidden_deleted_records_count = run_with_rollback(
+                    cursor, forbidden_function
+                )
+                assert forbidden_deleted_records_count == 0, (
+                    f"Expected 0 deleted records, but got {forbidden_deleted_records_count} (did you remember to return in the delete function?)"
+                )

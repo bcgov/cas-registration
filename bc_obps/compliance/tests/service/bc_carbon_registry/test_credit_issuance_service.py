@@ -1,16 +1,21 @@
 from datetime import date
-import pytest
 from unittest.mock import patch
-from model_bakery import baker
-from compliance.service.bc_carbon_registry.credit_issuance_service import BCCarbonRegistryCreditIssuanceService
+
+import pytest
 from common.exceptions import UserError
+from compliance.service.bc_carbon_registry.credit_issuance_service import (
+    BCCarbonRegistryCreditIssuanceService,
+)
+from model_bakery import baker
 
 pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
 def mock_api_client():
-    with patch('compliance.service.bc_carbon_registry.bc_carbon_registry_api_client.BCCarbonRegistryAPIClient') as mock:
+    with patch(
+        "compliance.service.bc_carbon_registry.bc_carbon_registry_api_client.BCCarbonRegistryAPIClient"
+    ) as mock:
         yield mock.return_value
 
 
@@ -69,7 +74,9 @@ def bccr_project_data():
 
 
 class TestBCCarbonRegistryCreditIssuanceService:
-    def test_issue_credits_success(self, service, mock_api_client, earned_credit, bccr_project_data):
+    def test_issue_credits_success(
+        self, service, mock_api_client, earned_credit, bccr_project_data
+    ):
         # Arrange
         mock_api_client.create_issuance.return_value = {"id": "issuance_789"}
 
@@ -104,7 +111,9 @@ class TestBCCarbonRegistryCreditIssuanceService:
         assert mixed_unit["defined_unit_id"] == "unit_456"
         assert mixed_unit["project_type_id"] == "140000000000002"
 
-    def test_issue_credits_bccr_api_failure(self, service, mock_api_client, earned_credit, bccr_project_data):
+    def test_issue_credits_bccr_api_failure(
+        self, service, mock_api_client, earned_credit, bccr_project_data
+    ):
         # Arrange
         mock_api_client.create_issuance.return_value = {}  # No ID in response
 
@@ -112,7 +121,9 @@ class TestBCCarbonRegistryCreditIssuanceService:
         with pytest.raises(UserError, match="Failed to issue credits in BCCR"):
             service.issue_credits(earned_credit, bccr_project_data)
 
-    def test_issue_credits_empty_mixed_unit_list(self, service, mock_api_client, earned_credit):
+    def test_issue_credits_empty_mixed_unit_list(
+        self, service, mock_api_client, earned_credit
+    ):
         # Arrange
         bccr_project_data_empty = {"id": "project_123", "mixedUnitList": []}
         mock_api_client.create_issuance.return_value = {"id": "issuance_789"}
@@ -121,7 +132,9 @@ class TestBCCarbonRegistryCreditIssuanceService:
         with pytest.raises(IndexError):
             service.issue_credits(earned_credit, bccr_project_data_empty)
 
-    def test_issue_credits_missing_mixed_unit_list(self, service, mock_api_client, earned_credit):
+    def test_issue_credits_missing_mixed_unit_list(
+        self, service, mock_api_client, earned_credit
+    ):
         # Arrange
         bccr_project_data_missing = {
             "id": "project_123"
@@ -133,7 +146,9 @@ class TestBCCarbonRegistryCreditIssuanceService:
         with pytest.raises(KeyError):
             service.issue_credits(earned_credit, bccr_project_data_missing)
 
-    def test_issue_credits_missing_project_id(self, service, mock_api_client, earned_credit, bccr_project_data):
+    def test_issue_credits_missing_project_id(
+        self, service, mock_api_client, earned_credit, bccr_project_data
+    ):
         # Arrange
         bccr_project_data_no_id = {
             "mixedUnitList": [

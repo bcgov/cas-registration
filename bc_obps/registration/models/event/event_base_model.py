@@ -1,10 +1,15 @@
 import uuid
+
 from django.db import models
-from registration.models import TimeStampedModel, Operation, Facility
+from registration.models import Facility, Operation, TimeStampedModel
 
 
 class EventBaseModel(TimeStampedModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the event")
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        db_comment="Primary key to identify the event",
+    )
     effective_date = models.DateTimeField(
         db_comment="The date on which the closure, restart, shutdown, or transfer takes effect operationally"
     )

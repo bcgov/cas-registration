@@ -1,7 +1,8 @@
+from compliance.models import ElicensingInvoice
 from django.db import models
 from django.db.models import Q
 from registration.models.time_stamped_model import TimeStampedModel
-from compliance.models import ElicensingInvoice
+
 from .rls_configs.elicensing_line_item import Rls as ElicensingLineItemRls
 
 
@@ -13,10 +14,12 @@ class ElicensingLineItem(TimeStampedModel):
     """
 
     class LineItemType(models.TextChoices):
-        FEE = 'Fee'
-        INTEREST = 'Interest'
+        FEE = "Fee"
+        INTEREST = "Interest"
 
-    object_id = models.IntegerField(db_comment="The objectId of the line item from elicensing")
+    object_id = models.IntegerField(
+        db_comment="The objectId of the line item from elicensing"
+    )
 
     guid = models.UUIDField(
         null=True,
@@ -31,9 +34,13 @@ class ElicensingLineItem(TimeStampedModel):
         related_name="elicensing_line_items",
     )
 
-    fee_date = models.DateField(db_comment="The date of the fee. feeDueDate in elicensing")
+    fee_date = models.DateField(
+        db_comment="The date of the fee. feeDueDate in elicensing"
+    )
 
-    description = models.CharField(db_comment="Description of the line item (fee)", blank=True, null=True)
+    description = models.CharField(
+        db_comment="Description of the line item (fee)", blank=True, null=True
+    )
 
     base_amount = models.DecimalField(
         decimal_places=2,
@@ -42,7 +49,9 @@ class ElicensingLineItem(TimeStampedModel):
     )
 
     line_item_type = models.CharField(
-        choices=LineItemType.choices, default=LineItemType.FEE, db_comment="The type of line item from elicensing."
+        choices=LineItemType.choices,
+        default=LineItemType.FEE,
+        db_comment="The type of line item from elicensing.",
     )
 
     class Meta(TimeStampedModel.Meta):

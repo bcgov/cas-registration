@@ -1,31 +1,20 @@
-from django.test import TestCase
 from unittest.mock import MagicMock, patch
-from model_bakery.baker import make_recipe
+
+import common.lib.pgtrigger as pgtrigger
 from django.core.files.base import ContentFile
+from django.db.models import Q
+from django.test import TestCase
 from django.utils import timezone
+from model_bakery.baker import make_recipe
 from model_bakery.utils import seq
-from registration.models import Operation
-from reporting.models.report_raw_activity_data import ReportRawActivityData
-from reporting.tests.service.test_report_activity_save_service import data
-from reporting.service.report_supplementary_version_service.report_supplementary_cloning import (
-    clone_or_refresh_report_version_representatives,
-    clone_report_version_operation,
-    clone_report_version_person_responsible,
-    clone_report_version_additional_data,
-    clone_report_version_new_entrant_data,
-    clone_report_version_verification,
-    clone_report_version_attachments,
-    clone_report_version_facilities,
-    reapply_emission_categories,
-    clone_all,
-)
+from registration.models import Contact, Operation
 from reporting.models import (
+    EmissionCategoryMapping,
     FacilityReport,
+    Methodology,
     ReportActivity,
     ReportAdditionalData,
     ReportAttachment,
-    EmissionCategoryMapping,
-    Methodology,
     ReportEmission,
     ReportMethodology,
     ReportNewEntrant,
@@ -37,24 +26,37 @@ from reporting.models import (
     ReportVerification,
     ReportVersion,
 )
-import common.lib.pgtrigger as pgtrigger
-from django.db.models import Q
-from registration.models import Contact
+from reporting.models.report_raw_activity_data import ReportRawActivityData
+from reporting.service.report_supplementary_version_service.report_supplementary_cloning import (
+    clone_all,
+    clone_or_refresh_report_version_representatives,
+    clone_report_version_additional_data,
+    clone_report_version_attachments,
+    clone_report_version_facilities,
+    clone_report_version_new_entrant_data,
+    clone_report_version_operation,
+    clone_report_version_person_responsible,
+    clone_report_version_verification,
+    reapply_emission_categories,
+)
+from reporting.tests.service.test_report_activity_save_service import data
 
 
 class ReportSupplementaryCloningTests(TestCase):
     def setUp(self):
         # Create old and new ReportVersion instances
         self.old_report_version = make_recipe(
-            'reporting.tests.utils.report_version',
+            "reporting.tests.utils.report_version",
             status=ReportVersion.ReportVersionStatus.Draft,
         )
 
         # Create a regulated product.
-        self.old_regulated_product = make_recipe('registration.tests.utils.regulated_product')
+        self.old_regulated_product = make_recipe(
+            "registration.tests.utils.regulated_product"
+        )
 
         # Create an activity (shared by operation)
-        self.old_activity = make_recipe('reporting.tests.utils.activity')
+        self.old_activity = make_recipe("reporting.tests.utils.activity")
 
         # Create a ReportOperation instance associated with the old report version
         self.old_report_operation = make_recipe(
@@ -73,23 +75,24 @@ class ReportSupplementaryCloningTests(TestCase):
 
         # Create two ReportOperationRepresentative instances for the old report version
         self.old_rep1 = make_recipe(
-            'reporting.tests.utils.report_operation_representative', report_version=self.old_report_version
+            "reporting.tests.utils.report_operation_representative",
+            report_version=self.old_report_version,
         )
         self.old_rep2 = make_recipe(
-            'reporting.tests.utils.report_operation_representative',
+            "reporting.tests.utils.report_operation_representative",
             report_version=self.old_report_version,
             representative_name="Another Rep",
         )
 
         # Create a ReportPersonResponsible instance for the old report version
         self.old_person = make_recipe(
-            'reporting.tests.utils.report_person_responsible',
+            "reporting.tests.utils.report_person_responsible",
             report_version=self.old_report_version,
         )
 
         # Create ReportAdditionalData for the old report version
         self.old_additional_data = make_recipe(
-            'reporting.tests.utils.report_additional_data',
+            "reporting.tests.utils.report_additional_data",
             report_version=self.old_report_version,
             capture_emissions=True,
             emissions_on_site_use=100.0,
@@ -100,31 +103,32 @@ class ReportSupplementaryCloningTests(TestCase):
 
         # Create a ReportNewEntrant and its related records for the old report version
         self.old_new_entrant = make_recipe(
-            'reporting.tests.utils.report_new_entrant',
+            "reporting.tests.utils.report_new_entrant",
             report_version=self.old_report_version,
         )
         self.old_emission = make_recipe(
-            'reporting.tests.utils.report_new_entrant_emission',
+            "reporting.tests.utils.report_new_entrant_emission",
             report_new_entrant=self.old_new_entrant,
             emission="5.0000",
         )
         self.old_production = make_recipe(
-            'reporting.tests.utils.report_new_entrant_production',
+            "reporting.tests.utils.report_new_entrant_production",
             report_new_entrant=self.old_new_entrant,
             production_amount="10.0000",
         )
 
         # Create an old FacilityReport associated with the old report version
         self.old_facility_report: FacilityReport = make_recipe(
-            "reporting.tests.utils.facility_report", report_version=self.old_report_version
+            "reporting.tests.utils.facility_report",
+            report_version=self.old_report_version,
         )
 
         # Simulate user adding a few extra activities, since the workflow allows it
         self.old_facility_report.activities.set(
             [
                 self.old_activity,
-                make_recipe('reporting.tests.utils.activity'),
-                make_recipe('reporting.tests.utils.activity'),
+                make_recipe("reporting.tests.utils.activity"),
+                make_recipe("reporting.tests.utils.activity"),
             ]
         )
 
@@ -157,7 +161,7 @@ class ReportSupplementaryCloningTests(TestCase):
         self.old_report_version.save()
 
         self.new_report_version: ReportVersion = make_recipe(
-            'reporting.tests.utils.report_version',
+            "reporting.tests.utils.report_version",
             report=self.old_report_version.report,
             status=ReportVersion.ReportVersionStatus.Draft,
         )
@@ -170,36 +174,59 @@ class ReportSupplementaryCloningTests(TestCase):
         """
         # PRE-ACT: Assert initial count of ReportOperation is 1.
         initial_count = ReportOperation.objects.count()
-        self.assertEqual(initial_count, 1, "There should be one ReportOperation initially.")
+        self.assertEqual(
+            initial_count, 1, "There should be one ReportOperation initially."
+        )
 
         # ACT: Run the cloning method.
         clone_report_version_operation(self.old_report_version, self.new_report_version)
 
         # ASSERT: Verify that a new ReportOperation has been created (count increases from 1 to 2).
         new_count = ReportOperation.objects.count()
-        self.assertEqual(new_count, 2, "A new ReportOperation should be created after cloning.")
+        self.assertEqual(
+            new_count, 2, "A new ReportOperation should be created after cloning."
+        )
 
         # ASSERT: Retrieve both old and new ReportOperation instances.
-        old_operation = ReportOperation.objects.get(report_version=self.old_report_version)
-        new_operation = ReportOperation.objects.get(report_version=self.new_report_version)
+        old_operation = ReportOperation.objects.get(
+            report_version=self.old_report_version
+        )
+        new_operation = ReportOperation.objects.get(
+            report_version=self.new_report_version
+        )
 
         # ASSERT: Check that scalar fields are copied correctly.
-        self.assertEqual(new_operation.operator_legal_name, old_operation.operator_legal_name)
-        self.assertEqual(new_operation.operator_trade_name, old_operation.operator_trade_name)
+        self.assertEqual(
+            new_operation.operator_legal_name, old_operation.operator_legal_name
+        )
+        self.assertEqual(
+            new_operation.operator_trade_name, old_operation.operator_trade_name
+        )
         self.assertEqual(new_operation.operation_name, old_operation.operation_name)
         self.assertEqual(new_operation.operation_type, old_operation.operation_type)
-        self.assertEqual(new_operation.registration_purpose, old_operation.registration_purpose)
-        self.assertEqual(new_operation.operation_bcghgid, old_operation.operation_bcghgid)
-        self.assertEqual(new_operation.bc_obps_regulated_operation_id, old_operation.bc_obps_regulated_operation_id)
+        self.assertEqual(
+            new_operation.registration_purpose, old_operation.registration_purpose
+        )
+        self.assertEqual(
+            new_operation.operation_bcghgid, old_operation.operation_bcghgid
+        )
+        self.assertEqual(
+            new_operation.bc_obps_regulated_operation_id,
+            old_operation.bc_obps_regulated_operation_id,
+        )
 
         # ASSERT: Verify many-to-many relationships for regulated_products are copied.
-        old_regulated_ids = set(old_operation.regulated_products.values_list('id', flat=True))
-        new_regulated_ids = set(new_operation.regulated_products.values_list('id', flat=True))
+        old_regulated_ids = set(
+            old_operation.regulated_products.values_list("id", flat=True)
+        )
+        new_regulated_ids = set(
+            new_operation.regulated_products.values_list("id", flat=True)
+        )
         self.assertEqual(old_regulated_ids, new_regulated_ids)
 
         # ASSERT: Verify many-to-many relationships for activities are copied.
-        old_activities_ids = set(old_operation.activities.values_list('id', flat=True))
-        new_activities_ids = set(new_operation.activities.values_list('id', flat=True))
+        old_activities_ids = set(old_operation.activities.values_list("id", flat=True))
+        new_activities_ids = set(new_operation.activities.values_list("id", flat=True))
         self.assertEqual(old_activities_ids, new_activities_ids)
 
     def test_clone_report_version_representatives_no_transfer(self):
@@ -209,33 +236,53 @@ class ReportSupplementaryCloningTests(TestCase):
         """
         # PRE-ACT: Assert initial counts of representatives.
         self.assertEqual(
-            ReportOperationRepresentative.objects.filter(report_version=self.old_report_version).count(), 2
+            ReportOperationRepresentative.objects.filter(
+                report_version=self.old_report_version
+            ).count(),
+            2,
         )
         self.assertEqual(
-            ReportOperationRepresentative.objects.filter(report_version=self.new_report_version).count(), 0
+            ReportOperationRepresentative.objects.filter(
+                report_version=self.new_report_version
+            ).count(),
+            0,
         )
 
         # ACT: Clone the representatives.
         clone_or_refresh_report_version_representatives(
-            self.old_report_version, self.new_report_version, is_operation_transferred=False
+            self.old_report_version,
+            self.new_report_version,
+            is_operation_transferred=False,
         )
 
         # ASSERT: Verify that two new representatives have been created.
-        new_reps = ReportOperationRepresentative.objects.filter(report_version=self.new_report_version)
-        self.assertEqual(new_reps.count(), 2, "Two representatives should be created after cloning.")
+        new_reps = ReportOperationRepresentative.objects.filter(
+            report_version=self.new_report_version
+        )
+        self.assertEqual(
+            new_reps.count(), 2, "Two representatives should be created after cloning."
+        )
 
         # ASSERT: Check that each new representative's fields match those of the old representatives.
         old_reps = {
             rep.representative_name: rep
-            for rep in ReportOperationRepresentative.objects.filter(report_version=self.old_report_version)
+            for rep in ReportOperationRepresentative.objects.filter(
+                report_version=self.old_report_version
+            )
         }
         for new_rep in new_reps:
             self.assertIn(new_rep.representative_name, old_reps)
-            self.assertEqual(new_rep.selected_for_report, old_reps[new_rep.representative_name].selected_for_report)
+            self.assertEqual(
+                new_rep.selected_for_report,
+                old_reps[new_rep.representative_name].selected_for_report,
+            )
 
     def test_clone_report_version_representatives_with_transfer(self):
         self.assertEqual(
-            ReportOperationRepresentative.objects.filter(report_version=self.new_report_version).count(), 0
+            ReportOperationRepresentative.objects.filter(
+                report_version=self.new_report_version
+            ).count(),
+            0,
         )
 
         make_recipe(
@@ -256,15 +303,20 @@ class ReportSupplementaryCloningTests(TestCase):
         )
 
         clone_or_refresh_report_version_representatives(
-            self.old_report_version, self.new_report_version, is_operation_transferred=True
+            self.old_report_version,
+            self.new_report_version,
+            is_operation_transferred=True,
         )
         self.assertEqual(
-            ReportOperationRepresentative.objects.filter(report_version=self.new_report_version).count(), 5
+            ReportOperationRepresentative.objects.filter(
+                report_version=self.new_report_version
+            ).count(),
+            5,
         )
         self.assertQuerySetEqual(
-            ReportOperationRepresentative.objects.filter(report_version=self.new_report_version).values_list(
-                "representative_name", flat=True
-            ),
+            ReportOperationRepresentative.objects.filter(
+                report_version=self.new_report_version
+            ).values_list("representative_name", flat=True),
             ["John Doe1", "John Doe2", "John Doe3", "John Doe4", "John Doe5"],
             ordered=False,
         )
@@ -275,11 +327,13 @@ class ReportSupplementaryCloningTests(TestCase):
             ).exists()
         )
 
-    def test_clone_report_version_representatives_no_transfer_adds_missing_operator_contacts(self):
+    def test_clone_report_version_representatives_no_transfer_adds_missing_operator_contacts(
+        self,
+    ):
         old_selections = dict(
-            ReportOperationRepresentative.objects.filter(report_version=self.old_report_version).values_list(
-                "representative_name", "selected_for_report"
-            )
+            ReportOperationRepresentative.objects.filter(
+                report_version=self.old_report_version
+            ).values_list("representative_name", "selected_for_report")
         )
         make_recipe(
             "registration.tests.utils.contact",
@@ -289,13 +343,15 @@ class ReportSupplementaryCloningTests(TestCase):
         )
 
         clone_or_refresh_report_version_representatives(
-            self.old_report_version, self.new_report_version, is_operation_transferred=False
+            self.old_report_version,
+            self.new_report_version,
+            is_operation_transferred=False,
         )
 
         new_selections = dict(
-            ReportOperationRepresentative.objects.filter(report_version=self.new_report_version).values_list(
-                "representative_name", "selected_for_report"
-            )
+            ReportOperationRepresentative.objects.filter(
+                report_version=self.new_report_version
+            ).values_list("representative_name", "selected_for_report")
         )
         # Previous selections are carried over and the new operator contact is added unselected
         self.assertDictEqual(new_selections, {**old_selections, "Nina New": False})
@@ -306,8 +362,16 @@ class ReportSupplementaryCloningTests(TestCase):
         ReportPersonResponsible when the referenced contact still exists.
         """
         # PRE-ACT: Verify that a ReportPersonResponsible exists for the old report version and none for the new version.
-        self.assertIsNotNone(ReportPersonResponsible.objects.filter(report_version=self.old_report_version).first())
-        self.assertIsNone(ReportPersonResponsible.objects.filter(report_version=self.new_report_version).first())
+        self.assertIsNotNone(
+            ReportPersonResponsible.objects.filter(
+                report_version=self.old_report_version
+            ).first()
+        )
+        self.assertIsNone(
+            ReportPersonResponsible.objects.filter(
+                report_version=self.new_report_version
+            ).first()
+        )
         # Create an active Contact with the same email
         make_recipe(
             "registration.tests.utils.contact",
@@ -315,10 +379,14 @@ class ReportSupplementaryCloningTests(TestCase):
         )
 
         # ACT: Clone the ReportPersonResponsible.
-        clone_report_version_person_responsible(self.old_report_version, self.new_report_version)
+        clone_report_version_person_responsible(
+            self.old_report_version, self.new_report_version
+        )
 
         # ASSERT: Retrieve and verify the cloned ReportPersonResponsible.
-        new_person = ReportPersonResponsible.objects.filter(report_version=self.new_report_version).first()
+        new_person = ReportPersonResponsible.objects.filter(
+            report_version=self.new_report_version
+        ).first()
         self.assertIsNotNone(new_person)
         self.assertEqual(new_person.first_name, self.old_person.first_name)
         self.assertEqual(new_person.last_name, self.old_person.last_name)
@@ -339,9 +407,15 @@ class ReportSupplementaryCloningTests(TestCase):
         ReportPersonResponsible when the referenced contact no longer exists.
         """
         # PRE-ACT: Ensure there is no matching active Contact
-        Contact.objects.filter(Q(id=self.old_person.contact_id) | Q(email=self.old_person.email)).delete()
+        Contact.objects.filter(
+            Q(id=self.old_person.contact_id) | Q(email=self.old_person.email)
+        ).delete()
 
-        self.assertIsNone(ReportPersonResponsible.objects.filter(report_version=self.new_report_version).first())
+        self.assertIsNone(
+            ReportPersonResponsible.objects.filter(
+                report_version=self.new_report_version
+            ).first()
+        )
 
         # ACT
         clone_report_version_person_responsible(
@@ -350,7 +424,11 @@ class ReportSupplementaryCloningTests(TestCase):
         )
 
         # ASSERT
-        self.assertIsNone(ReportPersonResponsible.objects.filter(report_version=self.new_report_version).first())
+        self.assertIsNone(
+            ReportPersonResponsible.objects.filter(
+                report_version=self.new_report_version
+            ).first()
+        )
 
     def test_clone_report_version_additional_data(self):
         """
@@ -358,25 +436,47 @@ class ReportSupplementaryCloningTests(TestCase):
         from the old report version to the new report version, copying all relevant field values.
         """
         # PRE-ACT: Assert that additional data exists for the old report version and not for the new version.
-        self.assertIsNotNone(ReportAdditionalData.objects.filter(report_version=self.old_report_version).first())
-        self.assertIsNone(ReportAdditionalData.objects.filter(report_version=self.new_report_version).first())
+        self.assertIsNotNone(
+            ReportAdditionalData.objects.filter(
+                report_version=self.old_report_version
+            ).first()
+        )
+        self.assertIsNone(
+            ReportAdditionalData.objects.filter(
+                report_version=self.new_report_version
+            ).first()
+        )
 
         # ACT: Clone the ReportAdditionalData.
-        clone_report_version_additional_data(self.old_report_version, self.new_report_version)
+        clone_report_version_additional_data(
+            self.old_report_version, self.new_report_version
+        )
 
         # ASSERT: Retrieve and verify the cloned additional data.
-        new_additional_data = ReportAdditionalData.objects.filter(report_version=self.new_report_version).first()
+        new_additional_data = ReportAdditionalData.objects.filter(
+            report_version=self.new_report_version
+        ).first()
         self.assertIsNotNone(new_additional_data)
-        self.assertEqual(new_additional_data.capture_emissions, self.old_additional_data.capture_emissions)
-        self.assertEqual(new_additional_data.emissions_on_site_use, self.old_additional_data.emissions_on_site_use)
+        self.assertEqual(
+            new_additional_data.capture_emissions,
+            self.old_additional_data.capture_emissions,
+        )
+        self.assertEqual(
+            new_additional_data.emissions_on_site_use,
+            self.old_additional_data.emissions_on_site_use,
+        )
         self.assertEqual(
             new_additional_data.emissions_on_site_sequestration,
             self.old_additional_data.emissions_on_site_sequestration,
         )
         self.assertEqual(
-            new_additional_data.emissions_off_site_transfer, self.old_additional_data.emissions_off_site_transfer
+            new_additional_data.emissions_off_site_transfer,
+            self.old_additional_data.emissions_off_site_transfer,
         )
-        self.assertEqual(new_additional_data.electricity_generated, self.old_additional_data.electricity_generated)
+        self.assertEqual(
+            new_additional_data.electricity_generated,
+            self.old_additional_data.electricity_generated,
+        )
 
     def test_clone_report_version_new_entrant_data(self):
         """
@@ -384,7 +484,9 @@ class ReportSupplementaryCloningTests(TestCase):
         along with its related emissions and production records, from the old report version to the new one.
         """
         # PRE-ACT: Assert that the old report version has a ReportNewEntrant and record counts.
-        old_new_entrant_instance = ReportNewEntrant.objects.filter(report_version=self.old_report_version).first()
+        old_new_entrant_instance = ReportNewEntrant.objects.filter(
+            report_version=self.old_report_version
+        ).first()
         self.assertIsNotNone(old_new_entrant_instance)
         old_emissions_count = ReportNewEntrantEmission.objects.filter(
             report_new_entrant=old_new_entrant_instance
@@ -394,38 +496,64 @@ class ReportSupplementaryCloningTests(TestCase):
         ).count()
         self.assertGreater(old_emissions_count, 0)
         self.assertGreater(old_productions_count, 0)
-        self.assertIsNone(ReportNewEntrant.objects.filter(report_version=self.new_report_version).first())
+        self.assertIsNone(
+            ReportNewEntrant.objects.filter(
+                report_version=self.new_report_version
+            ).first()
+        )
 
         # ACT: Clone the ReportNewEntrant data.
-        clone_report_version_new_entrant_data(self.old_report_version, self.new_report_version)
+        clone_report_version_new_entrant_data(
+            self.old_report_version, self.new_report_version
+        )
 
         # ASSERT: Verify that a new ReportNewEntrant has been created (count increases from 0 to 1).
-        new_new_entrant_instance = ReportNewEntrant.objects.filter(report_version=self.new_report_version).first()
+        new_new_entrant_instance = ReportNewEntrant.objects.filter(
+            report_version=self.new_report_version
+        ).first()
         self.assertIsNotNone(new_new_entrant_instance)
-        self.assertEqual(new_new_entrant_instance.authorization_date, old_new_entrant_instance.authorization_date)
-        self.assertEqual(new_new_entrant_instance.first_shipment_date, old_new_entrant_instance.first_shipment_date)
         self.assertEqual(
-            new_new_entrant_instance.new_entrant_period_start, old_new_entrant_instance.new_entrant_period_start
+            new_new_entrant_instance.authorization_date,
+            old_new_entrant_instance.authorization_date,
         )
-        self.assertEqual(new_new_entrant_instance.assertion_statement, old_new_entrant_instance.assertion_statement)
+        self.assertEqual(
+            new_new_entrant_instance.first_shipment_date,
+            old_new_entrant_instance.first_shipment_date,
+        )
+        self.assertEqual(
+            new_new_entrant_instance.new_entrant_period_start,
+            old_new_entrant_instance.new_entrant_period_start,
+        )
+        self.assertEqual(
+            new_new_entrant_instance.assertion_statement,
+            old_new_entrant_instance.assertion_statement,
+        )
 
         # ASSERT: Verify that emissions are cloned correctly.
-        new_emissions = ReportNewEntrantEmission.objects.filter(report_new_entrant=new_new_entrant_instance)
+        new_emissions = ReportNewEntrantEmission.objects.filter(
+            report_new_entrant=new_new_entrant_instance
+        )
         self.assertEqual(new_emissions.count(), old_emissions_count)
         for new_emission in new_emissions:
             old_emission = ReportNewEntrantEmission.objects.filter(
-                report_new_entrant=old_new_entrant_instance, emission=new_emission.emission
+                report_new_entrant=old_new_entrant_instance,
+                emission=new_emission.emission,
             ).first()
             self.assertIsNotNone(old_emission)
-            self.assertEqual(new_emission.emission_category.id, old_emission.emission_category.id)
+            self.assertEqual(
+                new_emission.emission_category.id, old_emission.emission_category.id
+            )
             self.assertEqual(new_emission.emission, old_emission.emission)
 
         # ASSERT: Verify that production records are cloned correctly.
-        new_productions = ReportNewEntrantProduction.objects.filter(report_new_entrant=new_new_entrant_instance)
+        new_productions = ReportNewEntrantProduction.objects.filter(
+            report_new_entrant=new_new_entrant_instance
+        )
         self.assertEqual(new_productions.count(), old_productions_count)
         for new_prod in new_productions:
             old_prod = ReportNewEntrantProduction.objects.filter(
-                report_new_entrant=old_new_entrant_instance, production_amount=new_prod.production_amount
+                report_new_entrant=old_new_entrant_instance,
+                production_amount=new_prod.production_amount,
             ).first()
             self.assertIsNotNone(old_prod)
             self.assertEqual(new_prod.product.id, old_prod.product.id)
@@ -437,9 +565,9 @@ class ReportSupplementaryCloningTests(TestCase):
         from the old report version to the new report version.
         """
         # PRE-ACT: Create a ReportVerification for the old report version.
-        with pgtrigger.ignore('reporting.ReportVerification:immutable_report_version'):
+        with pgtrigger.ignore("reporting.ReportVerification:immutable_report_version"):
             verification = make_recipe(
-                'reporting.tests.utils.report_verification',
+                "reporting.tests.utils.report_verification",
                 report_version=self.old_report_version,
                 verification_body_name="Test Verification Body",
                 accredited_by=ReportVerification.AccreditedBy.ANAB,
@@ -449,16 +577,30 @@ class ReportSupplementaryCloningTests(TestCase):
             )
 
         # ACT: Clone the ReportVerification from old to new report version.
-        clone_report_version_verification(self.old_report_version, self.new_report_version)
+        clone_report_version_verification(
+            self.old_report_version, self.new_report_version
+        )
 
         # ASSERT: Verify that a new ReportVerification has been created (record count increases).
-        new_verification = ReportVerification.objects.filter(report_version=self.new_report_version).first()
+        new_verification = ReportVerification.objects.filter(
+            report_version=self.new_report_version
+        ).first()
         self.assertIsNotNone(new_verification)
-        self.assertEqual(new_verification.verification_body_name, verification.verification_body_name)
+        self.assertEqual(
+            new_verification.verification_body_name, verification.verification_body_name
+        )
         self.assertEqual(new_verification.accredited_by, verification.accredited_by)
-        self.assertEqual(new_verification.scope_of_verification, verification.scope_of_verification)
-        self.assertEqual(new_verification.threats_to_independence, verification.threats_to_independence)
-        self.assertEqual(new_verification.verification_conclusion, verification.verification_conclusion)
+        self.assertEqual(
+            new_verification.scope_of_verification, verification.scope_of_verification
+        )
+        self.assertEqual(
+            new_verification.threats_to_independence,
+            verification.threats_to_independence,
+        )
+        self.assertEqual(
+            new_verification.verification_conclusion,
+            verification.verification_conclusion,
+        )
 
     def test_clone_report_version_verification_no_existing(self):
         """
@@ -466,12 +608,18 @@ class ReportSupplementaryCloningTests(TestCase):
         """
         # PRE-ACT: Ensure there are no ReportVerification records for the old report version.
 
-        ReportVerification.objects.filter(report_version=self.old_report_version).delete()
+        ReportVerification.objects.filter(
+            report_version=self.old_report_version
+        ).delete()
         # ACT: Attempt to clone ReportVerification.
-        clone_report_version_verification(self.old_report_version, self.new_report_version)
+        clone_report_version_verification(
+            self.old_report_version, self.new_report_version
+        )
 
         # ASSERT: Verify that no ReportVerification has been created for the new report version.
-        new_verification = ReportVerification.objects.filter(report_version=self.new_report_version).first()
+        new_verification = ReportVerification.objects.filter(
+            report_version=self.new_report_version
+        ).first()
         self.assertIsNone(new_verification)
 
     def test_clone_report_version_attachments(self):
@@ -480,17 +628,17 @@ class ReportSupplementaryCloningTests(TestCase):
         from the old report version to the new report version.
         """
         # PRE-ACT: Create two ReportAttachment instances for the old report version.
-        with pgtrigger.ignore('reporting.ReportAttachment:immutable_report_version'):
+        with pgtrigger.ignore("reporting.ReportAttachment:immutable_report_version"):
             make_recipe(
-                'reporting.tests.utils.report_attachment',
+                "reporting.tests.utils.report_attachment",
                 report_version=self.old_report_version,
                 attachment=ContentFile(b"dummy file content", "file1.pdf"),
                 attachment_type="verification_statement",
                 attachment_name="Attachment 1",
             )
-        with pgtrigger.ignore('reporting.ReportAttachment:immutable_report_version'):
+        with pgtrigger.ignore("reporting.ReportAttachment:immutable_report_version"):
             make_recipe(
-                'reporting.tests.utils.report_attachment',
+                "reporting.tests.utils.report_attachment",
                 report_version=self.old_report_version,
                 attachment=ContentFile(b"dummy file content", "file2.doc"),
                 attachment_type="wci_352_362",
@@ -498,21 +646,35 @@ class ReportSupplementaryCloningTests(TestCase):
             )
 
         # ACT: Clone the ReportAttachment instances.
-        with patch("django.core.files.storage.default_storage.duplicate_file") as mock_duplicate:
+        with patch(
+            "django.core.files.storage.default_storage.duplicate_file"
+        ) as mock_duplicate:
             mock_duplicate.return_value = "test_file"
 
-            clone_report_version_attachments(self.old_report_version, self.new_report_version)
+            clone_report_version_attachments(
+                self.old_report_version, self.new_report_version
+            )
             current_year = timezone.now().year
             # we add random suffixes to filenames, so we check patterns instead of exact matches
             assert len(mock_duplicate.mock_calls) == 2
             call_args = [str(call_obj) for call_obj in mock_duplicate.mock_calls]
-            assert any(f"report_attachments/{current_year}/file1" in arg and ".pdf" in arg for arg in call_args)
-            assert any(f"report_attachments/{current_year}/file2" in arg and ".doc" in arg for arg in call_args)
+            assert any(
+                f"report_attachments/{current_year}/file1" in arg and ".pdf" in arg
+                for arg in call_args
+            )
+            assert any(
+                f"report_attachments/{current_year}/file2" in arg and ".doc" in arg
+                for arg in call_args
+            )
 
         # ASSERT: Verify that two ReportAttachment instances have been cloned.
-        new_attachments = ReportAttachment.objects.filter(report_version=self.new_report_version)
+        new_attachments = ReportAttachment.objects.filter(
+            report_version=self.new_report_version
+        )
         self.assertEqual(new_attachments.count(), 2)
-        for old_attachment in ReportAttachment.objects.filter(report_version=self.old_report_version):
+        for old_attachment in ReportAttachment.objects.filter(
+            report_version=self.old_report_version
+        ):
             cloned_attachment = new_attachments.filter(
                 attachment_type=old_attachment.attachment_type,
                 attachment_name=old_attachment.attachment_name,
@@ -525,32 +687,64 @@ class ReportSupplementaryCloningTests(TestCase):
         from the old report version to the new report version using recipes.
         """
         # PRE-ACT: Assert that there is exactly one FacilityReport for the old report version.
-        initial_count = FacilityReport.objects.filter(report_version=self.old_report_version).count()
-        self.assertEqual(initial_count, 1, "There should be one FacilityReport initially.")
+        initial_count = FacilityReport.objects.filter(
+            report_version=self.old_report_version
+        ).count()
+        self.assertEqual(
+            initial_count, 1, "There should be one FacilityReport initially."
+        )
 
         # ACT: Clone the FacilityReport (and its associated ReportActivity) to the new report version.
-        clone_report_version_facilities(self.old_report_version, self.new_report_version)
+        clone_report_version_facilities(
+            self.old_report_version, self.new_report_version
+        )
 
         # ASSERT: Verify that a new FacilityReport has been created (record count increases from 1 to 2).
         new_count = FacilityReport.objects.count()
-        self.assertEqual(new_count, 2, "A new FacilityReport should be created after cloning.")
+        self.assertEqual(
+            new_count, 2, "A new FacilityReport should be created after cloning."
+        )
 
         # ASSERT: Retrieve the cloned FacilityReport and verify that its scalar fields match the original.
-        new_facility_report = FacilityReport.objects.filter(report_version=self.new_report_version).first()
-        self.assertIsNotNone(new_facility_report, "A cloned FacilityReport should exist for the new report version.")
-        self.assertEqual(new_facility_report.facility, self.old_facility_report.facility)
-        self.assertEqual(new_facility_report.facility_name, self.old_facility_report.facility_name)
-        self.assertEqual(new_facility_report.facility_type, self.old_facility_report.facility_type)
-        self.assertEqual(new_facility_report.facility_bcghgid, self.old_facility_report.facility_bcghgid)
-        self.assertFalse(new_facility_report.is_completed, "Cloned FacilityReport should have is_completed=False.")
+        new_facility_report = FacilityReport.objects.filter(
+            report_version=self.new_report_version
+        ).first()
+        self.assertIsNotNone(
+            new_facility_report,
+            "A cloned FacilityReport should exist for the new report version.",
+        )
+        self.assertEqual(
+            new_facility_report.facility, self.old_facility_report.facility
+        )
+        self.assertEqual(
+            new_facility_report.facility_name, self.old_facility_report.facility_name
+        )
+        self.assertEqual(
+            new_facility_report.facility_type, self.old_facility_report.facility_type
+        )
+        self.assertEqual(
+            new_facility_report.facility_bcghgid,
+            self.old_facility_report.facility_bcghgid,
+        )
+        self.assertFalse(
+            new_facility_report.is_completed,
+            "Cloned FacilityReport should have is_completed=False.",
+        )
 
         self.assertQuerySetEqual(
-            new_facility_report.activities.all(), self.old_facility_report.activities.all(), ordered=False
+            new_facility_report.activities.all(),
+            self.old_facility_report.activities.all(),
+            ordered=False,
         )
 
         # ASSERT: Verify that the ReportActivity ReportRawActivityData is cloned.
-        cloned_report_activity = ReportActivity.objects.filter(facility_report=new_facility_report).first()
-        self.assertIsNotNone(cloned_report_activity, "Cloned ReportActivity should exist for the new FacilityReport.")
+        cloned_report_activity = ReportActivity.objects.filter(
+            facility_report=new_facility_report
+        ).first()
+        self.assertIsNotNone(
+            cloned_report_activity,
+            "Cloned ReportActivity should exist for the new FacilityReport.",
+        )
         self.assertEqual(
             cloned_report_activity.json_data,
             self.old_facility_activity.json_data,
@@ -560,7 +754,9 @@ class ReportSupplementaryCloningTests(TestCase):
         new_raw_data = ReportRawActivityData.objects.filter(
             facility_report=new_facility_report, report_version=self.new_report_version
         ).all()
-        self.assertEqual(new_raw_data.count(), 1, "There should be one cloned ReportRawActivityData.")
+        self.assertEqual(
+            new_raw_data.count(), 1, "There should be one cloned ReportRawActivityData."
+        )
         self.assertEqual(
             new_raw_data[0].json_data,
             self.old_facility_activity_raw_data.json_data,
@@ -584,7 +780,6 @@ class ReportSupplementaryCloningTests(TestCase):
                 "reporting.service.report_supplementary_version_service.report_supplementary_cloning.EmissionCategoryMappingService.apply_emission_categories"
             ) as mock_apply,
         ):
-
             mock_filter.return_value.select_related.return_value = [fake_emission]
 
             # Act
@@ -602,9 +797,13 @@ class ReportSupplementaryCloningTests(TestCase):
     def test_reapply_emission_categories_pulp_and_paper_woody_biomass(self):
         woody_biomass_category_id = 10
         mapping = EmissionCategoryMapping.objects.filter(
-            activity__slug="pulp_and_paper", emission_category_id=woody_biomass_category_id
+            activity__slug="pulp_and_paper",
+            emission_category_id=woody_biomass_category_id,
         ).first()
-        facility_report = make_recipe("reporting.tests.utils.facility_report", report_version=self.new_report_version)
+        facility_report = make_recipe(
+            "reporting.tests.utils.facility_report",
+            report_version=self.new_report_version,
+        )
         report_activity = make_recipe(
             "reporting.tests.utils.report_activity",
             facility_report=facility_report,
@@ -620,7 +819,11 @@ class ReportSupplementaryCloningTests(TestCase):
 
         cases = [
             ("Solids-HHV", {}, True),
-            ("Alternative Parameter Measurement Methodology", {"isWoodyBiomass": True}, True),
+            (
+                "Alternative Parameter Measurement Methodology",
+                {"isWoodyBiomass": True},
+                True,
+            ),
             ("Replacement Methodology", {"isWoodyBiomass": True}, True),
             ("Replacement Methodology", {}, False),
         ]
@@ -642,7 +845,9 @@ class ReportSupplementaryCloningTests(TestCase):
 
                 reapply_emission_categories(self.new_report_version)
 
-                category_ids = report_emission.emission_categories.values_list("id", flat=True)
+                category_ids = report_emission.emission_categories.values_list(
+                    "id", flat=True
+                )
                 self.assertEqual(woody_biomass_category_id in category_ids, expected)
 
     def test_clone_all(self):
@@ -654,11 +859,15 @@ class ReportSupplementaryCloningTests(TestCase):
         cloning = "reporting.service.report_supplementary_version_service.report_supplementary_cloning"
         with (
             patch(f"{cloning}.clone_report_version_operation") as mock_op,
-            patch(f"{cloning}.clone_or_refresh_report_version_representatives") as mock_reps,
+            patch(
+                f"{cloning}.clone_or_refresh_report_version_representatives"
+            ) as mock_reps,
             patch(f"{cloning}.clone_report_version_person_responsible") as mock_person,
             patch(f"{cloning}.clone_electricity_import_data") as mock_electricity,
             patch(f"{cloning}.clone_report_version_additional_data") as mock_additional,
-            patch(f"{cloning}.clone_report_version_new_entrant_data") as mock_new_entrant,
+            patch(
+                f"{cloning}.clone_report_version_new_entrant_data"
+            ) as mock_new_entrant,
             patch(f"{cloning}.clone_report_version_verification") as mock_verification,
             patch(f"{cloning}.clone_report_version_attachments") as mock_attachments,
             patch(f"{cloning}.clone_report_version_facilities") as mock_facilities,
@@ -666,13 +875,31 @@ class ReportSupplementaryCloningTests(TestCase):
         ):
             clone_all(self.old_report_version, self.new_report_version, True)
 
-            mock_op.assert_called_once_with(self.old_report_version, self.new_report_version)
-            mock_reps.assert_called_once_with(self.old_report_version, self.new_report_version, True)
-            mock_person.assert_called_once_with(self.old_report_version, self.new_report_version)
-            mock_electricity.assert_called_once_with(self.old_report_version, self.new_report_version)
-            mock_additional.assert_called_once_with(self.old_report_version, self.new_report_version)
-            mock_new_entrant.assert_called_once_with(self.old_report_version, self.new_report_version)
-            mock_verification.assert_called_once_with(self.old_report_version, self.new_report_version)
-            mock_attachments.assert_called_once_with(self.old_report_version, self.new_report_version)
-            mock_facilities.assert_called_once_with(self.old_report_version, self.new_report_version)
+            mock_op.assert_called_once_with(
+                self.old_report_version, self.new_report_version
+            )
+            mock_reps.assert_called_once_with(
+                self.old_report_version, self.new_report_version, True
+            )
+            mock_person.assert_called_once_with(
+                self.old_report_version, self.new_report_version
+            )
+            mock_electricity.assert_called_once_with(
+                self.old_report_version, self.new_report_version
+            )
+            mock_additional.assert_called_once_with(
+                self.old_report_version, self.new_report_version
+            )
+            mock_new_entrant.assert_called_once_with(
+                self.old_report_version, self.new_report_version
+            )
+            mock_verification.assert_called_once_with(
+                self.old_report_version, self.new_report_version
+            )
+            mock_attachments.assert_called_once_with(
+                self.old_report_version, self.new_report_version
+            )
+            mock_facilities.assert_called_once_with(
+                self.old_report_version, self.new_report_version
+            )
             mock_reapply.assert_called_once_with(self.new_report_version)

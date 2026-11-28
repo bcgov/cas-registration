@@ -34,22 +34,24 @@ class ReadOnly(Protect):
     If none of these arguments are provided, all fields cannot be edited.
     """
 
-    fields: Union[List[str], None] = None
-    exclude: Union[List[str], None] = None
+    fields: list[str] | None = None
+    exclude: list[str] | None = None
     operation: core.Operation = core.Update
 
     def __init__(
         self,
         *,
-        fields: Union[List[str], None] = None,
-        exclude: Union[List[str], None] = None,
+        fields: list[str] | None = None,
+        exclude: list[str] | None = None,
         **kwargs: Any,
     ):
         self.fields = fields or self.fields
         self.exclude = exclude or self.exclude
 
         if self.fields and self.exclude:
-            raise ValueError('Must provide only one of "fields" or "exclude" to ReadOnly trigger')
+            raise ValueError(
+                'Must provide only one of "fields" or "exclude" to ReadOnly trigger'
+            )
 
         super().__init__(**kwargs)
 
@@ -62,13 +64,18 @@ class ReadOnly(Protect):
                 for field in self.exclude:
                     model._meta.get_field(field)
 
-                fields = [f.name for f in model._meta.fields if f.name not in self.exclude]
+                fields = [
+                    f.name for f in model._meta.fields if f.name not in self.exclude
+                ]
             else:
                 fields = [model._meta.get_field(field).name for field in self.fields]
 
             return functools.reduce(
                 operator.or_,
-                [core.Q(**{f"old__{field}__df": core.F(f"new__{field}")}) for field in fields],
+                [
+                    core.Q(**{f"old__{field}__df": core.F(f"new__{field}")})
+                    for field in fields
+                ],
             )
 
 
@@ -88,16 +95,16 @@ class FSM(core.Trigger):
     when: core.When = core.Before
     operation: core.Operation = core.Update
     field: str = None
-    transitions: List[Tuple[str, str]] = None
+    transitions: list[tuple[str, str]] = None
     separator: str = ":"
 
     def __init__(
         self,
         *,
         name: str = None,
-        condition: Union[core.Condition, None] = None,
+        condition: core.Condition | None = None,
         field: str = None,
-        transitions: List[Tuple[str, str]] = None,
+        transitions: list[tuple[str, str]] = None,
         separator: str = None,
     ):
         self.field = field or self.field
@@ -134,7 +141,11 @@ class FSM(core.Trigger):
 
     def get_func(self, model):
         col = model._meta.get_field(self.field).column
-        transition_uris = "{" + ",".join([f"{old}{self.separator}{new}" for old, new in self.transitions]) + "}"
+        transition_uris = (
+            "{"
+            + ",".join([f"{old}{self.separator}{new}" for old, new in self.transitions])
+            + "}"
+        )
 
         sql = f"""
             SELECT CONCAT(OLD.{utils.quote(col)}, '{self.separator}', NEW.{utils.quote(col)}) = ANY('{transition_uris}'::text[])
@@ -149,7 +160,7 @@ class FSM(core.Trigger):
             ELSE
                 RETURN NEW;
             END IF;
-        """  # noqa
+        """
         return self.format_sql(sql)
 
 
@@ -169,15 +180,15 @@ class SoftDelete(core.Trigger):
     when: core.When = core.Before
     operation: core.Operation = core.Delete
     field: str = None
-    value: Union[bool, str, int, None] = False
+    value: bool | str | int | None = False
 
     def __init__(
         self,
         *,
         name: str = None,
-        condition: Union[core.Condition, None] = None,
+        condition: core.Condition | None = None,
         field: str = None,
-        value: Union[bool, str, int, None] = _unset,
+        value: bool | str | int | None = _unset,
     ):
         self.field = field or self.field
         self.value = value if value is not _unset else self.value
@@ -224,11 +235,11 @@ class UpdateSearchVector(core.Trigger):
         `UpdateSearchVector` triggers are not compatible with [pgtrigger.ignore][] since
         it references a built-in trigger. Trying to ignore this trigger results in a
         `RuntimeError`.
-    """  # noqa
+    """
 
     when: core.When = core.Before
     vector_field: str = None
-    document_fields: List[str] = None
+    document_fields: list[str] = None
     config_name: str = "pg_catalog.english"
 
     def __init__(
@@ -236,7 +247,7 @@ class UpdateSearchVector(core.Trigger):
         *,
         name: str = None,
         vector_field: str = None,
-        document_fields: List[str] = None,
+        document_fields: list[str] = None,
         config_name: str = None,
     ):
         self.vector_field = vector_field or self.vector_field
@@ -252,7 +263,9 @@ class UpdateSearchVector(core.Trigger):
         if not self.config_name:  # pragma: no cover
             raise ValueError('Must provide "config_name" to update search vector')
 
-        super().__init__(name=name, operation=core.Insert | core.UpdateOf(*document_fields))
+        super().__init__(
+            name=name, operation=core.Insert | core.UpdateOf(*document_fields)
+        )
 
     def ignore(self, model):
         raise RuntimeError(f"Cannot ignore {self.__class__.__name__} triggers")
@@ -261,7 +274,9 @@ class UpdateSearchVector(core.Trigger):
         return ""
 
     def render_execute(self, model):
-        document_cols = [model._meta.get_field(field).column for field in self.document_fields]
+        document_cols = [
+            model._meta.get_field(field).column for field in self.document_fields
+        ]
         rendered_document_cols = ", ".join(utils.quote(col) for col in document_cols)
         vector_col = model._meta.get_field(self.vector_field).column
         return (

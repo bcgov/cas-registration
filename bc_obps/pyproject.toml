@@ -47,7 +47,7 @@ ipdb = "^0.13.13"
 pytest-cov = "^7.1.0"
 django-silk = "^5.5.0"
 pytest-mock = "^3.15.1"
-ruff = "^0.17.0"
+ruff = "0.17.6"
 mypy = "^2.4"
 django-stubs = {extras = ["compatible-mypy"], version = "^6.0.7"}
 types-requests = "^2.31.0.20240406"
@@ -58,6 +58,20 @@ syrupy = "^7.0.0"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+src = []
+target-version = "py313"
+extend-exclude = ["common/lib/pgtrigger", "*/migrations/*.py"]
+force-exclude = true # honour excludes when editors pass file paths explicitly
+
+[tool.ruff.lint]
+ignore = [
+  "F401", "F403", "E712", "E731",
+  "UP035", "UP043", "UP046", "UP047",
+  "B", "TRY", "SIM", "BLE", "RUF", "PLC", "PGH", "PLW", "LOG", "PIE", "PYI",
+  "G", "C", "ISC", "FURB", "PLR", "RET",
+]
 
 [tool.black]
 line-length = 120

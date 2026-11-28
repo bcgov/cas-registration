@@ -1,5 +1,6 @@
 import re
-from typing import Optional, Literal
+from typing import Literal
+
 from django.db.backends.utils import CursorWrapper
 from rls.enums import RlsRoles
 
@@ -24,8 +25,8 @@ class RlsPolicy:
         policy_name: str,
         operation: str,
         table: str,
-        using_statement: Optional[str] = None,
-        check_statement: Optional[str] = None,
+        using_statement: str | None = None,
+        check_statement: str | None = None,
         schema: Literal["erc", "common"] = "erc",
     ):
         self.role = role
@@ -43,9 +44,7 @@ class RlsPolicy:
         Args:
             cursor (Cursor): The database cursor for executing SQL commands.
         """
-        execute_string = (
-            f"CREATE POLICY {self.policy_name} ON {self.schema}.{self.table} FOR {self.operation} TO {self.role.value} "
-        )
+        execute_string = f"CREATE POLICY {self.policy_name} ON {self.schema}.{self.table} FOR {self.operation} TO {self.role.value} "
 
         if self.using_statement:
             execute_string += f" USING ( {self.using_statement} )"
@@ -65,7 +64,9 @@ class RlsPolicy:
          Args:
              cursor (Cursor): The database cursor for executing SQL commands.
         """
-        execute_string = f"DROP POLICY IF EXISTS {self.policy_name} ON {self.schema}.{self.table}  "
+        execute_string = (
+            f"DROP POLICY IF EXISTS {self.policy_name} ON {self.schema}.{self.table}  "
+        )
 
         try:
             cursor.execute(execute_string)
@@ -90,4 +91,6 @@ class RlsPolicy:
             select 1 from erc.report_version rv where report_version_id = rv.id
         )"""
 
-    REPORT_DELETE_USING_STATEMENT = add_draft_check_to_report_using_statement(REPORT_USING_STATEMENT)
+    REPORT_DELETE_USING_STATEMENT = add_draft_check_to_report_using_statement(
+        REPORT_USING_STATEMENT
+    )

@@ -1,23 +1,26 @@
-from django.http import HttpRequest
-from django.db.models import QuerySet
-from registration.constants import NAICS_CODE_TAGS
-from registration.service.data_access_service.naics_code_service import NaicsCodeDataAccessService
+from typing import Literal
+
 from common.permissions import authorize
+from django.db.models import QuerySet
+from django.http import HttpRequest
 from registration.api.router import router
-from typing import List, Literal, Tuple
+from registration.constants import NAICS_CODE_TAGS
 from registration.models import NaicsCode
 from registration.schema import NaicsCodeSchema
+from registration.service.data_access_service.naics_code_service import (
+    NaicsCodeDataAccessService,
+)
 
 ##### GET #####
 
 
 @router.get(
     "/naics_codes",
-    response=List[NaicsCodeSchema],
+    response=list[NaicsCodeSchema],
     tags=NAICS_CODE_TAGS,
     description="""Retrieves a list of NAICS codes.
     The endpoint returns cached data if available; otherwise, it queries the database and caches the results for future requests.""",
     auth=authorize("authorized_roles"),
 )
-def list_naics_codes(request: HttpRequest) -> Tuple[Literal[200], QuerySet[NaicsCode]]:
+def list_naics_codes(request: HttpRequest) -> tuple[Literal[200], QuerySet[NaicsCode]]:
     return 200, NaicsCodeDataAccessService.get_naics_codes()

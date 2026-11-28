@@ -1,12 +1,11 @@
 import pgtrigger
-from django.db import models
-
-from registration.models.time_stamped_model import TimeStampedModel
-from registration.models.user import User
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.models.rls_configs.compliance_report_version_manual_handling import (
     Rls as ComplianceReportVersionManualHandlingRls,
 )
+from django.db import models
+from registration.models.time_stamped_model import TimeStampedModel
+from registration.models.user import User
 
 
 class ComplianceReportVersionManualHandling(TimeStampedModel):

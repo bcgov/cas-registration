@@ -1,11 +1,11 @@
 from unittest.mock import MagicMock
-from model_bakery.baker import make_recipe
+
 import pytest
+from model_bakery.baker import make_recipe
 from reporting.api.permissions import (
     check_operation_ownership,
     check_version_ownership_in_url,
 )
-
 
 pytestmark = pytest.mark.django_db
 
@@ -25,7 +25,9 @@ role_status_access_tuples = [
 class TestVersionOwnershipFromUrl:
     @pytest.mark.parametrize("role,status,expected_validity", role_status_access_tuples)
     def test_version_ownership_from_url(self, role, status, expected_validity):
-        user_operator = make_recipe("registration.tests.utils.user_operator", role=role, status=status)
+        user_operator = make_recipe(
+            "registration.tests.utils.user_operator", role=role, status=status
+        )
         report_version = make_recipe(
             "reporting.tests.utils.report_version",
             report__operator=user_operator.operator,
@@ -56,7 +58,9 @@ class TestVersionOwnershipFromUrl:
         assert is_valid is False
 
     def test_version_ownership_from_url_denies_access_if_wrong_url_parameter_name(self):
-        user_operator = make_recipe("registration.tests.utils.user_operator", role="admin", status="Approved")
+        user_operator = make_recipe(
+            "registration.tests.utils.user_operator", role="admin", status="Approved"
+        )
         report_version = make_recipe(
             "reporting.tests.utils.report_version",
             report__operator=user_operator.operator,
@@ -73,7 +77,9 @@ class TestVersionOwnershipFromUrl:
         assert is_valid is False
 
     def test_version_ownership_from_url_denies_access_if_no_version_in_url(self):
-        user_operator = make_recipe("registration.tests.utils.user_operator", role="admin", status="Approved")
+        user_operator = make_recipe(
+            "registration.tests.utils.user_operator", role="admin", status="Approved"
+        )
         make_recipe(
             "reporting.tests.utils.report_version",
             report__operator=user_operator.operator,
@@ -93,8 +99,12 @@ class TestVersionOwnershipFromUrl:
 class TestOperationOwnershipFromPayload:
     @pytest.mark.parametrize("role,status,expected_validity", role_status_access_tuples)
     def test_operation_ownership_from_payload(self, role, status, expected_validity):
-        user_operator = make_recipe("registration.tests.utils.user_operator", role=role, status=status)
-        operation = make_recipe("registration.tests.utils.operation", operator=user_operator.operator)
+        user_operator = make_recipe(
+            "registration.tests.utils.user_operator", role=role, status=status
+        )
+        operation = make_recipe(
+            "registration.tests.utils.operation", operator=user_operator.operator
+        )
         make_recipe(
             "registration.tests.utils.operation_designated_operator_timeline",
             operation=operation,
@@ -106,7 +116,9 @@ class TestOperationOwnershipFromPayload:
         validator_under_test = check_operation_ownership()
 
         mock_request = MagicMock()
-        mock_request.body = f'{{"operation_id": "{operation.id}", "reporting_year": 2024}}'
+        mock_request.body = (
+            f'{{"operation_id": "{operation.id}", "reporting_year": 2024}}'
+        )
         mock_request.current_user = user_operator.user
 
         is_valid = validator_under_test(mock_request)
@@ -127,37 +139,55 @@ class TestOperationOwnershipFromPayload:
         validator_under_test = check_operation_ownership()
 
         mock_request = MagicMock()
-        mock_request.body = f'{{"operation_id": "{operation.id}", "reporting_year": 2024}}'
+        mock_request.body = (
+            f'{{"operation_id": "{operation.id}", "reporting_year": 2024}}'
+        )
         mock_request.current_user = user
 
         is_valid = validator_under_test(mock_request)
 
         assert is_valid is False
 
-    def test_operation_ownership_from_payload_denies_access_if_missing_field_in_payload(self):
-        user_operator = make_recipe("registration.tests.utils.user_operator", role="admin", status="Approved")
-        operation = make_recipe("registration.tests.utils.operation", operator=user_operator.operator)
+    def test_operation_ownership_from_payload_denies_access_if_missing_field_in_payload(
+        self,
+    ):
+        user_operator = make_recipe(
+            "registration.tests.utils.user_operator", role="admin", status="Approved"
+        )
+        operation = make_recipe(
+            "registration.tests.utils.operation", operator=user_operator.operator
+        )
 
         validator_under_test = check_operation_ownership()
 
         mock_request = MagicMock()
-        mock_request.body = f'{{"some_other_payload": "{operation.id}", "reporting_year": 2024}}'
+        mock_request.body = (
+            f'{{"some_other_payload": "{operation.id}", "reporting_year": 2024}}'
+        )
         mock_request.current_user = user_operator.user
 
         is_valid = validator_under_test(mock_request)
 
         assert is_valid is False
 
-        mock_request.body = f'{{"operation_id": "{operation.id}", "some_other_year": 2024}}'
+        mock_request.body = (
+            f'{{"operation_id": "{operation.id}", "some_other_year": 2024}}'
+        )
 
         is_valid = validator_under_test(mock_request)
 
         assert is_valid is False
 
     def test_operation_ownership_from_payload_allows_access_for_previous_operator(self):
-        old_user_operator = make_recipe("registration.tests.utils.user_operator", role="admin", status="Approved")
-        new_user_operator = make_recipe("registration.tests.utils.user_operator", role="admin", status="Approved")
-        operation = make_recipe("registration.tests.utils.operation", operator=new_user_operator.operator)
+        old_user_operator = make_recipe(
+            "registration.tests.utils.user_operator", role="admin", status="Approved"
+        )
+        new_user_operator = make_recipe(
+            "registration.tests.utils.user_operator", role="admin", status="Approved"
+        )
+        operation = make_recipe(
+            "registration.tests.utils.operation", operator=new_user_operator.operator
+        )
 
         make_recipe(
             "registration.tests.utils.operation_designated_operator_timeline",
@@ -177,7 +207,9 @@ class TestOperationOwnershipFromPayload:
         validator_under_test = check_operation_ownership()
 
         mock_request = MagicMock()
-        mock_request.body = f'{{"operation_id": "{operation.id}", "reporting_year": 2024}}'
+        mock_request.body = (
+            f'{{"operation_id": "{operation.id}", "reporting_year": 2024}}'
+        )
         mock_request.current_user = old_user_operator.user
 
         is_valid = validator_under_test(mock_request)
@@ -188,7 +220,9 @@ class TestOperationOwnershipFromPayload:
         is_valid = validator_under_test(mock_request)
         assert is_valid is False
 
-        mock_request.body = f'{{"operation_id": "{operation.id}", "reporting_year": 2025}}'
+        mock_request.body = (
+            f'{{"operation_id": "{operation.id}", "reporting_year": 2025}}'
+        )
         is_valid = validator_under_test(mock_request)
 
         # When reporting year is 2025, new operator has access and old operator does not

@@ -1,10 +1,16 @@
-from django.db import models
-from registration.models import Address, BusinessRole, UserAndContactCommonInfo, TimeStampedModel, Operator
-from common.enums import Schemas
-from registration.enums.enums import RegistrationTableNames
-from simple_history.models import HistoricalRecords
-from registration.models.rls_configs.contact import Rls as ContactRls
 import pgtrigger
+from common.enums import Schemas
+from django.db import models
+from registration.enums.enums import RegistrationTableNames
+from registration.models import (
+    Address,
+    BusinessRole,
+    Operator,
+    TimeStampedModel,
+    UserAndContactCommonInfo,
+)
+from registration.models.rls_configs.contact import Rls as ContactRls
+from simple_history.models import HistoricalRecords
 
 
 class Contact(UserAndContactCommonInfo, TimeStampedModel):
@@ -41,8 +47,8 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.CONTACT.value}'
         constraints = [
             models.UniqueConstraint(
-                fields=['email', 'operator'],
-                name='unique_active_email_per_operator',
+                fields=["email", "operator"],
+                name="unique_active_email_per_operator",
                 condition=models.Q(operator__isnull=False, archived_at__isnull=True),
             )
         ]

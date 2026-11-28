@@ -2,7 +2,6 @@ from typing import Any, ClassVar
 from uuid import UUID
 
 from django.core.exceptions import ObjectDoesNotExist
-
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,

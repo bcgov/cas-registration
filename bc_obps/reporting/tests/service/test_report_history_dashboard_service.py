@@ -1,19 +1,31 @@
 from django.test import TestCase
 from model_bakery import baker
-from reporting.service.report_history_dashboard_service import ReportingHistoryDashboardService
+from reporting.service.report_history_dashboard_service import (
+    ReportingHistoryDashboardService,
+)
 
 
 class TestReportingHistoryDashboardService(TestCase):
     def setUp(self):
         self.report = baker.make_recipe("reporting.tests.utils.report")
-        self.user_1 = baker.make_recipe("registration.tests.utils.industry_operator_user")
-        self.user_2 = baker.make_recipe("registration.tests.utils.industry_operator_user")
+        self.user_1 = baker.make_recipe(
+            "registration.tests.utils.industry_operator_user"
+        )
+        self.user_2 = baker.make_recipe(
+            "registration.tests.utils.industry_operator_user"
+        )
 
         self.report_version_1 = baker.make(
-            'reporting.ReportVersion', status="Draft", report=self.report, updated_by=self.user_1
+            "reporting.ReportVersion",
+            status="Draft",
+            report=self.report,
+            updated_by=self.user_1,
         )
         self.report_version_2 = baker.make(
-            'reporting.ReportVersion', status="Submitted", report=self.report, updated_by=self.user_2
+            "reporting.ReportVersion",
+            status="Submitted",
+            report=self.report,
+            updated_by=self.user_2,
         )
 
     def test_get_report_versions_for_report_history_dashboard(self):

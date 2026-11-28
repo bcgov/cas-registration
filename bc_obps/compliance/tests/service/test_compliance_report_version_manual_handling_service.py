@@ -2,8 +2,6 @@ import logging
 
 import pgtrigger
 import pytest
-from model_bakery import baker
-
 from common.exceptions import UserError
 from compliance.models import ComplianceReportVersion
 from compliance.models.compliance_report_version_manual_handling import (
@@ -12,6 +10,7 @@ from compliance.models.compliance_report_version_manual_handling import (
 from compliance.service.compliance_report_version_manual_handling_service import (
     ComplianceManualHandlingService,
 )
+from model_bakery import baker
 from registration.models.user import User
 
 logger = logging.getLogger(__name__)
@@ -23,7 +22,9 @@ pytestmark = pytest.mark.django_db
 class TestComplianceManualHandlingServiceGet:
     def test_get_manual_handling_by_report_version_returns_record(self):
         # Arrange
-        with pgtrigger.ignore("reporting.ReportComplianceSummary:immutable_report_version"):
+        with pgtrigger.ignore(
+            "reporting.ReportComplianceSummary:immutable_report_version"
+        ):
             crv = baker.make_recipe("compliance.tests.utils.compliance_report_version")
 
         manual = baker.make_recipe(
@@ -32,7 +33,9 @@ class TestComplianceManualHandlingServiceGet:
         )
 
         # Act
-        result = ComplianceManualHandlingService.get_manual_handling_by_report_version(crv.id)
+        result = ComplianceManualHandlingService.get_manual_handling_by_report_version(
+            crv.id
+        )
 
         # Assert
         assert result is not None
@@ -45,11 +48,15 @@ class TestComplianceManualHandlingServiceGet:
 
     def test_get_manual_handling_by_report_version_returns_none_when_missing(self):
         # Arrange
-        with pgtrigger.ignore("reporting.ReportComplianceSummary:immutable_report_version"):
+        with pgtrigger.ignore(
+            "reporting.ReportComplianceSummary:immutable_report_version"
+        ):
             crv = baker.make_recipe("compliance.tests.utils.compliance_report_version")
 
         # Act
-        result = ComplianceManualHandlingService.get_manual_handling_by_report_version(crv.id)
+        result = ComplianceManualHandlingService.get_manual_handling_by_report_version(
+            crv.id
+        )
 
         # Assert
         assert result is None
@@ -57,7 +64,9 @@ class TestComplianceManualHandlingServiceGet:
 
 class TestComplianceManualHandlingServiceAnalystUpdate:
     def _make_crv_with_manual_handling(self) -> ComplianceReportVersion:
-        with pgtrigger.ignore("reporting.ReportComplianceSummary:immutable_report_version"):
+        with pgtrigger.ignore(
+            "reporting.ReportComplianceSummary:immutable_report_version"
+        ):
             crv = baker.make_recipe("compliance.tests.utils.compliance_report_version")
 
         baker.make_recipe(
@@ -92,7 +101,8 @@ class TestComplianceManualHandlingServiceAnalystUpdate:
         assert record.analyst_comment == "Updated comment"
         # Director decision should be unchanged
         assert (
-            record.director_decision == ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING
+            record.director_decision
+            == ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING
         )
 
     def test_analyst_cannot_change_director_decision(self):
@@ -117,12 +127,15 @@ class TestComplianceManualHandlingServiceAnalystUpdate:
         assert record.analyst_comment == "Updated comment"
         # Director decision must *not* change from its original value
         assert (
-            record.director_decision == ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING
+            record.director_decision
+            == ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING
         )
 
     def test_analyst_cannot_edit_after_director_resolved(self):
         # Arrange
-        with pgtrigger.ignore("reporting.ReportComplianceSummary:immutable_report_version"):
+        with pgtrigger.ignore(
+            "reporting.ReportComplianceSummary:immutable_report_version"
+        ):
             crv = baker.make_recipe("compliance.tests.utils.compliance_report_version")
 
         baker.make_recipe(
@@ -148,7 +161,9 @@ class TestComplianceManualHandlingServiceAnalystUpdate:
 
 class TestComplianceManualHandlingServiceDirectorUpdate:
     def _make_crv_with_manual_handling(self) -> ComplianceReportVersion:
-        with pgtrigger.ignore("reporting.ReportComplianceSummary:immutable_report_version"):
+        with pgtrigger.ignore(
+            "reporting.ReportComplianceSummary:immutable_report_version"
+        ):
             crv = baker.make_recipe("compliance.tests.utils.compliance_report_version")
 
         baker.make_recipe(
@@ -199,13 +214,18 @@ class TestComplianceManualHandlingServiceDirectorUpdate:
 
         # Assert
         record.refresh_from_db()
-        assert record.director_decision == ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
+        assert (
+            record.director_decision
+            == ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
+        )
 
 
 class TestComplianceManualHandlingServiceUnauthorized:
     def test_non_cas_user_cannot_update(self):
         # Arrange
-        with pgtrigger.ignore("reporting.ReportComplianceSummary:immutable_report_version"):
+        with pgtrigger.ignore(
+            "reporting.ReportComplianceSummary:immutable_report_version"
+        ):
             crv = baker.make_recipe("compliance.tests.utils.compliance_report_version")
 
         baker.make_recipe(

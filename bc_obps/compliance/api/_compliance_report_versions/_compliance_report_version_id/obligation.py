@@ -1,15 +1,18 @@
 from dataclasses import asdict
-from typing import Literal, Tuple
-from django.http import HttpRequest
-from compliance.constants import COMPLIANCE
+from typing import Literal
+
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from compliance.service.compliance_obligation_service import ComplianceObligationService
-from compliance.service.compliance_dashboard_service import ComplianceDashboardService
-from registration.schema.generic import Message
+from compliance.api.permissions import (
+    approved_industry_user_compliance_report_version_composite_auth,
+)
 from compliance.api.router import router
-from compliance.schema.elicensing_payments import ElicensingPaymentListOut
+from compliance.constants import COMPLIANCE
 from compliance.schema.compliance_obligation import ObligationWithPaymentsOut
-from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth
+from compliance.schema.elicensing_payments import ElicensingPaymentListOut
+from compliance.service.compliance_dashboard_service import ComplianceDashboardService
+from compliance.service.compliance_obligation_service import ComplianceObligationService
+from django.http import HttpRequest
+from registration.schema.generic import Message
 
 
 @router.get(
@@ -21,7 +24,7 @@ from compliance.api.permissions import approved_industry_user_compliance_report_
 )
 def get_obligation_by_compliance_report_version_id(
     request: HttpRequest, compliance_report_version_id: int
-) -> Tuple[Literal[200], ObligationWithPaymentsOut]:
+) -> tuple[Literal[200], ObligationWithPaymentsOut]:
     """
     Get obligation data with payments for a compliance report version.
     Returns: outstanding balance, reporting year, tCO2e equivalent, obligation ID, and payments.
@@ -29,7 +32,9 @@ def get_obligation_by_compliance_report_version_id(
     payments = ComplianceDashboardService.get_compliance_obligation_payments_by_compliance_report_version_id(
         compliance_report_version_id=compliance_report_version_id
     )
-    obligation_data = ComplianceObligationService.get_obligation_data_by_report_version(compliance_report_version_id)
+    obligation_data = ComplianceObligationService.get_obligation_data_by_report_version(
+        compliance_report_version_id
+    )
 
     payment_data = ElicensingPaymentListOut(
         rows=list(payments),  # type: ignore [arg-type] # Mypy does not recognize queryset as iterable. Function is working as expected

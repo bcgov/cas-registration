@@ -1,9 +1,9 @@
 from unittest.mock import Mock, patch
-from django.test import SimpleTestCase, override_settings, Client
 
+from compliance.models import ComplianceReportVersionManualHandling
+from django.test import Client, SimpleTestCase, override_settings
 from registration.models.user import User
 from registration.utils import custom_reverse_lazy
-from compliance.models import ComplianceReportVersionManualHandling
 
 VALIDATE_PERMISSION_PATH = "common.permissions.validate_all"
 CHECK_PERMISSION_PATH = "common.permissions.check_permission_for_role"
@@ -15,9 +15,7 @@ UPDATE_SERVICE_PATH = (
     "compliance.service.compliance_report_version_manual_handling_service."
     "ComplianceManualHandlingService.update_manual_handling"
 )
-GET_CURRENT_USER_PATH = (
-    "compliance.api._compliance_report_versions._compliance_report_version_id.manual_handling.get_current_user"
-)
+GET_CURRENT_USER_PATH = "compliance.api._compliance_report_versions._compliance_report_version_id.manual_handling.get_current_user"
 
 
 @override_settings(MIDDLEWARE=[])  # Disable middleware to prevent DB queries
@@ -59,7 +57,9 @@ class TestComplianceReportVersionManualHandlingEndpoint(SimpleTestCase):
     @patch(CHECK_PERMISSION_PATH)
     @patch(GET_SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
-    def test_get_manual_handling_success(self, mock_permission, mock_get_manual_handling, mock_check_permission):
+    def test_get_manual_handling_success(
+        self, mock_permission, mock_get_manual_handling, mock_check_permission
+    ):
         mock_permission.return_value = True
         mock_check_permission.return_value = True
 
@@ -76,20 +76,27 @@ class TestComplianceReportVersionManualHandlingEndpoint(SimpleTestCase):
         response_data = response.json()
 
         assert response_data["handling_type"] == "decreased_obligation"
-        assert response_data["analyst_comment"] == "Analyst needs to review invoice mismatch"
+        assert (
+            response_data["analyst_comment"]
+            == "Analyst needs to review invoice mismatch"
+        )
         assert (
             response_data["director_decision"]
             == ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING
         )
 
-        mock_get_manual_handling.assert_called_once_with(self.compliance_report_version_id)
+        mock_get_manual_handling.assert_called_once_with(
+            self.compliance_report_version_id
+        )
 
     # --- PUT success ---
 
     @patch(GET_CURRENT_USER_PATH)
     @patch(UPDATE_SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
-    def test_update_manual_handling_success(self, mock_permission, mock_update_manual_handling, mock_get_current_user):
+    def test_update_manual_handling_success(
+        self, mock_permission, mock_update_manual_handling, mock_get_current_user
+    ):
         mock_permission.return_value = True
 
         updated_manual_handling = self._manual_handling_dict(
@@ -127,7 +134,10 @@ class TestComplianceReportVersionManualHandlingEndpoint(SimpleTestCase):
         call_args = mock_update_manual_handling.call_args
 
         # Endpoint calls service with keyword args
-        assert call_args.kwargs["compliance_report_version_id"] == self.compliance_report_version_id
+        assert (
+            call_args.kwargs["compliance_report_version_id"]
+            == self.compliance_report_version_id
+        )
 
         service_payload = call_args.kwargs["payload"]
         assert service_payload["analyst_comment"] == "Updated analyst comment"

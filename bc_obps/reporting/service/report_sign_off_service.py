@@ -1,21 +1,21 @@
 from dataclasses import dataclass
-from typing import Optional
+
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
 from reporting.models.report_sign_off import ReportSignOff
-from django.core.exceptions import ValidationError
 
 
 @dataclass
 class ReportSignOffAcknowledgements:
-    acknowledgement_of_review: Optional[bool]
-    acknowledgement_of_certification: Optional[bool]
+    acknowledgement_of_review: bool | None
+    acknowledgement_of_certification: bool | None
     acknowledgement_of_records: bool
-    acknowledgement_of_information: Optional[bool]
-    acknowledgement_of_possible_costs: Optional[bool]
-    acknowledgement_of_new_version: Optional[bool]
-    acknowledgement_of_corrections: Optional[bool]
-    acknowledgement_of_errors: Optional[bool]
+    acknowledgement_of_information: bool | None
+    acknowledgement_of_possible_costs: bool | None
+    acknowledgement_of_new_version: bool | None
+    acknowledgement_of_corrections: bool | None
+    acknowledgement_of_errors: bool | None
 
 
 @dataclass
@@ -27,7 +27,9 @@ class ReportSignOffData:
 class ReportSignOffService:
     @classmethod
     @transaction.atomic
-    def save_report_sign_off(cls, report_version_id: int, data: ReportSignOffData) -> ReportSignOff | None:
+    def save_report_sign_off(
+        cls, report_version_id: int, data: ReportSignOffData
+    ) -> ReportSignOff | None:
         acknowledgements = data.acknowledgements
         if ReportSignOffService.validate_report_sign_off(acknowledgements):
             report_sign_off_record, _ = ReportSignOff.objects.update_or_create(
@@ -46,10 +48,14 @@ class ReportSignOffService:
 
             return report_sign_off_record
         else:
-            raise ValidationError(["All fields must be accepted and filled out to sign off the report."])
+            raise ValidationError(
+                ["All fields must be accepted and filled out to sign off the report."]
+            )
 
     @staticmethod
-    def validate_report_sign_off(acknowledgements: ReportSignOffAcknowledgements) -> bool:
+    def validate_report_sign_off(
+        acknowledgements: ReportSignOffAcknowledgements,
+    ) -> bool:
         return all(
             [
                 acknowledgements.acknowledgement_of_records,

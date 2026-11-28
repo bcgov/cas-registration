@@ -1,7 +1,9 @@
 import pytest
 from django.db import connection
 from model_bakery.baker import make_recipe
-from reporting.api_v2._report_versions._report_version_id.comment_thread_schema import CommentThreadSchema
+from reporting.api_v2._report_versions._report_version_id.comment_thread_schema import (
+    CommentThreadSchema,
+)
 from reporting.models.comment_thread import CommentThread
 from reporting.service.comment_thread_service import CommentThreadService
 
@@ -10,12 +12,12 @@ pytestmark = pytest.mark.django_db
 
 class TestCommentThreadService:
     def setup_method(self):
-        self.report_version = make_recipe('reporting.tests.utils.report_version')
-        self.facility = make_recipe('registration.tests.utils.facility')
-        self.user = make_recipe('registration.tests.utils.cas_director')
+        self.report_version = make_recipe("reporting.tests.utils.report_version")
+        self.facility = make_recipe("registration.tests.utils.facility")
+        self.user = make_recipe("registration.tests.utils.cas_director")
         # Set the session guid so the audit trigger populates created_by on new comments
         with connection.cursor() as cursor:
-            cursor.execute('set my.guid = %s', [str(self.user.user_guid)])
+            cursor.execute("set my.guid = %s", [str(self.user.user_guid)])
 
     def test_create_thread(self):
         assert CommentThread.objects.all().count() == 0
@@ -42,19 +44,29 @@ class TestCommentThreadService:
             facility_id=self.facility.id,
             comment="Test comment",
         )
-        other_user = make_recipe('registration.tests.utils.cas_analyst')
+        other_user = make_recipe("registration.tests.utils.cas_analyst")
 
-        thread_for_author = CommentThreadService.threads_with_annotated_comments(self.user.user_guid).get(id=thread.id)
-        assert all(comment.user_can_edit is True for comment in thread_for_author.comments.all())
-
-        thread_for_other_user = CommentThreadService.threads_with_annotated_comments(other_user.user_guid).get(
-            id=thread.id
+        thread_for_author = CommentThreadService.threads_with_annotated_comments(
+            self.user.user_guid
+        ).get(id=thread.id)
+        assert all(
+            comment.user_can_edit is True
+            for comment in thread_for_author.comments.all()
         )
-        assert all(comment.user_can_edit is False for comment in thread_for_other_user.comments.all())
+
+        thread_for_other_user = CommentThreadService.threads_with_annotated_comments(
+            other_user.user_guid
+        ).get(id=thread.id)
+        assert all(
+            comment.user_can_edit is False
+            for comment in thread_for_other_user.comments.all()
+        )
 
     def test_get_threads(self):
         other_report_version = make_recipe(
-            'reporting.tests.utils.report_version', report_id=self.report_version.report_id, status='Submitted'
+            "reporting.tests.utils.report_version",
+            report_id=self.report_version.report_id,
+            status="Submitted",
         )
         # Create two threads that reference the same report and one other thread for a different report
         expected_thread_1 = CommentThreadService.create_thread(
@@ -69,7 +81,7 @@ class TestCommentThreadService:
             facility_id=self.facility.id,
             comment="Twinkle twinkle little star.",
         )
-        other_thread = make_recipe('reporting.tests.utils.comment_thread')
+        other_thread = make_recipe("reporting.tests.utils.comment_thread")
         assert CommentThread.objects.all().count() == 3
 
         threads = CommentThreadService.get_threads(
@@ -80,12 +92,16 @@ class TestCommentThreadService:
         assert {t.id for t in threads} == {expected_thread_1.id, expected_thread_2.id}
         assert other_thread.id not in {t.id for t in threads}
         # Comments were created by self.user, so they are editable by that user
-        assert all(comment.user_can_edit is True for thread in threads for comment in thread.comments.all())
+        assert all(
+            comment.user_can_edit is True
+            for thread in threads
+            for comment in thread.comments.all()
+        )
 
     @pytest.mark.parametrize("resolved_input", [True, False])
     def test_resolve_thread_updates_resolved_state(self, resolved_input):
         thread = make_recipe(
-            'reporting.tests.utils.comment_thread',
+            "reporting.tests.utils.comment_thread",
             report=self.report_version.report,
             report_version=self.report_version,
         )

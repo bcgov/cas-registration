@@ -1,10 +1,11 @@
-from django.db import models
-
 from common.enums import Schemas
+from django.db import models
 from registration.enums.enums import RegistrationTableNames
 from registration.models.event.event_base_model import EventBaseModel
+from registration.models.rls_configs.event.temporary_shutdown_event import (
+    Rls as TemporaryShutdownEventRls,
+)
 from simple_history.models import HistoricalRecords
-from registration.models.rls_configs.event.temporary_shutdown_event import Rls as TemporaryShutdownEventRls
 
 
 class TemporaryShutdownEvent(EventBaseModel):

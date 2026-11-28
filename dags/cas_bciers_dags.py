@@ -9,12 +9,12 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-PROCESS_DUE_TRANSFERS_DAG_NAME = 'cas_bciers_process_due_transfer_events'
+PROCESS_DUE_TRANSFERS_DAG_NAME = "cas_bciers_process_due_transfer_events"
 NIGHTLY_BUILD_DAG_NAME = "cas_bciers_nightly_build_report"
-BCIERS_NAMESPACE = os.getenv('BCIERS_NAMESPACE')
+BCIERS_NAMESPACE = os.getenv("BCIERS_NAMESPACE")
 START_DATE = datetime(2025, 1, 1, tzinfo=timezone.utc)
 
-default_args = {**default_dag_args, 'start_date': START_DATE}
+default_args = {**default_dag_args, "start_date": START_DATE}
 # Define which environments this Dag loads in to
 CURRENT_ENV = os.environ.get("ENVIRONMENT")
 ALLOWED_ENVIRONMENTS = ["dev", "test", "prod"]
@@ -26,18 +26,18 @@ DAG triggering cron job to process due transfers
 
 @dag(
     dag_id=PROCESS_DUE_TRANSFERS_DAG_NAME,
-    schedule='0 8 * * *',
+    schedule="0 8 * * *",
     default_args=default_args,
     catchup=False,
     is_paused_upon_creation=False,
     doc_md=PROCESS_DUE_DAG_DOC,
-    tags=['bciers'],
+    tags=["bciers"],
 )
 def process_transfer_event():
     @task
     def process_due_transfers():
         trigger_k8s_cronjob(
-            'process-due-transfer-events',
+            "process-due-transfer-events",
             BCIERS_NAMESPACE,
         )
 
@@ -64,7 +64,7 @@ The following parameters are available:
     catchup=False,
     is_paused_upon_creation=False,
     doc_md=NIGHTLY_BUILD_DAG_DOC,
-    tags=['bciers'],
+    tags=["bciers"],
 )
 def nightly_build_report(
     status: str = None,

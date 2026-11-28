@@ -2,14 +2,12 @@ from unittest.mock import patch
 
 import pytest
 from model_bakery import baker
-
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
     ReportValidationError,
     ReportValidationErrorKey,
     Severity,
 )
-from reporting.service.reporting_flow_service import ReportingFlow
 from reporting.service.report_validation.validators.required_fields.required_fields_report_review_facility_information import (
     REVIEW_FACILITIES_SECTION,
     REVIEW_FACILITIES_SECTION_TITLE,
@@ -17,7 +15,7 @@ from reporting.service.report_validation.validators.required_fields.required_fie
     applies,
     validate,
 )
-
+from reporting.service.reporting_flow_service import ReportingFlow
 
 pytestmark = pytest.mark.django_db
 
@@ -36,7 +34,9 @@ class TestRequiredFieldsReportReviewFacilityInformationValidator:
     def setup_method(self):
         self.report_version = baker.make_recipe("reporting.tests.utils.report_version")
         self.error_key = f"error_required_fields_{SECTION}"
-        self.review_facilities_error_key = f"error_required_fields_{REVIEW_FACILITIES_SECTION}"
+        self.review_facilities_error_key = (
+            f"error_required_fields_{REVIEW_FACILITIES_SECTION}"
+        )
 
     def test_applies_returns_true_for_applicable_flow(self):
         assert applies(ReportingFlow.SFO) is True
@@ -100,7 +100,9 @@ class TestRequiredFieldsReportReviewFacilityInformationValidator:
             ]
         )
 
-    def test_validate_returns_review_facilities_error_when_lfo_facility_is_not_completed(self):
+    def test_validate_returns_review_facilities_error_when_lfo_facility_is_not_completed(
+        self,
+    ):
         facility_report = baker.make_recipe(
             "reporting.tests.utils.facility_report",
             report_version=self.report_version,
@@ -126,9 +128,13 @@ class TestRequiredFieldsReportReviewFacilityInformationValidator:
         assert error.context.report_version_id == self.report_version.id
         assert error.context.section == REVIEW_FACILITIES_SECTION
         assert error.context.section_title == REVIEW_FACILITIES_SECTION_TITLE
-        assert error.context.missing_fields == ["All facilities must be marked complete"]
+        assert error.context.missing_fields == [
+            "All facilities must be marked complete"
+        ]
 
-    def test_validate_returns_both_errors_when_required_fields_are_missing_and_lfo_facility_is_not_completed(self):
+    def test_validate_returns_both_errors_when_required_fields_are_missing_and_lfo_facility_is_not_completed(
+        self,
+    ):
         facility_report = baker.make_recipe(
             "reporting.tests.utils.facility_report",
             report_version=self.report_version,

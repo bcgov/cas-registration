@@ -1,16 +1,21 @@
 import re
+import uuid
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from decimal import Decimal
-from typing import Any, Callable, Iterator, Optional
+from typing import Any
 from unittest.mock import patch
+
+import requests
+from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import (
+    BCCarbonRegistryAPIClient,
+)
+from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
 from compliance.service.elicensing.schema import InvoiceQueryResponse
 from pydantic import TypeAdapter
-import requests
 from requests.models import Response
+
 from ..utils import base_url, is_local_url, json_response
-from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
-from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
-import uuid
 
 
 class UnmockedExternalCall(RuntimeError):
@@ -36,12 +41,14 @@ class _InvoiceMock:
 
     def __init__(self) -> None:
         self._adjusted = False
-        self._posted_adjustment_amount: Optional[str] = None
-        self._posted_adjustment_reason: Optional[str] = None
+        self._posted_adjustment_amount: str | None = None
+        self._posted_adjustment_reason: str | None = None
 
     def get(self, url: str, **kwargs: Any) -> Response:
         # Echo the queried invoice number: the refresh looks the invoice up by the number it was created with
-        invoice_number = (kwargs.get("params") or {}).get("InvoiceNumber", _DEFAULT_INVOICE_NUMBER)
+        invoice_number = (kwargs.get("params") or {}).get(
+            "InvoiceNumber", _DEFAULT_INVOICE_NUMBER
+        )
         outstanding_dec = Decimal(_INITIAL_OUTSTANDING)
         if self._adjusted and self._posted_adjustment_amount is not None:
             outstanding_dec += Decimal(self._posted_adjustment_amount)
@@ -105,7 +112,11 @@ class _InvoiceMock:
     def adjust(self, url: str, **kwargs: Any) -> Response:
         self._adjusted = True
         payload: dict[str, Any] = kwargs.get("json") or {}
-        targets = [payload, payload.get("feeAdjustment", {}), (payload.get("adjustments") or [{}])[0]]
+        targets = [
+            payload,
+            payload.get("feeAdjustment", {}),
+            (payload.get("adjustments") or [{}])[0],
+        ]
 
         for target in targets:
             if not isinstance(target, dict):
@@ -115,7 +126,9 @@ class _InvoiceMock:
             raw_reason = target.get("reason")
 
             if raw_amount is not None:
-                self._posted_adjustment_amount = str(Decimal(str(raw_amount)).quantize(Decimal("0.01")))
+                self._posted_adjustment_amount = str(
+                    Decimal(str(raw_amount)).quantize(Decimal("0.01"))
+                )
             if raw_reason is not None:
                 self._posted_adjustment_reason = str(raw_reason)
 
@@ -264,8 +277,11 @@ BCCR_MOCKS: list[tuple[str, str, Callable[..., Response]]] = [
 
 
 def match_endpoint(
-    url: str, method: str, mocks: list[tuple[str, str, Callable[..., Response]]], **kwargs: Any
-) -> Optional[Response]:
+    url: str,
+    method: str,
+    mocks: list[tuple[str, str, Callable[..., Response]]],
+    **kwargs: Any,
+) -> Response | None:
     """Match URL and method against registered mocks using regex patterns."""
     for pattern, expected_method, handler in mocks:
         if method == expected_method and re.search(pattern, url):
@@ -279,18 +295,21 @@ def mock_external_http() -> Iterator[None]:
     # Fresh invoice mock state for each context invocation — no cross-request leakage
     invoice_mock = _InvoiceMock()
 
-    elicensing_mocks: list[tuple[str, str, Callable[..., Response]]] = _ELICENSING_STATIC_MOCKS + [
-        (
-            rf"{ELicensingAPIClient.CLIENT_ENDPOINT}/\d+{ELicensingAPIClient.INVOICE_ENDPOINT}$",
-            "GET",
-            invoice_mock.get,
-        ),
-        (
-            rf"{ELicensingAPIClient.CLIENT_ENDPOINT}/\d+{ELicensingAPIClient.ADJUST_ENDPOINT}$",
-            "POST",
-            invoice_mock.adjust,
-        ),
-    ]
+    elicensing_mocks: list[tuple[str, str, Callable[..., Response]]] = (
+        _ELICENSING_STATIC_MOCKS
+        + [
+            (
+                rf"{ELicensingAPIClient.CLIENT_ENDPOINT}/\d+{ELicensingAPIClient.INVOICE_ENDPOINT}$",
+                "GET",
+                invoice_mock.get,
+            ),
+            (
+                rf"{ELicensingAPIClient.CLIENT_ENDPOINT}/\d+{ELicensingAPIClient.ADJUST_ENDPOINT}$",
+                "POST",
+                invoice_mock.adjust,
+            ),
+        ]
+    )
 
     api_mocks = [
         ("eLicensing", elicensing_mocks, "ELICENSING_API_URL"),
@@ -300,7 +319,7 @@ def mock_external_http() -> Iterator[None]:
     real_session_request = requests.sessions.Session.request
     real_requests_request = requests.api.request
 
-    def dispatch(method: str, url: str, **_kwargs: Any) -> Optional[Response]:
+    def dispatch(method: str, url: str, **_kwargs: Any) -> Response | None:
         response = _pattern_based_mocking(url, method, api_mocks, **_kwargs)
         if response is not None:
             response.url = url
@@ -311,31 +330,45 @@ def mock_external_http() -> Iterator[None]:
 
     def _pattern_based_mocking(
         url: str, method: str, api_mocks: list[tuple[str, list, str]], **_kwargs: Any
-    ) -> Optional[Response]:
+    ) -> Response | None:
         for _, patterns, _ in api_mocks:
             response = match_endpoint(url, method.upper(), patterns, **_kwargs)
             if response is not None:
                 return response
         return None
 
-    def _block_unconfigured_external_http_calls(url: str, method: str, api_mocks: list[tuple[str, list, str]]) -> None:
+    def _block_unconfigured_external_http_calls(
+        url: str, method: str, api_mocks: list[tuple[str, list, str]]
+    ) -> None:
         if url.startswith(("http://", "https://")) and not is_local_url(url):  # NOSONAR
             # Check if this is an unmocked call to a configured API
             for service_name, _, setting in api_mocks:
                 api_base = base_url(setting)
                 if api_base and url.startswith(api_base):
-                    raise UnmockedExternalCall(f"[E2E] Unmocked {service_name} call: {method.upper()} {url}")
+                    raise UnmockedExternalCall(
+                        f"[E2E] Unmocked {service_name} call: {method.upper()} {url}"
+                    )
 
             # Generic block for other external URLs
-            raise UnmockedExternalCall(f"[E2E] Outbound HTTP blocked: {method.upper()} {url}")
+            raise UnmockedExternalCall(
+                f"[E2E] Outbound HTTP blocked: {method.upper()} {url}"
+            )
 
-    def patched_session_request(self: requests.Session, method: str, url: str, **kwargs: Any) -> Response:
+    def patched_session_request(
+        self: requests.Session, method: str, url: str, **kwargs: Any
+    ) -> Response:
         resp = dispatch(method, url, **kwargs)
-        return resp if resp is not None else real_session_request(self, method, url, **kwargs)
+        return (
+            resp
+            if resp is not None
+            else real_session_request(self, method, url, **kwargs)
+        )
 
     def patched_requests_request(method: str, url: str, **kwargs: Any) -> Response:
         resp = dispatch(method, url, **kwargs)
-        return resp if resp is not None else real_requests_request(method, url, **kwargs)
+        return (
+            resp if resp is not None else real_requests_request(method, url, **kwargs)
+        )
 
     with (
         patch.object(requests.sessions.Session, "request", patched_session_request),

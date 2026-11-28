@@ -3,12 +3,14 @@ Model for storing raw activity data before processing.
 """
 
 from django.db import models
-from registration.models.time_stamped_model import TimeStampedModel
 from registration.models.activity import Activity
-from reporting.models.report_version import ReportVersion
+from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.facility_report import FacilityReport
+from reporting.models.report_version import ReportVersion
+from reporting.models.rls_configs.report_raw_activity_data import (
+    Rls as ReportRawActivityDataRls,
+)
 from reporting.models.triggers import immutable_report_version_trigger
-from reporting.models.rls_configs.report_raw_activity_data import Rls as ReportRawActivityDataRls
 
 
 class ReportRawActivityData(TimeStampedModel):
@@ -46,7 +48,9 @@ class ReportRawActivityData(TimeStampedModel):
 
         db_table = 'erc"."report_raw_activity_data'
         app_label = "reporting"
-        db_table_comment = "Stores raw activity JSON data before processing into report activities"
+        db_table_comment = (
+            "Stores raw activity JSON data before processing into report activities"
+        )
         constraints = [
             models.UniqueConstraint(
                 name="unique_raw_data_facility_report_activity",

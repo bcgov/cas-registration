@@ -131,7 +131,7 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_selected_facilities",
-            "kwargs": {'version_id': MOCK_VERSION},
+            "kwargs": {"version_id": MOCK_VERSION},
         },
         {
             "method": "post",
@@ -306,7 +306,10 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_bccr_account_details",
-            "kwargs": {"account_id": MOCK_INT, "compliance_report_version_id": MOCK_INT},
+            "kwargs": {
+                "account_id": MOCK_INT,
+                "compliance_report_version_id": MOCK_INT,
+            },
         },
         {
             "method": "get",
@@ -369,7 +372,11 @@ ENDPOINTS = {
     ],
     "all_roles": [
         {"method": "get", "endpoint_name": "get_reporting_year"},
-        {"method": "get", "endpoint_name": "get_compliance_period_for_year", "kwargs": {"reporting_year": MOCK_INT}},
+        {
+            "method": "get",
+            "endpoint_name": "get_compliance_period_for_year",
+            "kwargs": {"reporting_year": MOCK_INT},
+        },
         {"method": "get", "endpoint_name": "get_current_compliance_penalty_rate"},
         {"method": "put", "endpoint_name": "update_user_profile"},
         {"method": "get", "endpoint_name": "get_all_reporting_years"},
@@ -408,7 +415,11 @@ ENDPOINTS = {
             "kwargs": {"operator_id": MOCK_UUID},
         },
         {"method": "post", "endpoint_name": "create_operator_and_user_operator"},
-        {"method": "delete", "endpoint_name": "delete_user_operator", "kwargs": {"user_operator_id": MOCK_UUID}},
+        {
+            "method": "delete",
+            "endpoint_name": "delete_user_operator",
+            "kwargs": {"user_operator_id": MOCK_UUID},
+        },
         {"method": "get", "endpoint_name": "get_contact_id_for_current_user"},
     ],
     "approved_industry_admin_user": [
@@ -416,13 +427,21 @@ ENDPOINTS = {
             "method": "get",
             "endpoint_name": "get_current_user_operator_access_requests",
         },
-        {"method": "patch", "endpoint_name": "archive_contact", "kwargs": {"contact_id": MOCK_UUID}},
+        {
+            "method": "patch",
+            "endpoint_name": "archive_contact",
+            "kwargs": {"contact_id": MOCK_UUID},
+        },
     ],
     "authorized_irc_user": [
         {"method": "get", "endpoint_name": "list_operators"},
         {"method": "get", "endpoint_name": "list_user_operators"},
         {"method": "get", "endpoint_name": "list_transfer_events"},
-        {"method": "get", "endpoint_name": "get_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
+        {
+            "method": "get",
+            "endpoint_name": "get_transfer_event",
+            "kwargs": {"transfer_id": MOCK_UUID},
+        },
         {"method": "get", "endpoint_name": "get_internal_users"},
         {"method": "get", "endpoint_name": "get_all_attachments"},
         {
@@ -437,7 +456,11 @@ ENDPOINTS = {
                 "compliance_report_version_id": MOCK_INT,
             },
         },
-        {"method": "get", "endpoint_name": "get_comment_threads", "kwargs": {"version_id": MOCK_INT}},
+        {
+            "method": "get",
+            "endpoint_name": "get_comment_threads",
+            "kwargs": {"version_id": MOCK_INT},
+        },
     ],
     "approved_authorized_roles": [
         {
@@ -700,8 +723,16 @@ ENDPOINTS = {
     ],
     "cas_director_analyst": [
         {"method": "post", "endpoint_name": "create_transfer_event"},
-        {"method": "patch", "endpoint_name": "update_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
-        {"method": "delete", "endpoint_name": "delete_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
+        {
+            "method": "patch",
+            "endpoint_name": "update_transfer_event",
+            "kwargs": {"transfer_id": MOCK_UUID},
+        },
+        {
+            "method": "delete",
+            "endpoint_name": "delete_transfer_event",
+            "kwargs": {"transfer_id": MOCK_UUID},
+        },
         {
             "method": "post",
             "endpoint_name": "create_thread",
@@ -720,15 +751,27 @@ ENDPOINTS = {
         {
             "method": "delete",
             "endpoint_name": "delete_comment",
-            "kwargs": {"version_id": MOCK_INT, "thread_id": MOCK_INT, "comment_id": MOCK_INT},
+            "kwargs": {
+                "version_id": MOCK_INT,
+                "thread_id": MOCK_INT,
+                "comment_id": MOCK_INT,
+            },
         },
         {
             "method": "patch",
             "endpoint_name": "update_comment",
-            "kwargs": {"version_id": MOCK_INT, "thread_id": MOCK_INT, "comment_id": MOCK_INT},
+            "kwargs": {
+                "version_id": MOCK_INT,
+                "thread_id": MOCK_INT,
+                "comment_id": MOCK_INT,
+            },
         },
     ],
     "cas_admin": [
-        {"method": "patch", "endpoint_name": "update_user_role", "kwargs": {"user_id": MOCK_UUID}},
+        {
+            "method": "patch",
+            "endpoint_name": "update_user_role",
+            "kwargs": {"user_id": MOCK_UUID},
+        },
     ],
 }

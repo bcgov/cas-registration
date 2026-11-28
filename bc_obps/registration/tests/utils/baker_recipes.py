@@ -1,35 +1,34 @@
 from django.utils import timezone
-from registration.models import OperationDesignatedOperatorTimeline
-from registration.models import Activity
-from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
+from model_bakery.recipe import Recipe, foreign_key, seq
+from registration.models import Activity, OperationDesignatedOperatorTimeline
+from registration.models.address import Address
+from registration.models.app_role import AppRole
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
-from registration.models.facility_designated_operation_timeline import (
-    FacilityDesignatedOperationTimeline,
-)
+from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
+from registration.models.business_role import BusinessRole
+from registration.models.business_structure import BusinessStructure
+from registration.models.contact import Contact
 from registration.models.document import Document
 from registration.models.document_type import DocumentType
 from registration.models.event.transfer_event import TransferEvent
 from registration.models.facility import Facility
+from registration.models.facility_designated_operation_timeline import (
+    FacilityDesignatedOperationTimeline,
+)
 from registration.models.multiple_operator import MultipleOperator
-from registration.models.app_role import AppRole
+from registration.models.naics_code import NaicsCode
+from registration.models.operation import Operation
+from registration.models.operator import Operator
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
+from registration.models.parent_operator import ParentOperator
+from registration.models.partner_operator import PartnerOperator
 from registration.models.regulated_product import RegulatedProduct
 from registration.models.user import User
 from registration.models.user_operator import UserOperator
-from registration.models.naics_code import NaicsCode
-from registration.models.operation import Operation
-from registration.models.business_role import BusinessRole
-from registration.models.contact import Contact
-from registration.models.partner_operator import PartnerOperator
-from registration.models.parent_operator import ParentOperator
-from registration.models.address import Address
-from registration.models.business_structure import BusinessStructure
 from registration.tests.utils.bakers import (
     generate_random_bc_corporate_registry_number,
     generate_random_cra_business_number,
 )
-from registration.models.operator import Operator
-from model_bakery.recipe import Recipe, foreign_key, seq
 
 naics_code = Recipe(NaicsCode, naics_code="486210")
 address = Recipe(
@@ -89,7 +88,9 @@ operator_for_operation = Recipe(
 )
 
 
-industry_operator_user = Recipe(User, app_role=AppRole.objects.get(role_name="industry_user"))
+industry_operator_user = Recipe(
+    User, app_role=AppRole.objects.get(role_name="industry_user")
+)
 cas_admin = Recipe(User, app_role=AppRole.objects.get(role_name="cas_admin"))
 cas_analyst = Recipe(User, app_role=AppRole.objects.get(role_name="cas_analyst"))
 cas_director = Recipe(User, app_role=AppRole.objects.get(role_name="cas_director"))
@@ -183,6 +184,8 @@ operation_designated_operator_timeline = Recipe(
     end_date=timezone.now(),
 )
 
-regulated_product = Recipe(RegulatedProduct, valid_from="2023-01-01", valid_to="2099-12-31", is_regulated=True)
+regulated_product = Recipe(
+    RegulatedProduct, valid_from="2023-01-01", valid_to="2099-12-31", is_regulated=True
+)
 
 activity = Recipe(Activity)

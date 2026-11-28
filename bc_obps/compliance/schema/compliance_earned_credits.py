@@ -1,18 +1,25 @@
-from typing import Literal, Optional
-from compliance.service.bc_carbon_registry.schema import FifteenDigitString
-from ninja import ModelSchema, Field, Schema
-from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
+from typing import Literal
 
-OPERATION_NAME_ALIAS = "compliance_report_version.compliance_report.report.operation.name"
-REPORTING_YEAR_ALIAS = "compliance_report_version.compliance_report.compliance_period.end_date.year"
+from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
+from compliance.service.bc_carbon_registry.schema import FifteenDigitString
+from ninja import Field, ModelSchema, Schema
+
+OPERATION_NAME_ALIAS = (
+    "compliance_report_version.compliance_report.report.operation.name"
+)
+REPORTING_YEAR_ALIAS = (
+    "compliance_report_version.compliance_report.compliance_period.end_date.year"
+)
 
 
 class ComplianceEarnedCreditsOut(ModelSchema):
     """Schema for compliance earned credits data"""
 
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
-    analyst_submitted_by: Optional[str] = Field(None, alias="analyst_submitted_by.get_full_name")
-    latest_compliance_report_version_id: Optional[int] = Field(None)
+    analyst_submitted_by: str | None = Field(
+        None, alias="analyst_submitted_by.get_full_name"
+    )
+    latest_compliance_report_version_id: int | None = Field(None)
 
     class Meta:
         model = ComplianceEarnedCredit
@@ -32,13 +39,20 @@ class ComplianceEarnedCreditsOut(ModelSchema):
 class ComplianceEarnedCreditsIn(Schema):
     """Schema for compliance earned credits data"""
 
-    bccr_trading_name: Optional[str] = None  # Only required for industry users - we enforce this in the service layer
-    bccr_holding_account_id: Optional[FifteenDigitString] = (
+    bccr_trading_name: str | None = (
         None  # Only required for industry users - we enforce this in the service layer
     )
-    analyst_suggestion: Optional[
-        Literal["Ready to approve", "Requiring change of BCCR Holding Account ID", "Requiring supplementary report"]
-    ] = None
-    analyst_comment: Optional[str] = None
-    director_comment: Optional[str] = None
-    director_decision: Optional[Literal["Approved", "Declined"]] = None
+    bccr_holding_account_id: FifteenDigitString | None = (
+        None  # Only required for industry users - we enforce this in the service layer
+    )
+    analyst_suggestion: (
+        Literal[
+            "Ready to approve",
+            "Requiring change of BCCR Holding Account ID",
+            "Requiring supplementary report",
+        ]
+        | None
+    ) = None
+    analyst_comment: str | None = None
+    director_comment: str | None = None
+    director_decision: Literal["Approved", "Declined"] | None = None

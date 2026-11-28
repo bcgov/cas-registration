@@ -1,25 +1,36 @@
-from typing import Dict, Literal, Optional
+from typing import Literal
 from uuid import UUID
-from registration.emails import send_operator_access_request_email
-from registration.enums.enums import AccessRequestStates, AccessRequestTypes
-from registration.schema import OperatorIn, UserOperatorFilterSchema, UserOperatorStatusUpdate
-from registration.utils import update_model_instance
-from registration.service.data_access_service.user_operator_service import UserOperatorDataAccessService
-from registration.service.data_access_service.user_service import UserDataAccessService
-from registration.service.data_access_service.operator_service import OperatorDataAccessService
-from registration.models import Operator, User, UserOperator, Contact, BusinessRole
+
 from django.db import transaction
-from registration.constants import UNAUTHORIZED_MESSAGE
-from registration.service.operator_service import OperatorService
 from django.db.models import QuerySet
 from django.db.models.functions import Lower
-from ninja import Query
 from django.utils import timezone
+from ninja import Query
+from registration.constants import UNAUTHORIZED_MESSAGE
+from registration.emails import send_operator_access_request_email
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes
+from registration.models import BusinessRole, Contact, Operator, User, UserOperator
+from registration.schema import (
+    OperatorIn,
+    UserOperatorFilterSchema,
+    UserOperatorStatusUpdate,
+)
+from registration.service.data_access_service.operator_service import (
+    OperatorDataAccessService,
+)
+from registration.service.data_access_service.user_operator_service import (
+    UserOperatorDataAccessService,
+)
+from registration.service.data_access_service.user_service import UserDataAccessService
+from registration.service.operator_service import OperatorService
+from registration.utils import update_model_instance
 
 
 class UserOperatorService:
     @classmethod
-    def check_if_user_eligible_to_access_user_operator(cls, user_guid: UUID, user_operator_id: UUID) -> Optional[bool]:
+    def check_if_user_eligible_to_access_user_operator(
+        cls, user_guid: UUID, user_operator_id: UUID
+    ) -> bool | None:
         """
         Check if a user is eligible to access a user_operator (i.e., they're allowed to access their own information (user_operator, operations, etc.) but not other people's).
 
@@ -32,14 +43,18 @@ class UserOperatorService:
         """
 
         user: User = UserDataAccessService.get_by_guid(user_guid)
-        user_operator: UserOperator = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
+        user_operator: UserOperator = (
+            UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
+        )
         if user.is_industry_user() and user_operator.user.user_guid != user_guid:
             raise PermissionError("Your user is not associated with this operator.")
         # internal users are always allowed to access user operators. (Though the authorize function prevents them from accessing certain external-only endpoints)
         return None
 
     @classmethod
-    def get_current_user_approved_user_operator_or_raise(cls, user: User) -> UserOperator:
+    def get_current_user_approved_user_operator_or_raise(
+        cls, user: User
+    ) -> UserOperator:
         try:
             return UserOperatorDataAccessService.get_approved_user_operator(user)
         except UserOperator.DoesNotExist:
@@ -48,7 +63,9 @@ class UserOperatorService:
     # Function to create operator instance
     @classmethod
     @transaction.atomic()
-    def save_operator(cls, updated_data: OperatorIn, operator_instance: Operator) -> Operator:
+    def save_operator(
+        cls, updated_data: OperatorIn, operator_instance: Operator
+    ) -> Operator:
         # fields to update on the Operator model
         operator_related_fields = [
             "legal_name",
@@ -60,13 +77,17 @@ class UserOperatorService:
         created_operator_instance: Operator = update_model_instance(
             operator_instance, operator_related_fields, updated_data.dict()
         )
-        created_operator_instance.save(update_fields=operator_related_fields + ["status"])
+        created_operator_instance.save(
+            update_fields=operator_related_fields + ["status"]
+        )
 
         return created_operator_instance
 
     @classmethod
     @transaction.atomic()
-    def create_operator_and_user_operator(cls, user_guid: UUID, payload: OperatorIn) -> Dict[str, UUID]:
+    def create_operator_and_user_operator(
+        cls, user_guid: UUID, payload: OperatorIn
+    ) -> dict[str, UUID]:
         """
         Function to create a user_operator and an operator
         We also need to create a contact for the user_operator once operator is created
@@ -94,7 +115,11 @@ class UserOperatorService:
         operator: Operator = cls.save_operator(payload, operator_instance)
 
         # create/save user operator instance as an approved admin
-        user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator.id)
+        user_operator, created = (
+            UserOperatorDataAccessService.get_or_create_user_operator(
+                user_guid, operator.id
+            )
+        )
         if created:
             user_operator.role = UserOperator.Roles.ADMIN
             user_operator.status = UserOperator.Statuses.APPROVED
@@ -113,18 +138,23 @@ class UserOperatorService:
                 "last_name": user_operator.user.last_name,
                 "phone_number": str(user_operator.user.phone_number),
                 "position_title": user_operator.user.position_title,
-                "business_role": BusinessRole.objects.get(role_name="Operation Representative"),
+                "business_role": BusinessRole.objects.get(
+                    role_name="Operation Representative"
+                ),
             },
         )
 
-        return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
+        return {
+            "user_operator_id": user_operator.id,
+            "operator_id": user_operator.operator.id,
+        }
 
     @classmethod
     def list_user_operators(
         cls,
         user_guid: UUID,
-        sort_field: Optional[str],
-        sort_order: Optional[Literal["desc", "asc"]],
+        sort_field: str | None,
+        sort_order: Literal["desc", "asc"] | None,
         filters: UserOperatorFilterSchema = Query(...),
     ) -> QuerySet[UserOperator]:
         user = UserDataAccessService.get_by_guid(user_guid)
@@ -133,36 +163,53 @@ class UserOperatorService:
             raise Exception(UNAUTHORIZED_MESSAGE)
 
         # Used to show internal users the list of user_operators to approve/deny
-        base_qs = UserOperatorDataAccessService.get_user_operator_requests_for_irc_users()
+        base_qs = (
+            UserOperatorDataAccessService.get_user_operator_requests_for_irc_users()
+        )
 
         sort_direction = "-" if sort_order == "desc" else ""
-        tiebreakers = (f"{sort_direction}created_at", f"{sort_direction}user_friendly_id", f"{sort_direction}id")
+        tiebreakers = (
+            f"{sort_direction}created_at",
+            f"{sort_direction}user_friendly_id",
+            f"{sort_direction}id",
+        )
 
         # `created_at` and `user_friendly_id` are not case-insensitive fields and Lower() cannot be applied to them
-        if sort_field in ['created_at', 'user_friendly_id']:
-            return filters.filter(base_qs).order_by(f"{sort_direction}{sort_field}", *tiebreakers)
+        if sort_field in ["created_at", "user_friendly_id"]:
+            return filters.filter(base_qs).order_by(
+                f"{sort_direction}{sort_field}", *tiebreakers
+            )
 
         # Use Lower for case-insensitive ordering
         lower_sort_field = Lower(sort_field)
         if sort_order == "desc":
             # Apply descending order
-            return filters.filter(base_qs).order_by(lower_sort_field.desc(), *tiebreakers)
+            return filters.filter(base_qs).order_by(
+                lower_sort_field.desc(), *tiebreakers
+            )
         # Apply ascending order
         return filters.filter(base_qs).order_by(lower_sort_field, *tiebreakers)
 
     @classmethod
     @transaction.atomic()
     def update_status_and_create_contact(
-        cls, user_operator_id: UUID, payload: UserOperatorStatusUpdate, admin_user_guid: UUID
+        cls,
+        user_operator_id: UUID,
+        payload: UserOperatorStatusUpdate,
+        admin_user_guid: UUID,
     ) -> UserOperator:
         """Function to update the user_operator status. If they are being approved, we create a Contact record for them."""
         admin_user: User = UserDataAccessService.get_by_guid(admin_user_guid)
-        user_operator: UserOperator = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
+        user_operator: UserOperator = (
+            UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
+        )
 
         if admin_user.is_industry_user():
             try:
-                operator_business_guid = OperatorDataAccessService.get_operators_business_guid(
-                    user_operator.operator.id
+                operator_business_guid = (
+                    OperatorDataAccessService.get_operators_business_guid(
+                        user_operator.operator.id
+                    )
                 )
             except Exception:
                 # operator_business_guid can be None if no admins are approved yet (business_guids come from admin users)
@@ -170,12 +217,17 @@ class UserOperatorService:
             if operator_business_guid != admin_user.business_guid:
                 # industry users can only update the status of user_operators from the same operator as themselves
                 raise PermissionError("Your user is not associated with this operator.")
-            access_request_type: AccessRequestTypes = AccessRequestTypes.OPERATOR_WITH_ADMIN
+            access_request_type: AccessRequestTypes = (
+                AccessRequestTypes.OPERATOR_WITH_ADMIN
+            )
 
         user_operator.status = payload.status  # type: ignore[attr-defined]
         updated_role = payload.role
 
-        if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
+        if user_operator.status in [
+            UserOperator.Statuses.APPROVED,
+            UserOperator.Statuses.DECLINED,
+        ]:
             user_operator.verified_at = timezone.now()
             user_operator.verified_by_id = admin_user_guid
 
@@ -183,7 +235,10 @@ class UserOperatorService:
                 # Set role to pending for now but we may want to add a new role for declined
                 user_operator.role = UserOperator.Roles.PENDING
 
-            if user_operator.status == UserOperator.Statuses.APPROVED and updated_role != UserOperator.Roles.PENDING:
+            if (
+                user_operator.status == UserOperator.Statuses.APPROVED
+                and updated_role != UserOperator.Roles.PENDING
+            ):
                 # we only update the role if the user_operator is being approved
                 user_operator.role = updated_role  # type: ignore[assignment]
                 # Create a contact record for the user_operator and add it to the operator's contacts
@@ -196,7 +251,9 @@ class UserOperatorService:
                         "last_name": user_operator.user.last_name,
                         "phone_number": str(user_operator.user.phone_number),
                         "position_title": user_operator.user.position_title,
-                        "business_role": BusinessRole.objects.get(role_name="Operation Representative"),
+                        "business_role": BusinessRole.objects.get(
+                            role_name="Operation Representative"
+                        ),
                     },
                 )
 
@@ -218,7 +275,9 @@ class UserOperatorService:
             user_operator.verified_at = None
             user_operator.verified_by_id = None
             user_operator.role = UserOperator.Roles.PENDING
-        user_operator.save(update_fields=["status", "verified_at", "verified_by_id", "role"])
+        user_operator.save(
+            update_fields=["status", "verified_at", "verified_by_id", "role"]
+        )
 
         return user_operator
 

@@ -1,6 +1,7 @@
 from django.db import models
-from registration.models.time_stamped_model import TimeStampedModel
 from registration.models import Operator
+from registration.models.time_stamped_model import TimeStampedModel
+
 from .rls_configs.elicensing_client_operator import Rls as ElicensingClientOperatorRls
 
 
@@ -14,7 +15,9 @@ class ElicensingClientOperator(TimeStampedModel):
         db_comment="The clientObjectId identifier from elicensing for the related client"
     )
 
-    client_guid = models.UUIDField(db_comment="The clientGuid identifier from elicensing for the related client")
+    client_guid = models.UUIDField(
+        db_comment="The clientGuid identifier from elicensing for the related client"
+    )
 
     operator = models.ForeignKey(
         Operator,

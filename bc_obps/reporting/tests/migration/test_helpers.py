@@ -2,7 +2,6 @@ from datetime import date
 from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
-
 from reporting.migrations._helpers import (
     ACTIVITY_SCHEMA_MAPPING,
     ACTIVITY_SCHEMA_MAPPING_2025,
@@ -10,7 +9,6 @@ from reporting.migrations._helpers import (
     load_activity_schemas_from_json,
     load_source_type_schemas_from_json,
 )
-
 
 FAKE_SCHEMA = {"type": "object", "title": "fake"}
 
@@ -44,7 +42,9 @@ def fake_apps_and_model():
 
 @patch("reporting.migrations._helpers.json.load", return_value=FAKE_SCHEMA)
 @patch("reporting.migrations._helpers.open", new_callable=mock_open, create=True)
-def test_load_source_type_schemas_from_json(mock_open_fn, mock_json_load, fake_apps_and_model):
+def test_load_source_type_schemas_from_json(
+    mock_open_fn, mock_json_load, fake_apps_and_model
+):
     fake_apps, fake_model = fake_apps_and_model
 
     load_source_type_schemas_from_json(fake_apps, schema_editor=None)
@@ -60,14 +60,18 @@ def test_load_source_type_schemas_from_json(mock_open_fn, mock_json_load, fake_a
 
     # Every opened path uses the per-tuple directory_path / schema_dir / file_name
     opened_paths = [call.args[0] for call in mock_open_fn.call_args_list]
-    for (_, directory_path, schema_dir, file_name, *_), path in zip(ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING, opened_paths):
+    for (_, directory_path, schema_dir, file_name, *_), path in zip(
+        ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING, opened_paths
+    ):
         expected_suffix = f"/{directory_path}/{schema_dir}/{file_name}.json"
         assert path.endswith(expected_suffix), f"unexpected schema path: {path}"
 
     # Check kwargs passed to update_or_create()
     for index, call in enumerate(fake_model.objects.update_or_create.call_args_list):
         kwargs = dict(call.kwargs)
-        activity_slug, _, _, _, source_type_json_key, has_unit, has_fuel = ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING[index]
+        activity_slug, _, _, _, source_type_json_key, has_unit, has_fuel = (
+            ACTIVITY_SOURCE_TYPE_SCHEMA_MAPPING[index]
+        )
         assert kwargs["has_unit"] == has_unit
         assert kwargs["has_fuel"] == has_fuel
         assert kwargs["defaults"]["json_schema"] == FAKE_SCHEMA
@@ -80,7 +84,9 @@ def test_load_source_type_schemas_from_json(mock_open_fn, mock_json_load, fake_a
 
 @patch("reporting.migrations._helpers.json.load", return_value=FAKE_SCHEMA)
 @patch("reporting.migrations._helpers.open", new_callable=mock_open, create=True)
-def test_load_activity_schemas_from_json(mock_open_fn, mock_json_load, fake_apps_and_model):
+def test_load_activity_schemas_from_json(
+    mock_open_fn, mock_json_load, fake_apps_and_model
+):
     fake_apps, fake_model = fake_apps_and_model
 
     load_activity_schemas_from_json(fake_apps, schema_editor=None)
@@ -94,8 +100,14 @@ def test_load_activity_schemas_from_json(mock_open_fn, mock_json_load, fake_apps
 
     # First paths correspond to the 2024 mapping
     for (_, schema_slug), path in zip(ACTIVITY_SCHEMA_MAPPING, opened_paths):
-        assert path.endswith(f"/reporting/json_schemas/2024/{schema_slug}/activity.json")
+        assert path.endswith(
+            f"/reporting/json_schemas/2024/{schema_slug}/activity.json"
+        )
 
     # remaining paths correspond to the 2025 mapping
-    for (_, schema_slug), path in zip(ACTIVITY_SCHEMA_MAPPING_2025, opened_paths[len(ACTIVITY_SCHEMA_MAPPING) :]):
-        assert path.endswith(f"/reporting/json_schemas/2025/{schema_slug}/activity.json")
+    for (_, schema_slug), path in zip(
+        ACTIVITY_SCHEMA_MAPPING_2025, opened_paths[len(ACTIVITY_SCHEMA_MAPPING) :]
+    ):
+        assert path.endswith(
+            f"/reporting/json_schemas/2025/{schema_slug}/activity.json"
+        )

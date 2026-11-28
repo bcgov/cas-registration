@@ -1,17 +1,16 @@
-from typing import Literal, Tuple, Union
+from typing import Literal
 
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
+from reporting.api.permissions import (
+    approved_authorized_roles_report_version_composite_auth,
+    approved_industry_user_report_version_composite_auth,
+)
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.models.report_operation import ReportOperation
 from reporting.schema.generic import Message
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.service.report_service import ReportService
 
-from .router import router
-from reporting.api.permissions import (
-    approved_industry_user_report_version_composite_auth,
-    approved_authorized_roles_report_version_composite_auth,
-)
 from ..schema.report_operation import (
     ReportOperationDataSchema,
     ReportOperationIn,
@@ -20,6 +19,7 @@ from ..schema.report_operation import (
 )
 from ..service.report_operation_service import ReportOperationService
 from ..service.sync_validation_service import SyncValidationService
+from .router import router
 
 """
 GET methods
@@ -62,7 +62,7 @@ PATCH methods
 )
 def get_update_report(
     request: HttpRequest, version_id: int
-) -> Union[Tuple[Literal[200], dict], Tuple[Literal[403], dict[str, str]]]:
+) -> tuple[Literal[200], dict] | tuple[Literal[403], dict[str, str]]:
     # Validate that sync is allowed before proceeding
     if not SyncValidationService.is_sync_allowed(version_id):
         return 403, {
@@ -88,6 +88,6 @@ POST methods
 )
 def save_report(
     request: HttpRequest, version_id: int, payload: ReportOperationIn
-) -> Tuple[Literal[201], ReportOperation]:
+) -> tuple[Literal[201], ReportOperation]:
     report_operation = ReportService.save_report_operation(version_id, payload)
     return 201, report_operation

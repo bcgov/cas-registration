@@ -1,9 +1,11 @@
 from enum import Enum
-from typing import Optional
 from uuid import UUID
-from registration.service.data_access_service.user_service import UserDataAccessService
-from registration.service.data_access_service.operator_service import OperatorDataAccessService
+
 from compliance.models import ComplianceReportVersion
+from registration.service.data_access_service.operator_service import (
+    OperatorDataAccessService,
+)
+from registration.service.data_access_service.user_service import UserDataAccessService
 
 
 class UserStatusEnum(Enum):
@@ -17,7 +19,9 @@ class UserComplianceAccessService:
     """
 
     @classmethod
-    def determine_user_compliance_status(cls, user_guid: UUID, compliance_report_version_id: Optional[int]) -> str:
+    def determine_user_compliance_status(
+        cls, user_guid: UUID, compliance_report_version_id: int | None
+    ) -> str:
         """
         Determines the user's access status to the compliance application or to a specific compliance report version.
 
@@ -36,20 +40,25 @@ class UserComplianceAccessService:
         operator = UserDataAccessService.get_operator_by_user(user_guid)
 
         # Check if the operator has any compliance reports associated with it
-        if not OperatorDataAccessService.check_operator_has_compliance_reports(operator.id):
+        if not OperatorDataAccessService.check_operator_has_compliance_reports(
+            operator.id
+        ):
             return UserStatusEnum.INVALID.value
 
         # If a compliance report version ID is provided, check if it belongs to this operator
         if compliance_report_version_id:
             has_version = ComplianceReportVersion.objects.filter(
-                id=compliance_report_version_id, compliance_report__report__operator=operator
+                id=compliance_report_version_id,
+                compliance_report__report__operator=operator,
             ).exists()
 
             if not has_version:
                 return UserStatusEnum.INVALID.value
 
             # Only fetch the crv object when we actually need its status
-            compliance_report_version = ComplianceReportVersion.objects.get(pk=compliance_report_version_id)
+            compliance_report_version = ComplianceReportVersion.objects.get(
+                pk=compliance_report_version_id
+            )
             return compliance_report_version.status
 
         return UserStatusEnum.REGISTERED.value

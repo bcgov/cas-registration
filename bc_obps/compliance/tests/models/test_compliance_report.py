@@ -1,15 +1,20 @@
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from compliance.models.compliance_report import ComplianceReport
 from common.tests.utils.helpers import BaseTestCase
-from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from compliance.models.compliance_report import ComplianceReport
+from compliance.tests.utils.compliance_rls_test_infrastructure import (
+    ComplianceReportRlsTestSetup,
+)
 from model_bakery.baker import make_recipe
-from compliance.tests.utils.compliance_rls_test_infrastructure import ComplianceReportRlsTestSetup
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ComplianceReportTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = make_recipe('compliance.tests.utils.compliance_report')
+        cls.test_object = make_recipe("compliance.tests.utils.compliance_report")
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
@@ -36,7 +41,9 @@ class TestComplianceReportRls(BaseTestCase):
 
         def insert_function(cursor):
             ComplianceReport.objects.create(
-                report=t.report_2011, bccr_subaccount_id="123456789099999", compliance_period=t.compliance_period_2011
+                report=t.report_2011,
+                bccr_subaccount_id="123456789099999",
+                compliance_period=t.compliance_period_2011,
             )
 
         def forbidden_insert_function(cursor):
@@ -45,7 +52,7 @@ class TestComplianceReportRls(BaseTestCase):
                     INSERT into "erc"."compliance_report"(report_id, bccr_subaccount_id, compliance_period_id)
                     values(%s, %s, %s)
                 """,
-                (t.report_2012.id, '123456789099999', t.compliance_period_2012.id),
+                (t.report_2012.id, "123456789099999", t.compliance_period_2012.id),
             )
 
         def update_function(cursor):

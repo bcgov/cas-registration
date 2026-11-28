@@ -1,26 +1,38 @@
-from typing import Literal, Optional, Tuple
+from typing import Literal
+
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
+from reporting.api.permissions import (
+    approved_industry_user_report_version_composite_auth,
+)
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from reporting.service.report_person_responsible import ReportContactService, ReportPersonResponsibleData
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from .router import router
+from reporting.service.report_person_responsible import (
+    ReportContactService,
+    ReportPersonResponsibleData,
+)
+
 from ..models import ReportPersonResponsible
-from ..schema.report_person_responsible import ReportPersonResponsibleIn, ReportPersonResponsibleOut
-from reporting.api.permissions import approved_industry_user_report_version_composite_auth
+from ..schema.report_person_responsible import (
+    ReportPersonResponsibleIn,
+    ReportPersonResponsibleOut,
+)
+from .router import router
 
 
 @router.get(
     "/report-version/{version_id}/person-responsible",
-    response={200: Optional[ReportPersonResponsibleOut], custom_codes_4xx: Message},
+    response={200: ReportPersonResponsibleOut | None, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
 def get_report_person_responsible_by_version_id(
     request: HttpRequest, version_id: int
-) -> Tuple[Literal[200], Optional[ReportPersonResponsible]]:
-    report_person_responsible = ReportContactService.get_report_person_responsible_by_version_id(version_id)
+) -> tuple[Literal[200], ReportPersonResponsible | None]:
+    report_person_responsible = (
+        ReportContactService.get_report_person_responsible_by_version_id(version_id)
+    )
     return 200, report_person_responsible
 
 

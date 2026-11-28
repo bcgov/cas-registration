@@ -1,15 +1,18 @@
-from common.enums import Schemas
-from registration.enums.enums import RegistrationTableNames
-from registration.models.user import User
 import re
 import typing
+
+from common.enums import Schemas
 from common.models import BaseModel
-from django.db import models
-from registration.constants import BORO_ID_REGEX
-from simple_history.models import HistoricalRecords
-from django.utils import timezone
 from django.core.exceptions import ValidationError
-from registration.models.rls_configs.bc_obps_regulated_operation import Rls as BcObpsRegulatedOperationRls
+from django.db import models
+from django.utils import timezone
+from registration.constants import BORO_ID_REGEX
+from registration.enums.enums import RegistrationTableNames
+from registration.models.rls_configs.bc_obps_regulated_operation import (
+    Rls as BcObpsRegulatedOperationRls,
+)
+from registration.models.user import User
+from simple_history.models import HistoricalRecords
 
 
 class BcObpsRegulatedOperation(BaseModel):

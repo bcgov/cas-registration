@@ -1,12 +1,15 @@
-from typing import Literal, Tuple
-from django.http import HttpRequest
+from typing import Literal
+
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from compliance.api.permissions import (
+    approved_authorized_roles_compliance_report_version_composite_auth,
+)
 from compliance.api.router import router
 from compliance.constants import COMPLIANCE
-from compliance.service.penalty_calculation_service import PenaltyCalculationService
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from registration.schema.generic import Message
 from compliance.schema.automatic_overdue_penalty import AutomaticOverduePenaltyOut
-from compliance.api.permissions import approved_authorized_roles_compliance_report_version_composite_auth
+from compliance.service.penalty_calculation_service import PenaltyCalculationService
+from django.http import HttpRequest
+from registration.schema.generic import Message
 
 
 @router.get(
@@ -16,8 +19,12 @@ from compliance.api.permissions import approved_authorized_roles_compliance_repo
     description="Get automatic overdue penalty data for a compliance report version.",
     auth=approved_authorized_roles_compliance_report_version_composite_auth,
 )
-def get_automatic_overdue_penalty(request: HttpRequest, compliance_report_version_id: int) -> Tuple[Literal[200], dict]:
+def get_automatic_overdue_penalty(
+    request: HttpRequest, compliance_report_version_id: int
+) -> tuple[Literal[200], dict]:
     """
     Get automatic overdue penalty data for a compliance report version.
     """
-    return 200, PenaltyCalculationService.get_automatic_overdue_penalty_data(compliance_report_version_id)
+    return 200, PenaltyCalculationService.get_automatic_overdue_penalty_data(
+        compliance_report_version_id
+    )

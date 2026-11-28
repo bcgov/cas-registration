@@ -1,13 +1,16 @@
+from common.lib import pgtrigger
 from common.tests.utils.helpers import BaseTestCase
-from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from model_bakery.baker import make_recipe
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from reporting.models import ReportVerification
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
-from reporting.models import ReportVerification
 from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsTestSetup
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from common.lib import pgtrigger
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ReportVerificationTest(BaseTestCase):
@@ -36,7 +39,6 @@ class ReportVerificationTest(BaseTestCase):
 
 
 class ReportVerificationRlsTest(BaseTestCase):
-
     def test_report_verification_rls_industry_user(self):
         # Common Test Setup
         t = ReportRlsTestSetup()
@@ -45,27 +47,31 @@ class ReportVerificationRlsTest(BaseTestCase):
         # Inside access bounds
         with pgtrigger.ignore("reporting.ReportVerification:immutable_report_version"):
             report_verification_2010_submitted = make_recipe(
-                'reporting.tests.utils.report_verification',
+                "reporting.tests.utils.report_verification",
                 report_version=t.report_version_2010_submitted,
             )
         report_verification_2010_draft = make_recipe(
-            'reporting.tests.utils.report_verification', report_version=t.report_version_2010_draft
+            "reporting.tests.utils.report_verification",
+            report_version=t.report_version_2010_draft,
         )
         # Outside access bounds
         report_verification_2013_draft = make_recipe(
-            'reporting.tests.utils.report_verification', report_version=t.report_version_2013_draft
+            "reporting.tests.utils.report_verification",
+            report_version=t.report_version_2013_draft,
         )
 
         # Additionl report_version needed for insert test: 2012 - Within access bounds
-        reporting_year_2012 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2012)
+        reporting_year_2012 = make_recipe(
+            "reporting.tests.utils.reporting_year", reporting_year=2012
+        )
         report_2012 = make_recipe(
-            'reporting.tests.utils.report',
+            "reporting.tests.utils.report",
             operation=t.report_version_2010_submitted.report.operation,
             operator=t.report_version_2010_submitted.report.operator,
             reporting_year=reporting_year_2012,
         )
         report_version_2012_draft = make_recipe(
-            'reporting.tests.utils.report_version', report=report_2012, status='Draft'
+            "reporting.tests.utils.report_version", report=report_2012, status="Draft"
         )
 
         def select_function(cursor):
@@ -93,7 +99,7 @@ class ReportVerificationRlsTest(BaseTestCase):
                     SET verification_body_name = %s
                     WHERE id = %s
                 """,
-                ('test', report_verification_2010_draft.id),
+                ("test", report_verification_2010_draft.id),
             )
             return cursor.rowcount
 
@@ -104,7 +110,7 @@ class ReportVerificationRlsTest(BaseTestCase):
                     SET verification_body_name = %s
                     WHERE id = %s
                 """,
-                ('test', report_verification_2013_draft.id),
+                ("test", report_verification_2013_draft.id),
             )
             return cursor.rowcount
 
@@ -126,7 +132,10 @@ class ReportVerificationRlsTest(BaseTestCase):
                     DELETE from "erc"."report_verification"
                     WHERE id in (%s,%s)
                 """,
-                (report_verification_2010_submitted.id, report_verification_2013_draft.id),
+                (
+                    report_verification_2010_submitted.id,
+                    report_verification_2013_draft.id,
+                ),
             )
             return cursor.rowcount
 

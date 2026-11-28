@@ -1,8 +1,8 @@
 import uuid
-from django.utils import timezone
 from decimal import Decimal
-from model_bakery.baker import make_recipe
+
 from common.lib import pgtrigger
+from compliance.dataclass import RefreshWrapperReturn
 from compliance.models import (
     ComplianceChargeRate,
     ComplianceEarnedCredit,
@@ -15,10 +15,10 @@ from compliance.models import (
     ElicensingLineItem,
 )
 from compliance.signals.consumers import handle_report_submission
+from django.utils import timezone
+from model_bakery.baker import make_recipe
 from registration.models import Operation
-from reporting.models import ReportVersion, ReportingYear
-from compliance.dataclass import RefreshWrapperReturn
-
+from reporting.models import ReportingYear, ReportVersion
 
 HANDLE_OBLIGATION_INTEGRATION = (
     "compliance.service.elicensing.elicensing_obligation_service"
@@ -39,9 +39,7 @@ REFRESH_DATA_BY_INVOICE = (
     "compliance.service.elicensing.elicensing_data_refresh_service"
     ".ElicensingDataRefreshService.refresh_data_by_invoice"
 )
-CREATE_PENALTY_INVOICE = (
-    "compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice"
-)
+CREATE_PENALTY_INVOICE = "compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty_invoice"
 CREATE_ADJUSTMENT = (
     "compliance.service.compliance_adjustment_service"
     ".ComplianceAdjustmentService.create_adjustment_for_target_version"
@@ -64,8 +62,12 @@ class ComplianceIntegrationTestBase:
 
     def _create_base_infrastructure(self):
         self.reporting_year = ReportingYear.objects.get(pk=self.REPORTING_YEAR)
-        self.compliance_period = CompliancePeriod.objects.get(reporting_year=self.reporting_year)
-        self.charge_rate = ComplianceChargeRate.objects.get(reporting_year=self.reporting_year).rate
+        self.compliance_period = CompliancePeriod.objects.get(
+            reporting_year=self.reporting_year
+        )
+        self.charge_rate = ComplianceChargeRate.objects.get(
+            reporting_year=self.reporting_year
+        ).rate
 
         self.operation = make_recipe(
             "registration.tests.utils.operation",
@@ -101,7 +103,9 @@ class ComplianceIntegrationTestBase:
         and sets CRV status to OBLIGATION_NOT_MET.
         """
         obligation = ComplianceObligation.objects.get(id=obligation_id)
-        operator = obligation.compliance_report_version.compliance_report.report.operator
+        operator = (
+            obligation.compliance_report_version.compliance_report.report.operator
+        )
         client_operator, _ = ElicensingClientOperator.objects.get_or_create(
             operator=operator,
             defaults={"client_object_id": 12345, "client_guid": uuid.uuid4()},
@@ -124,10 +128,14 @@ class ComplianceIntegrationTestBase:
             fee_date=compliance_period.compliance_deadline,
             base_amount=obligation.fee_amount_dollars,
         )
-        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
+        with pgtrigger.ignore(
+            "compliance.ComplianceObligation:set_updated_audit_columns"
+        ):
             obligation.elicensing_invoice = invoice
             obligation.save(update_fields=["elicensing_invoice"])
-        obligation.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        obligation.compliance_report_version.status = (
+            ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        )
         obligation.compliance_report_version.save(update_fields=["status"])
 
     @staticmethod
@@ -136,8 +144,12 @@ class ComplianceIntegrationTestBase:
 
         Returns the actual invoice from DB without calling the eLicensing API.
         """
-        obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
-        return RefreshWrapperReturn(data_is_fresh=True, invoice=obligation.elicensing_invoice)
+        obligation = ComplianceObligation.objects.get(
+            compliance_report_version_id=compliance_report_version_id
+        )
+        return RefreshWrapperReturn(
+            data_is_fresh=True, invoice=obligation.elicensing_invoice
+        )
 
     # ------------------------------------------------------------------
     # Initial report helpers
@@ -173,8 +185,13 @@ class ComplianceIntegrationTestBase:
         After: self.initial_crv has the status OBLIGATION_PENDING_INVOICE_CREATION.
         """
         self._fire_initial_report(excess_emissions, Decimal("0"))
-        assert self.initial_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
-        initial_obligation = ComplianceObligation.objects.get(compliance_report_version=self.initial_crv)
+        assert (
+            self.initial_crv.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
+        )
+        initial_obligation = ComplianceObligation.objects.get(
+            compliance_report_version=self.initial_crv
+        )
         assert initial_obligation.elicensing_invoice is None
 
     def _create_initial_report_with_obligation_post_invoice(self, excess_emissions):
@@ -184,8 +201,13 @@ class ComplianceIntegrationTestBase:
                self.initial_obligation has elicensing_invoice set.
         """
         self._fire_initial_report(excess_emissions, Decimal("0"))
-        assert self.initial_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
-        self.initial_obligation = ComplianceObligation.objects.get(compliance_report_version=self.initial_crv)
+        assert (
+            self.initial_crv.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        )
+        self.initial_obligation = ComplianceObligation.objects.get(
+            compliance_report_version=self.initial_crv
+        )
         assert self.initial_obligation.elicensing_invoice is not None
 
     def _create_initial_report_with_earned_credits(self, credited_emissions):
@@ -195,16 +217,27 @@ class ComplianceIntegrationTestBase:
                self.initial_earned_credit has status CREDITS_NOT_ISSUED.
         """
         self._fire_initial_report(Decimal("0"), credited_emissions)
-        assert self.initial_crv.status == ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
-        self.initial_earned_credit = ComplianceEarnedCredit.objects.get(compliance_report_version=self.initial_crv)
-        assert self.initial_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+        assert (
+            self.initial_crv.status
+            == ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
+        self.initial_earned_credit = ComplianceEarnedCredit.objects.get(
+            compliance_report_version=self.initial_crv
+        )
+        assert (
+            self.initial_earned_credit.issuance_status
+            == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+        )
 
     # ------------------------------------------------------------------
     # Supplementary report helper
     # ------------------------------------------------------------------
 
     def _submit_supplementary_report(
-        self, excess_emissions, credited_emissions=Decimal("0"), previous_report_version=None
+        self,
+        excess_emissions,
+        credited_emissions=Decimal("0"),
+        previous_report_version=None,
     ):
         """Mark the previous version as submitted, create supplementary report data, fire signal.
 

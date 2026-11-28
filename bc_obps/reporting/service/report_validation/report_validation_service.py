@@ -1,19 +1,22 @@
-from typing import Any, List
 import logging
+from typing import Any
 
-from reporting.service.reporting_flow_service import resolve_flow
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
 )
 from reporting.service.report_validation.report_validation_tags import ValidationTags
+from reporting.service.reporting_flow_service import resolve_flow
+
 from . import validators
 
 logger = logging.getLogger(__name__)
 
 
-def collect_validation_plugins() -> List[Any]:
-    validation_plugins = [validators.__dict__.get(plugin_name) for plugin_name in validators.__all__]
+def collect_validation_plugins() -> list[Any]:
+    validation_plugins = [
+        validators.__dict__.get(plugin_name) for plugin_name in validators.__all__
+    ]
 
     for plugin in validation_plugins:
         if not plugin:
@@ -23,7 +26,9 @@ def collect_validation_plugins() -> List[Any]:
                 f"Plugin {plugin.__name__} needs to expose a `validate(report_version: ReportVersion) -> ReportValidationResult` function"
             )
         if not callable(plugin.validate):
-            raise AttributeError(f"{plugin.__name__}'s `validate` attribute must be callable")
+            raise AttributeError(
+                f"{plugin.__name__}'s `validate` attribute must be callable"
+            )
 
     return validation_plugins
 

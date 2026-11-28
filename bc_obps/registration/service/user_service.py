@@ -1,4 +1,5 @@
 from uuid import UUID
+
 from common.exceptions import UserError
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.user import User
@@ -12,7 +13,8 @@ class UserService:
         admin_user: User = UserDataAccessService.get_by_guid(admin_user_guid)
         target_user: User = UserDataAccessService.get_by_guid(target_user_guid)
         if (
-            admin_user.is_industry_user() and admin_user.business_guid == target_user.business_guid
+            admin_user.is_industry_user()
+            and admin_user.business_guid == target_user.business_guid
         ) or admin_user.is_irc_user():
             return target_user
         raise Exception(UNAUTHORIZED_MESSAGE)
@@ -35,9 +37,11 @@ class UserService:
             include_archived: Whether or not to included archived users when doing operations on users.
         """
         if updating_user_guid == user_to_update_guid:
-            raise UserError('You cannot change your own user role.')
+            raise UserError("You cannot change your own user role.")
 
-        user: User = UserDataAccessService.update_user(user_to_update_guid, updated_data, include_archived)
+        user: User = UserDataAccessService.update_user(
+            user_to_update_guid, updated_data, include_archived
+        )
 
         if updated_data.archive:
             user.set_archive(updating_user_guid)

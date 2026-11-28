@@ -1,8 +1,8 @@
+from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Iterator
 from unittest.mock import patch
-from .http_mocks import mock_external_http, UnmockedExternalCall
 
+from .http_mocks import UnmockedExternalCall, mock_external_http
 
 __all__ = [
     "e2e_sandbox",
@@ -24,7 +24,9 @@ def mock_bccr_client() -> Iterator[None]:
     This patch directly bypasses the _validate_config method to avoid needing real credentials.
     All HTTP requests will be intercepted by our HTTP-layer mocks regardless of config state.
     """
-    from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
+    from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import (
+        BCCarbonRegistryAPIClient,
+    )
 
     # Patch _validate_config to be a no-op, allowing the client to work without real credentials
     # HTTP requests will still be intercepted by our HTTP mocks

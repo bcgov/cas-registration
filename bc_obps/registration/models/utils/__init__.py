@@ -1,3 +1,5 @@
-from .generate_unique_bcghg_id_for_operation_or_facility import generate_unique_bcghg_id_for_operation_or_facility
+from .generate_unique_bcghg_id_for_operation_or_facility import (
+    generate_unique_bcghg_id_for_operation_or_facility,
+)
 
-__all__ = ['generate_unique_bcghg_id_for_operation_or_facility']
+__all__ = ["generate_unique_bcghg_id_for_operation_or_facility"]

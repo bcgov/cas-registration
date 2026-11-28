@@ -1,8 +1,10 @@
 from common.models import BaseModel
 from django.db import models
 from registration.models import Activity
-from reporting.models import SourceType, EmissionCategory
-from reporting.models.rls_configs.emission_category_mapping import Rls as EmissionCategoryMappingRls
+from reporting.models import EmissionCategory, SourceType
+from reporting.models.rls_configs.emission_category_mapping import (
+    Rls as EmissionCategoryMappingRls,
+)
 
 
 class EmissionCategoryMapping(BaseModel):

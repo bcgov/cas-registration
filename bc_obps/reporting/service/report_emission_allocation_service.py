@@ -1,17 +1,21 @@
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import List
 from uuid import UUID
+
 from django.db import transaction
 from django.db.models import Sum
-from reporting.models.emission_category import EmissionCategory
 from registration.models.regulated_product import RegulatedProduct
-from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
+from reporting.models import FacilityReport
+from reporting.models.emission_category import EmissionCategory
 from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
-from reporting.models import FacilityReport
-from reporting.schema.report_emission_allocation import ReportEmissionAllocationsSchemaIn
+from reporting.models.report_product_emission_allocation import (
+    ReportProductEmissionAllocation,
+)
+from reporting.schema.report_emission_allocation import (
+    ReportEmissionAllocationsSchemaIn,
+)
 from reporting.service.emission_category_service import EmissionCategoryService
 from reporting.service.report_product_service import ReportProductService
 
@@ -38,7 +42,7 @@ class ReportFacilityEmissionsData:
     emission_category_id: int
     category_type: str
     emission_total: Decimal | int
-    products: List[ReportProductEmissionAllocationData]
+    products: list[ReportProductEmissionAllocationData]
 
 
 @dataclass
@@ -48,9 +52,9 @@ class ReportEmissionAllocationData:
     and allowing this service to do math on it
     """
 
-    report_product_emission_allocations: List[ReportFacilityEmissionsData]
+    report_product_emission_allocations: list[ReportFacilityEmissionsData]
     facility_total_emissions: Decimal | int
-    report_product_emission_allocation_totals: List[ReportProductEmissionAllocationData]
+    report_product_emission_allocation_totals: list[ReportProductEmissionAllocationData]
     allocation_methodology: str
     allocation_other_methodology_description: str
 
@@ -61,37 +65,51 @@ class ReportEmissionAllocationData:
 class ReportEmissionAllocationService:
     @staticmethod
     @transaction.atomic()
-    def get_emission_allocation_data(report_version_id: int, facility_id: UUID) -> ReportEmissionAllocationData:
+    def get_emission_allocation_data(
+        report_version_id: int, facility_id: UUID
+    ) -> ReportEmissionAllocationData:
         # Step 1: Get the facility report ID
-        facility_report_id = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id).pk
+        facility_report_id = FacilityReport.objects.get(
+            report_version_id=report_version_id, facility_id=facility_id
+        ).pk
 
         # Step 2: Fetch all emission category totals
-        all_emission_categories_totals = ReportEmissionAllocationService.get_emission_category_totals_with_ids(
-            facility_report_id
+        all_emission_categories_totals = (
+            ReportEmissionAllocationService.get_emission_category_totals_with_ids(
+                facility_report_id
+            )
         )
 
         # Step 3: Fetch report products for the given report version and facility. They necessarily have the unregulated entries created upon saving the ReportOperation model.
         report_products = ReportProduct.objects.filter(
-            report_version_id=report_version_id, facility_report__facility_id=facility_id
+            report_version_id=report_version_id,
+            facility_report__facility_id=facility_id,
         )
 
         # Step 4: Fetch existing emission allocations for the given report version and facility
         report_emission_allocation = ReportEmissionAllocation.objects.filter(
             report_version_id=report_version_id, facility_report_id=facility_report_id
         ).first()
-        report_product_emission_allocations = ReportProductEmissionAllocation.objects.filter(
-            report_emission_allocation=report_emission_allocation,
-            report_version_id=report_version_id,
+        report_product_emission_allocations = (
+            ReportProductEmissionAllocation.objects.filter(
+                report_emission_allocation=report_emission_allocation,
+                report_version_id=report_version_id,
+            )
         )
 
         # Step 5: Construct the response data
-        allocation_methodology = ""  # because these fields are the same for all records of a report
+        allocation_methodology = (
+            ""  # because these fields are the same for all records of a report
+        )
         allocation_other_methodology_description = ""
 
         # Grab methodology
         if report_emission_allocation is not None:
             allocation_methodology = report_emission_allocation.allocation_methodology
-            if report_emission_allocation.allocation_other_methodology_description is not None:
+            if (
+                report_emission_allocation.allocation_other_methodology_description
+                is not None
+            ):
                 allocation_other_methodology_description = (
                     report_emission_allocation.allocation_other_methodology_description
                 )
@@ -111,12 +129,15 @@ class ReportEmissionAllocationService:
             products = []
             for rp in report_products:
                 product_emission = report_product_emission_allocations.filter(
-                    report_product_id=rp.id, emission_category__category_name=data["category_name"]
+                    report_product_id=rp.id,
+                    emission_category__category_name=data["category_name"],
                 ).first()
                 product = ReportProductEmissionAllocationData(
                     report_product_id=rp.pk,
                     product_name=rp.product.name,
-                    allocated_quantity=product_emission.allocated_quantity if product_emission else 0,
+                    allocated_quantity=product_emission.allocated_quantity
+                    if product_emission
+                    else 0,
                 )
                 products.append(product)
 
@@ -132,7 +153,9 @@ class ReportEmissionAllocationService:
 
         # Step 6: Assess whether we're missing some products
         allowed_product_ids = set(
-            ReportProductService.get_allowed_products(report_version_id).values_list("id", flat=True)
+            ReportProductService.get_allowed_products(report_version_id).values_list(
+                "id", flat=True
+            )
         )
         reported_product_ids = set(report_products.values_list("product_id", flat=True))
         has_missing_products = allowed_product_ids != reported_product_ids
@@ -157,26 +180,34 @@ class ReportEmissionAllocationService:
         data: ReportEmissionAllocationsSchemaIn,
         user_guid: UUID,
     ) -> None:
-
-        facility_report_id = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id).pk
+        facility_report_id = FacilityReport.objects.get(
+            report_version_id=report_version_id, facility_id=facility_id
+        ).pk
 
         # Assumption: data is only entered when allocated_quantity is not 0
         report_emission_allocations = data.report_product_emission_allocations
         allocation_methodology = data.allocation_methodology
-        allocation_other_methodology_description = data.allocation_other_methodology_description
+        allocation_other_methodology_description = (
+            data.allocation_other_methodology_description
+        )
 
         # Update the emission allocation parent table from the data
-        report_emission_allocation, _ = ReportEmissionAllocation.objects.update_or_create(
-            report_version_id=report_version_id,
-            facility_report_id=facility_report_id,
-            defaults={
-                "allocation_methodology": allocation_methodology,
-                "allocation_other_methodology_description": allocation_other_methodology_description,
-            },
+        report_emission_allocation, _ = (
+            ReportEmissionAllocation.objects.update_or_create(
+                report_version_id=report_version_id,
+                facility_report_id=facility_report_id,
+                defaults={
+                    "allocation_methodology": allocation_methodology,
+                    "allocation_other_methodology_description": allocation_other_methodology_description,
+                },
+            )
         )
 
         # If the methodology is "Not Applicable", delete all existing product emission allocations
-        if allocation_methodology == ReportEmissionAllocation.AllocationMethodologyChoices.NOT_APPLICABLE:
+        if (
+            allocation_methodology
+            == ReportEmissionAllocation.AllocationMethodologyChoices.NOT_APPLICABLE
+        ):
             ReportProductEmissionAllocation.objects.filter(
                 report_version_id=report_version_id,
                 report_emission_allocation=report_emission_allocation.id,
@@ -186,29 +217,37 @@ class ReportEmissionAllocationService:
         # Update the emission product allocations from the data as children of report_emission_allocation created
         for allocations in report_emission_allocations:
             for product in allocations.products:
-                if product.allocated_quantity == 0:  # if the allocated quantity is 0, delete any existing allocation
-                    existing_allocation = ReportProductEmissionAllocation.objects.filter(
-                        report_version_id=report_version_id,
-                        report_emission_allocation=report_emission_allocation.id,
-                        report_product_id=product.report_product_id,
-                        emission_category_id=allocations.emission_category_id,
+                if (
+                    product.allocated_quantity == 0
+                ):  # if the allocated quantity is 0, delete any existing allocation
+                    existing_allocation = (
+                        ReportProductEmissionAllocation.objects.filter(
+                            report_version_id=report_version_id,
+                            report_emission_allocation=report_emission_allocation.id,
+                            report_product_id=product.report_product_id,
+                            emission_category_id=allocations.emission_category_id,
+                        )
                     )
                     if existing_allocation.exists():
                         existing_allocation.delete()
                     continue
 
-                report_emission_allocation_record, _ = ReportProductEmissionAllocation.objects.update_or_create(
-                    report_emission_allocation=report_emission_allocation,
-                    report_version_id=report_version_id,
-                    report_product_id=product.report_product_id,
-                    emission_category_id=allocations.emission_category_id,
-                    defaults={
-                        "allocated_quantity": product.allocated_quantity,
-                    },
+                report_emission_allocation_record, _ = (
+                    ReportProductEmissionAllocation.objects.update_or_create(
+                        report_emission_allocation=report_emission_allocation,
+                        report_version_id=report_version_id,
+                        report_product_id=product.report_product_id,
+                        emission_category_id=allocations.emission_category_id,
+                        defaults={
+                            "allocated_quantity": product.allocated_quantity,
+                        },
+                    )
                 )
 
     @staticmethod
-    def check_if_products_are_allowed(report_version_id: int, product_ids: List[int]) -> bool:
+    def check_if_products_are_allowed(
+        report_version_id: int, product_ids: list[int]
+    ) -> bool:
         """
         Check if the given product IDs are allowed for the given report version ID.
 
@@ -220,12 +259,16 @@ class ReportEmissionAllocationService:
             bool: True if all product IDs are allowed, False otherwise.
         """
         allowed_product_ids = list(
-            ReportOperation.objects.get(report_version_id=report_version_id).regulated_products.values_list(
-                "id", flat=True
-            )
+            ReportOperation.objects.get(
+                report_version_id=report_version_id
+            ).regulated_products.values_list("id", flat=True)
         )
 
-        return not RegulatedProduct.objects.filter(id__in=product_ids).exclude(id__in=allowed_product_ids).exists()
+        return (
+            not RegulatedProduct.objects.filter(id__in=product_ids)
+            .exclude(id__in=allowed_product_ids)
+            .exists()
+        )
 
     @staticmethod
     def get_emission_category_totals_with_ids(facility_report_id: int) -> dict:
@@ -241,8 +284,10 @@ class ReportEmissionAllocationService:
         emission_categories = EmissionCategory.objects.all()
         emission_categories_totals = {}
         for category in emission_categories:
-            emission_total = EmissionCategoryService.get_total_emissions_by_emission_category(
-                facility_report_id, category.pk
+            emission_total = (
+                EmissionCategoryService.get_total_emissions_by_emission_category(
+                    facility_report_id, category.pk
+                )
             )
             emission_categories_totals[category.pk] = {
                 "category_name": category.category_name,
@@ -266,12 +311,16 @@ class ReportEmissionAllocationService:
         Returns:
            List[ReportProductEmissionAllocationSchemaOut]
         """
-        report_products = ReportProduct.objects.filter(facility_report_id=facility_report_id)
+        report_products = ReportProduct.objects.filter(
+            facility_report_id=facility_report_id
+        )
         report_product_emission_allocation_totals = []
         for rp in report_products:
             allocated_quantity = ReportProductEmissionAllocation.objects.filter(
                 report_product_id=rp.pk, emission_category__category_type="basic"
-            ).aggregate(allocated_quantity=Sum("allocated_quantity"))["allocated_quantity"]
+            ).aggregate(allocated_quantity=Sum("allocated_quantity"))[
+                "allocated_quantity"
+            ]
             report_product_emission_allocation_totals.append(
                 ReportProductEmissionAllocationData(
                     report_product_id=rp.pk,

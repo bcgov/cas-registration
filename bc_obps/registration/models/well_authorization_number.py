@@ -1,14 +1,17 @@
-from django.db import models
 from common.enums import Schemas
+from django.db import models
 from registration.enums.enums import RegistrationTableNames
 from registration.models import TimeStampedModel
+from registration.models.rls_configs.well_authorization_number import (
+    Rls as WellAuthorizationNumberRls,
+)
 from simple_history.models import HistoricalRecords
-from registration.models.rls_configs.well_authorization_number import Rls as WellAuthorizationNumberRls
 
 
 class WellAuthorizationNumber(TimeStampedModel):
     well_authorization_number = models.IntegerField(
-        primary_key=True, db_comment="A well authorization number from the BC Energy Regulator"
+        primary_key=True,
+        db_comment="A well authorization number from the BC Energy Regulator",
     )
 
     history = HistoricalRecords(

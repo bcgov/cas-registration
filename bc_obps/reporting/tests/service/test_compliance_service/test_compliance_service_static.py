@@ -1,11 +1,11 @@
-from django.test import TestCase
 from decimal import Decimal
-from reporting.service.compliance_service import ComplianceService
+
+from django.test import TestCase
 from model_bakery.baker import make_recipe
+from reporting.service.compliance_service import ComplianceService
 
 
 class TestComplianceSummaryService(TestCase):
-
     def test_get_emissions_attributable_for_reporting(self):
         ## SETUP ##
         # Create report_emission records with recipes
@@ -63,9 +63,13 @@ class TestComplianceSummaryService(TestCase):
         )
 
         ## TESTS ##
-        sums_for_testing = ComplianceService.get_production_totals(report_product_1.report_version_id)
+        sums_for_testing = ComplianceService.get_production_totals(
+            report_product_1.report_version_id
+        )
         annual_sum = (
-            report_product_1.annual_production + report_product_2.annual_production + report_product_3.annual_production
+            report_product_1.annual_production
+            + report_product_2.annual_production
+            + report_product_3.annual_production
         )
         apr_dec_sum = (
             report_product_1.production_data_apr_dec
@@ -105,11 +109,15 @@ class TestComplianceSummaryService(TestCase):
         )
 
         ## TESTS ##
-        product_1_2_aggregate_for_test = ComplianceService.get_report_product_aggregated_totals(
-            report_product_1.report_version_id, report_product_1.product_id
+        product_1_2_aggregate_for_test = (
+            ComplianceService.get_report_product_aggregated_totals(
+                report_product_1.report_version_id, report_product_1.product_id
+            )
         )
-        product_3_4_aggregate_for_test = ComplianceService.get_report_product_aggregated_totals(
-            report_product_3.report_version_id, report_product_3.product_id
+        product_3_4_aggregate_for_test = (
+            ComplianceService.get_report_product_aggregated_totals(
+                report_product_3.report_version_id, report_product_3.product_id
+            )
         )
 
         assert (
@@ -118,7 +126,8 @@ class TestComplianceSummaryService(TestCase):
         )
         assert (
             product_1_2_aggregate_for_test["apr_dec"]
-            == report_product_1.production_data_apr_dec + report_product_2.production_data_apr_dec
+            == report_product_1.production_data_apr_dec
+            + report_product_2.production_data_apr_dec
         )
 
         assert (
@@ -127,7 +136,8 @@ class TestComplianceSummaryService(TestCase):
         )
         assert (
             product_3_4_aggregate_for_test["apr_dec"]
-            == report_product_3.production_data_apr_dec + report_product_4.production_data_apr_dec
+            == report_product_3.production_data_apr_dec
+            + report_product_4.production_data_apr_dec
         )
 
     def test_get_emission_limit(self):

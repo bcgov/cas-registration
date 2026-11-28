@@ -1,18 +1,25 @@
 from decimal import Decimal
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user, run_with_rollback
-from compliance.models.compliance_obligation import ComplianceObligation
+
 from common.tests.utils.helpers import BaseTestCase
-from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
-from model_bakery.baker import make_recipe
-from compliance.tests.utils.compliance_rls_test_infrastructure import ComplianceReportRlsTestSetup
+from compliance.models.compliance_obligation import ComplianceObligation
+from compliance.tests.utils.compliance_rls_test_infrastructure import (
+    ComplianceReportRlsTestSetup,
+)
 from django.db import connection
+from model_bakery.baker import make_recipe
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from rls.middleware.rls import RlsMiddleware
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+    run_with_rollback,
+)
 
 
 class ComplianceObligationTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = make_recipe('compliance.tests.utils.compliance_obligation')
+        cls.test_object = make_recipe("compliance.tests.utils.compliance_obligation")
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
@@ -35,20 +42,22 @@ class TestComplianceObligationRls(BaseTestCase):
 
         # within access bounds
         obligation_2010 = make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=t.compliance_report_version_2010
+            "compliance.tests.utils.compliance_obligation",
+            compliance_report_version=t.compliance_report_version_2010,
         )
         supp_compliance_report_version_2010 = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
+            "compliance.tests.utils.compliance_report_version",
             compliance_report=t.compliance_report_2010,
             is_supplementary=True,
         )
 
         # outside access bounds
         obligation_2013 = make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=t.compliance_report_version_2013
+            "compliance.tests.utils.compliance_obligation",
+            compliance_report_version=t.compliance_report_version_2013,
         )
         supp_compliance_report_version_2013 = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
+            "compliance.tests.utils.compliance_report_version",
             compliance_report=t.compliance_report_2013,
             is_supplementary=True,
         )
@@ -76,7 +85,7 @@ class TestComplianceObligationRls(BaseTestCase):
                         %s, %s, %s
                     )
                 """,
-                (supp_compliance_report_version_2013.id, '1234', 'None'),
+                (supp_compliance_report_version_2013.id, "1234", "None"),
             )
 
         def update_function(cursor):
@@ -86,7 +95,7 @@ class TestComplianceObligationRls(BaseTestCase):
                     SET fee_amount_dollars = %s
                     WHERE id = %s
                 """,
-                (Decimal('8888'), obligation_2010.id),
+                (Decimal("8888"), obligation_2010.id),
             )
             return cursor.rowcount
 
@@ -97,13 +106,13 @@ class TestComplianceObligationRls(BaseTestCase):
                     SET fee_amount_dollars = %s
                     WHERE id = %s
                 """,
-                (Decimal('8888'), obligation_2013.id),
+                (Decimal("8888"), obligation_2013.id),
             )
             return cursor.rowcount
 
         # Extra assert for forbidden delete unless crv is superceded
         # Ensure status is not 'Superceded' to prevent delete
-        t.compliance_report_version_2010.status = 'Obligation not met'
+        t.compliance_report_version_2010.status = "Obligation not met"
         t.compliance_report_version_2010.save()
 
         def forbidden_delete_unless_superceded(cursor):
@@ -118,13 +127,15 @@ class TestComplianceObligationRls(BaseTestCase):
 
         with connection.cursor() as cursor:
             RlsMiddleware._set_user_guid_and_role(cursor, t.approved_user_operator.user)
-            forbidden_deleted_records_count = run_with_rollback(cursor, forbidden_delete_unless_superceded)
-            assert (
-                forbidden_deleted_records_count == 0
-            ), f"Expected 0 deleted records when status is not 'Superceded', but got {forbidden_deleted_records_count} (did you remember to return in the delete function?)"
+            forbidden_deleted_records_count = run_with_rollback(
+                cursor, forbidden_delete_unless_superceded
+            )
+            assert forbidden_deleted_records_count == 0, (
+                f"Expected 0 deleted records when status is not 'Superceded', but got {forbidden_deleted_records_count} (did you remember to return in the delete function?)"
+            )
 
         # Update status to 'Superceded' to allow for delete
-        t.compliance_report_version_2010.status = 'Superceded'
+        t.compliance_report_version_2010.status = "Superceded"
         t.compliance_report_version_2010.save()
 
         def delete_function(cursor):
@@ -164,10 +175,12 @@ class TestComplianceObligationRls(BaseTestCase):
         t = ComplianceReportRlsTestSetup()
 
         make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=t.compliance_report_version_2010
+            "compliance.tests.utils.compliance_obligation",
+            compliance_report_version=t.compliance_report_version_2010,
         )
         make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=t.compliance_report_version_2013
+            "compliance.tests.utils.compliance_obligation",
+            compliance_report_version=t.compliance_report_version_2013,
         )
 
         def select_function(cursor):

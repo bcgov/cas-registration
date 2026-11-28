@@ -36,7 +36,12 @@ class TestParameters(SimpleTestCase):
 
         result = extract_function_parameters(args, kwargs, test_function)
 
-        expected = {"param1": "value1", "param2": "value2", "param3": "value3", "param4": "value4"}
+        expected = {
+            "param1": "value1",
+            "param2": "value2",
+            "param3": "value3",
+            "param4": "value4",
+        }
         self.assertEqual(result, expected)
 
     def test_extract_function_parameters_extra_kwargs(self):

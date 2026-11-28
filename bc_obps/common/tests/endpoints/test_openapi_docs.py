@@ -9,5 +9,5 @@ class TestOpenAPIDocs(TestCase):
 
     def test_openapi_docs_are_accessible(self):
         client = Client()
-        response = client.get(custom_reverse_lazy('openapi-json'))
+        response = client.get(custom_reverse_lazy("openapi-json"))
         self.assertEqual(response.status_code, 200)

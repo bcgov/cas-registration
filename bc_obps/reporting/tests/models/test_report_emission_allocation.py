@@ -1,15 +1,18 @@
 import pytest
-from django.core.exceptions import ValidationError
+from common.lib import pgtrigger
 from common.tests.utils.helpers import BaseTestCase
+from django.core.exceptions import ValidationError
+from model_bakery.baker import make, make_recipe
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
-from model_bakery.baker import make_recipe, make
+from reporting.models import ReportEmissionAllocation
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
-from reporting.models import ReportEmissionAllocation
 from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsTestSetup
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from common.lib import pgtrigger
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ReportEmissionAllocationModelTest(BaseTestCase):
@@ -67,50 +70,63 @@ class ReportEmissionAllocationModelTest(BaseTestCase):
         )
 
     def test_immutable_after_report_version_submitted(self):
-        assert_immutable_report_version("reporting.tests.utils.report_emission_allocation")
+        assert_immutable_report_version(
+            "reporting.tests.utils.report_emission_allocation"
+        )
 
 
 class ReportEmissionAllocationRlsTest(BaseTestCase):
-
     def test_report_emission_allocation_rls_industry_user(self):
         # Common Test Setup
-        t = ReportRlsTestSetup('facility_report')
+        t = ReportRlsTestSetup("facility_report")
 
         # ReportEmissionAllocation Setup
         # Inside access bounds
-        with pgtrigger.ignore("reporting.ReportEmissionAllocation:immutable_report_version"):
+        with pgtrigger.ignore(
+            "reporting.ReportEmissionAllocation:immutable_report_version"
+        ):
             report_emission_allocation_2010_submitted = make_recipe(
-                'reporting.tests.utils.report_emission_allocation', report_version=t.report_version_2010_submitted
+                "reporting.tests.utils.report_emission_allocation",
+                report_version=t.report_version_2010_submitted,
             )
         report_emission_allocation_2010_draft = make_recipe(
-            'reporting.tests.utils.report_emission_allocation', report_version=t.report_version_2010_draft
+            "reporting.tests.utils.report_emission_allocation",
+            report_version=t.report_version_2010_draft,
         )
         # Outside access bounds
         report_emission_allocation_2013_draft = make_recipe(
-            'reporting.tests.utils.report_emission_allocation', report_version=t.report_version_2013_draft
+            "reporting.tests.utils.report_emission_allocation",
+            report_version=t.report_version_2013_draft,
         )
 
         # Additional report_version needed for insert test: 2012 - Within access bounds
-        reporting_year_2012 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2012)
+        reporting_year_2012 = make_recipe(
+            "reporting.tests.utils.reporting_year", reporting_year=2012
+        )
         report_2012 = make_recipe(
-            'reporting.tests.utils.report',
+            "reporting.tests.utils.report",
             operation=t.report_version_2010_submitted.report.operation,
             operator=t.report_version_2010_submitted.report.operator,
             reporting_year=reporting_year_2012,
         )
         report_version_2012_draft = make_recipe(
-            'reporting.tests.utils.report_version', report=report_2012, status='Draft'
+            "reporting.tests.utils.report_version", report=report_2012, status="Draft"
         )
 
         def select_function(cursor):
-            ReportEmissionAllocation.objects.get(id=report_emission_allocation_2010_submitted.id)
+            ReportEmissionAllocation.objects.get(
+                id=report_emission_allocation_2010_submitted.id
+            )
 
         def forbidden_select_function(cursor):
-            ReportEmissionAllocation.objects.get(id=report_emission_allocation_2013_draft.id)
+            ReportEmissionAllocation.objects.get(
+                id=report_emission_allocation_2013_draft.id
+            )
 
         def insert_function(cursor):
             ReportEmissionAllocation.objects.create(
-                report_version=report_version_2012_draft, facility_report=t.parent_object_2010_draft
+                report_version=report_version_2012_draft,
+                facility_report=t.parent_object_2010_draft,
             )
 
         def forbidden_insert_function(cursor):
@@ -129,7 +145,10 @@ class ReportEmissionAllocationRlsTest(BaseTestCase):
                     SET allocation_methodology = %s
                     WHERE id = %s
                 """,
-                ('OBPS Allocation Calculator', report_emission_allocation_2010_draft.id),
+                (
+                    "OBPS Allocation Calculator",
+                    report_emission_allocation_2010_draft.id,
+                ),
             )
             return cursor.rowcount
 
@@ -140,7 +159,10 @@ class ReportEmissionAllocationRlsTest(BaseTestCase):
                     SET allocation_methodology = %s
                     WHERE id = %s
                 """,
-                ('OBPS Allocation Calculator', report_emission_allocation_2013_draft.id),
+                (
+                    "OBPS Allocation Calculator",
+                    report_emission_allocation_2013_draft.id,
+                ),
             )
             return cursor.rowcount
 
@@ -162,7 +184,10 @@ class ReportEmissionAllocationRlsTest(BaseTestCase):
                     DELETE from "erc"."report_emission_allocation"
                     WHERE id in (%s,%s)
                 """,
-                (report_emission_allocation_2010_submitted.id, report_emission_allocation_2013_draft.id),
+                (
+                    report_emission_allocation_2010_submitted.id,
+                    report_emission_allocation_2013_draft.id,
+                ),
             )
             return cursor.rowcount
 

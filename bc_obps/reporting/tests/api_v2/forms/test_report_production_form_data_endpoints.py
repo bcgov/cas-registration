@@ -1,13 +1,16 @@
 from model_bakery.baker import make_recipe
 from registration.models.regulated_product import RegulatedProduct
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from reporting.tests.utils.report_access_validation import (
+    assert_report_version_ownership_is_validated,
+)
 
 
 class TestReportProductV2Endpoints(CommonTestSetup):
     def setup_method(self):
         self.report_version = make_recipe(
-            "reporting.tests.utils.report_version", report__reporting_year__reporting_year=1922
+            "reporting.tests.utils.report_version",
+            report__reporting_year__reporting_year=1922,
         )
         self.facility_report = make_recipe(
             "reporting.tests.utils.facility_report",
@@ -31,7 +34,9 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             operator=self.facility_report.report_version.report.operator,
             operations=[self.facility_report.report_version.report.operation],
         )
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
+        response = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", self.endpoint_under_test
+        )
 
         assert response.json() == {
             "facility_data": {
@@ -59,7 +64,9 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             operator=self.facility_report.report_version.report.operator,
             operations=[self.facility_report.report_version.report.operation],
         )
-        self.report_operation.regulated_products.set(RegulatedProduct.objects.filter(id__in=[1, 2, 3]))
+        self.report_operation.regulated_products.set(
+            RegulatedProduct.objects.filter(id__in=[1, 2, 3])
+        )
         rp1 = make_recipe(
             "reporting.tests.utils.report_product",
             report_version=self.facility_report.report_version,
@@ -94,7 +101,9 @@ class TestReportProductV2Endpoints(CommonTestSetup):
             product_id=4,
         )
 
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
+        response = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", self.endpoint_under_test
+        )
 
         assert response.json() == {
             "facility_data": {
@@ -165,4 +174,6 @@ class TestReportProductV2Endpoints(CommonTestSetup):
         }
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_production_form_data", facility_id="uuid")
+        assert_report_version_ownership_is_validated(
+            "get_production_form_data", facility_id="uuid"
+        )

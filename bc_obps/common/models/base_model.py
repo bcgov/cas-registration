@@ -1,6 +1,7 @@
 import typing
-from django.db import models
+
 from common.constants import AUDIT_FIELDS
+from django.db import models
 from rls.models import Rls
 
 
@@ -17,10 +18,14 @@ class BaseModel(models.Model, metaclass=Rls):
     def save(self, *args, **kwargs) -> None:
         # if `update_fields` is passed, we only clean them otherwise we clean all fields(except audit fields)
         # This is to optimize the performance of the save method by only validating the fields that are being updated
-        fields_to_update = kwargs.get('update_fields')
+        fields_to_update = kwargs.get("update_fields")
         if fields_to_update:
             self.full_clean(
-                exclude=[field.name for field in self._meta.fields if field.name not in fields_to_update]
+                exclude=[
+                    field.name
+                    for field in self._meta.fields
+                    if field.name not in fields_to_update
+                ]
             )  # validate the model before saving
         else:
             self.full_clean(exclude=AUDIT_FIELDS)  # validate the model before saving
@@ -29,8 +34,8 @@ class BaseModel(models.Model, metaclass=Rls):
     @typing.no_type_check
     def custom_update_or_create(self, **kwargs: dict):
         # Extract pk or id from kwargs if available
-        pk = kwargs.pop('pk', None)
-        kwargs_id = kwargs.pop('id', None)
+        pk = kwargs.pop("pk", None)
+        kwargs_id = kwargs.pop("id", None)
 
         # Use pk if available, otherwise use id
         identifier = pk if pk is not None else kwargs_id
@@ -41,6 +46,8 @@ class BaseModel(models.Model, metaclass=Rls):
             created = True
         else:
             # If identifier is provided, update or create the instance
-            instance, created = self.objects.update_or_create(pk=identifier, defaults=kwargs)
+            instance, created = self.objects.update_or_create(
+                pk=identifier, defaults=kwargs
+            )
 
         return instance, created

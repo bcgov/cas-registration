@@ -1,4 +1,5 @@
 from decimal import Decimal
+
 from reporting.models.reporting_year import ReportingYear
 
 

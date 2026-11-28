@@ -1,6 +1,6 @@
+from compliance.dataclass import ObligationInvoiceContext
 from django.template.loader import render_to_string
 from django.test import SimpleTestCase
-from compliance.dataclass import ObligationInvoiceContext
 
 
 class TestInvoiceTemplate(SimpleTestCase):
@@ -20,14 +20,20 @@ class TestInvoiceTemplate(SimpleTestCase):
             compliance_obligation="1,000 tonnes CO2e",
             compliance_obligation_charge_rate="$2.00 per tonne",
             compliance_obligation_equivalent_amount="$2,000.00",
-            billing_items=[{"date": "Jan 15, 2025", "description": "Compliance Fee", "amount": "$2,000.00"}],
+            billing_items=[
+                {
+                    "date": "Jan 15, 2025",
+                    "description": "Compliance Fee",
+                    "amount": "$2,000.00",
+                }
+            ],
             total_amount_due="$2,000.00",
             logo_base64="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
         )
 
     def test_invoice_template_renders_with_all_required_variables(self):
         context = self.base_context.__dict__
-        rendered_html = render_to_string('invoice.html', context)
+        rendered_html = render_to_string("invoice.html", context)
         self.assertIn("<!doctype html>", rendered_html)
         self.assertIn("<title>Compliance Invoice</title>", rendered_html)
         self.assertIn("Ministry of Energy and Climate Solutions", rendered_html)
@@ -35,7 +41,7 @@ class TestInvoiceTemplate(SimpleTestCase):
 
     def test_invoice_template_includes_all_operator_information(self):
         context = self.base_context.__dict__
-        rendered_html = render_to_string('invoice.html', context)
+        rendered_html = render_to_string("invoice.html", context)
         self.assertIn("Operator Business Address", rendered_html)
         self.assertIn("Test Operator Ltd.", rendered_html)
         self.assertIn("123 Test Street", rendered_html)
@@ -44,7 +50,7 @@ class TestInvoiceTemplate(SimpleTestCase):
 
     def test_invoice_template_includes_all_invoice_details(self):
         context = self.base_context.__dict__
-        rendered_html = render_to_string('invoice.html', context)
+        rendered_html = render_to_string("invoice.html", context)
         self.assertIn("INV-2025-001", rendered_html)
         self.assertIn("Jan 15, 2025", rendered_html)
         self.assertIn("Feb 15, 2025", rendered_html)
@@ -56,7 +62,7 @@ class TestInvoiceTemplate(SimpleTestCase):
 
     def test_invoice_template_includes_billing_items(self):
         context = self.base_context.__dict__
-        rendered_html = render_to_string('invoice.html', context)
+        rendered_html = render_to_string("invoice.html", context)
         self.assertIn("Fees and Adjustments", rendered_html)
         self.assertIn("Date", rendered_html)
         self.assertIn("Description", rendered_html)
@@ -67,28 +73,48 @@ class TestInvoiceTemplate(SimpleTestCase):
 
     def test_invoice_template_with_void_invoice(self):
         context = self.base_context.__dict__.copy()
-        context['invoice_is_void'] = True
-        rendered_html = render_to_string('invoice.html', context)
+        context["invoice_is_void"] = True
+        rendered_html = render_to_string("invoice.html", context)
         self.assertIn("VOID", rendered_html)
         self.assertIn("watermark", rendered_html)
 
     def test_invoice_template_without_void_invoice(self):
         context = self.base_context.__dict__.copy()
-        context['invoice_is_void'] = False
-        rendered_html = render_to_string('invoice.html', context)
+        context["invoice_is_void"] = False
+        rendered_html = render_to_string("invoice.html", context)
         self.assertNotIn("VOID", rendered_html)
 
     def test_invoice_template_with_multiple_billing_items(self):
         context = self.base_context.__dict__.copy()
-        context['billing_items'] = [
-            {"date": "Jan 15, 2025", "description": "Compliance Fee", "amount": "$2,000.00"},
-            {"date": "Jan 20, 2025", "description": "Late Payment Penalty", "amount": "$100.00"},
-            {"date": "Jan 25, 2025", "description": "Payment Credit", "amount": "-$500.00"},
-            {"date": "Jan 26, 2025", "description": "FAA Interest", "amount": "$200.00"},
-            {"date": "Jan 26, 2025", "description": "FAA Interest Payment", "amount": "-$200.00"},
+        context["billing_items"] = [
+            {
+                "date": "Jan 15, 2025",
+                "description": "Compliance Fee",
+                "amount": "$2,000.00",
+            },
+            {
+                "date": "Jan 20, 2025",
+                "description": "Late Payment Penalty",
+                "amount": "$100.00",
+            },
+            {
+                "date": "Jan 25, 2025",
+                "description": "Payment Credit",
+                "amount": "-$500.00",
+            },
+            {
+                "date": "Jan 26, 2025",
+                "description": "FAA Interest",
+                "amount": "$200.00",
+            },
+            {
+                "date": "Jan 26, 2025",
+                "description": "FAA Interest Payment",
+                "amount": "-$200.00",
+            },
         ]
-        context['total_amount_due'] = "$1,600.00"
-        rendered_html = render_to_string('invoice.html', context)
+        context["total_amount_due"] = "$1,600.00"
+        rendered_html = render_to_string("invoice.html", context)
         self.assertIn("Compliance Fee", rendered_html)
         self.assertIn("Late Payment Penalty", rendered_html)
         self.assertIn("Payment Credit", rendered_html)
@@ -103,9 +129,9 @@ class TestInvoiceTemplate(SimpleTestCase):
 
     def test_invoice_template_with_empty_billing_items(self):
         context = self.base_context.__dict__.copy()
-        context['billing_items'] = []
-        context['total_amount_due'] = "$0.00"
-        rendered_html = render_to_string('invoice.html', context)
+        context["billing_items"] = []
+        context["total_amount_due"] = "$0.00"
+        rendered_html = render_to_string("invoice.html", context)
         self.assertIn("<!doctype html>", rendered_html)
         self.assertIn("Fees and Adjustments", rendered_html)
         self.assertIn("Amount Due:", rendered_html)
@@ -113,14 +139,14 @@ class TestInvoiceTemplate(SimpleTestCase):
 
     def test_invoice_template_includes_logo(self):
         context = self.base_context.__dict__
-        rendered_html = render_to_string('invoice.html', context)
+        rendered_html = render_to_string("invoice.html", context)
         self.assertIn("data:image/png;base64,", rendered_html)
         self.assertIn("CleanBC Logo", rendered_html)
 
     def test_invoice_template_css_styles_present(self):
         context = self.base_context.__dict__
-        rendered_html = render_to_string('invoice.html', context)
-        self.assertIn("font-family: \"Inter\"", rendered_html)
+        rendered_html = render_to_string("invoice.html", context)
+        self.assertIn('font-family: "Inter"', rendered_html)
         self.assertIn("company-logo", rendered_html)
         self.assertIn("ministry-title", rendered_html)
         self.assertIn("invoice-title", rendered_html)
@@ -129,7 +155,7 @@ class TestInvoiceTemplate(SimpleTestCase):
 
     def test_invoice_template_page_setup(self):
         context = self.base_context.__dict__
-        rendered_html = render_to_string('invoice.html', context)
+        rendered_html = render_to_string("invoice.html", context)
         self.assertIn("@page", rendered_html)
         self.assertIn("size: A4 landscape", rendered_html)
         self.assertIn("@bottom-left", rendered_html)
@@ -139,7 +165,7 @@ class TestInvoiceTemplate(SimpleTestCase):
 
     def test_invoice_template_font_loading(self):
         context = self.base_context.__dict__
-        rendered_html = render_to_string('invoice.html', context)
+        rendered_html = render_to_string("invoice.html", context)
         self.assertIn("fonts.googleapis.com", rendered_html)
         self.assertIn("Inter", rendered_html)
 
@@ -167,4 +193,4 @@ class TestInvoiceTemplate(SimpleTestCase):
         self.assertIn('<div class="bciers-alert"', html)
         self.assertIn("Invoice data last updated", html)
         self.assertIn("2025-08-25 19:37:03", html)
-        self.assertIn('mailto:ghgregulator@gov.bc.ca', html)
+        self.assertIn("mailto:ghgregulator@gov.bc.ca", html)

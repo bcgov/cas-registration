@@ -1,14 +1,15 @@
 import typing
+
 from bc_obps.storage_backends import keep_deleted_items
-from common.models.scanned_file_storage_mixin import ScannedFileStorageMixin
-from django.db import models
 from common.enums import Schemas
+from common.models.scanned_file_storage_mixin import ScannedFileStorageMixin
+from django.core.files.storage import default_storage
+from django.db import models
+from django.db.models.fields.files import FieldFile
 from registration.enums.enums import RegistrationTableNames
 from registration.models import DocumentType, TimeStampedModel
-from simple_history.models import HistoricalRecords
 from registration.models.rls_configs.document import Rls as DocumentRls
-from django.core.files.storage import default_storage
-from django.db.models.fields.files import FieldFile
+from simple_history.models import HistoricalRecords
 
 
 class Document(TimeStampedModel, ScannedFileStorageMixin):
@@ -24,7 +25,9 @@ class Document(TimeStampedModel, ScannedFileStorageMixin):
         related_name="documents",
         db_comment="The type of this document (e.g. boundary map, process flow diagram). Foreign key to erc.document_type",
     )
-    description = models.CharField(max_length=1000, blank=True, null=True, db_comment="Description of the document")
+    description = models.CharField(
+        max_length=1000, blank=True, null=True, db_comment="Description of the document"
+    )
     operation = models.ForeignKey(
         "registration.Operation",
         blank=True,
@@ -43,9 +46,7 @@ class Document(TimeStampedModel, ScannedFileStorageMixin):
         return self.file
 
     class Meta(TimeStampedModel.Meta):
-        db_table_comment = (
-            "Table that contains information about documents such as file metadata, type, and description."
-        )
+        db_table_comment = "Table that contains information about documents such as file metadata, type, and description."
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.DOCUMENT.value}'
 
     Rls = DocumentRls

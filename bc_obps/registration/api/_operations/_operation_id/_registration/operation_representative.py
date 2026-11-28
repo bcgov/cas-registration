@@ -1,19 +1,20 @@
-from typing import Literal, Tuple
+from typing import Literal
 from uuid import UUID
+
+from common.api.utils import get_current_user_guid
+from common.permissions import authorize
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
+from registration.api.router import router
+from registration.constants import OPERATION_TAGS
 from registration.models.contact import Contact
 from registration.schema import (
+    Message,
     OperationRepresentativeIn,
     OperationRepresentativeOut,
     OperationRepresentativeRemove,
-    Message,
 )
 from registration.service.operation_service import OperationService
-from registration.constants import OPERATION_TAGS
-from common.api.utils import get_current_user_guid
-from registration.api.router import router
-from common.permissions import authorize
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
 @router.post(
@@ -26,8 +27,10 @@ from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 )
 def create_operation_representative(
     request: HttpRequest, operation_id: UUID, payload: OperationRepresentativeIn
-) -> Tuple[Literal[201], Contact]:
-    return 201, OperationService.create_operation_representative(get_current_user_guid(request), operation_id, payload)
+) -> tuple[Literal[201], Contact]:
+    return 201, OperationService.create_operation_representative(
+        get_current_user_guid(request), operation_id, payload
+    )
 
 
 @router.put(
@@ -40,7 +43,7 @@ def create_operation_representative(
 )
 def remove_operation_representative(
     request: HttpRequest, operation_id: UUID, payload: OperationRepresentativeRemove
-) -> Tuple[Literal[200], OperationRepresentativeRemove]:
+) -> tuple[Literal[200], OperationRepresentativeRemove]:
     removed_id = OperationService.remove_operation_representative(
         get_current_user_guid(request),
         operation_id,

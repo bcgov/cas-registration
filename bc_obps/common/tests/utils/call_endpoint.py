@@ -1,4 +1,5 @@
 import json
+
 from model_bakery import baker
 from registration.models.user import User
 
@@ -6,7 +7,7 @@ from registration.models.user import User
 def call_endpoint(client, method, endpoint, app_role=None):
     client_method = getattr(client, method)
     kwargs = {
-        'path': endpoint,
+        "path": endpoint,
     }
 
     if app_role:
@@ -21,10 +22,10 @@ def call_endpoint(client, method, endpoint, app_role=None):
             archived_at=None,
             _fill_optional=True,
         )  # Passing _fill_optional to fill all fields with random data
-        auth_header = {'user_guid': str(user.user_guid)}
-        kwargs['HTTP_AUTHORIZATION'] = json.dumps(auth_header)
+        auth_header = {"user_guid": str(user.user_guid)}
+        kwargs["HTTP_AUTHORIZATION"] = json.dumps(auth_header)
 
     if method.lower() != "get":
-        kwargs.update({'content_type': "application/json", 'data': {}})
+        kwargs.update({"content_type": "application/json", "data": {}})
 
     return client_method(**kwargs)

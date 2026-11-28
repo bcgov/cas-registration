@@ -1,17 +1,18 @@
-from typing import Iterable, List
+from collections.abc import Iterable
 from uuid import UUID
 
-from django.db.models import Exists, OuterRef, Q, QuerySet
 from django.db import transaction
+from django.db.models import Exists, OuterRef, Q, QuerySet
 from registration.models.regulated_product import RegulatedProduct
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
-from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
+from reporting.models.report_product_emission_allocation import (
+    ReportProductEmissionAllocation,
+)
 
 
 class ReportProductService:
-
     @classmethod
     def update_empty_records_for_unregulated_products(
         cls,
@@ -54,28 +55,42 @@ class ReportProductService:
     @classmethod
     @transaction.atomic()
     def save_production_data(
-        cls, report_version_id: int, facility_id: UUID, report_products: List[dict], user_guid: UUID
+        cls,
+        report_version_id: int,
+        facility_id: UUID,
+        report_products: list[dict],
+        user_guid: UUID,
     ) -> None:
-
-        facility_report = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
+        facility_report = FacilityReport.objects.get(
+            report_version_id=report_version_id, facility_id=facility_id
+        )
 
         # A DoesNotExist error is raised if the report doesn't have a ReportOperation object.
-        allowed_products = ReportOperation.objects.get(report_version_id=report_version_id).regulated_products
+        allowed_products = ReportOperation.objects.get(
+            report_version_id=report_version_id
+        ).regulated_products
         allowed_product_ids = allowed_products.values_list("id", flat=True)
 
         # A KeyError is raised if the "product_id" key doesn't exist
         submitted_product_ids = {rp["product_id"] for rp in report_products}
 
-        if RegulatedProduct.objects.filter(id__in=submitted_product_ids).exclude(id__in=allowed_product_ids).exists():
+        if (
+            RegulatedProduct.objects.filter(id__in=submitted_product_ids)
+            .exclude(id__in=allowed_product_ids)
+            .exists()
+        ):
             raise ValueError(
                 "Data was submitted for a product that is not in the products allowed for this facility. "
                 + f"Allowed products ids: {list(allowed_product_ids)}, Submitted product ids: {submitted_product_ids}"
             )
 
         # Do not remove auto-generated report_product records for unregulated products
-        keep = submitted_product_ids.union(allowed_products.filter(is_regulated=False).values_list("id", flat=True))
+        keep = submitted_product_ids.union(
+            allowed_products.filter(is_regulated=False).values_list("id", flat=True)
+        )
         ReportProduct.objects.filter(
-            report_version_id=report_version_id, facility_report__facility_id=facility_id
+            report_version_id=report_version_id,
+            facility_report__facility_id=facility_id,
         ).exclude(product_id__in=keep).delete()
 
         # Update or create the report products from the data
@@ -94,22 +109,28 @@ class ReportProductService:
                 },
             )
 
-        ReportProductService.update_empty_records_for_unregulated_products(report_version_id, [facility_report.id])
+        ReportProductService.update_empty_records_for_unregulated_products(
+            report_version_id, [facility_report.id]
+        )
 
     @classmethod
-    def get_production_data(cls, report_version_id: int, facility_id: UUID) -> QuerySet[ReportProduct]:
-
+    def get_production_data(
+        cls, report_version_id: int, facility_id: UUID
+    ) -> QuerySet[ReportProduct]:
         return (
             ReportProduct.objects.select_related("product")
             .order_by("product__id")
-            .filter(report_version_id=report_version_id, facility_report__facility_id=facility_id)
+            .filter(
+                report_version_id=report_version_id,
+                facility_report__facility_id=facility_id,
+            )
         )
 
     @classmethod
     def get_allowed_products(cls, report_version_id: int) -> QuerySet[RegulatedProduct]:
-        return ReportOperation.objects.get(report_version_id=report_version_id).regulated_products.exclude(
-            is_regulated=False
-        )
+        return ReportOperation.objects.get(
+            report_version_id=report_version_id
+        ).regulated_products.exclude(is_regulated=False)
 
     @classmethod
     def get_reported_products(cls, report_version_id: int) -> QuerySet[ReportProduct]:

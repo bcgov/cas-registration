@@ -1,10 +1,16 @@
 from common.models import BaseModel
 from django.contrib.postgres.constraints import ExclusionConstraint
-from django.contrib.postgres.fields import DateTimeRangeField, RangeBoundary, RangeOperators
+from django.contrib.postgres.fields import (
+    DateTimeRangeField,
+    RangeBoundary,
+    RangeOperators,
+)
 from django.db import models
 from registration.models.naics_code import NaicsCode
 from registration.models.regulated_product import RegulatedProduct
-from reporting.models.rls_configs.naics_regulatory_override import Rls as NaicsRegulatoryOverrideRls
+from reporting.models.rls_configs.naics_regulatory_override import (
+    Rls as NaicsRegulatoryOverrideRls,
+)
 
 
 class TsTzRange(models.Func):
@@ -49,10 +55,14 @@ class NaicsRegulatoryOverride(BaseModel):
         max_digits=5,
     )
     valid_from = models.DateField(
-        blank=True, null=True, db_comment="Date from which the regulatory values override is applicable"
+        blank=True,
+        null=True,
+        db_comment="Date from which the regulatory values override is applicable",
     )
     valid_to = models.DateField(
-        blank=True, null=True, db_comment="Date until which the regulatory values override is applicable"
+        blank=True,
+        null=True,
+        db_comment="Date until which the regulatory values override is applicable",
     )
 
     class Meta:
@@ -65,7 +75,10 @@ class NaicsRegulatoryOverride(BaseModel):
             ExclusionConstraint(
                 name="exclude_overlapping_naics_regulatory_override_records_by_date_range",
                 expressions=[
-                    (TsTzRange("valid_from", "valid_to", RangeBoundary()), RangeOperators.OVERLAPS),
+                    (
+                        TsTzRange("valid_from", "valid_to", RangeBoundary()),
+                        RangeOperators.OVERLAPS,
+                    ),
                     ("naics_code", RangeOperators.EQUAL),
                 ],
             ),

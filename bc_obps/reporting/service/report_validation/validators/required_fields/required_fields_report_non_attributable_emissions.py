@@ -1,7 +1,6 @@
 from typing import ClassVar
 
 from django.db.models import Prefetch
-
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_non_attributable_emissions import (
     ReportNonAttributableEmissions,
@@ -32,7 +31,11 @@ class RequiredFieldsNonAttributableEmissionsValidator(BaseRequiredFieldsValidato
     REQUIRED_FIELDS: ClassVar[list[RequiredFieldConfig]] = [
         {"field": "activity", "label": "Activity name", "field_type": "scalar"},
         {"field": "source_type", "label": "Source type", "field_type": "scalar"},
-        {"field": "emission_category", "label": "Emission category", "field_type": "scalar"},
+        {
+            "field": "emission_category",
+            "label": "Emission category",
+            "field_type": "scalar",
+        },
         {"field": "gas_type", "label": "Gas type", "field_type": "m2m"},
     ]
 

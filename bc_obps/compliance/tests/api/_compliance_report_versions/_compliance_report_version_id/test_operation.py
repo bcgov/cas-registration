@@ -1,11 +1,14 @@
 from unittest.mock import patch
+
+from common.tests.utils.helpers import assert_error_response
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
-from common.tests.utils.helpers import assert_error_response
 
-VALIDATE_VERSION_OWNERSHIP_PATH = "compliance.api.permissions._validate_version_ownership_in_url"
+VALIDATE_VERSION_OWNERSHIP_PATH = (
+    "compliance.api.permissions._validate_version_ownership_in_url"
+)
 
 
 class TestReportOperationByComplianceReportVersionEndpoint(CommonTestSetup):
@@ -20,17 +23,22 @@ class TestReportOperationByComplianceReportVersionEndpoint(CommonTestSetup):
         # Arrange
         test_data = ComplianceTestHelper.build_test_data()
         approved_user_operator = make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data.operation.operator,
         )
-        test_data.report_operation.operation_name = 'reporting name'
+        test_data.report_operation.operation_name = "reporting name"
         test_data.report_operation.save()
 
         # Act
         # Mock the authorization and perform the request
-        TestUtils.authorize_current_user_as_operator_user(self, operator=approved_user_operator.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=approved_user_operator.operator
+        )
         TestUtils.generate_operation_operator_timeline(
             operator=test_data.compliance_report_version.compliance_report.report.operator,
-            operations=[test_data.compliance_report_version.compliance_report.report.operation],
+            operations=[
+                test_data.compliance_report_version.compliance_report.report.operation
+            ],
         )
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -39,16 +47,18 @@ class TestReportOperationByComplianceReportVersionEndpoint(CommonTestSetup):
         )
         # Assert
         assert response.status_code == 200
-        assert response.json() == {"operation_name": 'reporting name'}
+        assert response.json() == {"operation_name": "reporting name"}
 
     @patch(VALIDATE_VERSION_OWNERSHIP_PATH, return_value=True)
     def test_invalid_compliance_report_version_id(self, _):
         # Arrange
-        invalid_compliance_report_version_id = 99999  # Assuming this ID does not exist in the database
+        invalid_compliance_report_version_id = (
+            99999  # Assuming this ID does not exist in the database
+        )
         # Act
         # Mock the authorization and perform the request
         TestUtils.authorize_current_user_as_operator_user(
-            self, operator=make_recipe('registration.tests.utils.operator')
+            self, operator=make_recipe("registration.tests.utils.operator")
         )
         response = TestUtils.mock_get_with_auth_role(
             self,

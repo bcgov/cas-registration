@@ -1,8 +1,8 @@
-from django.test import TestCase
 from common.tests.utils.helpers import BaseTestCase
-from registration.models import Address, BusinessRole
-from model_bakery import baker
 from django.db import ProgrammingError, transaction
+from django.test import TestCase
+from model_bakery import baker
+from registration.models import Address, BusinessRole
 
 
 class TestAddressModel(BaseTestCase):
@@ -30,7 +30,9 @@ class AddressTriggerTests(TestCase):
         self.address = baker.make_recipe("registration.tests.utils.address")
         self.operation_representative_contact = baker.make_recipe(
             "registration.tests.utils.contact",
-            business_role=BusinessRole.objects.get(role_name="Operation Representative"),
+            business_role=BusinessRole.objects.get(
+                role_name="Operation Representative"
+            ),
             address=self.address,
         )
         self.senior_officer_contact = baker.make_recipe(
@@ -58,7 +60,7 @@ class AddressTriggerTests(TestCase):
         """Test that setting a field to empty string fails when linked to Operation Representative."""
         with transaction.atomic():
             with self.assertRaises(ProgrammingError) as cm:
-                self.address.municipality = ''
+                self.address.municipality = ""
                 self.address.save()
             self.assertIn(
                 "Cannot set address fields to empty or NULL when associated with an Operation Representative",
@@ -98,4 +100,7 @@ class AddressTriggerTests(TestCase):
 
         # Verify fields unchanged
         self.address.refresh_from_db()
-        self.assertEqual(fields_before_update, [self.address.street_address, self.address.municipality])
+        self.assertEqual(
+            fields_before_update,
+            [self.address.street_address, self.address.municipality],
+        )

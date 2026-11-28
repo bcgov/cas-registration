@@ -1,10 +1,16 @@
 from decimal import Decimal
+
+from compliance.models import (
+    CompliancePeriod,
+    ComplianceReportVersion,
+    ElicensingLineItem,
+)
+from compliance.models.compliance_report_version_manual_handling import (
+    ComplianceReportVersionManualHandling,
+)
+from model_bakery.baker import make_recipe
 from registration.models import Operation
 from reporting.models import ReportingYear, ReportVersion
-from compliance.models import CompliancePeriod, ComplianceReportVersion, ElicensingLineItem
-from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
-
-from model_bakery.baker import make_recipe
 
 
 class BaseComplianceTestInfrastructure:
@@ -13,34 +19,40 @@ class BaseComplianceTestInfrastructure:
         if ReportingYear.objects.filter(pk=reporting_year).exists():
             self.reporting_year = ReportingYear.objects.get(pk=reporting_year)
         else:
-            self.reporting_year = make_recipe('reporting.tests.utils.reporting_year', reporting_year=reporting_year)
+            self.reporting_year = make_recipe(
+                "reporting.tests.utils.reporting_year", reporting_year=reporting_year
+            )
         ## COMPLIANCE PERIOD
         if CompliancePeriod.objects.filter(reporting_year=self.reporting_year).exists():
-            self.compliance_period = CompliancePeriod.objects.get(reporting_year=reporting_year)
+            self.compliance_period = CompliancePeriod.objects.get(
+                reporting_year=reporting_year
+            )
         else:
             self.compliance_period = make_recipe(
-                'compliance.tests.utils.compliance_period',
+                "compliance.tests.utils.compliance_period",
                 reporting_year=self.reporting_year,
-                start_date=f'{reporting_year}-01-01',
-                end_date=f'{reporting_year}-12-31',
-                compliance_deadline=f'{reporting_year + 1}-11-30',
-                invoice_generation_date=f'{reporting_year + 1}-11-01',
+                start_date=f"{reporting_year}-01-01",
+                end_date=f"{reporting_year}-12-31",
+                compliance_deadline=f"{reporting_year + 1}-11-30",
+                invoice_generation_date=f"{reporting_year + 1}-11-01",
             )
         ## OPERATION
         self.operation = make_recipe(
-            'registration.tests.utils.operation',
-            bc_obps_regulated_operation=make_recipe('registration.tests.utils.boro_id'),
+            "registration.tests.utils.operation",
+            bc_obps_regulated_operation=make_recipe("registration.tests.utils.boro_id"),
             status=Operation.Statuses.REGISTERED,
         )
         ## EMISSION REPORT
         self.report = make_recipe(
-            'reporting.tests.utils.report',
+            "reporting.tests.utils.report",
             operator=self.operation.operator,
             operation=self.operation,
             reporting_year=self.reporting_year,
         )
         ## INITIAL EMISSION REPORT VERSION
-        self.report_version = make_recipe('reporting.tests.utils.report_version', report=self.report)
+        self.report_version = make_recipe(
+            "reporting.tests.utils.report_version", report=self.report
+        )
         ## INITIAL REPORT OPERATION
         self.report_operation = make_recipe(
             "reporting.tests.utils.report_operation",
@@ -49,18 +61,20 @@ class BaseComplianceTestInfrastructure:
         )
         ## INITIAL REPORT COMPLIANCE SUMMARY
         self.report_compliance_summary = make_recipe(
-            'reporting.tests.utils.report_compliance_summary',
+            "reporting.tests.utils.report_compliance_summary",
             report_version=self.report_version,
             excess_emissions=0,
             credited_emissions=0,
         )
         ## COMPLIANCE REPORT
         self.compliance_report = make_recipe(
-            'compliance.tests.utils.compliance_report', report=self.report, compliance_period=self.compliance_period
+            "compliance.tests.utils.compliance_report",
+            report=self.report,
+            compliance_period=self.compliance_period,
         )
         ## INITIAL COMPLIANCE REPORT VERSION
         self.compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
+            "compliance.tests.utils.compliance_report_version",
             compliance_report=self.compliance_report,
             report_compliance_summary=self.report_compliance_summary,
             excess_emissions_delta_from_previous=0,
@@ -75,43 +89,46 @@ class InitialComplianceObligation(BaseComplianceTestInfrastructure):
     def __init__(self, reporting_year):
         super().__init__(reporting_year)
         self.compliance_obligation = make_recipe(
-            'compliance.tests.utils.compliance_obligation',
+            "compliance.tests.utils.compliance_obligation",
             compliance_report_version=self.compliance_report_version,
         )
-        self.report_compliance_summary.excess_emissions = Decimal('100')
+        self.report_compliance_summary.excess_emissions = Decimal("100")
 
 
 class InitialComplianceEarnedCredit(BaseComplianceTestInfrastructure):
     def __init__(self, reporting_year):
         super().__init__(reporting_year)
         self.compliance_earned_credit = make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
+            "compliance.tests.utils.compliance_earned_credit",
             compliance_report_version=self.compliance_report_version,
-            bccr_trading_name='test',
-            bccr_holding_account_id='test',
+            bccr_trading_name="test",
+            bccr_holding_account_id="test",
         )
-        self.report_compliance_summary.credited_emissions = Decimal('100')
+        self.report_compliance_summary.credited_emissions = Decimal("100")
 
 
 class SupplementaryComplianceTestInfrastructure:
     def __init__(self, previous_data):
         ## ENSURE PREVIOUS EMISSION REPORT IS SUBMITTED
-        previous_data.report_version.status = ReportVersion.ReportVersionStatus.Submitted
+        previous_data.report_version.status = (
+            ReportVersion.ReportVersionStatus.Submitted
+        )
         previous_data.report_version.save()
         ## SUPPLEMENTARY EMISSION REPORT VERSION
         self.report_version = make_recipe(
-            'reporting.tests.utils.report_version', report=previous_data.report_version.report
+            "reporting.tests.utils.report_version",
+            report=previous_data.report_version.report,
         )
         ## SUPPLEMENTARY REPORT COMPLIANCE SUMMARY
         self.report_compliance_summary = make_recipe(
-            'reporting.tests.utils.report_compliance_summary',
+            "reporting.tests.utils.report_compliance_summary",
             report_version=self.report_version,
             excess_emissions=0,
             credited_emissions=0,
         )
         ## SUPPLEMENTARY COMPLIANCE REPORT VERSION
         self.compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
+            "compliance.tests.utils.compliance_report_version",
             compliance_report=previous_data.compliance_report_version.compliance_report,
             report_compliance_summary=self.report_compliance_summary,
             excess_emissions_delta_from_previous=0,
@@ -126,20 +143,20 @@ class SupplementaryComplianceObligation(SupplementaryComplianceTestInfrastructur
     def __init__(self, previous_data):
         super().__init__(previous_data)
         self.compliance_obligation = make_recipe(
-            'compliance.tests.utils.compliance_obligation',
+            "compliance.tests.utils.compliance_obligation",
             compliance_report_version=self.compliance_report_version,
         )
-        self.report_compliance_summary.excess_emissions = Decimal('100')
+        self.report_compliance_summary.excess_emissions = Decimal("100")
 
 
 class SupplementaryComplianceEarnedCredit(SupplementaryComplianceTestInfrastructure):
     def __init__(self, previous_data):
         super().__init__(previous_data)
         self.compliance_earned_credit = make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
+            "compliance.tests.utils.compliance_earned_credit",
             compliance_report_version=self.compliance_report_version,
         )
-        self.report_compliance_summary.credited_emissions = Decimal('100')
+        self.report_compliance_summary.credited_emissions = Decimal("100")
 
 
 class ComplianceTestHelper:
@@ -166,7 +183,9 @@ class ComplianceTestHelper:
         reporting_year: int = 2025,
         crv_status: ComplianceReportVersion.ComplianceStatus = ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
         create_invoice_data: bool = False,
-        previous_data: BaseComplianceTestInfrastructure | SupplementaryComplianceTestInfrastructure | None = None,
+        previous_data: BaseComplianceTestInfrastructure
+        | SupplementaryComplianceTestInfrastructure
+        | None = None,
     ):
         """
         Generates all the initial base data objects for testing the compliance module.
@@ -188,9 +207,11 @@ class ComplianceTestHelper:
                     t = SupplementaryComplianceObligation(previous_data)
                 else:
                     t = InitialComplianceObligation(reporting_year)
-                t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+                t.compliance_report_version.status = (
+                    ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+                )
                 t.compliance_report_version.save()
-                t.report_compliance_summary.excess_emissions = Decimal('100')
+                t.report_compliance_summary.excess_emissions = Decimal("100")
                 t.report_compliance_summary.save()
                 if create_invoice_data:
                     cls.generate_invoice_data(t)
@@ -200,47 +221,45 @@ class ComplianceTestHelper:
                     t = SupplementaryComplianceObligation(previous_data)
                 else:
                     t = InitialComplianceObligation(reporting_year)
-                t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+                t.compliance_report_version.status = (
+                    ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+                )
                 t.compliance_report_version.save()
-                t.report_compliance_summary.excess_emissions = Decimal('100')
+                t.report_compliance_summary.excess_emissions = Decimal("100")
                 t.report_compliance_summary.save()
                 if create_invoice_data:
                     cls.generate_invoice_data(t)
-                    t.invoice.outstanding_balance = Decimal('0')
+                    t.invoice.outstanding_balance = Decimal("0")
 
             case ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID:
                 if previous_data:
                     t = SupplementaryComplianceObligation(previous_data)
                 else:
                     t = InitialComplianceObligation(reporting_year)
-                t.compliance_report_version.status = (
-                    ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
-                )
+                t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
                 t.compliance_report_version.save()
-                t.report_compliance_summary.excess_emissions = Decimal('100')
+                t.report_compliance_summary.excess_emissions = Decimal("100")
                 t.report_compliance_summary.save()
                 if create_invoice_data:
                     cls.generate_invoice_data(t)
-                    t.invoice.invoice_fee_balance = Decimal('0')
-                    t.invoice.invoice_interest_balance = Decimal('0')
+                    t.invoice.invoice_fee_balance = Decimal("0")
+                    t.invoice.invoice_interest_balance = Decimal("0")
                     make_recipe(
                         "compliance.tests.utils.elicensing_line_item",
                         elicensing_invoice=t.invoice,
                         base_amount=Decimal("50.00"),
                         line_item_type=ElicensingLineItem.LineItemType.INTEREST,
                     )
-                    t.invoice.outstanding_balance = Decimal('50')
+                    t.invoice.outstanding_balance = Decimal("50")
 
             case ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION:
                 if previous_data:
                     t = SupplementaryComplianceObligation(previous_data)
                 else:
                     t = InitialComplianceObligation(reporting_year)
-                t.compliance_report_version.status = (
-                    ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
-                )
+                t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
                 t.compliance_report_version.save()
-                t.report_compliance_summary.excess_emissions = Decimal('100')
+                t.report_compliance_summary.excess_emissions = Decimal("100")
                 t.report_compliance_summary.save()
 
             case ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS:
@@ -248,12 +267,16 @@ class ComplianceTestHelper:
                     t = SupplementaryComplianceEarnedCredit(previous_data)
                 else:
                     t = InitialComplianceEarnedCredit(reporting_year)
-                t.report_compliance_summary.credited_emissions = Decimal('100')
+                t.report_compliance_summary.credited_emissions = Decimal("100")
                 t.report_compliance_summary.save()
-                t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+                t.compliance_report_version.status = (
+                    ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+                )
                 t.compliance_report_version.save()
 
-            case ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS:
+            case (
+                ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+            ):
                 if previous_data:
                     t = SupplementaryComplianceTestInfrastructure(previous_data)
                 else:
@@ -264,7 +287,9 @@ class ComplianceTestHelper:
                     t = SupplementaryComplianceTestInfrastructure(previous_data)
                 else:
                     t = BaseComplianceTestInfrastructure(reporting_year)
-                t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.SUPERCEDED
+                t.compliance_report_version.status = (
+                    ComplianceReportVersion.ComplianceStatus.SUPERCEDED
+                )
                 t.compliance_report_version.save()
 
             case ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING:
@@ -272,7 +297,9 @@ class ComplianceTestHelper:
                     t = SupplementaryComplianceTestInfrastructure(previous_data)
                 else:
                     t = BaseComplianceTestInfrastructure(reporting_year)
-                t.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING
+                t.compliance_report_version.status = (
+                    ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING
+                )
                 t.compliance_report_version.save()
                 ComplianceReportVersionManualHandling.objects.create(
                     compliance_report_version=t.compliance_report_version,

@@ -1,5 +1,6 @@
-from typing import Annotated, List, Optional
+from typing import Annotated
 from uuid import UUID
+
 from ninja import Field, FilterSchema, ModelSchema
 from pydantic import alias_generators
 from reporting.models import FacilityReport
@@ -18,12 +19,18 @@ class FacilityReportOut(ModelSchema):
     class Meta:
         alias_generator = alias_generators.to_snake
         model = FacilityReport
-        fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities', 'facility']
+        fields = [
+            "facility_name",
+            "facility_type",
+            "facility_bcghgid",
+            "activities",
+            "facility",
+        ]
 
-    operation_id: Optional[UUID] = None
+    operation_id: UUID | None = None
     is_sync_allowed: bool = True
-    facility_activities: List[ActivitySchema] = []
-    other_activities: List[ActivitySchema] = []
+    facility_activities: list[ActivitySchema] = []
+    other_activities: list[ActivitySchema] = []
 
 
 class FacilityReportIn(ModelSchema):
@@ -33,32 +40,34 @@ class FacilityReportIn(ModelSchema):
 
     facility_name: str
     facility_type: str
-    facility_bcghgid: Optional[str]
-    activities: List[int]
+    facility_bcghgid: str | None
+    activities: list[int]
 
     class Meta:
         alias_generator = alias_generators.to_snake
         model = FacilityReport
-        fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities']
+        fields = ["facility_name", "facility_type", "facility_bcghgid", "activities"]
 
 
 class FacilityReportListSchema(ModelSchema):
     class Meta:
         alias_generator = alias_generators.to_snake
         model = FacilityReport
-        fields = ['id', 'facility_name', 'facility', 'facility_bcghgid', 'is_completed']
+        fields = ["id", "facility_name", "facility", "facility_bcghgid", "is_completed"]
 
 
 class FacilityReportListInSchema(ModelSchema):
-    facility: UUID = Field(alias='facility')
+    facility: UUID = Field(alias="facility")
     is_completed: bool
 
     class Meta:
         alias_generator = alias_generators.to_snake
         model = FacilityReport
-        fields = ['is_completed']
+        fields = ["is_completed"]
 
 
 class FacilityReportFilterSchema(FilterSchema):
-    facility_name: Annotated[str | None, Field(q='facility_name__icontains')] = None
-    facility_bcghgid: Annotated[str | None, Field(q='facility_bcghgid__icontains')] = None
+    facility_name: Annotated[str | None, Field(q="facility_name__icontains")] = None
+    facility_bcghgid: Annotated[str | None, Field(q="facility_bcghgid__icontains")] = (
+        None
+    )

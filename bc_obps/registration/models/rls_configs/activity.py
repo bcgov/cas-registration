@@ -1,5 +1,5 @@
 from registration.enums.enums import RegistrationTableNames
-from rls.enums import RlsRoles, RlsOperations
+from rls.enums import RlsOperations, RlsRoles
 from rls.utils.helpers import generate_rls_grants
 
 

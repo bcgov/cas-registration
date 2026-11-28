@@ -1,8 +1,8 @@
 from common.tests.utils.helpers import BaseTestCase
 from django.db.models import Count
-from reporting.models import ProductEmissionIntensity
-from registration.models import RegulatedProduct
 from django.test import TestCase
+from registration.models import RegulatedProduct
+from reporting.models import ProductEmissionIntensity
 
 
 class TestInitialData(TestCase):
@@ -25,13 +25,18 @@ class EmissionCategoryModelTest(BaseTestCase):
         cls.test_object = ProductEmissionIntensity.objects.create(
             product_id=1,
             product_weighted_average_emission_intensity="0.1",
-            valid_from='1999-01-01',
-            valid_to='1999-12-31',
+            valid_from="1999-01-01",
+            valid_to="1999-12-31",
         )
         cls.field_data = [
             ("id", "ID", None, None),
             ("product", "product", None, None),
-            ("product_weighted_average_emission_intensity", "product weighted average emission intensity", None, None),
+            (
+                "product_weighted_average_emission_intensity",
+                "product weighted average emission intensity",
+                None,
+                None,
+            ),
             ("valid_from", "valid from", None, None),
             ("valid_to", "valid to", None, None),
         ]

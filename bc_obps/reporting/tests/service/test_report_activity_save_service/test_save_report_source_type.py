@@ -1,7 +1,10 @@
 from unittest.mock import MagicMock, call, patch
-from django.test import TestCase
-from django.core.exceptions import ValidationError
+
 import pytest
+from common.exceptions import UserError
+from django.core.exceptions import ValidationError
+from django.test import TestCase
+from model_bakery.baker import make, make_recipe
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_unit import ReportUnit
@@ -10,14 +13,18 @@ from reporting.service.report_activity_save_service import ReportActivitySaveSer
 from reporting.tests.service.test_report_activity_save_service.infrastructure import (
     TestInfrastructure,
 )
-from model_bakery.baker import make_recipe, make
-from common.exceptions import UserError
 
 
 class TestSaveReportSourceType(TestCase):
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit")
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit"
+    )
     def test_save_source_type_with_unit(
         self,
         mock_save_unit: MagicMock,
@@ -37,10 +44,16 @@ class TestSaveReportSourceType(TestCase):
         )
 
         with pytest.raises(SourceType.DoesNotExist):
-            service_under_test.save_source_type(report_activity, "thisIsNotAValidSourceTypeSlug", {"test": 123})
+            service_under_test.save_source_type(
+                report_activity, "thisIsNotAValidSourceTypeSlug", {"test": 123}
+            )
 
-        with pytest.raises(UserError, match="Source type sourceTypeWithUnit is expecting unit data"):
-            service_under_test.save_source_type(report_activity, "sourceTypeWithUnit", {"test": 123})
+        with pytest.raises(
+            UserError, match="Source type sourceTypeWithUnit is expecting unit data"
+        ):
+            service_under_test.save_source_type(
+                report_activity, "sourceTypeWithUnit", {"test": 123}
+            )
 
         return_value = service_under_test.save_source_type(
             report_activity,
@@ -55,7 +68,10 @@ class TestSaveReportSourceType(TestCase):
         assert return_value.activity_source_type_base_schema == act_st
         assert return_value.source_type == act_st.source_type
         assert return_value.report_activity == report_activity
-        assert return_value.report_version == test_infrastructure.facility_report.report_version
+        assert (
+            return_value.report_version
+            == test_infrastructure.facility_report.report_version
+        )
 
         mock_save_unit.assert_has_calls(
             [
@@ -66,9 +82,15 @@ class TestSaveReportSourceType(TestCase):
         mock_save_fuel.assert_not_called()
         mock_save_emission.assert_not_called()
 
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit")
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit"
+    )
     def test_save_source_type_with_unit_update(
         self,
         mock_save_unit: MagicMock,
@@ -156,15 +178,26 @@ class TestSaveReportSourceType(TestCase):
         assert update_return_value.activity_source_type_base_schema == act_st
         assert update_return_value.source_type == act_st.source_type
         assert update_return_value.report_activity == report_activity
-        assert update_return_value.report_version == test_infrastructure.facility_report.report_version
+        assert (
+            update_return_value.report_version
+            == test_infrastructure.facility_report.report_version
+        )
 
-        mock_save_unit.assert_called_once_with(update_return_value, {"another_unit": "test"})
+        mock_save_unit.assert_called_once_with(
+            update_return_value, {"another_unit": "test"}
+        )
         mock_save_fuel.assert_not_called()
         mock_save_emission.assert_not_called()
 
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit")
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit"
+    )
     def test_save_source_type_with_fuel(
         self,
         mock_save_unit: MagicMock,
@@ -183,8 +216,12 @@ class TestSaveReportSourceType(TestCase):
             test_infrastructure.user.user_guid,
         )
 
-        with pytest.raises(UserError, match="Source type sourceTypeWithFuel is expecting fuel data"):
-            service_under_test.save_source_type(report_activity, "sourceTypeWithFuel", {"test": 123})
+        with pytest.raises(
+            UserError, match="Source type sourceTypeWithFuel is expecting fuel data"
+        ):
+            service_under_test.save_source_type(
+                report_activity, "sourceTypeWithFuel", {"test": 123}
+            )
 
         return_value = service_under_test.save_source_type(
             report_activity,
@@ -196,7 +233,10 @@ class TestSaveReportSourceType(TestCase):
         assert return_value.activity_source_type_base_schema == act_st
         assert return_value.source_type == act_st.source_type
         assert return_value.report_activity == report_activity
-        assert return_value.report_version == test_infrastructure.facility_report.report_version
+        assert (
+            return_value.report_version
+            == test_infrastructure.facility_report.report_version
+        )
 
         mock_save_unit.assert_not_called()
         mock_save_fuel.assert_has_calls(
@@ -207,9 +247,15 @@ class TestSaveReportSourceType(TestCase):
         )
         mock_save_emission.assert_not_called()
 
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit")
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit"
+    )
     def test_save_source_type_without_unit_or_fuel(
         self,
         mock_save_unit: MagicMock,
@@ -234,7 +280,9 @@ class TestSaveReportSourceType(TestCase):
             UserError,
             match="Source type sourceTypeWithoutFuelOrUnit is expecting emission data",
         ):
-            service_under_test.save_source_type(report_activity, "sourceTypeWithoutFuelOrUnit", {"test": 123})
+            service_under_test.save_source_type(
+                report_activity, "sourceTypeWithoutFuelOrUnit", {"test": 123}
+            )
 
         return_value = service_under_test.save_source_type(
             report_activity,
@@ -246,7 +294,10 @@ class TestSaveReportSourceType(TestCase):
         assert return_value.activity_source_type_base_schema == act_st
         assert return_value.source_type == act_st.source_type
         assert return_value.report_activity == report_activity
-        assert return_value.report_version == test_infrastructure.facility_report.report_version
+        assert (
+            return_value.report_version
+            == test_infrastructure.facility_report.report_version
+        )
 
         mock_save_unit.assert_not_called()
         mock_save_fuel.assert_not_called()
@@ -257,9 +308,15 @@ class TestSaveReportSourceType(TestCase):
             ]
         )
 
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit")
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit"
+    )
     def test_removes_deleted_units(
         self,
         mock_save_unit: MagicMock,
@@ -332,9 +389,18 @@ class TestSaveReportSourceType(TestCase):
             _quantity=3,
         )
 
-        assert ReportUnit.objects.filter(report_source_type=report_source_type).count() == 8
-        assert ReportFuel.objects.filter(report_source_type=report_source_type).count() == 4
-        assert ReportEmission.objects.filter(report_source_type=report_source_type).count() == 6
+        assert (
+            ReportUnit.objects.filter(report_source_type=report_source_type).count()
+            == 8
+        )
+        assert (
+            ReportFuel.objects.filter(report_source_type=report_source_type).count()
+            == 4
+        )
+        assert (
+            ReportEmission.objects.filter(report_source_type=report_source_type).count()
+            == 6
+        )
 
         service_under_test.save_source_type(
             report_activity,
@@ -366,9 +432,15 @@ class TestSaveReportSourceType(TestCase):
             ordered=False,
         )
 
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit")
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit"
+    )
     def test_removes_deleted_fuels(
         self,
         mock_save_unit: MagicMock,
@@ -429,9 +501,18 @@ class TestSaveReportSourceType(TestCase):
             _quantity=3,
         )
 
-        assert ReportUnit.objects.filter(report_source_type=report_source_type).count() == 8
-        assert ReportFuel.objects.filter(report_source_type=report_source_type).count() == 5
-        assert ReportEmission.objects.filter(report_source_type=report_source_type).count() == 6
+        assert (
+            ReportUnit.objects.filter(report_source_type=report_source_type).count()
+            == 8
+        )
+        assert (
+            ReportFuel.objects.filter(report_source_type=report_source_type).count()
+            == 5
+        )
+        assert (
+            ReportEmission.objects.filter(report_source_type=report_source_type).count()
+            == 6
+        )
 
         service_under_test.save_source_type(
             report_activity,
@@ -445,7 +526,10 @@ class TestSaveReportSourceType(TestCase):
             },
         )
 
-        assert ReportUnit.objects.filter(report_source_type=report_source_type).count() == 8
+        assert (
+            ReportUnit.objects.filter(report_source_type=report_source_type).count()
+            == 8
+        )
         self.assertQuerySetEqual(
             ReportFuel.objects.filter(report_source_type=report_source_type),
             [report_fuels[2], report_fuels[3]],
@@ -457,9 +541,15 @@ class TestSaveReportSourceType(TestCase):
             ordered=False,
         )
 
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit")
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_unit"
+    )
     def test_removes_deleted_emissions(
         self,
         mock_save_unit: MagicMock,
@@ -510,9 +600,18 @@ class TestSaveReportSourceType(TestCase):
             _quantity=4,
         )
 
-        assert ReportUnit.objects.filter(report_source_type=report_source_type).count() == 8
-        assert ReportFuel.objects.filter(report_source_type=report_source_type).count() == 5
-        assert ReportEmission.objects.filter(report_source_type=report_source_type).count() == 4
+        assert (
+            ReportUnit.objects.filter(report_source_type=report_source_type).count()
+            == 8
+        )
+        assert (
+            ReportFuel.objects.filter(report_source_type=report_source_type).count()
+            == 5
+        )
+        assert (
+            ReportEmission.objects.filter(report_source_type=report_source_type).count()
+            == 4
+        )
 
         service_under_test.save_source_type(
             report_activity,
@@ -525,8 +624,14 @@ class TestSaveReportSourceType(TestCase):
             },
         )
 
-        assert ReportUnit.objects.filter(report_source_type=report_source_type).count() == 8
-        assert ReportFuel.objects.filter(report_source_type=report_source_type).count() == 5
+        assert (
+            ReportUnit.objects.filter(report_source_type=report_source_type).count()
+            == 8
+        )
+        assert (
+            ReportFuel.objects.filter(report_source_type=report_source_type).count()
+            == 5
+        )
         self.assertQuerySetEqual(
             ReportEmission.objects.filter(report_source_type=report_source_type),
             [report_emissions[0]],

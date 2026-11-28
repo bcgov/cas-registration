@@ -1,7 +1,7 @@
-import pytest
-from model_bakery import baker
 from unittest.mock import patch
 
+import pytest
+from model_bakery import baker
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
     ReportValidationError,
@@ -14,7 +14,6 @@ from reporting.service.report_validation.validators.required_fields.required_fie
     validate,
 )
 from reporting.service.reporting_flow_service import ReportingFlow
-
 
 pytestmark = pytest.mark.django_db
 
@@ -42,8 +41,12 @@ class TestRequiredFieldsReportProductionDataValidator:
         assert applies(ReportingFlow.EIO) is False
 
     @patch(GET_ALLOWED_PRODUCTS_PATH)
-    def test_validate_returns_error_when_facility_has_no_products(self, mock_allowed_products):
-        mock_allowed_products.return_value = [baker.make_recipe("reporting.tests.utils.regulated_product")]
+    def test_validate_returns_error_when_facility_has_no_products(
+        self, mock_allowed_products
+    ):
+        mock_allowed_products.return_value = [
+            baker.make_recipe("reporting.tests.utils.regulated_product")
+        ]
 
         result = validate(self.report_version)
 
@@ -68,7 +71,9 @@ class TestRequiredFieldsReportProductionDataValidator:
         ]
 
     @patch(GET_ALLOWED_PRODUCTS_PATH)
-    def test_validate_returns_empty_dict_when_required_fields_are_present(self, mock_allowed_products):
+    def test_validate_returns_empty_dict_when_required_fields_are_present(
+        self, mock_allowed_products
+    ):
         product = baker.make_recipe("reporting.tests.utils.regulated_product")
         mock_allowed_products.return_value = [product]
 

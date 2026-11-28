@@ -24,12 +24,13 @@ else:
     raise AssertionError
 
 if TYPE_CHECKING:
+    from typing import TypeAlias
+
     from django.db.backends.utils import CursorWrapper
-    from typing_extensions import TypeAlias
 
     from pgtrigger import Timing
 
-_Query: "TypeAlias" = "str | bytes | psycopg_sql.SQL | psycopg_sql.Composed"
+_Query: TypeAlias = "str | bytes | psycopg_sql.SQL | psycopg_sql.Composed"
 
 # All triggers currently being ignored
 _ignore = threading.local()
@@ -63,9 +64,15 @@ def _is_transaction_errored(cursor):
     True if the current transaction is in an errored state
     """
     if utils.psycopg_maj_version == 2:
-        return cursor.connection.get_transaction_status() == psycopg2.extensions.TRANSACTION_STATUS_INERROR
+        return (
+            cursor.connection.get_transaction_status()
+            == psycopg2.extensions.TRANSACTION_STATUS_INERROR
+        )
     elif utils.psycopg_maj_version == 3:
-        return cursor.connection.info.transaction_status == psycopg.pq.TransactionStatus.INERROR
+        return (
+            cursor.connection.info.transaction_status
+            == psycopg.pq.TransactionStatus.INERROR
+        )
     else:
         raise AssertionError
 
@@ -126,7 +133,9 @@ def _set_ignore_session_state(database=None):
                     # We've finished ignoring triggers and are in a transaction,
                     # so flush the local variable.
                     with connection.cursor() as cursor:
-                        cursor.execute("SELECT set_config('pgtrigger.ignore', NULL, false);")
+                        cursor.execute(
+                            "SELECT set_config('pgtrigger.ignore', NULL, false);"
+                        )
     else:
         yield
 
@@ -170,7 +179,7 @@ def _set_ignore_state(model, trigger):
 
 
 @contextlib.contextmanager
-def ignore(*uris: str, databases: Union[List[str], None] = None) -> Generator[None]:
+def ignore(*uris: str, databases: list[str] | None = None) -> Generator[None]:
     """
     Dynamically ignore registered triggers matching URIs from executing in
     an individual thread.
@@ -214,7 +223,9 @@ def _inject_schema(execute, sql, params, many, context):
     variable in the executed SQL.
     """
     if _can_inject_variable(context["cursor"], sql) and _schema.value:
-        path = ", ".join(val if not val.startswith("$") else f'"{val}"' for val in _schema.value)
+        path = ", ".join(
+            val if not val.startswith("$") else f'"{val}"' for val in _schema.value
+        )
         sql = f"SELECT set_config('search_path', %s, true); {sql}"
         params = [path, *(params or ())]
 
@@ -278,7 +289,7 @@ def _set_schema_state(*schemas):
 
 
 @contextlib.contextmanager
-def schema(*schemas: str, databases: Union[List[str], None] = None) -> Generator[None]:
+def schema(*schemas: str, databases: list[str] | None = None) -> Generator[None]:
     """
     Sets the search path to the provided schemas.
 
@@ -301,7 +312,7 @@ def schema(*schemas: str, databases: Union[List[str], None] = None) -> Generator
 schema.session = _schema_session
 
 
-def constraints(timing: "Timing", *uris: str, databases: Union[List[str], None] = None) -> None:
+def constraints(timing: Timing, *uris: str, databases: list[str] | None = None) -> None:
     """
     Set deferrable constraint timing for the given triggers, which
     will persist until overridden or until end of transaction.
@@ -322,13 +333,17 @@ def constraints(timing: "Timing", *uris: str, databases: Union[List[str], None] 
 
     for model, trigger in registry.registered(*uris):
         if not trigger.timing:
-            raise ValueError(f"Trigger {trigger.name} on model {model._meta.label_lower} is not deferrable.")
+            raise ValueError(
+                f"Trigger {trigger.name} on model {model._meta.label_lower} is not deferrable."
+            )
 
     for database in utils.postgres_databases(databases):
         if not connections[database].in_atomic_block:
             raise RuntimeError(f'Database "{database}" is not in a transaction.')
 
-        names = ", ".join(trigger.get_pgid(model) for model, trigger in registry.registered(*uris))
+        names = ", ".join(
+            trigger.get_pgid(model) for model, trigger in registry.registered(*uris)
+        )
 
         with connections[database].cursor() as cursor:
             cursor.execute(f"SET CONSTRAINTS {names} {timing}")

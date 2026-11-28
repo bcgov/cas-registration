@@ -1,6 +1,6 @@
 import pytest
-from model_bakery import baker
 from django.db import connection
+from model_bakery import baker
 from registration.models import Operator
 
 pytestmark = pytest.mark.django_db
@@ -11,13 +11,13 @@ class TestTimeStampedModel:
     def test_create_update_audit_fields():
         # Create a timestamped table (operator)
         operator = baker.make_recipe(
-            'registration.tests.utils.operator',
+            "registration.tests.utils.operator",
         )
 
         # Update a timestamped table (operator)
         Operator.objects.filter(
             id=operator.id,
-        ).update(trade_name='CHANGED')
+        ).update(trade_name="CHANGED")
 
         # Refresh from DB
         operator.refresh_from_db()

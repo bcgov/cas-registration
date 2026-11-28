@@ -1,6 +1,5 @@
-from typing import Optional
-from ninja import ModelSchema, Field
-from pydantic import alias_generators, ConfigDict
+from ninja import Field, ModelSchema
+from pydantic import ConfigDict, alias_generators
 from reporting.models import ReportPersonResponsible
 
 
@@ -11,7 +10,7 @@ class ReportPersonResponsibleOut(ModelSchema):
 
     model_config = ConfigDict(populate_by_name=True)
 
-    contact_id: Optional[int] = Field(..., alias="contact.id")
+    contact_id: int | None = Field(..., alias="contact.id")
 
     @staticmethod
     def resolve_phone_number(obj: ReportPersonResponsible) -> str:
@@ -20,17 +19,17 @@ class ReportPersonResponsibleOut(ModelSchema):
     class Meta:
         model = ReportPersonResponsible
         fields = [
-            'street_address',
-            'municipality',
-            'province',
-            'postal_code',
-            'first_name',
-            'phone_number',
-            'last_name',
-            'email',
-            'position_title',
-            'business_role',
-            'report_version',
+            "street_address",
+            "municipality",
+            "province",
+            "postal_code",
+            "first_name",
+            "phone_number",
+            "last_name",
+            "email",
+            "position_title",
+            "business_role",
+            "report_version",
         ]
 
 
@@ -39,20 +38,20 @@ class ReportPersonResponsibleIn(ModelSchema):
     Schema for the save report contact endpoint request input.
     """
 
-    contact_id: Optional[int] = None
+    contact_id: int | None = None
 
     class Meta:
         alias_generator = alias_generators.to_snake
         model = ReportPersonResponsible
         fields = [
-            'street_address',
-            'municipality',
-            'province',
-            'postal_code',
-            'first_name',
-            'phone_number',
-            'last_name',
-            'email',
-            'position_title',
-            'business_role',
+            "street_address",
+            "municipality",
+            "province",
+            "postal_code",
+            "first_name",
+            "phone_number",
+            "last_name",
+            "email",
+            "position_title",
+            "business_role",
         ]

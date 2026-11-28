@@ -1,14 +1,19 @@
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from common.tests.utils.helpers import BaseTestCase
-from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
-from model_bakery.baker import make_recipe
 from compliance.models.elicensing_client_operator import ElicensingClientOperator
+from model_bakery.baker import make_recipe
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ElicensingClientOperatorTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.test_object = make_recipe('compliance.tests.utils.elicensing_client_operator')
+        cls.test_object = make_recipe(
+            "compliance.tests.utils.elicensing_client_operator"
+        )
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
@@ -23,29 +28,37 @@ class ElicensingClientOperatorTest(BaseTestCase):
 class TestElicensingClientOperatorRls(BaseTestCase):
     def test_elicensing_client_operator_rls_industry_user(self):
         # approved object
-        operator = make_recipe('registration.tests.utils.operator', id=1)
-        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator', operator=operator)
+        operator = make_recipe("registration.tests.utils.operator", id=1)
+        approved_user_operator = make_recipe(
+            "registration.tests.utils.approved_user_operator", operator=operator
+        )
         # operation belonging to the approved user operator
         approved_elicensing_client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator',
+            "compliance.tests.utils.elicensing_client_operator",
             operator=approved_user_operator.operator,
             client_object_id="1147483647",
         )
 
         # second object
-        random_operator = make_recipe('registration.tests.utils.operator', id=2)
+        random_operator = make_recipe("registration.tests.utils.operator", id=2)
         # operation belonging to a random operator
         random_elicensing_client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator', operator=random_operator, client_object_id="1147483647"
+            "compliance.tests.utils.elicensing_client_operator",
+            operator=random_operator,
+            client_object_id="1147483647",
         )
 
         assert ElicensingClientOperator.objects.count() == 2
 
         def select_function(cursor):
-            ElicensingClientOperator.objects.get(id=approved_elicensing_client_operator.id)
+            ElicensingClientOperator.objects.get(
+                id=approved_elicensing_client_operator.id
+            )
 
         def forbidden_select_function(cursor):
-            ElicensingClientOperator.objects.get(id=random_elicensing_client_operator.id)
+            ElicensingClientOperator.objects.get(
+                id=random_elicensing_client_operator.id
+            )
 
         def insert_function(cursor):
             ElicensingClientOperator.objects.create(
@@ -100,8 +113,12 @@ class TestElicensingClientOperatorRls(BaseTestCase):
         )
 
     def test_elicensing_client_operator_rls_cas_users(self):
-        operator = make_recipe('registration.tests.utils.operator')
-        make_recipe('compliance.tests.utils.elicensing_client_operator', id=88, operator=operator)
+        operator = make_recipe("registration.tests.utils.operator")
+        make_recipe(
+            "compliance.tests.utils.elicensing_client_operator",
+            id=88,
+            operator=operator,
+        )
 
         def select_function(cursor):
             assert ElicensingClientOperator.objects.count() == 1

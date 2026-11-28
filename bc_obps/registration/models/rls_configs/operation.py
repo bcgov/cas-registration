@@ -1,9 +1,9 @@
 from registration.enums.enums import RegistrationTableNames
-from rls.enums import RlsRoles, RlsOperations
+from rls.enums import RlsOperations, RlsRoles
 from rls.utils.helpers import (
+    generate_m2m_rls,
     generate_report_policy_mapping_from_grants,
     generate_rls_grants,
-    generate_m2m_rls,
     generate_rls_policies,
 )
 
@@ -22,7 +22,11 @@ class Rls:
                     """
 
     role_grants_mapping = {
-        RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
+        RlsRoles.INDUSTRY_USER: [
+            RlsOperations.SELECT,
+            RlsOperations.INSERT,
+            RlsOperations.UPDATE,
+        ],
         # To issue BORO ID and BCGHG ID
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT, RlsOperations.UPDATE],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],

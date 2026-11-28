@@ -1,7 +1,7 @@
 from common.models import BaseModel
+from common.models.triggers import immutable_slug_trigger
 from django.db import models
 from reporting.models.rls_configs.reporting_field import Rls as ReportingFieldRls
-from common.models.triggers import immutable_slug_trigger
 
 
 class ReportingField(BaseModel):
@@ -9,11 +9,17 @@ class ReportingField(BaseModel):
 
     # No history needed, these elements are immutable
     field_name = models.CharField(
-        max_length=1000, db_comment="Name of field needed for the related configuration element."
+        max_length=1000,
+        db_comment="Name of field needed for the related configuration element.",
     )
-    field_type = models.CharField(max_length=1000, db_comment="Type definition for field.")
+    field_type = models.CharField(
+        max_length=1000, db_comment="Type definition for field."
+    )
     field_units = models.CharField(
-        max_length=1000, blank=True, null=True, db_comment="Units of measurement relating to the field."
+        max_length=1000,
+        blank=True,
+        null=True,
+        db_comment="Units of measurement relating to the field.",
     )
     field_display_title = models.CharField(
         max_length=1000,
@@ -22,19 +28,24 @@ class ReportingField(BaseModel):
         db_comment="Optional display title for the field to be used in forms.",
     )
     slug = models.CharField(
-        max_length=1000, db_comment="camel-cased slug defines how this field is represented in the reported json data."
+        max_length=1000,
+        db_comment="camel-cased slug defines how this field is represented in the reported json data.",
     )
 
     def serialize(self) -> "dict[str,str| None]":
-        return {"fieldName": self.field_name, "fieldType": self.field_type, "fieldUnits": self.field_units}
+        return {
+            "fieldName": self.field_name,
+            "fieldType": self.field_type,
+            "fieldUnits": self.field_units,
+        }
 
     class Meta:
         db_table_comment = "A field name/type combination that relates to a configuration element record through the config_element_reporting_field intersection table. Used to dynamically create a form schema from the configuration"
         db_table = 'erc"."reporting_field'
         constraints = [
             models.UniqueConstraint(
-                fields=['field_name', 'field_type', 'field_units', 'slug'],
-                name='unique_reporting_field',
+                fields=["field_name", "field_type", "field_units", "slug"],
+                name="unique_reporting_field",
             )
         ]
         triggers = [immutable_slug_trigger()]

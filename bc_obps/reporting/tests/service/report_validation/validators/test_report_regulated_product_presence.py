@@ -1,5 +1,5 @@
-from model_bakery.baker import make_recipe
 import pytest
+from model_bakery.baker import make_recipe
 from registration.models.operation import Operation
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
@@ -10,7 +10,6 @@ from reporting.service.report_validation.report_validation_error import (
 from reporting.service.report_validation.validators import (
     report_regulated_product_presence,
 )
-
 
 regulated_products_required_purposes = [
     Operation.Purposes.OBPS_REGULATED_OPERATION,
@@ -28,9 +27,9 @@ regulated_products_not_required_purposes = [
 @pytest.mark.django_db
 class TestOperationRegulatedProductsSelectedValidator:
     def test_all_purposes_are_evaluated(self):
-        assert set(regulated_products_required_purposes).union(regulated_products_not_required_purposes) == set(
-            Operation.Purposes
-        )
+        assert set(regulated_products_required_purposes).union(
+            regulated_products_not_required_purposes
+        ) == set(Operation.Purposes)
 
     @pytest.mark.parametrize(
         "reg_purpose",
@@ -43,7 +42,9 @@ class TestOperationRegulatedProductsSelectedValidator:
         )
         report_operation.regulated_products.clear()
 
-        result = report_regulated_product_presence.validate(report_operation.report_version)
+        result = report_regulated_product_presence.validate(
+            report_operation.report_version
+        )
 
         assert result == {
             "missing_regulated_product": ReportValidationError(
@@ -54,7 +55,9 @@ class TestOperationRegulatedProductsSelectedValidator:
                     "If the correct products are selected, you may continue."
                 ),
                 key=ReportValidationErrorKey.MISSING_REGULATED_PRODUCT,
-                context=ErrorContext(report_version_id=report_operation.report_version.id),
+                context=ErrorContext(
+                    report_version_id=report_operation.report_version.id
+                ),
             )
         }
 
@@ -69,7 +72,7 @@ class TestOperationRegulatedProductsSelectedValidator:
         )
 
         unregulated_product = make_recipe(
-            'registration.tests.utils.regulated_product',
+            "registration.tests.utils.regulated_product",
             name="Unregulated product",
             unit="tonnes",
             is_regulated=False,
@@ -77,7 +80,9 @@ class TestOperationRegulatedProductsSelectedValidator:
 
         report_operation.regulated_products.set([unregulated_product])
 
-        result = report_regulated_product_presence.validate(report_operation.report_version)
+        result = report_regulated_product_presence.validate(
+            report_operation.report_version
+        )
 
         assert result == {
             "missing_regulated_product": ReportValidationError(
@@ -88,7 +93,9 @@ class TestOperationRegulatedProductsSelectedValidator:
                     "If the correct products are selected, you may continue."
                 ),
                 key=ReportValidationErrorKey.MISSING_REGULATED_PRODUCT,
-                context=ErrorContext(report_version_id=report_operation.report_version.id),
+                context=ErrorContext(
+                    report_version_id=report_operation.report_version.id
+                ),
             )
         }
 
@@ -103,7 +110,7 @@ class TestOperationRegulatedProductsSelectedValidator:
         )
 
         regulated_product = make_recipe(
-            'registration.tests.utils.regulated_product',
+            "registration.tests.utils.regulated_product",
             name="Regulated product",
             unit="tonnes",
             is_regulated=True,
@@ -111,7 +118,9 @@ class TestOperationRegulatedProductsSelectedValidator:
 
         report_operation.regulated_products.set([regulated_product])
 
-        result = report_regulated_product_presence.validate(report_operation.report_version)
+        result = report_regulated_product_presence.validate(
+            report_operation.report_version
+        )
 
         assert not result
 
@@ -126,6 +135,8 @@ class TestOperationRegulatedProductsSelectedValidator:
         )
         report_operation.regulated_products.clear()
 
-        result = report_regulated_product_presence.validate(report_operation.report_version)
+        result = report_regulated_product_presence.validate(
+            report_operation.report_version
+        )
 
         assert not result

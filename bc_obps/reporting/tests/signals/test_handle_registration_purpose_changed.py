@@ -1,10 +1,10 @@
-import pytest
-from unittest.mock import patch, MagicMock
-from model_bakery import baker
+import logging
+from unittest.mock import MagicMock, patch
 
+import pytest
+from model_bakery import baker
 from reporting.models import ReportVersion
 from reporting.signals.consumers import handle_registration_purpose_changed
-import logging
 
 pytestmark = pytest.mark.django_db
 
@@ -28,9 +28,17 @@ class TestHandleRegistrationPurposeChanged:
         same_operator=False simulates a transferred operation (report.operator != operation.operator).
         """
         operator = baker.make_recipe("registration.tests.utils.operator")
-        operation = baker.make_recipe("registration.tests.utils.operation", operator=operator)
-        year_obj = baker.make_recipe("reporting.tests.utils.reporting_year", reporting_year=year_value)
-        report_operator = operator if same_operator else baker.make_recipe("registration.tests.utils.operator")
+        operation = baker.make_recipe(
+            "registration.tests.utils.operation", operator=operator
+        )
+        year_obj = baker.make_recipe(
+            "reporting.tests.utils.reporting_year", reporting_year=year_value
+        )
+        report_operator = (
+            operator
+            if same_operator
+            else baker.make_recipe("registration.tests.utils.operator")
+        )
         report = baker.make(
             "reporting.Report",
             operation=operation,
@@ -55,16 +63,24 @@ class TestHandleRegistrationPurposeChanged:
     def test_no_draft_version_does_nothing(self):
         operation = baker.make_recipe("registration.tests.utils.operation")
 
-        with patch("reporting.signals.consumers.ReportVersionService.delete_report_version") as mock_delete:
+        with patch(
+            "reporting.signals.consumers.ReportVersionService.delete_report_version"
+        ) as mock_delete:
             self._send(operation.id)
 
         mock_delete.assert_not_called()
 
-    @patch("reporting.signals.consumers.ReportingYearService.get_current_reporting_year")
+    @patch(
+        "reporting.signals.consumers.ReportingYearService.get_current_reporting_year"
+    )
     @patch("reporting.signals.consumers.ReportVersionService.delete_report_version")
-    def test_past_year_draft_is_not_deleted(self, mock_delete: MagicMock, mock_get_year: MagicMock):
+    def test_past_year_draft_is_not_deleted(
+        self, mock_delete: MagicMock, mock_get_year: MagicMock
+    ):
         draft_version = self._make_draft_version(year_value=2028)
-        current_year_obj = baker.make_recipe("reporting.tests.utils.reporting_year", reporting_year=2029)
+        current_year_obj = baker.make_recipe(
+            "reporting.tests.utils.reporting_year", reporting_year=2029
+        )
         mock_get_year.return_value = current_year_obj
 
         self._send(draft_version.report.operation_id)
@@ -72,9 +88,13 @@ class TestHandleRegistrationPurposeChanged:
         mock_delete.assert_not_called()
         assert ReportVersion.objects.filter(id=draft_version.id).exists()
 
-    @patch("reporting.signals.consumers.ReportingYearService.get_current_reporting_year")
+    @patch(
+        "reporting.signals.consumers.ReportingYearService.get_current_reporting_year"
+    )
     @patch("reporting.signals.consumers.ReportVersionService.delete_report_version")
-    def test_transferred_operation_draft_is_not_deleted(self, mock_delete: MagicMock, mock_get_year: MagicMock):
+    def test_transferred_operation_draft_is_not_deleted(
+        self, mock_delete: MagicMock, mock_get_year: MagicMock
+    ):
         draft_version = self._make_draft_version(year_value=2030, same_operator=False)
         mock_get_year.return_value = draft_version.report.reporting_year
 
@@ -83,9 +103,13 @@ class TestHandleRegistrationPurposeChanged:
         mock_delete.assert_not_called()
         assert ReportVersion.objects.filter(id=draft_version.id).exists()
 
-    @patch("reporting.signals.consumers.ReportingYearService.get_current_reporting_year")
+    @patch(
+        "reporting.signals.consumers.ReportingYearService.get_current_reporting_year"
+    )
     @patch("reporting.signals.consumers.ReportVersionService.delete_report_version")
-    def test_current_year_draft_is_deleted(self, mock_delete: MagicMock, mock_get_year: MagicMock):
+    def test_current_year_draft_is_deleted(
+        self, mock_delete: MagicMock, mock_get_year: MagicMock
+    ):
         draft_version = self._make_draft_version(year_value=2031, same_operator=True)
         mock_get_year.return_value = draft_version.report.reporting_year
 
@@ -93,15 +117,32 @@ class TestHandleRegistrationPurposeChanged:
 
         mock_delete.assert_called_once_with(draft_version.id)
 
-    @patch("reporting.signals.consumers.ReportingYearService.get_current_reporting_year")
+    @patch(
+        "reporting.signals.consumers.ReportingYearService.get_current_reporting_year"
+    )
     @patch("reporting.signals.consumers.ReportVersionService.delete_report_version")
-    def test_submitted_version_is_not_deleted(self, mock_delete: MagicMock, mock_get_year: MagicMock):
+    def test_submitted_version_is_not_deleted(
+        self, mock_delete: MagicMock, mock_get_year: MagicMock
+    ):
         operator = baker.make_recipe("registration.tests.utils.operator")
-        operation = baker.make_recipe("registration.tests.utils.operation", operator=operator)
-        year_obj = baker.make_recipe("reporting.tests.utils.reporting_year", reporting_year=2032)
+        operation = baker.make_recipe(
+            "registration.tests.utils.operation", operator=operator
+        )
+        year_obj = baker.make_recipe(
+            "reporting.tests.utils.reporting_year", reporting_year=2032
+        )
         mock_get_year.return_value = year_obj
-        report = baker.make("reporting.Report", operation=operation, operator=operator, reporting_year=year_obj)
-        baker.make("reporting.ReportVersion", report=report, status=ReportVersion.ReportVersionStatus.Submitted)
+        report = baker.make(
+            "reporting.Report",
+            operation=operation,
+            operator=operator,
+            reporting_year=year_obj,
+        )
+        baker.make(
+            "reporting.ReportVersion",
+            report=report,
+            status=ReportVersion.ReportVersionStatus.Submitted,
+        )
 
         self._send(operation.id)
 

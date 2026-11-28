@@ -1,6 +1,7 @@
 import json
-from typing import Any, Dict, Optional
+from typing import Any
 from uuid import UUID
+
 from django.conf import settings
 from django.http import HttpRequest
 from requests.models import Response
@@ -34,8 +35,10 @@ def is_local_url(url: str) -> bool:
     return url.startswith("http://localhost") or url.startswith("http://127.0.0.1")
 
 
-def extract_user_guid_from_authorization_header(request: HttpRequest) -> Optional[UUID]:
-    auth_header = request.headers.get("Authorization") or request.META.get("HTTP_AUTHORIZATION")
+def extract_user_guid_from_authorization_header(request: HttpRequest) -> UUID | None:
+    auth_header = request.headers.get("Authorization") or request.META.get(
+        "HTTP_AUTHORIZATION"
+    )
     if not auth_header:
         return None
 
@@ -54,7 +57,7 @@ def extract_user_guid_from_authorization_header(request: HttpRequest) -> Optiona
         return None
 
 
-def extract_user_guid(request: HttpRequest, payload: Dict[str, Any]) -> UUID:
+def extract_user_guid(request: HttpRequest, payload: dict[str, Any]) -> UUID:
     # Try middleware-provided current_user first
     try:
         current_user = getattr(request, "current_user", None)

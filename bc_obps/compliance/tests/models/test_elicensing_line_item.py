@@ -1,17 +1,21 @@
 from decimal import Decimal
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from django.core.exceptions import ValidationError
-from compliance.models.elicensing_line_item import ElicensingLineItem
+
 from common.tests.utils.helpers import BaseTestCase
-from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from compliance.models.elicensing_line_item import ElicensingLineItem
+from django.core.exceptions import ValidationError
 from model_bakery.baker import make_recipe
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ElicensingLineItemTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.test_object = make_recipe(
-            'compliance.tests.utils.elicensing_line_item',
+            "compliance.tests.utils.elicensing_line_item",
         )
         cls.field_data = [
             *TIMESTAMP_COMMON_FIELDS,
@@ -28,51 +32,63 @@ class ElicensingLineItemTest(BaseTestCase):
         ]
 
     def test_unique_constraint_on_fee_line_item_per_invoice(self):
-        invoice = make_recipe('compliance.tests.utils.elicensing_invoice')
+        invoice = make_recipe("compliance.tests.utils.elicensing_invoice")
         # Create a Fee line item for the invoice
         make_recipe(
-            'compliance.tests.utils.elicensing_line_item',
+            "compliance.tests.utils.elicensing_line_item",
             elicensing_invoice=invoice,
             line_item_type=ElicensingLineItem.LineItemType.FEE,
         )
         # Attempt to create another Fee line item for the same invoice, which should raise an IntegrityError
         with self.assertRaises(ValidationError) as context:
             make_recipe(
-                'compliance.tests.utils.elicensing_line_item',
+                "compliance.tests.utils.elicensing_line_item",
                 elicensing_invoice=invoice,
                 line_item_type=ElicensingLineItem.LineItemType.FEE,
             )
-        self.assertEqual(["A Fee line item already exists for this invoice."], context.exception.messages)
+        self.assertEqual(
+            ["A Fee line item already exists for this invoice."],
+            context.exception.messages,
+        )
 
 
 #  RLS tests
 class TestElicensingLineItemRls(BaseTestCase):
     def test_elicensing_line_item_rls_industry_user(self):
         # approved object
-        operator = make_recipe('registration.tests.utils.operator', id=1)
-        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator', operator=operator)
+        operator = make_recipe("registration.tests.utils.operator", id=1)
+        approved_user_operator = make_recipe(
+            "registration.tests.utils.approved_user_operator", operator=operator
+        )
         approved_client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator',
+            "compliance.tests.utils.elicensing_client_operator",
             operator=approved_user_operator.operator,
             client_object_id="1147483647",
         )
         approved_invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=approved_client_operator
+            "compliance.tests.utils.elicensing_invoice",
+            elicensing_client_operator=approved_client_operator,
         )
         approved_elicensing_line_item = make_recipe(
-            'compliance.tests.utils.elicensing_line_item', id=88, elicensing_invoice=approved_invoice
+            "compliance.tests.utils.elicensing_line_item",
+            id=88,
+            elicensing_invoice=approved_invoice,
         )
 
         # second object
-        random_operator = make_recipe('registration.tests.utils.operator', id=2)
+        random_operator = make_recipe("registration.tests.utils.operator", id=2)
         random_client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator', operator=random_operator, client_object_id="1147483647"
+            "compliance.tests.utils.elicensing_client_operator",
+            operator=random_operator,
+            client_object_id="1147483647",
         )
         random_invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=random_client_operator
+            "compliance.tests.utils.elicensing_invoice",
+            elicensing_client_operator=random_client_operator,
         )
         random_elicensing_line_item = make_recipe(
-            'compliance.tests.utils.elicensing_line_item', elicensing_invoice=random_invoice
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=random_invoice,
         )
 
         assert ElicensingLineItem.objects.count() == 2
@@ -88,8 +104,8 @@ class TestElicensingLineItemRls(BaseTestCase):
                 elicensing_invoice=approved_invoice,
                 object_id=123456,
                 guid="550e8400-e29b-41d4-a716-446655440000",
-                fee_date='2024-10-01',
-                base_amount=Decimal('888'),
+                fee_date="2024-10-01",
+                base_amount=Decimal("888"),
             )
 
         def forbidden_insert_function(cursor):
@@ -111,7 +127,7 @@ class TestElicensingLineItemRls(BaseTestCase):
                     SET base_amount = %s
                     WHERE id = %s
                 """,
-                (Decimal('999'), approved_elicensing_line_item.id),
+                (Decimal("999"), approved_elicensing_line_item.id),
             )
             return cursor.rowcount
 
@@ -122,7 +138,7 @@ class TestElicensingLineItemRls(BaseTestCase):
                     SET base_amount = %s
                     WHERE id = %s
                 """,
-                (Decimal('999'), random_elicensing_line_item.id),
+                (Decimal("999"), random_elicensing_line_item.id),
             )
             return cursor.rowcount
 
@@ -138,12 +154,21 @@ class TestElicensingLineItemRls(BaseTestCase):
         )
 
     def test_elicensing_line_item_rls_cas_users(self):
-        operator = make_recipe('registration.tests.utils.operator', id=3)
+        operator = make_recipe("registration.tests.utils.operator", id=3)
         client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator', operator=operator, client_object_id="1147488888"
+            "compliance.tests.utils.elicensing_client_operator",
+            operator=operator,
+            client_object_id="1147488888",
         )
-        invoice = make_recipe('compliance.tests.utils.elicensing_invoice', elicensing_client_operator=client_operator)
-        make_recipe('compliance.tests.utils.elicensing_line_item', id=888, elicensing_invoice=invoice)
+        invoice = make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            elicensing_client_operator=client_operator,
+        )
+        make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            id=888,
+            elicensing_invoice=invoice,
+        )
 
         def select_function(cursor):
             assert ElicensingLineItem.objects.count() == 1

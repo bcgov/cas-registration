@@ -1,9 +1,11 @@
 from django.test import TestCase
-from reporting.models.methodology import Methodology
-from reporting.tests.utils.report_data_bakers import report_emission_baker
-from reporting.service.report_activity_save_service import ReportActivitySaveService
-from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
 from model_bakery.baker import make_recipe
+from reporting.models.methodology import Methodology
+from reporting.service.report_activity_save_service import ReportActivitySaveService
+from reporting.tests.service.test_report_activity_save_service.infrastructure import (
+    TestInfrastructure,
+)
+from reporting.tests.utils.report_data_bakers import report_emission_baker
 
 
 class TestSaveReportMethodology(TestCase):
@@ -77,4 +79,7 @@ class TestSaveReportMethodology(TestCase):
             "unitFuelCo2DefaultEmissionFactor": 3,
             "unitFuelCo2DefaultEmissionFactorFieldUnits": "kg/GJ",
         }
-        assert updated_return_value.methodology_id == Methodology.objects.get(name="Default HHV/Default EF").id
+        assert (
+            updated_return_value.methodology_id
+            == Methodology.objects.get(name="Default HHV/Default EF").id
+        )

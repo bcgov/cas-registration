@@ -1,33 +1,38 @@
-from typing import List, Literal, Optional
+from typing import Literal
+
+from common.api.utils import get_current_user_guid
+from common.permissions import authorize
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.db.models import QuerySet
+from django.http import HttpRequest
+from ninja import File, Query, UploadedFile
+from ninja.pagination import paginate
+from registration.api.router import router
 from registration.constants import OPERATION_TAGS
 from registration.models.operation import Operation
-from typing import Tuple
+from registration.models.operation_designated_operator_timeline import (
+    OperationDesignatedOperatorTimeline,
+)
 from registration.schema import (
-    OperationInformationIn,
     Message,
+    OperationInformationIn,
     OperationTimelineFilterSchema,
     OperationTimelineListOut,
 )
 from registration.schema.operation import OperationUpdateOut
-from registration.service.data_types.operation_service import OperationData, MultipleOperatorData
+from registration.service.data_types.operation_service import (
+    MultipleOperatorData,
+    OperationData,
+)
 from registration.service.operation_service import OperationService
-from common.permissions import authorize
-from django.http import HttpRequest
-from common.api.utils import get_current_user_guid
-from registration.api.router import router
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from ninja import File, Query, UploadedFile
-from django.db.models import QuerySet
-from ninja.pagination import paginate
 from registration.utils import CustomPagination
-from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 
 ##### GET #####
 
 
 @router.get(
     "/operations",
-    response={200: List[OperationTimelineListOut], custom_codes_4xx: Message},
+    response={200: list[OperationTimelineListOut], custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     auth=authorize("approved_authorized_roles"),
 )
@@ -35,12 +40,14 @@ from registration.models.operation_designated_operator_timeline import Operation
 def list_operations(
     request: HttpRequest,
     filters: OperationTimelineFilterSchema = Query(...),
-    sort_field: Optional[str] = "operation__created_at",
-    sort_order: Optional[Literal["desc", "asc"]] = "desc",
+    sort_field: str | None = "operation__created_at",
+    sort_order: Literal["desc", "asc"] | None = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[OperationDesignatedOperatorTimeline]:
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
-    return OperationService.list_operations_timeline(get_current_user_guid(request), sort_field, sort_order, filters)
+    return OperationService.list_operations_timeline(
+        get_current_user_guid(request), sort_field, sort_order, filters
+    )
 
 
 REGISTRATION_PURPOSES_LITERALS = Literal[
@@ -55,12 +62,14 @@ REGISTRATION_PURPOSES_LITERALS = Literal[
 
 @router.get(
     "/operations/registration-purposes",
-    response={200: List[REGISTRATION_PURPOSES_LITERALS], custom_codes_4xx: Message},
+    response={200: list[REGISTRATION_PURPOSES_LITERALS], custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves a list of strings representing the valid options for an operation's registration purpose (aka registration category).""",
     auth=authorize("approved_authorized_roles"),
 )
-def get_registration_purposes(request: HttpRequest) -> Tuple[Literal[200], List[REGISTRATION_PURPOSES_LITERALS]]:
+def get_registration_purposes(
+    request: HttpRequest,
+) -> tuple[Literal[200], list[REGISTRATION_PURPOSES_LITERALS]]:
     purposes = [purpose for purpose in Operation.Purposes]
     return 200, purposes
 
@@ -80,14 +89,14 @@ def register_create_operation_information(
     boundary_map: File[UploadedFile] = None,  # type: ignore
     process_flow_diagram: File[UploadedFile] = None,  # type: ignore
     new_entrant_application: File[UploadedFile] = None,  # type: ignore
-) -> Tuple[Literal[201], Operation]:
-
+) -> tuple[Literal[201], Operation]:
     operation_data = OperationData(
-        **payload.model_dump(exclude={'multiple_operators_array'}),
+        **payload.model_dump(exclude={"multiple_operators_array"}),
         multiple_operators_array=(
             [
                 MultipleOperatorData(
-                    **op.model_dump(exclude={'business_structure'}), business_structure_id=op.business_structure.name  # type: ignore
+                    **op.model_dump(exclude={"business_structure"}),
+                    business_structure_id=op.business_structure.name,  # type: ignore
                 )
                 for op in payload.multiple_operators_array or []
             ]

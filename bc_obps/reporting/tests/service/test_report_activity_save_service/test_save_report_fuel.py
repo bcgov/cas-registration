@@ -1,6 +1,9 @@
 from unittest.mock import MagicMock, call, patch
-from django.test import TestCase
+
 import pytest
+from common.exceptions import UserError
+from django.test import TestCase
+from model_bakery.baker import make, make_recipe
 from reporting.models.fuel_type import FuelType
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_source_type import ReportSourceType
@@ -9,12 +12,12 @@ from reporting.service.report_activity_save_service import ReportActivitySaveSer
 from reporting.tests.service.test_report_activity_save_service.infrastructure import (
     TestInfrastructure,
 )
-from model_bakery.baker import make_recipe, make
-from common.exceptions import UserError
 
 
 class TestSaveReportFuel(TestCase):
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission"
+    )
     def test_save_fuel(self, mock_save_emission: MagicMock):
         test_infrastructure = TestInfrastructure.build()
         act_st = test_infrastructure.make_activity_source_type(
@@ -37,7 +40,9 @@ class TestSaveReportFuel(TestCase):
             report_version=test_infrastructure.report_version,
             json_data={"test_report_unit": True},
         )
-        fuel_type = make_recipe("reporting.tests.utils.fuel_type", name="Test Fuel Type")
+        fuel_type = make_recipe(
+            "reporting.tests.utils.fuel_type", name="Test Fuel Type"
+        )
 
         service_under_test = ReportActivitySaveService(
             report_activity.report_version.id,
@@ -47,9 +52,13 @@ class TestSaveReportFuel(TestCase):
         )
 
         with pytest.raises(UserError, match="Fuel Name is required"):
-            service_under_test.save_fuel(report_source_type, report_unit, {"no_fuel_type": True})
+            service_under_test.save_fuel(
+                report_source_type, report_unit, {"no_fuel_type": True}
+            )
         with pytest.raises(UserError, match="Fuel Name is required"):
-            service_under_test.save_fuel(report_source_type, report_unit, {"fuelType": {}})
+            service_under_test.save_fuel(
+                report_source_type, report_unit, {"fuelType": {}}
+            )
         with pytest.raises(FuelType.DoesNotExist):
             service_under_test.save_fuel(
                 report_source_type,
@@ -64,19 +73,30 @@ class TestSaveReportFuel(TestCase):
             service_under_test.save_fuel(
                 report_source_type,
                 report_unit,
-                {"fuelType": {"fuelName": "Test Fuel Type"}, "no_emission_data": True, "annualFuelAmount": 1},
+                {
+                    "fuelType": {"fuelName": "Test Fuel Type"},
+                    "no_emission_data": True,
+                    "annualFuelAmount": 1,
+                },
             )
         with pytest.raises(UserError, match="Annual Fuel Amount is required"):
             service_under_test.save_fuel(
                 report_source_type,
                 report_unit,
-                {"fuelType": {"fuelName": fuel_type.name}, "emissions": [{"emission": 1}]},
+                {
+                    "fuelType": {"fuelName": fuel_type.name},
+                    "emissions": [{"emission": 1}],
+                },
             )
 
         with_none_report_unit = service_under_test.save_fuel(
             report_source_type,
             None,
-            {"fuelType": {"fuelName": fuel_type.name}, "emissions": [], "annualFuelAmount": 9800},
+            {
+                "fuelType": {"fuelName": fuel_type.name},
+                "emissions": [],
+                "annualFuelAmount": 9800,
+            },
         )
 
         assert with_none_report_unit.report_unit is None
@@ -92,7 +112,10 @@ class TestSaveReportFuel(TestCase):
             },
         )
 
-        assert return_value.json_data == {"test_fuel_prop": "fuel_value", "annualFuelAmount": 9800}
+        assert return_value.json_data == {
+            "test_fuel_prop": "fuel_value",
+            "annualFuelAmount": 9800,
+        }
         assert return_value.report_source_type == report_source_type
         assert return_value.report_unit == report_unit
         assert return_value.report_version == test_infrastructure.report_version
@@ -104,7 +127,9 @@ class TestSaveReportFuel(TestCase):
             ]
         )
 
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission"
+    )
     def test_save_fuel_update(self, mock_save_emission: MagicMock):
         test_infrastructure = TestInfrastructure.build()
         act_st = test_infrastructure.make_activity_source_type(
@@ -127,7 +152,9 @@ class TestSaveReportFuel(TestCase):
             report_version=test_infrastructure.report_version,
             json_data={"test_report_unit": True},
         )
-        fuel_type = make_recipe("reporting.tests.utils.fuel_type", name="Test Fuel Type")
+        fuel_type = make_recipe(
+            "reporting.tests.utils.fuel_type", name="Test Fuel Type"
+        )
 
         service_under_test = ReportActivitySaveService(
             report_activity.report_version.id,
@@ -148,7 +175,9 @@ class TestSaveReportFuel(TestCase):
         )
 
         # Update
-        new_fuel_type = make_recipe("reporting.tests.utils.fuel_type", name="Another Fuel Type")
+        new_fuel_type = make_recipe(
+            "reporting.tests.utils.fuel_type", name="Another Fuel Type"
+        )
         update_return_value = service_under_test.save_fuel(
             report_source_type,
             report_unit,
@@ -162,10 +191,15 @@ class TestSaveReportFuel(TestCase):
         )
 
         assert update_return_value.id == report_fuel.id
-        assert update_return_value.json_data == {"test_fuel_prop": "updated!", "annualFuelAmount": 9800}
+        assert update_return_value.json_data == {
+            "test_fuel_prop": "updated!",
+            "annualFuelAmount": 9800,
+        }
         assert update_return_value.fuel_type == new_fuel_type
 
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission"
+    )
     def test_removes_deleted_emissions(self, mock_save_emission: MagicMock):
         test_infrastructure = TestInfrastructure.build()
         act_st = test_infrastructure.make_activity_source_type(
@@ -188,7 +222,9 @@ class TestSaveReportFuel(TestCase):
             report_version=test_infrastructure.report_version,
             json_data={"test_report_unit": True},
         )
-        fuel_type = make_recipe("reporting.tests.utils.fuel_type", name="Test Fuel Type")
+        fuel_type = make_recipe(
+            "reporting.tests.utils.fuel_type", name="Test Fuel Type"
+        )
 
         service_under_test = ReportActivitySaveService(
             report_activity.report_version.id,

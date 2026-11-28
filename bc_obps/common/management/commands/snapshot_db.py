@@ -1,5 +1,6 @@
 import json
 import os
+
 from django.apps import apps as django_apps
 from django.core.management.base import BaseCommand, CommandError
 
@@ -67,7 +68,11 @@ def snapshot_model(model) -> dict:
     Return {'count': N, 'rows': [...]} for *model*, with rows sorted by their JSON content.
     """
     meta = model._meta
-    fk_names = [f.name for f in meta.concrete_fields if f.is_relation and f.name not in EXCLUDED_FIELDS]
+    fk_names = [
+        f.name
+        for f in meta.concrete_fields
+        if f.is_relation and f.name not in EXCLUDED_FIELDS
+    ]
     m2m_names = [f.name for f in meta.many_to_many]
 
     qs = model.objects.all()
@@ -139,5 +144,8 @@ class Command(BaseCommand):
             json.dump(snapshot, f, indent=2, sort_keys=True)
 
         self.stdout.write(
-            self.style.SUCCESS(f"\nSnapshot saved → {output}\n" f"Tables: {len(snapshot)}  |  Total rows: {total_rows}")
+            self.style.SUCCESS(
+                f"\nSnapshot saved → {output}\n"
+                f"Tables: {len(snapshot)}  |  Total rows: {total_rows}"
+            )
         )

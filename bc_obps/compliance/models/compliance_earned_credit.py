@@ -1,10 +1,11 @@
 import pgtrigger
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
-from simple_history.models import HistoricalRecords
-from compliance.models.compliance_report_version import ComplianceReportVersion
-from .rls_configs.compliance_earned_credit import Rls as ComplianceEarnedCreditRls
 from registration.models.user import User
+from simple_history.models import HistoricalRecords
+
+from .rls_configs.compliance_earned_credit import Rls as ComplianceEarnedCreditRls
 
 
 class ComplianceEarnedCredit(TimeStampedModel):
@@ -18,16 +19,18 @@ class ComplianceEarnedCredit(TimeStampedModel):
     """
 
     class IssuanceStatus(models.TextChoices):
-        CREDITS_NOT_ISSUED = ('Credits Not Issued in BCCR',)
-        ISSUANCE_REQUESTED = ('Issuance Requested',)
-        CHANGES_REQUIRED = ('Changes Required',)
-        APPROVED = ('Approved',)
-        DECLINED = ('Declined',)
+        CREDITS_NOT_ISSUED = ("Credits Not Issued in BCCR",)
+        ISSUANCE_REQUESTED = ("Issuance Requested",)
+        CHANGES_REQUIRED = ("Changes Required",)
+        APPROVED = ("Approved",)
+        DECLINED = ("Declined",)
 
     class AnalystSuggestion(models.TextChoices):
-        READY_TO_APPROVE = ('Ready to approve',)
-        REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID = ('Requiring change of BCCR Holding Account ID',)
-        REQUIRING_SUPPLEMENTARY_REPORT = ('Requiring supplementary report',)
+        READY_TO_APPROVE = ("Ready to approve",)
+        REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID = (
+            "Requiring change of BCCR Holding Account ID",
+        )
+        REQUIRING_SUPPLEMENTARY_REPORT = ("Requiring supplementary report",)
 
     compliance_report_version = models.OneToOneField(
         ComplianceReportVersion,
@@ -149,7 +152,10 @@ class ComplianceEarnedCredit(TimeStampedModel):
                 name="restrict_bccr_fields_unless_not_issued",
                 when=pgtrigger.Before,
                 operation=pgtrigger.Insert | pgtrigger.Update,
-                condition=(pgtrigger.Q(new__bccr_trading_name__isnull=True) | pgtrigger.Q(new__bccr_trading_name=""))
+                condition=(
+                    pgtrigger.Q(new__bccr_trading_name__isnull=True)
+                    | pgtrigger.Q(new__bccr_trading_name="")
+                )
                 | (
                     pgtrigger.Q(new__bccr_holding_account_id__isnull=True)
                     | pgtrigger.Q(new__bccr_holding_account_id="")

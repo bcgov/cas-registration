@@ -4,10 +4,18 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class UserAndContactCommonInfo(BaseModel):
-    first_name = models.CharField(max_length=1000, db_comment="A user or contact's first name")
-    last_name = models.CharField(max_length=1000, db_comment="A user or contact's last name")
-    position_title = models.CharField(max_length=1000, db_comment="A user or contact's position title")
-    email = models.EmailField(max_length=254, db_comment="A user or contact's email, limited to valid emails")
+    first_name = models.CharField(
+        max_length=1000, db_comment="A user or contact's first name"
+    )
+    last_name = models.CharField(
+        max_length=1000, db_comment="A user or contact's last name"
+    )
+    position_title = models.CharField(
+        max_length=1000, db_comment="A user or contact's position title"
+    )
+    email = models.EmailField(
+        max_length=254, db_comment="A user or contact's email, limited to valid emails"
+    )
     phone_number = PhoneNumberField(
         blank=True,
         db_comment="A user or contact's phone number, limited to valid phone numbers",

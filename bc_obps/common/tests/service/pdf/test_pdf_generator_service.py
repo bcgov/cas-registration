@@ -1,12 +1,13 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import pytest
-from django.template.exceptions import TemplateDoesNotExist
 from common.service.pdf.pdf_generator_service import PDFGeneratorService
+from django.template.exceptions import TemplateDoesNotExist
 
 
 class TestPDFGeneratorService:
-    @patch('common.service.pdf.pdf_generator_service.get_template')
-    @patch('common.service.pdf.pdf_generator_service.HTML')
+    @patch("common.service.pdf.pdf_generator_service.get_template")
+    @patch("common.service.pdf.pdf_generator_service.HTML")
     def test_generate_pdf_success(self, mock_html, mock_get_template):
         # Arrange
         template_name = "test.html"
@@ -32,17 +33,19 @@ class TestPDFGeneratorService:
         assert size == len(mock_pdf)
         assert b"".join(generator) == mock_pdf
 
-    @patch('common.service.pdf.pdf_generator_service.get_template')
+    @patch("common.service.pdf.pdf_generator_service.get_template")
     def test_generate_pdf_template_not_found(self, mock_get_template):
         # Arrange
         mock_get_template.side_effect = TemplateDoesNotExist("test.html")
 
         # Act/Assert
-        with pytest.raises(ValueError, match="Failed to generate PDF: template 'test.html' not found"):
+        with pytest.raises(
+            ValueError, match="Failed to generate PDF: template 'test.html' not found"
+        ):
             PDFGeneratorService.generate_pdf("test.html", {}, "test.pdf")
 
-    @patch('common.service.pdf.pdf_generator_service.get_template')
-    @patch('common.service.pdf.pdf_generator_service.HTML')
+    @patch("common.service.pdf.pdf_generator_service.get_template")
+    @patch("common.service.pdf.pdf_generator_service.HTML")
     def test_generate_pdf_with_logo(self, mock_html, mock_get_template):
         # Arrange
         template_name = "test.html"
@@ -56,9 +59,14 @@ class TestPDFGeneratorService:
         mock_html.return_value.write_pdf.return_value = mock_pdf
 
         # Act
-        with patch.object(PDFGeneratorService, '_get_logo_base64', return_value="base64_logo") as mock_get_logo:
+        with patch.object(
+            PDFGeneratorService, "_get_logo_base64", return_value="base64_logo"
+        ) as mock_get_logo:
             generator, output_filename, size = PDFGeneratorService.generate_pdf(
-                template_name=template_name, context=context, filename=filename, logo_file_name=logo_file_name
+                template_name=template_name,
+                context=context,
+                filename=filename,
+                logo_file_name=logo_file_name,
             )
 
         # Assert
@@ -72,14 +80,16 @@ class TestPDFGeneratorService:
         assert size == len(mock_pdf)
         assert b"".join(generator) == mock_pdf
 
-    @patch('common.service.pdf.pdf_generator_service.get_template')
-    @patch('common.service.pdf.pdf_generator_service.HTML')
+    @patch("common.service.pdf.pdf_generator_service.get_template")
+    @patch("common.service.pdf.pdf_generator_service.HTML")
     def test_generate_pdf_weasyprint_error(self, mock_html, mock_get_template):
         # Arrange
         mock_template = MagicMock()
         mock_template.render.return_value = "<html>test</html>"
         mock_get_template.return_value = mock_template
-        mock_html.return_value.write_pdf.side_effect = Exception("PDF generation failed")
+        mock_html.return_value.write_pdf.side_effect = Exception(
+            "PDF generation failed"
+        )
 
         # Act/Assert
         with pytest.raises(ValueError, match="Failed to generate PDF document"):

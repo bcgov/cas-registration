@@ -1,23 +1,26 @@
 import json
 from uuid import UUID
+
+from ninja import Field, ModelSchema, Schema
+from ninja.types import DictStrAny
+from registration.models import MultipleOperator, Operation, Operator, User
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
-from typing import List, Optional
 from registration.models.contact import Contact
 from registration.models.document import Document
-from registration.schema import OperatorForOperationOut, MultipleOperatorIn, MultipleOperatorOut
-from ninja import Field, ModelSchema, Schema
-from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
-from registration.models import Operator, User
-from ninja.types import DictStrAny
+from registration.schema import (
+    MultipleOperatorIn,
+    MultipleOperatorOut,
+    OperatorForOperationOut,
+)
 
 
-def serialize_document(doc: Document | None) -> Optional[str]:
+def serialize_document(doc: Document | None) -> str | None:
     # Something similar to dataURL to allow passing metadata along with the filename.
     # Required because RJSF expects a string for a file field.
     if doc:
         # Document.file is non-nullable, so name is always set; django-stubs 6.0 types it as str | None.
-        name = doc.file.name.split('/')[-1]  # type: ignore[union-attr]
+        name = doc.file.name.split("/")[-1]  # type: ignore[union-attr]
         return json.dumps({"name": name, "id": doc.id, "status": doc.status})
     return None
 
@@ -27,20 +30,20 @@ def serialize_document(doc: Document | None) -> Optional[str]:
 
 class OperationRegistrationOut(ModelSchema):
     operation: UUID = Field(..., alias="id")
-    naics_code_id: Optional[int] = Field(None, alias="naics_code.id")
-    secondary_naics_code_id: Optional[int] = Field(None, alias="secondary_naics_code.id")
-    tertiary_naics_code_id: Optional[int] = Field(None, alias="tertiary_naics_code.id")
-    multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
-    operation_has_multiple_operators: Optional[bool] = False
-    boundary_map: Optional[str] = None
-    process_flow_diagram: Optional[str] = None
+    naics_code_id: int | None = Field(None, alias="naics_code.id")
+    secondary_naics_code_id: int | None = Field(None, alias="secondary_naics_code.id")
+    tertiary_naics_code_id: int | None = Field(None, alias="tertiary_naics_code.id")
+    multiple_operators_array: list[MultipleOperatorOut] | None = []
+    operation_has_multiple_operators: bool | None = False
+    boundary_map: str | None = None
+    process_flow_diagram: str | None = None
 
     @staticmethod
-    def resolve_boundary_map(obj: Operation) -> Optional[str]:
+    def resolve_boundary_map(obj: Operation) -> str | None:
         return serialize_document(obj.get_boundary_map())
 
     @staticmethod
-    def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
+    def resolve_process_flow_diagram(obj: Operation) -> str | None:
         return serialize_document(obj.get_process_flow_diagram())
 
     @staticmethod
@@ -48,20 +51,32 @@ class OperationRegistrationOut(ModelSchema):
         return obj.multiple_operators.exists()
 
     @staticmethod
-    def resolve_multiple_operators_array(obj: Operation) -> Optional[List[MultipleOperator]]:
+    def resolve_multiple_operators_array(
+        obj: Operation,
+    ) -> list[MultipleOperator] | None:
         if obj.multiple_operators.exists():
             return [
-                multiple_operator for multiple_operator in obj.multiple_operators.select_related("attorney_address")
+                multiple_operator
+                for multiple_operator in obj.multiple_operators.select_related(
+                    "attorney_address"
+                )
             ]
         return None
 
     class Meta:
         model = Operation
-        fields = ["id", "name", 'type', 'registration_purpose', 'regulated_products', 'activities']
+        fields = [
+            "id",
+            "name",
+            "type",
+            "registration_purpose",
+            "regulated_products",
+            "activities",
+        ]
 
 
 class OperationRepresentativeIn(ModelSchema):
-    existing_contact_id: Optional[int] = None
+    existing_contact_id: int | None = None
     street_address: str
     municipality: str
     province: str
@@ -69,39 +84,39 @@ class OperationRepresentativeIn(ModelSchema):
 
     class Meta:
         model = Contact
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 'position_title']
+        fields = ["first_name", "last_name", "email", "phone_number", "position_title"]
 
 
 class OperationRepresentativeRemove(ModelSchema):
     class Meta:
         model = Contact
-        fields = ['id']
+        fields = ["id"]
 
 
 class OperationInformationIn(ModelSchema):
-    registration_purpose: Optional[Operation.Purposes] = None
-    regulated_products: Optional[List[int]] = None
-    activities: Optional[List[int]] = None
-    naics_code_id: Optional[int] = None
-    secondary_naics_code_id: Optional[int] = None
-    tertiary_naics_code_id: Optional[int] = None
-    multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
-    date_of_first_shipment: Optional[str] = None
+    registration_purpose: Operation.Purposes | None = None
+    regulated_products: list[int] | None = None
+    activities: list[int] | None = None
+    naics_code_id: int | None = None
+    secondary_naics_code_id: int | None = None
+    tertiary_naics_code_id: int | None = None
+    multiple_operators_array: list[MultipleOperatorIn] | None = None
+    date_of_first_shipment: str | None = None
 
     class Meta:
         model = Operation
-        fields = ['name', 'type']
+        fields = ["name", "type"]
 
 
 class OperationInformationInUpdate(OperationInformationIn):
-    operation_representatives: List[int]
+    operation_representatives: list[int]
 
 
 class OptedInOperationDetailOut(ModelSchema):
-    final_reporting_year: Optional[int] = None
+    final_reporting_year: int | None = None
 
     @staticmethod
-    def resolve_final_reporting_year(obj: OptedInOperationDetail) -> Optional[int]:
+    def resolve_final_reporting_year(obj: OptedInOperationDetail) -> int | None:
         """
         Extract the year integer from the final_reporting_year ForeignKey.
         """
@@ -136,30 +151,36 @@ class OptedOutOperationDetailIn(Schema):
     """Schema for updating final_reporting_year only.
     Accepts final_reporting_year as an integer from the frontend."""
 
-    final_reporting_year: Optional[int] = None
+    final_reporting_year: int | None = None
 
 
 class OperationOut(ModelSchema):
-    naics_code_id: Optional[int] = Field(None, alias="naics_code.id")
-    secondary_naics_code_id: Optional[int] = Field(None, alias="secondary_naics_code.id")
-    tertiary_naics_code_id: Optional[int] = Field(None, alias="tertiary_naics_code.id")
-    bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
-    operator: Optional[OperatorForOperationOut] = None
-    registration_purpose: Optional[str] = None
-    multiple_operators_array: Optional[List[MultipleOperatorOut]] = []
-    operation_has_multiple_operators: Optional[bool] = False
-    opted_in_operation: Optional[OptedInOperationDetailOut] = None
-    opted_out_operation: Optional[int] = None
-    date_of_first_shipment: Optional[str] = None
-    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
-    operation_representatives: Optional[List[int]] = []
+    naics_code_id: int | None = Field(None, alias="naics_code.id")
+    secondary_naics_code_id: int | None = Field(None, alias="secondary_naics_code.id")
+    tertiary_naics_code_id: int | None = Field(None, alias="tertiary_naics_code.id")
+    bc_obps_regulated_operation: str | None = Field(
+        None, alias="bc_obps_regulated_operation.id"
+    )
+    operator: OperatorForOperationOut | None = None
+    registration_purpose: str | None = None
+    multiple_operators_array: list[MultipleOperatorOut] | None = []
+    operation_has_multiple_operators: bool | None = False
+    opted_in_operation: OptedInOperationDetailOut | None = None
+    opted_out_operation: int | None = None
+    date_of_first_shipment: str | None = None
+    bcghg_id: str | None = Field(None, alias="bcghg_id.id")
+    operation_representatives: list[int] | None = []
 
     @staticmethod
-    def resolve_operation_representatives(obj: Operation) -> List[int]:
-        return list(obj.contacts.filter(business_role='Operation Representative').values_list('id', flat=True))
+    def resolve_operation_representatives(obj: Operation) -> list[int]:
+        return list(
+            obj.contacts.filter(business_role="Operation Representative").values_list(
+                "id", flat=True
+            )
+        )
 
     @staticmethod
-    def resolve_multiple_operators_array(obj: Operation) -> List[MultipleOperator]:
+    def resolve_multiple_operators_array(obj: Operation) -> list[MultipleOperator]:
         return list(obj.multiple_operators.all())
 
     @staticmethod
@@ -167,11 +188,11 @@ class OperationOut(ModelSchema):
         return obj.multiple_operators.exists()
 
     @staticmethod
-    def resolve_operator(obj: Operation, context: DictStrAny) -> Optional[Operator]:
+    def resolve_operator(obj: Operation, context: DictStrAny) -> Operator | None:
         """
         Only return operator details if the user is an IRC user
         """
-        request = context.get('request')
+        request = context.get("request")
         if request:
             user: User = request.current_user
             if user.is_irc_user():
@@ -179,7 +200,7 @@ class OperationOut(ModelSchema):
         return None
 
     @staticmethod
-    def resolve_opted_out_operation(obj: Operation) -> Optional[int]:
+    def resolve_opted_out_operation(obj: Operation) -> int | None:
         """
         Extract final_reporting_year from opted_in_operation to use as opted_out_operation
         """
@@ -191,38 +212,38 @@ class OperationOut(ModelSchema):
         model = Operation
         fields = [
             "id",
-            'name',
-            'type',
-            'regulated_products',
-            'status',
-            'activities',
-            'opted_in_operation',
+            "name",
+            "type",
+            "regulated_products",
+            "status",
+            "activities",
+            "opted_in_operation",
         ]
         from_attributes = True
 
 
 class OperationOutWithDocuments(OperationOut):
-    boundary_map: Optional[str] = None
-    process_flow_diagram: Optional[str] = None
-    new_entrant_application: Optional[str] = None
+    boundary_map: str | None = None
+    process_flow_diagram: str | None = None
+    new_entrant_application: str | None = None
 
     @staticmethod
-    def resolve_boundary_map(obj: Operation) -> Optional[str]:
+    def resolve_boundary_map(obj: Operation) -> str | None:
         return serialize_document(obj.get_boundary_map())
 
     @staticmethod
-    def resolve_process_flow_diagram(obj: Operation) -> Optional[str]:
+    def resolve_process_flow_diagram(obj: Operation) -> str | None:
         return serialize_document(obj.get_process_flow_diagram())
 
     @staticmethod
-    def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
+    def resolve_new_entrant_application(obj: Operation) -> str | None:
         return serialize_document(obj.get_new_entrant_application())
 
 
 class OperationUpdateOut(ModelSchema):
     class Meta:
         model = Operation
-        fields = ['id', 'name']
+        fields = ["id", "name"]
 
 
 class OperationCurrentOut(ModelSchema):
@@ -238,27 +259,27 @@ class OperationRegistrationSubmissionIn(Schema):
 
 
 class OperationNewEntrantApplicationOut(ModelSchema):
-    new_entrant_application: Optional[str] = None
+    new_entrant_application: str | None = None
 
     @staticmethod
-    def resolve_new_entrant_application(obj: Operation) -> Optional[str]:
+    def resolve_new_entrant_application(obj: Operation) -> str | None:
         return serialize_document(obj.get_new_entrant_application())
 
     class Meta:
         model = Operation
-        fields = ['date_of_first_shipment']
+        fields = ["date_of_first_shipment"]
 
 
 class OperationRepresentativeOut(ModelSchema):
     class Meta:
         model = Contact
-        fields = ['id']
+        fields = ["id"]
 
 
 class OperationBoroIdOut(ModelSchema):
     class Meta:
         model = BcObpsRegulatedOperation
-        fields = ['id']
+        fields = ["id"]
 
 
 class OperationUpdateStatusOut(ModelSchema):

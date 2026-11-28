@@ -1,23 +1,32 @@
 from uuid import UUID
 
-from django.db.models import OuterRef, QuerySet, Value, F, Subquery, Case, When, Q, CharField
-from django.db.models.functions import Concat, Coalesce
+from django.db.models import (
+    Case,
+    CharField,
+    F,
+    OuterRef,
+    Q,
+    QuerySet,
+    Subquery,
+    Value,
+    When,
+)
+from django.db.models.functions import Coalesce, Concat
 from ninja import Query
 from registration.models.operation import Operation
-from reporting.models import ReportOperation
-from reporting.models.report import Report
-from reporting.models.report_version import ReportVersion
 from registration.service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
 from registration.service.data_access_service.user_service import UserDataAccessService
-from typing import Optional
+from registration.service.user_operator_service import UserOperatorService
+from reporting.models import ReportOperation
+from reporting.models.report import Report
+from reporting.models.report_version import ReportVersion
 from reporting.schema.dashboard import (
     ReportingDashboardOperationFilterSchema,
     ReportingDashboardReportFilterSchema,
     ReportsPeriod,
 )
-from registration.service.user_operator_service import UserOperatorService
 
 
 class ReportingDashboardService:
@@ -34,21 +43,24 @@ class ReportingDashboardService:
         ReportVersion.objects.filter(report_id=OuterRef("id"))
         .order_by("-id")
         .annotate(
-            full_name=Concat(F("updated_by__first_name"), Value(" "), F("updated_by__last_name")),
+            full_name=Concat(
+                F("updated_by__first_name"), Value(" "), F("updated_by__last_name")
+            ),
             operation_name=F("report_operation__operation_name"),
         )[:1]
     )
     latest_submitted_report_version_subquery = ReportVersion.objects.filter(
         report_id=OuterRef("id"), status="Submitted", is_latest_submitted=True
     ).annotate(
-        full_name=Concat(F("updated_by__first_name"), Value(" "), F("updated_by__last_name")),
+        full_name=Concat(
+            F("updated_by__first_name"), Value(" "), F("updated_by__last_name")
+        ),
         operation_name=F("report_operation__operation_name"),
-    )[
-        :1
-    ]
+    )[:1]
     report_status_sort_key = Case(
         When(
-            Q(report_status="Draft") & ~Q(report_version_id=F("first_report_version_id")),
+            Q(report_status="Draft")
+            & ~Q(report_version_id=F("first_report_version_id")),
             then=Value("Draft Supplementary Report"),
         ),
         When(report_status="Draft", then=Value("Draft")),
@@ -62,8 +74,8 @@ class ReportingDashboardService:
         cls,
         user_guid: UUID,
         reporting_year: int,
-        sort_field: Optional[str] = "id",
-        sort_order: Optional[str] = "asc",
+        sort_field: str | None = "id",
+        sort_order: str | None = "asc",
         filters: ReportingDashboardOperationFilterSchema = Query(...),
     ) -> QuerySet[Operation]:
         """
@@ -72,7 +84,11 @@ class ReportingDashboardService:
         the operation has since been transferred to another operator.
         """
         user = UserDataAccessService.get_by_guid(user_guid)
-        operator_id = UserOperatorService.get_current_user_approved_user_operator_or_raise(user).operator_id
+        operator_id = (
+            UserOperatorService.get_current_user_approved_user_operator_or_raise(
+                user
+            ).operator_id
+        )
 
         # Related docs: https://docs.djangoproject.com/en/5.1/ref/models/expressions/#subquery-expressions
         report_queryset = Report.objects.filter(
@@ -84,10 +100,24 @@ class ReportingDashboardService:
             report_queryset = report_queryset.filter(operator_id=operator_id)
 
         report_subquery = (
-            report_queryset.annotate(latest_version_id=cls.latest_report_version_subquery.values("id"))
-            .annotate(latest_version_status=cls.latest_report_version_subquery.values("status"))
-            .annotate(latest_version_updated_at=cls.latest_report_version_subquery.values("updated_at"))
-            .annotate(latest_version_updated_by=cls.latest_report_version_subquery.values("full_name"))
+            report_queryset.annotate(
+                latest_version_id=cls.latest_report_version_subquery.values("id")
+            )
+            .annotate(
+                latest_version_status=cls.latest_report_version_subquery.values(
+                    "status"
+                )
+            )
+            .annotate(
+                latest_version_updated_at=cls.latest_report_version_subquery.values(
+                    "updated_at"
+                )
+            )
+            .annotate(
+                latest_version_updated_by=cls.latest_report_version_subquery.values(
+                    "full_name"
+                )
+            )
             .annotate(first_version_id=cls.first_report_version_subquery.values("id"))
         )
 
@@ -99,24 +129,36 @@ class ReportingDashboardService:
             start_date__year__lte=reporting_year,
         )
         operations_for_reporting_year = Operation.objects.filter(
-            id__in=timeline.values_list('operation_id', flat=True),
+            id__in=timeline.values_list("operation_id", flat=True),
         )
 
         queryset = (
             operations_for_reporting_year.filter(
                 status=Operation.Statuses.REGISTERED
             )  # ✅ Filter operations with status "Registered"
-            .exclude(registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
+            .exclude(
+                registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION
+            )
             # Exclude operations that have opted-out effective before the specified reporting_year
             .exclude(opted_in_operation__final_reporting_year__lt=reporting_year)
             .annotate(
                 # the [:1] is necessary for the sorting and filters to work
                 report_id=Subquery(report_subquery.values("id")[:1]),
-                report_version_id=Subquery(report_subquery.values("latest_version_id")[:1]),
-                first_report_version_id=Subquery(report_subquery.values("first_version_id")[:1]),
-                report_status=Subquery(report_subquery.values("latest_version_status")[:1]),
-                report_updated_at=Subquery(report_subquery.values("latest_version_updated_at")[:1]),
-                report_submitted_by=Subquery(report_subquery.values("latest_version_updated_by")[:1]),
+                report_version_id=Subquery(
+                    report_subquery.values("latest_version_id")[:1]
+                ),
+                first_report_version_id=Subquery(
+                    report_subquery.values("first_version_id")[:1]
+                ),
+                report_status=Subquery(
+                    report_subquery.values("latest_version_status")[:1]
+                ),
+                report_updated_at=Subquery(
+                    report_subquery.values("latest_version_updated_at")[:1]
+                ),
+                report_submitted_by=Subquery(
+                    report_subquery.values("latest_version_updated_by")[:1]
+                ),
                 operation_name=Coalesce(
                     Subquery(
                         ReportOperation.objects.filter(
@@ -142,8 +184,8 @@ class ReportingDashboardService:
         user_guid: UUID,
         current_reporting_year: int,
         reports_period: ReportsPeriod = ReportsPeriod.ALL,
-        sort_field: Optional[str] = "reporting_year",
-        sort_order: Optional[str] = "asc",
+        sort_field: str | None = "reporting_year",
+        sort_order: str | None = "asc",
         filters: ReportingDashboardReportFilterSchema = Query(...),
     ) -> QuerySet[Report]:
         """
@@ -155,29 +197,58 @@ class ReportingDashboardService:
         is_internal = "cas_" in user.app_role_id
 
         if is_internal:
-            queryset = Report.objects.filter(report_versions__is_latest_submitted=True).annotate(
+            queryset = Report.objects.filter(
+                report_versions__is_latest_submitted=True
+            ).annotate(
                 report_id=F("id"),
-                first_report_version_id=cls.first_report_version_subquery.values("id")[:1],
-                report_updated_at=cls.latest_submitted_report_version_subquery.values("updated_at"),
-                report_version_id=cls.latest_submitted_report_version_subquery.values("id"),
-                report_status=cls.latest_submitted_report_version_subquery.values("status"),
-                report_submitted_by=cls.latest_submitted_report_version_subquery.values("full_name"),
+                first_report_version_id=cls.first_report_version_subquery.values("id")[
+                    :1
+                ],
+                report_updated_at=cls.latest_submitted_report_version_subquery.values(
+                    "updated_at"
+                ),
+                report_version_id=cls.latest_submitted_report_version_subquery.values(
+                    "id"
+                ),
+                report_status=cls.latest_submitted_report_version_subquery.values(
+                    "status"
+                ),
+                report_submitted_by=cls.latest_submitted_report_version_subquery.values(
+                    "full_name"
+                ),
                 operation_name=Coalesce(
-                    Subquery(cls.latest_submitted_report_version_subquery.values("operation_name")),
+                    Subquery(
+                        cls.latest_submitted_report_version_subquery.values(
+                            "operation_name"
+                        )
+                    ),
                     F("operation__name"),
                 ),
             )
         else:
-            operator_id = UserOperatorService.get_current_user_approved_user_operator_or_raise(user).operator.id
+            operator_id = (
+                UserOperatorService.get_current_user_approved_user_operator_or_raise(
+                    user
+                ).operator.id
+            )
             queryset = Report.objects.filter(operator_id=operator_id).annotate(
                 report_id=F("id"),
-                first_report_version_id=cls.first_report_version_subquery.values("id")[:1],
-                report_updated_at=cls.latest_report_version_subquery.values("updated_at"),
+                first_report_version_id=cls.first_report_version_subquery.values("id")[
+                    :1
+                ],
+                report_updated_at=cls.latest_report_version_subquery.values(
+                    "updated_at"
+                ),
                 report_version_id=cls.latest_report_version_subquery.values("id"),
                 report_status=cls.latest_report_version_subquery.values("status"),
-                report_submitted_by=cls.latest_report_version_subquery.values("full_name"),
+                report_submitted_by=cls.latest_report_version_subquery.values(
+                    "full_name"
+                ),
                 operation_name=Coalesce(
-                    Subquery(cls.latest_report_version_subquery.values("operation_name")), F("operation__name")
+                    Subquery(
+                        cls.latest_report_version_subquery.values("operation_name")
+                    ),
+                    F("operation__name"),
                 ),
                 report_status_sort_key=cls.report_status_sort_key,
             )
@@ -193,12 +264,16 @@ class ReportingDashboardService:
         return filters.filter(queryset).order_by(*sort_fields)
 
     @classmethod
-    def _get_sort_fields(cls, sort_field: Optional[str] = "id", sort_order: Optional[str] = "asc") -> list[str]:
+    def _get_sort_fields(
+        cls, sort_field: str | None = "id", sort_order: str | None = "asc"
+    ) -> list[str]:
         """
         Helper method to determine the sort fields based on the provided sort field and order.
         """
         sort_direction = "-" if sort_order == "desc" else ""
-        primary_field = "report_status_sort_key" if sort_field == "report_status" else sort_field
+        primary_field = (
+            "report_status_sort_key" if sort_field == "report_status" else sort_field
+        )
         sort_fields = [f"{sort_direction}{primary_field}"]
         if primary_field != "id":
             sort_fields.append("id")

@@ -1,27 +1,31 @@
+from dataclasses import dataclass
+from typing import Any
 from uuid import UUID
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Case, When, Value, BooleanField
-from django.db import transaction
-from django.db.models import QuerySet
+
 from common.exceptions import UserError
-from registration.models import Activity
-from registration.models import RegulatedProduct
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
+from django.db.models import BooleanField, Case, QuerySet, Value, When
+from registration.models import Activity, RegulatedProduct
 from registration.models.operation import Operation
-from reporting.models import ReportOperationRepresentative
-from reporting.models.report import Report
-from reporting.models.facility_report import FacilityReport
-from reporting.models.report_operation import ReportOperation
-from reporting.service.report_product_service import ReportProductService
-from reporting.service.data_access_service.report_service import ReportDataAccessService
-from reporting.service.data_access_service.reporting_year import ReportingYearDataAccessService
+from registration.service.data_access_service.user_service import UserDataAccessService
 from registration.service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineService,
 )
+from reporting.models import ReportOperationRepresentative
+from reporting.models.facility_report import FacilityReport
+from reporting.models.report import Report
+from reporting.models.report_operation import ReportOperation
+from reporting.service.data_access_service.report_service import ReportDataAccessService
+from reporting.service.data_access_service.reporting_year import (
+    ReportingYearDataAccessService,
+)
+from reporting.service.facility_report_service import (
+    FacilityReportService,
+    SaveFacilityReportData,
+)
+from reporting.service.report_product_service import ReportProductService
 from reporting.service.report_version_service import ReportVersionService
-from reporting.service.facility_report_service import FacilityReportService, SaveFacilityReportData
-from typing import Any, List, Optional
-from registration.service.data_access_service.user_service import UserDataAccessService
-from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
@@ -39,12 +43,12 @@ class SaveReportOperationData:
         operation_type: str,
         registration_purpose: str,
         bc_obps_regulated_operation_id: str,
-        activities: List[int],
-        regulated_products: List[int],
+        activities: list[int],
+        regulated_products: list[int],
         operation_report_type: str,
-        operation_representative_name: List[int],
-        operator_trade_name: Optional[str] = None,
-        operation_bcghgid: Optional[str] = None,
+        operation_representative_name: list[int],
+        operator_trade_name: str | None = None,
+        operation_bcghgid: str | None = None,
     ):
         self.operator_legal_name = operator_legal_name
         self.operation_name = operation_name
@@ -64,22 +68,22 @@ class ReportService:
     @transaction.atomic()
     def create_report(cls, operation_id: UUID, reporting_year: int) -> int:
         if ReportDataAccessService.report_exists(operation_id, reporting_year):
-            raise UserError("A report already exists for this operation and year, unable to create a new one.")
+            raise UserError(
+                "A report already exists for this operation and year, unable to create a new one."
+            )
 
         # Fetching report context
-        designated_operator_timeline = (
-            OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
-                operation_id=operation_id, reporting_year=reporting_year
-            )
+        designated_operator_timeline = OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
+            operation_id=operation_id, reporting_year=reporting_year
         )
         if not designated_operator_timeline:
             raise ObjectDoesNotExist(
                 f"Designated operator for reporting year {reporting_year} not found for operation {operation_id}."
             )
 
-        operation = Operation.objects.prefetch_related("activities", "regulated_products", "opted_in_operation").get(
-            id=operation_id
-        )
+        operation = Operation.objects.prefetch_related(
+            "activities", "regulated_products", "opted_in_operation"
+        ).get(id=operation_id)
 
         # Creating report object
 
@@ -111,11 +115,9 @@ class ReportService:
         ).get(id=operation_id)
 
         # Check whether the operation had a designated operator during the selected reporting year
-        designated_operator_timeline = (
-            OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
-                operation_id=operation_id,
-                reporting_year=reporting_year,
-            )
+        designated_operator_timeline = OperationDesignatedOperatorTimelineService.get_operation_designated_operator_for_reporting_year(
+            operation_id=operation_id,
+            reporting_year=reporting_year,
         )
 
         if designated_operator_timeline:
@@ -151,7 +153,9 @@ class ReportService:
 
         # A report cannot be created if one already exists for the same operation and reporting year
         if ReportDataAccessService.report_exists(operation_id, reporting_year):
-            raise UserError("A report already exists for this operation and year, unable to create a new one.")
+            raise UserError(
+                "A report already exists for this operation and year, unable to create a new one."
+            )
 
         # BORO ID: validate that OBPS Regulated, Opt-in, and New Entrant operations
         selected_registration_purpose = data.registration_purpose
@@ -186,13 +190,19 @@ class ReportService:
 
     @classmethod
     @transaction.atomic
-    def save_report_operation(cls, report_version_id: int, data: Any) -> ReportOperation:
+    def save_report_operation(
+        cls, report_version_id: int, data: Any
+    ) -> ReportOperation:
         # Fetch the existing report operation
-        report_operation = ReportOperation.objects.get(report_version__id=report_version_id)
+        report_operation = ReportOperation.objects.get(
+            report_version__id=report_version_id
+        )
 
         # Update the selected_for_report field based on the provided data
         representative_ids_in_data = data.operation_representative_name
-        ReportOperationRepresentative.objects.filter(report_version_id=report_version_id).update(
+        ReportOperationRepresentative.objects.filter(
+            report_version_id=report_version_id
+        ).update(
             selected_for_report=Case(
                 When(id__in=representative_ids_in_data, then=Value(True)),
                 default=Value(False),
@@ -205,23 +215,29 @@ class ReportService:
         report_operation.operation_name = data.operation_name
         report_operation.operation_type = data.operation_type
         report_operation.operation_bcghgid = data.operation_bcghgid
-        report_operation.bc_obps_regulated_operation_id = data.bc_obps_regulated_operation_id
+        report_operation.bc_obps_regulated_operation_id = (
+            data.bc_obps_regulated_operation_id
+        )
 
         # Fetch and set ManyToMany fields
         activities = Activity.objects.filter(id__in=data.activities)
         report_operation.activities.set(activities)
-        regulated_products = RegulatedProduct.objects.filter(id__in=data.regulated_products)
+        regulated_products = RegulatedProduct.objects.filter(
+            id__in=data.regulated_products
+        )
         report_operation.regulated_products.set(regulated_products)
         report_operation.save()
 
-        if report_operation.operation_type == 'Linear Facilities Operation':
+        if report_operation.operation_type == "Linear Facilities Operation":
             facility_reports: QuerySet[FacilityReport] = FacilityReport.objects.filter(
                 report_version__id=report_version_id
             )
 
             # Update empty records for unregulated products for all facility reports associated with this report version
             facility_report_ids = facility_reports.values_list("id", flat=True)
-            ReportProductService.update_empty_records_for_unregulated_products(report_version_id, facility_report_ids)
+            ReportProductService.update_empty_records_for_unregulated_products(
+                report_version_id, facility_report_ids
+            )
 
             # Facility reports with reported data for a removed product, identified before that data is pruned
             facility_report_ids_losing_data = set(
@@ -243,14 +259,18 @@ class ReportService:
                 )
 
             # Facilities that lost reported product data must re-allocate their emissions, so they are no longer complete
-            facility_reports.filter(id__in=facility_report_ids_losing_data, is_completed=True).update(
-                is_completed=False
-            )
+            facility_reports.filter(
+                id__in=facility_report_ids_losing_data, is_completed=True
+            ).update(is_completed=False)
         else:
-            facility_report: FacilityReport = FacilityReport.objects.get(report_version__id=report_version_id)
+            facility_report: FacilityReport = FacilityReport.objects.get(
+                report_version__id=report_version_id
+            )
 
             # Update empty records for unregulated products for all facility reports associated with this report version
-            ReportProductService.update_empty_records_for_unregulated_products(report_version_id, [facility_report.id])
+            ReportProductService.update_empty_records_for_unregulated_products(
+                report_version_id, [facility_report.id]
+            )
 
             facility_report_save_data = SaveFacilityReportData(
                 facility_name=report_operation.operation_name,
@@ -268,5 +288,7 @@ class ReportService:
 
     @staticmethod
     def get_registration_purpose_by_version_id(version_id: int) -> dict:
-        registration_purpose = ReportOperation.objects.get(report_version__id=version_id).registration_purpose
+        registration_purpose = ReportOperation.objects.get(
+            report_version__id=version_id
+        ).registration_purpose
         return {"registration_purpose": registration_purpose}

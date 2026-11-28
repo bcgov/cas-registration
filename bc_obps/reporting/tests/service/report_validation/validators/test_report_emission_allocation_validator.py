@@ -1,6 +1,6 @@
-from django.test import TestCase
-from model_bakery.baker import make_recipe, make
 import pytest
+from django.test import TestCase
+from model_bakery.baker import make, make_recipe
 from registration.models.operation import Operation
 from reporting.models.report_operation import ReportOperation
 from reporting.service.report_validation.report_validation_error import (
@@ -12,7 +12,9 @@ from reporting.service.report_validation.report_validation_error import (
 from reporting.service.report_validation.validators.report_emission_allocation_validator import (
     validate,
 )
-from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
+from reporting.tests.service.test_report_activity_save_service.infrastructure import (
+    TestInfrastructure,
+)
 
 
 @pytest.mark.django_db

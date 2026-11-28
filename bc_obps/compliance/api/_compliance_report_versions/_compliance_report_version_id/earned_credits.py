@@ -1,18 +1,19 @@
-from typing import Tuple
 from common.api.utils.current_user_utils import get_current_user
-from django.http import HttpRequest
-from compliance.constants import COMPLIANCE
-from compliance.models import ComplianceEarnedCredit
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
-from registration.schema.generic import Message
-from compliance.api.router import router
-from typing import Optional
-from compliance.schema.compliance_earned_credits import ComplianceEarnedCreditsOut, ComplianceEarnedCreditsIn
 from compliance.api.permissions import (
     approved_authorized_roles_compliance_report_version_composite_auth,
     approved_industry_user_cas_director_cas_analyst_compliance_report_version_composite_auth,
 )
+from compliance.api.router import router
+from compliance.constants import COMPLIANCE
+from compliance.models import ComplianceEarnedCredit
+from compliance.schema.compliance_earned_credits import (
+    ComplianceEarnedCreditsIn,
+    ComplianceEarnedCreditsOut,
+)
+from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
+from django.http import HttpRequest
+from registration.schema.generic import Message
 
 
 @router.get(
@@ -25,9 +26,11 @@ from compliance.api.permissions import (
 )
 def get_compliance_report_version_earned_credits(
     request: HttpRequest, compliance_report_version_id: int
-) -> Tuple[int, Optional[ComplianceEarnedCredit]]:
-    compliance_earned_credits = ComplianceEarnedCreditsService.get_earned_credit_data_by_report_version(
-        compliance_report_version_id
+) -> tuple[int, ComplianceEarnedCredit | None]:
+    compliance_earned_credits = (
+        ComplianceEarnedCreditsService.get_earned_credit_data_by_report_version(
+            compliance_report_version_id
+        )
     )
     return 200, compliance_earned_credits
 
@@ -40,8 +43,10 @@ def get_compliance_report_version_earned_credits(
     auth=approved_industry_user_cas_director_cas_analyst_compliance_report_version_composite_auth,
 )
 def update_compliance_report_version_earned_credit(
-    request: HttpRequest, compliance_report_version_id: int, payload: ComplianceEarnedCreditsIn
-) -> Tuple[int, ComplianceEarnedCredit]:
+    request: HttpRequest,
+    compliance_report_version_id: int,
+    payload: ComplianceEarnedCreditsIn,
+) -> tuple[int, ComplianceEarnedCredit]:
     user = get_current_user(request)
     earned_credit = ComplianceEarnedCreditsService.update_earned_credit(
         compliance_report_version_id, payload.model_dump(), user

@@ -1,41 +1,62 @@
+from collections.abc import Callable, Generator
 from datetime import date, datetime
-from typing import List, Optional, Tuple, Callable, Generator
+from uuid import UUID
 from zoneinfo import ZoneInfo
-from common.lib.dataclasses import asdict
-from django.core.files.uploadedfile import UploadedFile
-from django.db.models import QuerySet
+
 from common.exceptions import UserError
+from common.lib.dataclasses import asdict
+from django.conf import settings
+from django.core.files.uploadedfile import UploadedFile
+from django.db import transaction
+from django.db.models import Q, QuerySet
+from django.utils import timezone
+from ninja import Query
+from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.emails import send_registration_and_boro_id_email
 from registration.enums.enums import EmailTemplateNames
+from registration.models import Operation, User
+from registration.models.address import Address
+from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
+from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
+from registration.models.contact import Contact
+from registration.models.document import Document
+from registration.models.document_type import DocumentType
 from registration.models.facility import Facility
+from registration.models.facility_designated_operation_timeline import (
+    FacilityDesignatedOperationTimeline,
+)
+from registration.models.multiple_operator import MultipleOperator
+from registration.models.operation_designated_operator_timeline import (
+    OperationDesignatedOperatorTimeline,
+)
+from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.models.regulated_product import RegulatedProduct
-from registration.signals.signals import operation_registration_purpose_changed
-from registration.utils import is_document_scan_complete
+from registration.models.user_operator import UserOperator
+from registration.schema import (
+    FacilityIn,
+    OperationRepresentativeIn,
+    OperationTimelineFilterSchema,
+)
 from registration.service.contact_service import ContactService
-from registration.service.data_access_service.document_service import DocumentDataAccessService
+from registration.service.data_access_service.address_service import (
+    AddressDataAccessService,
+)
+from registration.service.data_access_service.document_service import (
+    DocumentDataAccessService,
+)
+from registration.service.data_access_service.multiple_operator_service import (
+    MultipleOperatorService,
+)
 from registration.service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
-from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
-from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
-from registration.models.document_type import DocumentType
-from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
-from registration.constants import UNAUTHORIZED_MESSAGE
-from registration.models.address import Address
-from registration.models.contact import Contact
-from registration.models.multiple_operator import MultipleOperator
-from registration.models.document import Document
-from registration.service.data_access_service.address_service import AddressDataAccessService
-from registration.service.data_access_service.multiple_operator_service import MultipleOperatorService
-from registration.models.user_operator import UserOperator
-from registration.models import Operation, User
-from ninja import Query
-from django.db import transaction
-from registration.service.data_access_service.operation_service import OperationDataAccessService
+from registration.service.data_access_service.operation_service import (
+    OperationDataAccessService,
+)
+from registration.service.data_access_service.opted_in_operation_detail_service import (
+    OptedInOperationDataAccessService,
+)
 from registration.service.data_access_service.user_service import UserDataAccessService
-from uuid import UUID
-from registration.models.opted_in_operation_detail import OptedInOperationDetail
-from registration.service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
 from registration.service.data_types.operation_service import (
     MultipleOperatorData,
     OperationData,
@@ -47,29 +68,23 @@ from registration.service.facility_designated_operation_timeline_service import 
     FacilityDesignatedOperationTimelineService,
 )
 from registration.service.facility_service import FacilityService
-from registration.schema import (
-    OperationRepresentativeIn,
-    FacilityIn,
-    OperationTimelineFilterSchema,
-)
-from django.db.models import Q
-from django.utils import timezone
-from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
-from reporting.service.reporting_year_service import ReportingYearService
-from django.conf import settings
+from registration.signals.signals import operation_registration_purpose_changed
+from registration.utils import is_document_scan_complete
 from reporting.models.report import Report
+from reporting.service.reporting_year_service import ReportingYearService
 
 
 class OperationService:
-
-    OPERATION_DEFAULT_START_DATE = datetime(2024, 1, 1, tzinfo=ZoneInfo("America/Vancouver"))
+    OPERATION_DEFAULT_START_DATE = datetime(
+        2024, 1, 1, tzinfo=ZoneInfo("America/Vancouver")
+    )
 
     @classmethod
     def get_if_authorized(
         cls,
         user_guid: UUID,
         operation_id: UUID,
-        only_fields: Optional[List[str]] = None,
+        only_fields: list[str] | None = None,
     ) -> Operation:
         operation: Operation
         if only_fields:
@@ -85,15 +100,19 @@ class OperationService:
     def list_operations_timeline(
         cls,
         user_guid: UUID,
-        sort_field: Optional[str],
-        sort_order: Optional[str],
+        sort_field: str | None,
+        sort_order: str | None,
         filters: OperationTimelineFilterSchema = Query(...),
     ) -> QuerySet[OperationDesignatedOperatorTimeline]:
         user = UserDataAccessService.get_by_guid(user_guid)
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
-        base_qs = OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(user)
-        return filters.filter(base_qs).order_by(sort_by, f"{sort_direction}created_at", f"{sort_direction}id")
+        base_qs = OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(
+            user
+        )
+        return filters.filter(base_qs).order_by(
+            sort_by, f"{sort_direction}created_at", f"{sort_direction}id"
+        )
 
     @classmethod
     def list_current_users_unregistered_operations(
@@ -101,19 +120,21 @@ class OperationService:
         user_guid: UUID,
     ) -> QuerySet[Operation]:
         user = UserDataAccessService.get_by_guid(user_guid)
-        return OperationDataAccessService.get_all_current_operations_for_user(user).filter(
-            ~Q(status=Operation.Statuses.REGISTERED)
-        )
+        return OperationDataAccessService.get_all_current_operations_for_user(
+            user
+        ).filter(~Q(status=Operation.Statuses.REGISTERED))
 
     @classmethod
     @transaction.atomic()
-    def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
+    def update_status(
+        cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses
+    ) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
-        fields_to_update = ['status']
+        fields_to_update = ["status"]
         if status == Operation.Statuses.REGISTERED:
             cls.raise_exception_if_operation_missing_registration_information(operation)
             operation.submission_date = timezone.now()
-            fields_to_update.append('submission_date')
+            fields_to_update.append("submission_date")
         operation.status = Operation.Statuses(status)
         operation.save(update_fields=fields_to_update)
 
@@ -135,16 +156,24 @@ class OperationService:
     def update_opted_in_operation_detail(
         cls, user_guid: UUID, operation_id: UUID, payload: OptedInOperationDetailData
     ) -> OptedInOperationDetail:
-        operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
+        operation = OperationService.get_if_authorized(
+            user_guid, operation_id, ["id", "operator_id"]
+        )
         if not operation.opted_in_operation:
-            raise OptedInOperationDetail.DoesNotExist("Operation does not have an opted-in operation.")
+            raise OptedInOperationDetail.DoesNotExist(
+                "Operation does not have an opted-in operation."
+            )
         return OptedInOperationDataAccessService.update_opted_in_operation_detail(
             operation.opted_in_operation.id, payload
         )
 
     @classmethod
-    def get_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> Optional[OptedInOperationDetail]:
-        operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
+    def get_opted_in_operation_detail(
+        cls, user_guid: UUID, operation_id: UUID
+    ) -> OptedInOperationDetail | None:
+        operation = OperationService.get_if_authorized(
+            user_guid, operation_id, ["id", "operator_id"]
+        )
         return operation.opted_in_operation
 
     @classmethod
@@ -152,18 +181,27 @@ class OperationService:
     def update_opted_in_final_reporting_year(
         cls, user_guid: UUID, operation_id: UUID, final_reporting_year: int | None
     ) -> OptedInOperationDetail:
-        operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
+        operation = OperationService.get_if_authorized(
+            user_guid, operation_id, ["id", "operator_id"]
+        )
         if not operation.opted_in_operation:
-            raise OptedInOperationDetail.DoesNotExist("There is no opted-in operation detail for this operation.")
+            raise OptedInOperationDetail.DoesNotExist(
+                "There is no opted-in operation detail for this operation."
+            )
         return OptedInOperationDataAccessService.update_opted_in_final_reporting_year(
             operation.opted_in_operation.id, final_reporting_year
         )
 
     @classmethod
     def create_or_replace_new_entrant_application(
-        cls, user_guid: UUID, operation_id: UUID, new_entrant_application: UploadedFile | None
+        cls,
+        user_guid: UUID,
+        operation_id: UUID,
+        new_entrant_application: UploadedFile | None,
     ) -> Operation:
-        operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
+        operation = OperationService.get_if_authorized(
+            user_guid, operation_id, ["id", "operator_id"]
+        )
 
         if new_entrant_application is not None:
             (
@@ -185,7 +223,9 @@ class OperationService:
     def create_operation_representative(
         cls, user_guid: UUID, operation_id: UUID, payload: OperationRepresentativeIn
     ) -> Contact:
-        operation: Operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
+        operation: Operation = OperationService.get_if_authorized(
+            user_guid, operation_id, ["id", "operator_id"]
+        )
         existing_contact_id = payload.existing_contact_id
         if existing_contact_id:
             # We need to prevent users from updating the contact's first name, last name, and email if they are using an existing contact
@@ -198,8 +238,12 @@ class OperationService:
                     payload.email != contact.email,  # type: ignore[attr-defined]
                 ]
             ):
-                raise UserError("Cannot update first name, last name, or email of existing contact.")
-            contact = ContactService.update_contact(user_guid, existing_contact_id, payload)
+                raise UserError(
+                    "Cannot update first name, last name, or email of existing contact."
+                )
+            contact = ContactService.update_contact(
+                user_guid, existing_contact_id, payload
+            )
         else:
             contact = ContactService.create_contact(user_guid, payload)
         operation.contacts.add(contact)
@@ -207,26 +251,38 @@ class OperationService:
 
     @classmethod
     @transaction.atomic()
-    def _create_or_update_eio(cls, user_guid: UUID, operation: Operation, payload: OperationData) -> None:
+    def _create_or_update_eio(
+        cls, user_guid: UUID, operation: Operation, payload: OperationData
+    ) -> None:
         # EIO operations have a facility with the same data as the operation
-        eio_payload = FacilityIn(name=payload.name, type=Facility.Types.ELECTRICITY_IMPORT, operation_id=operation.id)
+        eio_payload = FacilityIn(
+            name=payload.name,
+            type=Facility.Types.ELECTRICITY_IMPORT,
+            operation_id=operation.id,
+        )
         try:
             facility = Facility.objects.get(operation=operation)
         except Facility.DoesNotExist:
-            FacilityService.create_facilities_with_designated_operations(user_guid, [eio_payload])
+            FacilityService.create_facilities_with_designated_operations(
+                user_guid, [eio_payload]
+            )
         else:
             FacilityService.update_facility(user_guid, facility.id, eio_payload)
 
     @classmethod
     @transaction.atomic()
-    def _create_opted_in_operation_detail(cls, user_guid: UUID, operation: Operation) -> Operation:
+    def _create_opted_in_operation_detail(
+        cls, user_guid: UUID, operation: Operation
+    ) -> Operation:
         """
         Creates an empty OptedInOperationDetail instance for the specified operation.
         This method is called before any opt-in data is available.
         """
 
-        operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
-        operation.save(update_fields=['opted_in_operation'])
+        operation.opted_in_operation = OptedInOperationDetail.objects.create(
+            created_by_id=user_guid
+        )
+        operation.save(update_fields=["opted_in_operation"])
 
         return operation
 
@@ -238,7 +294,9 @@ class OperationService:
         operation_id: UUID,
         contact_id: int,
     ) -> int:
-        operation: Operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
+        operation: Operation = OperationService.get_if_authorized(
+            user_guid, operation_id, ["id", "operator_id"]
+        )
         operation.contacts.remove(contact_id)
 
         return contact_id
@@ -252,16 +310,21 @@ class OperationService:
     ) -> Operation:
         operation_fields = operation_data.operation_fields()
 
-        user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(user_guid)
-        operation_fields['operator_id'] = user_operator.operator_id
+        user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(
+            user_guid
+        )
+        operation_fields["operator_id"] = user_operator.operator_id
 
         operation = OperationDataAccessService.create_operation(
             user_guid,
             operation_fields,
-            operation_data.activities if hasattr(operation_data, "activities") and operation_data.activities else [],
+            operation_data.activities
+            if hasattr(operation_data, "activities") and operation_data.activities
+            else [],
             (
                 operation_data.regulated_products
-                if hasattr(operation_data, "regulated_products") and operation_data.regulated_products
+                if hasattr(operation_data, "regulated_products")
+                and operation_data.regulated_products
                 else []
             ),
         )
@@ -269,9 +332,9 @@ class OperationService:
         OperationDesignatedOperatorTimelineDataAccessService.create_operation_designated_operator_timeline(
             user_guid,
             {
-                'operator': user_operator.operator,
-                'operation': operation,
-                'start_date': cls.OPERATION_DEFAULT_START_DATE,
+                "operator": user_operator.operator,
+                "operation": operation,
+                "start_date": cls.OPERATION_DEFAULT_START_DATE,
             },
         )
 
@@ -283,7 +346,7 @@ class OperationService:
                 DocumentDataAccessService.create_document(
                     user_guid,
                     operation_data.boundary_map,
-                    'boundary_map',
+                    "boundary_map",
                     operation.id,
                 )
             )
@@ -292,7 +355,7 @@ class OperationService:
                 DocumentDataAccessService.create_document(
                     user_guid,
                     operation_data.process_flow_diagram,
-                    'process_flow_diagram',
+                    "process_flow_diagram",
                     operation.id,
                 )
             )
@@ -301,7 +364,7 @@ class OperationService:
                 DocumentDataAccessService.create_document(
                     user_guid,
                     operation_data.new_entrant_application,
-                    'new_entrant_application',
+                    "new_entrant_application",
                     operation.id,
                 )
             )
@@ -315,7 +378,10 @@ class OperationService:
         # handle purposes
         if operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION:
             operation = cls._create_opted_in_operation_detail(user_guid, operation)
-        if operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+        if (
+            operation.registration_purpose
+            == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        ):
             cls._create_or_update_eio(user_guid, operation, operation_data)
 
         return operation
@@ -345,9 +411,14 @@ class OperationService:
     @classmethod
     @transaction.atomic()
     def upsert_multiple_operators(
-        cls, operation: Operation, multiple_operators_data: list[MultipleOperatorData] | None, user_guid: UUID
+        cls,
+        operation: Operation,
+        multiple_operators_data: list[MultipleOperatorData] | None,
+        user_guid: UUID,
     ) -> None:
-        old_multiple_operators: QuerySet[MultipleOperator] = operation.multiple_operators.all()
+        old_multiple_operators: QuerySet[MultipleOperator] = (
+            operation.multiple_operators.all()
+        )
         # if all multiple operators have been removed, archive them
         if not multiple_operators_data:
             for old_multiple in old_multiple_operators:
@@ -359,33 +430,41 @@ class OperationService:
             mo_operator_data: dict = asdict(
                 mo_data,
                 include={
-                    'legal_name',
-                    'trade_name',
-                    'business_structure_id',
-                    'cra_business_number',
-                    'bc_corporate_registry_number',
+                    "legal_name",
+                    "trade_name",
+                    "business_structure_id",
+                    "cra_business_number",
+                    "bc_corporate_registry_number",
                 },
             )
 
-            old_address_id = mo_data.attorney_address if hasattr(mo_data, 'attorney_address') else None
+            old_address_id = (
+                mo_data.attorney_address
+                if hasattr(mo_data, "attorney_address")
+                else None
+            )
             new_address: dict = asdict(
                 mo_data,
-                include={'street_address', 'municipality', 'province', 'postal_code'},
+                include={"street_address", "municipality", "province", "postal_code"},
                 exclude_none=True,
             )
             if old_address_id and not new_address:
                 old_address = Address.objects.get(id=old_address_id)
-                mo_operator_data['attorney_address'] = None
+                mo_operator_data["attorney_address"] = None
                 old_address.delete()
 
             if new_address:
-                updated_attorney_address = AddressDataAccessService.upsert_address_from_data(
-                    new_address, old_address_id
+                updated_attorney_address = (
+                    AddressDataAccessService.upsert_address_from_data(
+                        new_address, old_address_id
+                    )
                 )
-                mo_operator_data['attorney_address'] = updated_attorney_address
+                mo_operator_data["attorney_address"] = updated_attorney_address
 
             new_multiple_operators.append(
-                MultipleOperatorService.create_or_update(mo_data.id, operation, user_guid, mo_operator_data)
+                MultipleOperatorService.create_or_update(
+                    mo_data.id, operation, user_guid, mo_operator_data
+                )
             )
 
         for old_multiple in old_multiple_operators:
@@ -407,7 +486,10 @@ class OperationService:
             operation_id,
         )
 
-        if updated_operation_data.registration_purpose != operation.registration_purpose:
+        if (
+            updated_operation_data.registration_purpose
+            != operation.registration_purpose
+        ):
             updated_operation_data = cls.handle_change_of_registration_purpose(
                 user_guid, operation, updated_operation_data
             )
@@ -418,25 +500,33 @@ class OperationService:
             )
         if updated_operation_data.type != operation.type:
             if operation.status == Operation.Statuses.REGISTERED:
-                raise UserError("Cannot change the type of an operation that has already been registered.")
-            FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id(user_guid, operation.id)
+                raise UserError(
+                    "Cannot change the type of an operation that has already been registered."
+                )
+            FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id(
+                user_guid, operation.id
+            )
 
         operation_data = updated_operation_data.operation_fields()
 
-        operation_data['pk'] = operation_id
-        operation_data['operator_id'] = operation.operator.id
+        operation_data["pk"] = operation_id
+        operation_data["operator_id"] = operation.operator.id
 
         operation, _ = Operation.custom_update_or_create(Operation, **operation_data)
 
         operation.activities.set(updated_operation_data.activities or [])
-        operation.regulated_products.set(updated_operation_data.regulated_products or [])
+        operation.regulated_products.set(
+            updated_operation_data.regulated_products or []
+        )
 
         if operation.status == Operation.Statuses.REGISTERED and isinstance(
             updated_operation_data, UpdateOperationData
         ):
             # operation representatives are only mandatory to register (vs. simply update) and operation
             for contact_id in updated_operation_data.operation_representatives:
-                ContactService.raise_exception_if_contact_missing_address_information(contact_id)
+                ContactService.raise_exception_if_contact_missing_address_information(
+                    contact_id
+                )
 
             operation.contacts.set(updated_operation_data.operation_representatives)
 
@@ -450,7 +540,7 @@ class OperationService:
                             user_guid,
                             operation.id,
                             updated_operation_data.boundary_map,
-                            'boundary_map',
+                            "boundary_map",
                         )
                     ]
                     if updated_operation_data.boundary_map
@@ -462,7 +552,7 @@ class OperationService:
                             user_guid,
                             operation.id,
                             updated_operation_data.process_flow_diagram,
-                            'process_flow_diagram',
+                            "process_flow_diagram",
                         )
                     ]
                     if updated_operation_data.process_flow_diagram
@@ -474,7 +564,7 @@ class OperationService:
                             user_guid,
                             operation.id,
                             updated_operation_data.new_entrant_application,
-                            'new_entrant_application',
+                            "new_entrant_application",
                         )
                     ]
                     if updated_operation_data.new_entrant_application
@@ -492,7 +582,10 @@ class OperationService:
         ):
             operation = cls._create_opted_in_operation_detail(user_guid, operation)
 
-        if operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+        if (
+            operation.registration_purpose
+            == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        ):
             cls._create_or_update_eio(user_guid, operation, updated_operation_data)
 
         # # handle multiple operators
@@ -512,40 +605,51 @@ class OperationService:
             return False
 
         required_fields = [
-            'meets_section_3_emissions_requirements',
-            'meets_electricity_import_operation_criteria',
-            'meets_entire_operation_requirements',
-            'meets_section_6_emissions_requirements',
-            'meets_naics_code_11_22_562_classification_requirements',
-            'meets_producing_gger_schedule_a1_regulated_product',
-            'meets_reporting_and_regulated_obligations',
-            'meets_notification_to_director_on_criteria_change',
+            "meets_section_3_emissions_requirements",
+            "meets_electricity_import_operation_criteria",
+            "meets_entire_operation_requirements",
+            "meets_section_6_emissions_requirements",
+            "meets_naics_code_11_22_562_classification_requirements",
+            "meets_producing_gger_schedule_a1_regulated_product",
+            "meets_reporting_and_regulated_obligations",
+            "meets_notification_to_director_on_criteria_change",
         ]
 
-        return all(getattr(opted_in_operation, field) is not None for field in required_fields)
+        return all(
+            getattr(opted_in_operation, field) is not None for field in required_fields
+        )
 
     @classmethod
-    def is_operation_new_entrant_information_complete(cls, operation: Operation) -> bool:
+    def is_operation_new_entrant_information_complete(
+        cls, operation: Operation
+    ) -> bool:
         """
         This function checks whether the expected data for new-entrant operations has been saved.
         Date of first shipment is no longer required for 2025+ registrations.
         """
-        if not operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")).exists():
+        if not operation.documents.filter(
+            type=DocumentType.objects.get(name="new_entrant_application")
+        ).exists():
             return False
         return True
 
     @classmethod
-    def raise_exception_if_operation_missing_registration_information(cls, operation: Operation) -> None:
+    def raise_exception_if_operation_missing_registration_information(
+        cls, operation: Operation
+    ) -> None:
         """
         This function checks if the given operation instance has all necessary registration information.
         If any required information is missing, it raises an appropriate exception.
         """
 
-        def check_conditions() -> Generator[Tuple[Callable[[], bool], str], None, None]:
-            yield lambda: operation.registration_purpose is not None, "Operation must have a registration purpose."
+        def check_conditions() -> Generator[tuple[Callable[[], bool], str], None, None]:
+            yield (
+                lambda: operation.registration_purpose is not None,
+                "Operation must have a registration purpose.",
+            )
             yield (
                 lambda: operation.contacts.filter(
-                    business_role__role_name='Operation Representative',
+                    business_role__role_name="Operation Representative",
                     address__street_address__isnull=False,
                     address__municipality__isnull=False,
                     address__province__isnull=False,
@@ -554,55 +658,80 @@ class OperationService:
                 "Operation must have an operation representative with an address.",
             )
             yield (
-                lambda: FacilityDesignatedOperationTimeline.objects.filter(operation=operation).exists(),
+                lambda: FacilityDesignatedOperationTimeline.objects.filter(
+                    operation=operation
+                ).exists(),
                 "Operation must have at least one facility.",
             )
             # unless the registration purpose is Electricity Import Operation, the operation should have at least 1 reporting activity
             yield (
-                lambda: not (
-                    operation.registration_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
-                    and not operation.activities.exists()
+                lambda: (
+                    not (
+                        operation.registration_purpose
+                        != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+                        and not operation.activities.exists()
+                    )
                 ),
                 "Operation must have at least one reporting activity.",
             )
 
             # Check if the operation has both a process flow diagram and a boundary map (unless it is an EIO)
             yield (
-                lambda: not (
-                    operation.registration_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
-                    and operation.documents.filter(Q(type__name='process_flow_diagram') | Q(type__name='boundary_map'))
-                    .distinct()
-                    .count()
-                    < 2
+                lambda: (
+                    not (
+                        operation.registration_purpose
+                        != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+                        and operation.documents.filter(
+                            Q(type__name="process_flow_diagram")
+                            | Q(type__name="boundary_map")
+                        )
+                        .distinct()
+                        .count()
+                        < 2
+                    )
                 ),
                 "Operation must have a process flow diagram and a boundary map.",
             )
 
             # Check if operation documents have been scanned for malware (skip the check in CI because we don't hit GCS)
             yield (
-                lambda: True if settings.CI == 'true' else is_document_scan_complete(operation),
+                lambda: (
+                    True
+                    if settings.CI == "true"
+                    else is_document_scan_complete(operation)
+                ),
                 "Please wait. Your attachments are being scanned for malware, this may take a few minutes.",
             )
             # Check if operation documents are malware free
             yield (
-                lambda: not operation.documents.filter(
-                    status=Document.FileStatus.QUARANTINED,
-                ).exists(),
+                lambda: (
+                    not operation.documents.filter(
+                        status=Document.FileStatus.QUARANTINED,
+                    ).exists()
+                ),
                 f"Potential threat detected in "
                 f"{', '.join(operation.documents.filter(status=Document.FileStatus.QUARANTINED).values_list('file', flat=True))}. "
                 f"Please go back and replace these attachments before submitting.",
             )
             yield (
-                lambda: not (
-                    operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
-                    and not cls.is_operation_new_entrant_information_complete(operation)
+                lambda: (
+                    not (
+                        operation.registration_purpose
+                        == Operation.Purposes.NEW_ENTRANT_OPERATION
+                        and not cls.is_operation_new_entrant_information_complete(
+                            operation
+                        )
+                    )
                 ),
                 "Operation must have a signed statutory declaration and date of first shipment if it is a new entrant.",
             )
             yield (
-                lambda: not (
-                    operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
-                    and not cls.is_operation_opt_in_information_complete(operation)
+                lambda: (
+                    not (
+                        operation.registration_purpose
+                        == Operation.Purposes.OPTED_IN_OPERATION
+                        and not cls.is_operation_opt_in_information_complete(operation)
+                    )
                 ),
                 "Operation must have completed opt-in information if it is opted in.",
             )
@@ -612,7 +741,9 @@ class OperationService:
                 raise UserError(error_message)
 
     @classmethod
-    def generate_boro_id(cls, user_guid: UUID, operation_id: UUID) -> Optional[BcObpsRegulatedOperation]:
+    def generate_boro_id(
+        cls, user_guid: UUID, operation_id: UUID
+    ) -> BcObpsRegulatedOperation | None:
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if not user.is_cas_director():
             raise Exception(UNAUTHORIZED_MESSAGE)
@@ -621,26 +752,32 @@ class OperationService:
         operation: Operation = OperationDataAccessService.get_by_id(operation_id)
 
         if operation.bc_obps_regulated_operation:
-            raise UserError('Operation already has a BORO ID.')
+            raise UserError("Operation already has a BORO ID.")
         if not operation.is_regulated_operation:
-            raise UserError('Non-regulated operations cannot be issued BORO IDs.')
+            raise UserError("Non-regulated operations cannot be issued BORO IDs.")
         if operation.status != Operation.Statuses.REGISTERED:
-            raise UserError('Operations must be registered before they can be issued a BORO ID.')
+            raise UserError(
+                "Operations must be registered before they can be issued a BORO ID."
+            )
 
         operation.generate_unique_boro_id(user_guid=user_guid)
-        operation.save(update_fields=['bc_obps_regulated_operation'])
+        operation.save(update_fields=["bc_obps_regulated_operation"])
         if operation.bc_obps_regulated_operation is None:
-            raise Exception('Failed to create a BORO ID for the operation.')
+            raise Exception("Failed to create a BORO ID for the operation.")
 
         # send an email to every Operation Representative for the operation, notifying them that a BORO ID has been issued.
         send_registration_and_boro_id_email(
-            EmailTemplateNames.BORO_ID_ISSUANCE, operation.operator.legal_name, operation
+            EmailTemplateNames.BORO_ID_ISSUANCE,
+            operation.operator.legal_name,
+            operation,
         )
         return operation.bc_obps_regulated_operation
 
     @classmethod
     @transaction.atomic()
-    def generate_bcghg_id(cls, user_guid: UUID, operation_id: UUID, bcghg_id: str | None = None) -> BcGreenhouseGasId:
+    def generate_bcghg_id(
+        cls, user_guid: UUID, operation_id: UUID, bcghg_id: str | None = None
+    ) -> BcGreenhouseGasId:
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if not user.is_cas_director():
             raise Exception(UNAUTHORIZED_MESSAGE)
@@ -649,24 +786,28 @@ class OperationService:
 
         if bcghg_id:
             bcghg_id_record, _ = BcGreenhouseGasId.objects.get_or_create(
-                id=bcghg_id, defaults={'issued_by_id': user_guid, 'comments': 'bcghg id manually set to operation'}
+                id=bcghg_id,
+                defaults={
+                    "issued_by_id": user_guid,
+                    "comments": "bcghg id manually set to operation",
+                },
             )
             operation.bcghg_id = bcghg_id_record
         else:
             operation.generate_unique_bcghg_id(user_guid=user_guid)
 
-        operation.save(update_fields=['bcghg_id'])
+        operation.save(update_fields=["bcghg_id"])
         if operation.bcghg_id is None:
-            raise Exception('Failed to create a BCGHG ID for the operation.')
+            raise Exception("Failed to create a BCGHG ID for the operation.")
 
         # For SFOs, facility should also have the BCGHG ID
         if operation.type == Operation.Types.SFO:
             # an operation muse be registered before it can be issued a BCGHG ID, so there will always be a facility
             sfo_facility = Facility.objects.get(operation=operation)
             sfo_facility.bcghg_id = operation.bcghg_id
-            sfo_facility.save(update_fields=['bcghg_id'])
+            sfo_facility.save(update_fields=["bcghg_id"])
             if sfo_facility.bcghg_id is None:
-                raise Exception('Failed to add the BCGHG ID to the facility.')
+                raise Exception("Failed to add the BCGHG ID to the facility.")
         return operation.bcghg_id
 
     @classmethod
@@ -678,11 +819,13 @@ class OperationService:
         operation = OperationDataAccessService.get_by_id(operation_id)
 
         operation.bcghg_id = None
-        operation.save(update_fields=['bcghg_id'])
+        operation.save(update_fields=["bcghg_id"])
 
     @classmethod
     @transaction.atomic()
-    def update_operator(cls, user_guid: UUID, operation: Operation, operator_id: UUID) -> Operation:
+    def update_operator(
+        cls, user_guid: UUID, operation: Operation, operator_id: UUID
+    ) -> Operation:
         """
         Update the operator for the operation
         At the time of implementation, this is only used for transferring operations between operators and,
@@ -711,14 +854,20 @@ class OperationService:
 
         if old_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
             # EIOs have one facility that has the same information as the operation
-            FacilityDesignatedOperationTimeline.objects.get(operation=operation).delete()
+            FacilityDesignatedOperationTimeline.objects.get(
+                operation=operation
+            ).delete()
             operation.facilities.all().delete()
         if old_purpose == Operation.Purposes.OPTED_IN_OPERATION:
             if operation.opted_in_operation_id:  # To make mypy happy
-                OptedInOperationDetail.objects.filter(pk=operation.opted_in_operation_id).delete()
+                OptedInOperationDetail.objects.filter(
+                    pk=operation.opted_in_operation_id
+                ).delete()
         elif old_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
             operation_data.date_of_first_shipment = None
-            DocumentService.archive_or_delete_operation_document(user_guid, operation.id, 'new_entrant_application')
+            DocumentService.archive_or_delete_operation_document(
+                user_guid, operation.id, "new_entrant_application"
+            )
 
         new_purpose = operation_data.registration_purpose
         if new_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
@@ -730,8 +879,12 @@ class OperationService:
             operation_data.tertiary_naics_code_id = None
             operation_data.boundary_map = None
             operation_data.process_flow_diagram = None
-            DocumentService.archive_or_delete_operation_document(user_guid, operation.id, 'process_flow_diagram')
-            DocumentService.archive_or_delete_operation_document(user_guid, operation.id, 'boundary_map')
+            DocumentService.archive_or_delete_operation_document(
+                user_guid, operation.id, "process_flow_diagram"
+            )
+            DocumentService.archive_or_delete_operation_document(
+                user_guid, operation.id, "boundary_map"
+            )
         elif new_purpose in [
             Operation.Purposes.REPORTING_OPERATION,
             Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
@@ -743,7 +896,9 @@ class OperationService:
 
     # list previous reportable operations methods:
     @staticmethod
-    def get_valid_operation_regulated_products(operation: Operation, reporting_year: int) -> QuerySet[RegulatedProduct]:
+    def get_valid_operation_regulated_products(
+        operation: Operation, reporting_year: int
+    ) -> QuerySet[RegulatedProduct]:
         """
         Get the operation's regulated products that are valid for a specific reporting year.
         Uses May 1st of the reporting year as the date to check against the regulated product's valid_from and valid_to dates.
@@ -809,7 +964,9 @@ class OperationService:
 
         user_operator = UserDataAccessService.get_user_operator_by_user(user_guid)
         reporting_years = ReportingYearService.get_previous_reporting_years()
-        year_values = sorted({reporting_year.reporting_year for reporting_year in reporting_years})
+        year_values = sorted(
+            {reporting_year.reporting_year for reporting_year in reporting_years}
+        )
         timelines = list(
             OperationDesignatedOperatorTimeline.objects.select_related("operation")
             .filter(

@@ -1,10 +1,11 @@
 from django.db import models
-
 from registration.models.time_stamped_model import TimeStampedModel
 from registration.models.user_and_contact_common_info import UserAndContactCommonInfo
 from reporting.models.report_version import ReportVersion
+from reporting.models.rls_configs.report_person_responsible import (
+    Rls as ReportPersonResponsibleRls,
+)
 from reporting.models.triggers import immutable_report_version_trigger
-from reporting.models.rls_configs.report_person_responsible import Rls as ReportPersonResponsibleRls
 
 
 class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
@@ -46,7 +47,9 @@ class ReportPersonResponsible(UserAndContactCommonInfo, TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
-        db_table_comment = "A table to store the data about the person responsible for the report"
+        db_table_comment = (
+            "A table to store the data about the person responsible for the report"
+        )
         db_table = 'erc"."report_person_responsible'
         app_label = "reporting"
         triggers = [

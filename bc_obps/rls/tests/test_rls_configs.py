@@ -29,9 +29,13 @@ class TestRlsConfigs:
         if missing_rls:
             errors.append(f"Models missing Rls class:\n{'\n'.join(missing_rls)}")
         if missing_grants:
-            errors.append(f"Models missing Rls.grants attribute:\n{'\n'.join(missing_grants)}")
+            errors.append(
+                f"Models missing Rls.grants attribute:\n{'\n'.join(missing_grants)}"
+            )
         if missing_policies:
-            errors.append(f"Models missing Rls.policies attribute:\n{'\n'.join(missing_policies)}")
+            errors.append(
+                f"Models missing Rls.policies attribute:\n{'\n'.join(missing_policies)}"
+            )
         if missing_m2m:
             errors.append(
                 f"Models missing Rls.m2m_rls_list attribute or has incorrect number of M2mRls:\n{'\n'.join(missing_m2m)}"

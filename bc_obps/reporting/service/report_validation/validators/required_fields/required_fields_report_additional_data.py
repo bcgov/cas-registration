@@ -1,7 +1,6 @@
 from typing import ClassVar
 
 from django.core.exceptions import ObjectDoesNotExist
-
 from reporting.models.report_additional_data import ReportAdditionalData
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (

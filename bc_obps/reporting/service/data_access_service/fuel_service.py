@@ -1,8 +1,7 @@
-from typing import Optional
+from django.core.cache import cache
 from django.db.models import QuerySet
 from reporting.models import FuelType
 from reporting.schema.fuel import FuelTypeSchema
-from django.core.cache import cache
 
 ##### GET #####
 
@@ -10,11 +9,11 @@ from django.core.cache import cache
 class FuelTypeDataAccessService:
     @classmethod
     def get_fuels(cls) -> QuerySet[FuelType]:
-        cached_data: Optional[QuerySet[FuelType]] = cache.get("fuels")
+        cached_data: QuerySet[FuelType] | None = cache.get("fuels")
         if cached_data:
             return cached_data
         else:
-            fuels = FuelType.objects.only(*FuelTypeSchema.Meta.fields).order_by('name')
+            fuels = FuelType.objects.only(*FuelTypeSchema.Meta.fields).order_by("name")
             cache.set("fuels", fuels, 60 * 60 * 24 * 1)  # 1 day
             return fuels
 

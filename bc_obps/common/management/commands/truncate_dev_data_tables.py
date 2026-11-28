@@ -36,11 +36,15 @@ class Command(BaseCommand):
         schemas = ["erc", "erc_history"]
         for schema in schemas:
             with connection.cursor() as cursor:
-                cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname = %s;", [schema])
+                cursor.execute(
+                    "SELECT tablename FROM pg_tables WHERE schemaname = %s;", [schema]
+                )
                 for row in cursor.fetchall():
                     table_name = schema + "." + row[0]
                     if row[0] not in tables_with_production_data:
-                        truncate_statement = """ TRUNCATE TABLE %s RESTART IDENTITY CASCADE; """
+                        truncate_statement = (
+                            """ TRUNCATE TABLE %s RESTART IDENTITY CASCADE; """
+                        )
                         full_truncate_statement = truncate_statement % table_name
                         cursor.execute(full_truncate_statement)
 

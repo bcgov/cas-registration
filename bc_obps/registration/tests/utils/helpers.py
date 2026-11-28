@@ -1,21 +1,24 @@
-import pytest
 import json
+
+import pytest
+from django.test import Client
+from model_bakery import baker
+from phonenumber_field.modelfields import PhoneNumberField
+from registration.constants import BASE_ENDPOINT
 from registration.models import (
     Address,
     AppRole,
     BusinessStructure,
     Facility,
+    Operation,
+    Operator,
     User,
     UserOperator,
     WellAuthorizationNumber,
-    Operation,
-    Operator,
 )
-from model_bakery import baker
-from django.test import Client
-from phonenumber_field.modelfields import PhoneNumberField
-from registration.constants import BASE_ENDPOINT
-from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
+from registration.models.facility_designated_operation_timeline import (
+    FacilityDesignatedOperationTimeline,
+)
 
 
 class TestUtils:
@@ -23,41 +26,54 @@ class TestUtils:
     client = Client()
 
     def save_app_role(self, role_name):
-        self.user.app_role = AppRole.objects.filter(role_name=role_name).first() or baker.make(
-            AppRole, role_name=role_name
-        )
+        self.user.app_role = AppRole.objects.filter(
+            role_name=role_name
+        ).first() or baker.make(AppRole, role_name=role_name)
         self.user.save()
 
     def mock_get_with_auth_role(self, role_name, endpoint=None):
         TestUtils.save_app_role(self, role_name)
-        return TestUtils.client.get(endpoint or self.endpoint, HTTP_AUTHORIZATION=self.auth_header_dumps)
+        return TestUtils.client.get(
+            endpoint or self.endpoint, HTTP_AUTHORIZATION=self.auth_header_dumps
+        )
 
     def mock_post_with_auth_role(self, role_name, content_type, data, endpoint=None):
         TestUtils.save_app_role(self, role_name)
         return TestUtils.client.post(
-            endpoint or self.endpoint, content_type=content_type, data=data, HTTP_AUTHORIZATION=self.auth_header_dumps
+            endpoint or self.endpoint,
+            content_type=content_type,
+            data=data,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
     def mock_put_with_auth_role(self, role_name, content_type, data, endpoint=None):
         TestUtils.save_app_role(self, role_name)
         return TestUtils.client.put(
-            endpoint or self.endpoint, content_type=content_type, data=data, HTTP_AUTHORIZATION=self.auth_header_dumps
+            endpoint or self.endpoint,
+            content_type=content_type,
+            data=data,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
     def mock_patch_with_auth_role(self, role_name, content_type, data, endpoint=None):
         TestUtils.save_app_role(self, role_name)
         return TestUtils.client.patch(
-            endpoint or self.endpoint, content_type=content_type, data=data, HTTP_AUTHORIZATION=self.auth_header_dumps
+            endpoint or self.endpoint,
+            content_type=content_type,
+            data=data,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
-    def generate_operation_operator_timeline(operator: Operator, operations: list[Operation]) -> None:
+    def generate_operation_operator_timeline(
+        operator: Operator, operations: list[Operation]
+    ) -> None:
         for op in operations:
             baker.make_recipe(
-                'registration.tests.utils.operation_designated_operator_timeline',
+                "registration.tests.utils.operation_designated_operator_timeline",
                 operator=operator,
                 operation=op,
-                start_date='1899-01-01',
-                end_date='9999-12-31',
+                start_date="1899-01-01",
+                end_date="9999-12-31",
             )
 
     def authorize_current_user_as_operator_user(self, operator):
@@ -71,7 +87,9 @@ class TestUtils:
 
     def mock_delete_with_auth_role(self, role_name, endpoint=None):
         TestUtils.save_app_role(self, role_name)
-        return TestUtils.client.delete(endpoint or self.endpoint, HTTP_AUTHORIZATION=self.auth_header_dumps)
+        return TestUtils.client.delete(
+            endpoint or self.endpoint, HTTP_AUTHORIZATION=self.auth_header_dumps
+        )
 
     def create_operator_and_operation(self):
         """
@@ -87,16 +105,21 @@ class TestUtils:
             - `owning_operation`: The created operation instance associated with the operator.
         """
         # Create an operator instance
-        operator = baker.make_recipe('registration.tests.utils.operator')
+        operator = baker.make_recipe("registration.tests.utils.operator")
 
         # Create an operation instance associated with the operator
-        owning_operation = baker.make_recipe('registration.tests.utils.operation', operator=operator)
+        owning_operation = baker.make_recipe(
+            "registration.tests.utils.operation", operator=operator
+        )
 
         # Return the created operator and operation instances
         return operator, owning_operation
 
     def create_operator_operation_and_facility(
-        self, authorize_user=False, with_address=False, facility_well_authorization_numbers=None
+        self,
+        authorize_user=False,
+        with_address=False,
+        facility_well_authorization_numbers=None,
     ):
         """
         Sets up an operator, an associated facility, and optionally an address and well authorization numbers
@@ -128,13 +151,19 @@ class TestUtils:
 
         # Create a facility, optionally with an address
         facility = baker.make_recipe(
-            'registration.tests.utils.facility',
+            "registration.tests.utils.facility",
             operation=owning_operation,
-            address=baker.make_recipe('registration.tests.utils.address') if with_address else None,
+            address=baker.make_recipe("registration.tests.utils.address")
+            if with_address
+            else None,
         )
 
         # Link the created facility with the operation
-        baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
+        baker.make(
+            FacilityDesignatedOperationTimeline,
+            operation=owning_operation,
+            facility=facility,
+        )
 
         # Optionally set facility well authorization numbers
         if facility_well_authorization_numbers:
@@ -147,7 +176,9 @@ class TestUtils:
         return operator, owning_operation, facility
 
     @staticmethod
-    def assert_facility_db_state(facility, expect_address=None, expect_well_authorization_numbers=None):
+    def assert_facility_db_state(
+        facility, expect_address=None, expect_well_authorization_numbers=None
+    ):
         """
         Asserts the state of a Facility object and related models.
 
@@ -165,13 +196,19 @@ class TestUtils:
 
         assert facility.address == expect_address
         assert facility.well_authorization_numbers.count() == (
-            expect_well_authorization_numbers if expect_well_authorization_numbers is not None else 0
+            expect_well_authorization_numbers
+            if expect_well_authorization_numbers is not None
+            else 0
         )
 
         assert Facility.objects.count() == 1
-        assert Address.objects.count() == (2 if expect_address else 1)  # 1 for the operator; 0-1 for the facility
+        assert Address.objects.count() == (
+            2 if expect_address else 1
+        )  # 1 for the operator; 0-1 for the facility
         assert WellAuthorizationNumber.objects.count() == (
-            expect_well_authorization_numbers if expect_well_authorization_numbers is not None else 0
+            expect_well_authorization_numbers
+            if expect_well_authorization_numbers is not None
+            else 0
         )
 
     @staticmethod
@@ -208,7 +245,9 @@ baker.generators.add(PhoneNumberField, TestUtils.mock_phone_number)
 
 
 class CommonTestSetup:
-    pytestmark = pytest.mark.django_db  # This is used to mark a test function as requiring the database
+    pytestmark = (
+        pytest.mark.django_db
+    )  # This is used to mark a test function as requiring the database
     base_endpoint = BASE_ENDPOINT
 
     def setup_method(self):
@@ -222,5 +261,5 @@ class CommonTestSetup:
             first_name="Testy",
             last_name="McTesterson",
         )  # Passing _fill_optional to fill all fields with random data
-        self.auth_header = {'user_guid': str(self.user.user_guid)}
+        self.auth_header = {"user_guid": str(self.user.user_guid)}
         self.auth_header_dumps = json.dumps(self.auth_header)

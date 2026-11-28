@@ -1,5 +1,5 @@
 from compliance.enums import ComplianceTableNames
-from rls.enums import RlsRoles, RlsOperations
+from rls.enums import RlsOperations, RlsRoles
 from rls.utils.helpers import generate_rls_grants
 
 
@@ -16,4 +16,6 @@ class Rls:
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
 
-    grants = generate_rls_grants(role_grants_mapping, ComplianceTableNames.ELICENSING_INTEREST_RATE)
+    grants = generate_rls_grants(
+        role_grants_mapping, ComplianceTableNames.ELICENSING_INTEREST_RATE
+    )

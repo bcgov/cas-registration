@@ -1,6 +1,7 @@
-from django.db import models
 from common.lib.pgtrigger.core import Q
+from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
+
 from .rls_configs.compliance_penalty_rate import Rls as CompliancePenaltyRateRls
 
 

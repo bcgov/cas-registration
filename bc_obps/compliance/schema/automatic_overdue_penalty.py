@@ -1,7 +1,8 @@
 from decimal import Decimal
+from typing import Any
+
 from compliance.schema.elicensing_payments import ElicensingPaymentListOut
 from ninja import Schema
-from typing import Any, Optional
 
 
 class _PenaltyStatusBase(Schema):
@@ -30,8 +31,8 @@ class AutomaticOverduePenaltyOut(_PenaltyStatusBase):
     penalty_charge_rate: Decimal
     total_penalty: Decimal
     total_amount: Decimal
-    due_date: Optional[str]
-    invoice_number: Optional[str]
+    due_date: str | None
+    invoice_number: str | None
 
 
 class PenaltyWithPaymentsOut(_PenaltyStatusBase):

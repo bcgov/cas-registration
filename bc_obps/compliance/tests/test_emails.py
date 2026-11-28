@@ -1,15 +1,13 @@
+import uuid
 from decimal import Decimal
 from unittest.mock import patch
-import uuid
-from compliance.models.compliance_report_version import ComplianceReportVersion
-from common.models import EmailNotification
-from registration.models.app_role import AppRole
-from registration.models.user import User
-from registration.models.user_operator import UserOperator
-from common.service.email.email_service import EmailService
+
 import pytest
-from common.service.data_access_service.email_template_service import EmailNotificationTemplateService
-from model_bakery import baker
+from common.models import EmailNotification
+from common.service.data_access_service.email_template_service import (
+    EmailNotificationTemplateService,
+)
+from common.service.email.email_service import EmailService
 from compliance.emails import (
     _send_email_or_raise,
     _send_email_to_operators_approved_users_or_raise,
@@ -18,37 +16,47 @@ from compliance.emails import (
     send_notice_of_no_obligation_no_credits_generated_email,
     send_notice_of_obligation_due_email,
     send_notice_of_obligation_generated_email,
-    send_supplementary_report_submitted_after_deadline,
-    send_reminder_of_obligation_due_email,
     send_notice_of_obligation_met_email,
     send_notice_of_obligation_met_penalty_due_email,
     send_notice_of_penalty_accrual_email,
     send_notice_of_penalty_paid_email,
+    send_reminder_of_obligation_due_email,
+    send_supplementary_report_submitted_after_deadline,
 )
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
+from model_bakery import baker
+from registration.models.app_role import AppRole
+from registration.models.user import User
+from registration.models.user_operator import UserOperator
 
 pytestmark = pytest.mark.django_db
 email_service = EmailService()
-SEND_EMAIL_TO_OPERATORS_USERS_PATH = 'compliance.emails._send_email_to_operators_approved_users_or_raise'
-SEND_EMAIL_OR_RAISE_PATH = 'compliance.emails._send_email_or_raise'
-COMPLIANCE_CHARGE_RATE_SERVICE_PATH = (
-    'compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceChargeRateService'
+SEND_EMAIL_TO_OPERATORS_USERS_PATH = (
+    "compliance.emails._send_email_to_operators_approved_users_or_raise"
 )
+SEND_EMAIL_OR_RAISE_PATH = "compliance.emails._send_email_or_raise"
+COMPLIANCE_CHARGE_RATE_SERVICE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceChargeRateService"
 
 
 def mock_email_service(mocker):
     return mocker.patch.object(
         email_service,
-        'send_email_by_template',
-        return_value={'txId': str(uuid.uuid4()), 'messages': [{'msgId': str(uuid.uuid4())}]},
+        "send_email_by_template",
+        return_value={
+            "txId": str(uuid.uuid4()),
+            "messages": [{"msgId": str(uuid.uuid4())}],
+        },
     )
 
 
 class TestComplianceEmailHelpers:
     def test_send_email_or_raise_success(self, mocker):
         mocked_send_email = mock_email_service(mocker)
-        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
-        recipients = ['email@email.com', 'email2@email.com']
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            "Notice of Earned Credits Generated"
+        )
+        recipients = ["email@email.com", "email2@email.com"]
         context = {"foo": "bar"}
         _send_email_or_raise(template_instance, context, recipients)
         # Assert that send_email_by_template is called exactly once
@@ -79,39 +87,46 @@ class TestComplianceEmailHelpers:
         assert len(email_notification.recipients_email) == 2
 
     def test_send_email_or_raise_fail(self, mocker):
-
-        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            "Notice of Earned Credits Generated"
+        )
         mocked_send_email = mock_email_service(mocker)
 
         mocked_send_email.side_effect = Exception("Whoops")
-        with patch('django.conf.settings.ENVIRONMENT', 'test'):
+        with patch("django.conf.settings.ENVIRONMENT", "test"):
             with pytest.raises(Exception, match="Whoops"):
-                _send_email_or_raise(template_instance, {"foo": "bar"}, ['email@email.com'])
+                _send_email_or_raise(
+                    template_instance, {"foo": "bar"}, ["email@email.com"]
+                )
 
     def test_send_email_to_operators_approved_users_or_raise_success(self, mocker):
         # admin user - should receive email
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator',
+            "registration.tests.utils.approved_user_operator",
         )
         # two reporter users with the same operator - should receive email
-        users = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"), _quantity=2)
+        users = baker.make(
+            User, app_role=AppRole.objects.get(role_name="industry_user"), _quantity=2
+        )
         baker.make_recipe(
-            'registration.tests.utils.user_operator',
+            "registration.tests.utils.user_operator",
             user=users[0],
             operator=approved_user_operator.operator,
             status=UserOperator.Statuses.APPROVED,
         )
         baker.make_recipe(
-            'registration.tests.utils.user_operator',
+            "registration.tests.utils.user_operator",
             user=users[1],
             operator=approved_user_operator.operator,
             status=UserOperator.Statuses.APPROVED,
         )
 
         # one declined user with the same operator - should NOT receive email
-        declined_user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        declined_user = baker.make(
+            User, app_role=AppRole.objects.get(role_name="industry_user")
+        )
         baker.make_recipe(
-            'registration.tests.utils.user_operator',
+            "registration.tests.utils.user_operator",
             user=declined_user,
             operator=approved_user_operator.operator,
             status=UserOperator.Statuses.DECLINED,
@@ -119,15 +134,19 @@ class TestComplianceEmailHelpers:
 
         # some users from another operator - should not receive email
         other_operator_user_1 = baker.make_recipe(
-            'registration.tests.utils.user_operator', status=UserOperator.Statuses.APPROVED
+            "registration.tests.utils.user_operator",
+            status=UserOperator.Statuses.APPROVED,
         )
         other_operator_user_2 = baker.make_recipe(
-            'registration.tests.utils.user_operator', status=UserOperator.Statuses.APPROVED
+            "registration.tests.utils.user_operator",
+            status=UserOperator.Statuses.APPROVED,
         )
 
-        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            "Notice of Earned Credits Generated"
+        )
         mocked_send_email = mock_email_service(mocker)
-        expected_context = {'context': 'context'}
+        expected_context = {"context": "context"}
 
         _send_email_to_operators_approved_users_or_raise(
             approved_user_operator.operator, template_instance, expected_context
@@ -183,14 +202,16 @@ class TestComplianceEmailHelpers:
     def test_send_email_to_operators_approved_users_or_raise_fail(self, mocker):
         # Arrange: create an approved user_operator
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator',
+            "registration.tests.utils.approved_user_operator",
         )
 
-        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            "Notice of Earned Credits Generated"
+        )
         mocked_send_email = mock_email_service(mocker)
 
         mocked_send_email.side_effect = Exception("Whoops")
-        with patch('django.conf.settings.ENVIRONMENT', 'test'):
+        with patch("django.conf.settings.ENVIRONMENT", "test"):
             with pytest.raises(Exception, match="Whoops"):
                 _send_email_to_operators_approved_users_or_raise(
                     approved_user_operator.operator, template_instance, {"foo": "bar"}
@@ -199,7 +220,9 @@ class TestComplianceEmailHelpers:
 
 class TestSendNotifications:
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
-    def test_send_earned_credits_email(self, mock_send_email_to_operators_approved_users_or_raise):
+    def test_send_earned_credits_email(
+        self, mock_send_email_to_operators_approved_users_or_raise
+    ):
         # Create a report with earned credits
         test_data = ComplianceTestHelper.build_test_data(
             crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
@@ -209,10 +232,13 @@ class TestSendNotifications:
 
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data.operation.operator,
         )
 
-        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            "Notice of Earned Credits Generated"
+        )
         expected_context = {
             "operator_legal_name": test_data.report_operation.operator_legal_name,
             "operation_name": test_data.report_operation.operation_name,
@@ -221,7 +247,9 @@ class TestSendNotifications:
         }
 
         # Call the function with the earned credit ID
-        send_notice_of_earned_credits_generated_email(test_data.compliance_earned_credit.id)
+        send_notice_of_earned_credits_generated_email(
+            test_data.compliance_earned_credit.id
+        )
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
@@ -238,20 +266,26 @@ class TestSendNotifications:
         )
         test_data.compliance_earned_credit.delete()
         test_data.compliance_earned_credit = baker.make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
+            "compliance.tests.utils.compliance_earned_credit",
             compliance_report_version=test_data.compliance_report_version,
-            earned_credits_amount=Decimal('0.5'),  # Amount greater than 0 but less than 1
+            earned_credits_amount=Decimal(
+                "0.5"
+            ),  # Amount greater than 0 but less than 1
         )
         test_data.compliance_earned_credit.save()
 
         # Call the function with the earned credit ID
-        send_notice_of_earned_credits_generated_email(test_data.compliance_earned_credit.id)
+        send_notice_of_earned_credits_generated_email(
+            test_data.compliance_earned_credit.id
+        )
 
         # Verify that the email function was not called
         mock_send_email_to_operators_approved_users_or_raise.assert_not_called()
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
-    def test_send_no_obligation_no_credits_email(self, mock_send_email_to_operators_approved_users_or_raise):
+    def test_send_no_obligation_no_credits_email(
+        self, mock_send_email_to_operators_approved_users_or_raise
+    ):
         # Create a report with no obligation and no earned credits
         test_data = ComplianceTestHelper.build_test_data(
             crv_status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -259,11 +293,12 @@ class TestSendNotifications:
 
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data.operation.operator,
         )
 
         template_instance = EmailNotificationTemplateService.get_template_by_name(
-            'No Obligation No Earned Credits Generated'
+            "No Obligation No Earned Credits Generated"
         )
 
         expected_context = {
@@ -273,7 +308,9 @@ class TestSendNotifications:
         }
 
         # Call the function with the report
-        send_notice_of_no_obligation_no_credits_generated_email(test_data.compliance_report_version.id)
+        send_notice_of_no_obligation_no_credits_generated_email(
+            test_data.compliance_report_version.id
+        )
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
@@ -281,7 +318,9 @@ class TestSendNotifications:
         )
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
-    def test_obligation_email(self, mock_send_email_to_operators_approved_users_or_raise):
+    def test_obligation_email(
+        self, mock_send_email_to_operators_approved_users_or_raise
+    ):
         # Create a report with no obligation or earned credits
         test_data = ComplianceTestHelper.build_test_data(
             crv_status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -289,21 +328,30 @@ class TestSendNotifications:
 
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data.operation.operator,
         )
 
-        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Generated')
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            "Notice of Obligation Generated"
+        )
 
         expected_context = {
             "operator_legal_name": test_data.report_operation.operator_legal_name,
             "operation_name": test_data.report_operation.operation_name,
             "compliance_year": test_data.report.reporting_year.reporting_year,
-            "invoice_generation_date": test_data.compliance_period.invoice_generation_date.strftime("%B %d, %Y"),
-            "compliance_deadline": test_data.compliance_period.compliance_deadline.strftime("%B %d, %Y"),
+            "invoice_generation_date": test_data.compliance_period.invoice_generation_date.strftime(
+                "%B %d, %Y"
+            ),
+            "compliance_deadline": test_data.compliance_period.compliance_deadline.strftime(
+                "%B %d, %Y"
+            ),
         }
 
         # Call the function with the report id
-        send_notice_of_obligation_generated_email(test_data.compliance_report_version.id)
+        send_notice_of_obligation_generated_email(
+            test_data.compliance_report_version.id
+        )
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
@@ -316,7 +364,7 @@ class TestSendNotifications:
         mock_send_email_or_raise,
         settings,
     ):
-        settings.ENVIRONMENT = 'prod'
+        settings.ENVIRONMENT = "prod"
         # Create a report with earned credits
         test_data = ComplianceTestHelper.build_test_data(
             crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
@@ -324,39 +372,51 @@ class TestSendNotifications:
         test_data.compliance_earned_credit.earned_credits_amount = 100
         test_data.compliance_earned_credit.save()
 
-        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Credits Requested')
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            "Notice of Credits Requested"
+        )
         expected_context = {
             "operator_legal_name": test_data.report_operation.operator_legal_name,
             "operation_name": test_data.report_operation.operation_name,
         }
 
         # Call the function with the earned credit id
-        send_notice_of_credits_requested_generated_email(test_data.compliance_earned_credit.id)
+        send_notice_of_credits_requested_generated_email(
+            test_data.compliance_earned_credit.id
+        )
         mock_send_email_or_raise.assert_called_once_with(
-            template_instance, expected_context, ['GHGRegulator@gov.bc.ca'], cc_ghg_regulator=False
+            template_instance,
+            expected_context,
+            ["GHGRegulator@gov.bc.ca"],
+            cc_ghg_regulator=False,
         )
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
     @patch(
-        'compliance.service.compliance_report_version_service.ComplianceReportVersionService.calculate_outstanding_balance_tco2e'
+        "compliance.service.compliance_report_version_service.ComplianceReportVersionService.calculate_outstanding_balance_tco2e"
     )
     def test_obligation_due_email(
-        self, mock_calculate_outstanding_balance_tco2e, mock_send_email_to_operators_approved_users_or_raise
+        self,
+        mock_calculate_outstanding_balance_tco2e,
+        mock_send_email_to_operators_approved_users_or_raise,
     ):
         # Create a report with invoice
         test_data = ComplianceTestHelper.build_test_data(
             crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
             create_invoice_data=True,
         )
-        test_data.invoice.invoice_fee_balance = Decimal('5.6')
+        test_data.invoice.invoice_fee_balance = Decimal("5.6")
         test_data.invoice.save()
 
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data.operation.operator,
         )
 
-        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Compliance Obligation Due')
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            "Notice of Compliance Obligation Due"
+        )
         mock_calculate_outstanding_balance_tco2e.return_value = Decimal(1000.1234)
 
         expected_context = {
@@ -364,8 +424,8 @@ class TestSendNotifications:
             "operation_name": test_data.report_operation.operation_name,
             "compliance_period": test_data.reporting_year.reporting_year,
             "year_due": test_data.reporting_year.reporting_year + 1,
-            "tonnes_of_co2": '1,000.1234',
-            "outstanding_balance": '$5.60',
+            "tonnes_of_co2": "1,000.1234",
+            "outstanding_balance": "$5.60",
         }
 
         # Call the function with the obligcation id
@@ -378,26 +438,29 @@ class TestSendNotifications:
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
     @patch(
-        'compliance.service.compliance_report_version_service.ComplianceReportVersionService.calculate_outstanding_balance_tco2e'
+        "compliance.service.compliance_report_version_service.ComplianceReportVersionService.calculate_outstanding_balance_tco2e"
     )
     def test_obligation_reminder_email(
-        self, mock_calculate_outstanding_balance_tco2e, mock_send_email_to_operators_approved_users_or_raise
+        self,
+        mock_calculate_outstanding_balance_tco2e,
+        mock_send_email_to_operators_approved_users_or_raise,
     ):
         # Create a report with invoice
         test_data = ComplianceTestHelper.build_test_data(
             crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
             create_invoice_data=True,
         )
-        test_data.invoice.invoice_fee_balance = Decimal('5.6')
+        test_data.invoice.invoice_fee_balance = Decimal("5.6")
         test_data.invoice.save()
 
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data.operation.operator,
         )
 
         template_instance = EmailNotificationTemplateService.get_template_by_name(
-            'Reminder of Compliance Obligation Due'
+            "Reminder of Compliance Obligation Due"
         )
         mock_calculate_outstanding_balance_tco2e.return_value = Decimal(1000.1234)
 
@@ -406,8 +469,8 @@ class TestSendNotifications:
             "operation_name": test_data.report_operation.operation_name,
             "compliance_period": test_data.compliance_period.reporting_year.reporting_year,
             "year_due": test_data.reporting_year.reporting_year + 1,
-            "tonnes_of_co2": '1,000.1234',
-            "outstanding_balance": '$5.60',
+            "tonnes_of_co2": "1,000.1234",
+            "outstanding_balance": "$5.60",
         }
 
         # Call the function with the obligcation id
@@ -419,9 +482,11 @@ class TestSendNotifications:
         )
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
-    @patch('compliance.emails._prepare_obligation_context')
+    @patch("compliance.emails._prepare_obligation_context")
     def test_obligation_met_email(
-        self, mock_prepare_obligation_context, mock_send_email_to_operators_approved_users_or_raise
+        self,
+        mock_prepare_obligation_context,
+        mock_send_email_to_operators_approved_users_or_raise,
     ):
         # Create a report with invoice
         test_data = ComplianceTestHelper.build_test_data(
@@ -433,18 +498,21 @@ class TestSendNotifications:
 
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data.operation.operator,
         )
 
-        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Met')
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            "Notice of Obligation Met"
+        )
         expected_context = {
             "operator_legal_name": test_data.report_operation.operator_legal_name,
             "operation_name": test_data.report_operation.operation_name,
             "compliance_period": test_data.compliance_period,
             # the following properties aren't used in the email, but we're reusing the helper function that includes them
             "year_due": test_data.reporting_year.reporting_year + 1,
-            "tonnes_of_co2": '1,000.1234',
-            "outstanding_balance": '$0.00',
+            "tonnes_of_co2": "1,000.1234",
+            "outstanding_balance": "$0.00",
         }
         mock_prepare_obligation_context.return_value = expected_context
 
@@ -457,7 +525,9 @@ class TestSendNotifications:
         )
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
-    def test_obligation_met_penalty_due_email(self, mock_send_email_to_operators_approved_users_or_raise):
+    def test_obligation_met_penalty_due_email(
+        self, mock_send_email_to_operators_approved_users_or_raise
+    ):
         # Create a report with invoice
         test_data = ComplianceTestHelper.build_test_data(
             crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
@@ -466,7 +536,8 @@ class TestSendNotifications:
 
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data.operation.operator,
         )
 
         # Penalty invoices: 2 outstanding (count), 1 void (exclude), 1 zero (exclude)
@@ -513,7 +584,9 @@ class TestSendNotifications:
             "Notice of Obligation Met Penalty Due"
         )
 
-        expected_penalty_amount = Decimal("100.00") + Decimal("250.25")  # void + zero excluded by query
+        expected_penalty_amount = Decimal("100.00") + Decimal(
+            "250.25"
+        )  # void + zero excluded by query
         expected_context = {
             "operator_legal_name": test_data.report_operation.operator_legal_name,
             "operation_name": test_data.report_operation.operation_name,
@@ -525,7 +598,9 @@ class TestSendNotifications:
         }
 
         # Act
-        send_notice_of_obligation_met_penalty_due_email(test_data.compliance_obligation.id)
+        send_notice_of_obligation_met_penalty_due_email(
+            test_data.compliance_obligation.id
+        )
 
         # Assert
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
@@ -535,9 +610,11 @@ class TestSendNotifications:
         )
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
-    @patch('compliance.emails._prepare_obligation_context')
+    @patch("compliance.emails._prepare_obligation_context")
     def test_penalty_paid_email(
-        self, mock_prepare_obligation_context, mock_send_email_to_operators_approved_users_or_raise
+        self,
+        mock_prepare_obligation_context,
+        mock_send_email_to_operators_approved_users_or_raise,
     ):
         # Create a report with invoice
         test_data = ComplianceTestHelper.build_test_data(
@@ -547,7 +624,8 @@ class TestSendNotifications:
 
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data.operation.operator,
         )
 
         # Penalty invoice - paid
@@ -564,7 +642,9 @@ class TestSendNotifications:
         )
 
         # Template + context
-        template_instance = EmailNotificationTemplateService.get_template_by_name("Notice of Penalty Paid")
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            "Notice of Penalty Paid"
+        )
         expected_context = {
             "operator_legal_name": test_data.report_operation.operator_legal_name,
             "operation_name": test_data.report_operation.operation_name,
@@ -583,7 +663,7 @@ class TestSendNotifications:
 
 
 @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
-@patch('compliance.emails._prepare_obligation_context')
+@patch("compliance.emails._prepare_obligation_context")
 def test_penalty_accrual_email(
     mock_prepare_obligation_context,
     mock_send_email_to_operators_approved_users_or_raise,
@@ -596,12 +676,13 @@ def test_penalty_accrual_email(
 
     # admin user
     approved_user_operator = baker.make_recipe(
-        'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
+        "registration.tests.utils.approved_user_operator",
+        operator=test_data.operation.operator,
     )
 
     # Expected template and context
     template_instance = EmailNotificationTemplateService.get_template_by_name(
-        'Compliance Obligation Due Date Passed - Penalty now Accruing'
+        "Compliance Obligation Due Date Passed - Penalty now Accruing"
     )
     expected_context = {
         "operator_legal_name": test_data.report_operation.operator_legal_name,
@@ -609,8 +690,8 @@ def test_penalty_accrual_email(
         "compliance_period": test_data.compliance_period,
         "year_due": test_data.reporting_year.reporting_year + 1,
         # values below aren’t used directly in this assertion path; they come from the helper:
-        "tonnes_of_co2": '1,000.1234',
-        "outstanding_balance": '$123.45',
+        "tonnes_of_co2": "1,000.1234",
+        "outstanding_balance": "$123.45",
     }
     mock_prepare_obligation_context.return_value = expected_context
 
@@ -618,7 +699,9 @@ def test_penalty_accrual_email(
     send_notice_of_penalty_accrual_email(test_data.compliance_obligation.id)
 
     # Assert
-    mock_prepare_obligation_context.assert_called_once_with(test_data.compliance_obligation)
+    mock_prepare_obligation_context.assert_called_once_with(
+        test_data.compliance_obligation
+    )
     mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
         approved_user_operator.operator,
         template_instance,
@@ -626,9 +709,11 @@ def test_penalty_accrual_email(
     )
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
-    @patch('compliance.emails._prepare_obligation_context')
+    @patch("compliance.emails._prepare_obligation_context")
     def test_supplementary_report_creates_obligation_email(
-        self, mock_prepare_obligation_context, mock_send_email_to_operators_approved_users_or_raise
+        self,
+        mock_prepare_obligation_context,
+        mock_send_email_to_operators_approved_users_or_raise,
     ):
         # Create a report with invoice
         test_data = ComplianceTestHelper.build_test_data(
@@ -638,11 +723,12 @@ def test_penalty_accrual_email(
 
         # admin user
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=test_data.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data.operation.operator,
         )
 
         template_instance = EmailNotificationTemplateService.get_template_by_name(
-            'Supplementary Report Submitted after Deadline'
+            "Supplementary Report Submitted after Deadline"
         )
 
         expected_context = {
@@ -651,13 +737,15 @@ def test_penalty_accrual_email(
             "compliance_period": test_data.compliance_period,
             # the following properties aren't used in the email, but we're reusing the helper function that includes them
             "year_due": test_data.reporting_year.reporting_year + 1,
-            "tonnes_of_co2": '1,000.1234',
-            "outstanding_balance": '$0.00',
+            "tonnes_of_co2": "1,000.1234",
+            "outstanding_balance": "$0.00",
         }
         mock_prepare_obligation_context.return_value = expected_context
 
         # Call the function with the obligcation id
-        send_supplementary_report_submitted_after_deadline(test_data.compliance_obligation.id)
+        send_supplementary_report_submitted_after_deadline(
+            test_data.compliance_obligation.id
+        )
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,

@@ -1,4 +1,5 @@
 from uuid import UUID
+
 from django.http import HttpRequest
 from registration.models import User
 

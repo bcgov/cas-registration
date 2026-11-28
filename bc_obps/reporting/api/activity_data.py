@@ -1,12 +1,15 @@
-from registration.service.activity_service import ActivityService
+from uuid import UUID
+
 from common.permissions import authorize
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from .router import router
 from django.http import HttpRequest
-from typing import Tuple
-from uuid import UUID
+from registration.service.activity_service import ActivityService
+from reporting.api.permissions import (
+    approved_industry_user_report_version_composite_auth,
+)
 from reporting.schema.generic import Message
-from reporting.api.permissions import approved_industry_user_report_version_composite_auth
+
+from .router import router
 
 ##### GET #####
 
@@ -18,8 +21,10 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
 )
 def get_initial_activity_data(
     request: HttpRequest, version_id: int, facility_id: UUID, activity_id: int
-) -> Tuple[int, str]:
-    return 200, ActivityService.get_initial_activity_data(version_id, facility_id, activity_id)
+) -> tuple[int, str]:
+    return 200, ActivityService.get_initial_activity_data(
+        version_id, facility_id, activity_id
+    )
 
 
 @router.get(
@@ -27,5 +32,5 @@ def get_initial_activity_data(
     response={200: list, custom_codes_4xx: Message},
     auth=authorize("approved_authorized_roles"),
 )
-def get_activities(request: HttpRequest) -> Tuple[int, list]:
+def get_activities(request: HttpRequest) -> tuple[int, list]:
     return 200, ActivityService.get_all_activities()

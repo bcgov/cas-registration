@@ -3,8 +3,8 @@ from reporting.models.fuel_type import FuelType
 from reporting.models.report_data_base_model import ReportDataBaseModel
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
-from reporting.models.triggers import immutable_report_version_trigger
 from reporting.models.rls_configs.report_fuel import Rls as ReportFuelRls
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportFuel(ReportDataBaseModel):
@@ -30,7 +30,9 @@ class ReportFuel(ReportDataBaseModel):
     )
 
     class Meta(ReportDataBaseModel.Meta):
-        db_table_comment = "A table to store the reported fuel-specific data, in a JSON format"
+        db_table_comment = (
+            "A table to store the reported fuel-specific data, in a JSON format"
+        )
         db_table = 'erc"."report_fuel'
         app_label = "reporting"
         triggers = [

@@ -1,10 +1,9 @@
-from typing import List, Optional
+from ninja import Field, ModelSchema, Schema
+from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.schema.report_product_emission_allocation import (
     EmissionCategoryAllocationsSchemaIn,
     ReportProductEmissionAllocationSchemaOut,
 )
-from ninja import ModelSchema, Schema, Field
-from reporting.models.report_emission_allocation import ReportEmissionAllocation
 
 
 class ReportEmissionAllocationSchema(ModelSchema):
@@ -22,7 +21,7 @@ class ReportEmissionAllocationsSchemaIn(Schema):
     """
 
     allocation_methodology: str
-    allocation_other_methodology_description: Optional[str] = Field(None)
+    allocation_other_methodology_description: str | None = Field(None)
     # For the product allocations
     report_product_emission_allocations: list[EmissionCategoryAllocationsSchemaIn]
 
@@ -32,7 +31,7 @@ class ReportFacilityEmissionsSchemaOut(Schema):
     emission_category_id: int
     category_type: str
     emission_total: float
-    products: List[ReportProductEmissionAllocationSchemaOut]
+    products: list[ReportProductEmissionAllocationSchemaOut]
 
 
 class ReportEmissionAllocationSchemaOut(Schema):
@@ -40,9 +39,11 @@ class ReportEmissionAllocationSchemaOut(Schema):
     Schema for the get report emission allocations endpoint response
     """
 
-    report_product_emission_allocations: List[ReportFacilityEmissionsSchemaOut]
+    report_product_emission_allocations: list[ReportFacilityEmissionsSchemaOut]
     facility_total_emissions: float
-    report_product_emission_allocation_totals: List[ReportProductEmissionAllocationSchemaOut]
+    report_product_emission_allocation_totals: list[
+        ReportProductEmissionAllocationSchemaOut
+    ]
     allocation_methodology: str
     allocation_other_methodology_description: str
     has_missing_products: bool

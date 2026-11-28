@@ -1,5 +1,4 @@
 from ninja import ModelSchema
-
 from registration.models import Activity
 
 
@@ -10,4 +9,4 @@ class FacilityReportActivityDataOut(ModelSchema):
 
     class Meta:
         model = Activity
-        fields = ['id', 'name', 'slug']
+        fields = ["id", "name", "slug"]

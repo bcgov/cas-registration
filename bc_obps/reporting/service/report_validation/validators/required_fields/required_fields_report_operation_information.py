@@ -5,7 +5,9 @@ from reporting.models.report_operation_representative import (
     ReportOperationRepresentative,
 )
 from reporting.models.report_version import ReportVersion
-from reporting.service.report_validation.report_validation_error import ReportValidationError
+from reporting.service.report_validation.report_validation_error import (
+    ReportValidationError,
+)
 from reporting.service.report_validation.report_validation_tags import ValidationTags
 from reporting.service.report_validation.validators.required_fields.base_required_fields_validator import (
     BaseRequiredFieldsValidator,
@@ -26,9 +28,17 @@ class RequiredFieldsReportOperationInformationValidator(BaseRequiredFieldsValida
 
     REQUIRED_FIELDS: ClassVar[list[RequiredFieldConfig]] = [
         {"field": "operation_name", "label": "Operation name", "field_type": "scalar"},
-        {"field": "operator_legal_name", "label": "Operator legal name", "field_type": "scalar"},
+        {
+            "field": "operator_legal_name",
+            "label": "Operator legal name",
+            "field_type": "scalar",
+        },
         {"field": "activities", "label": "Activities", "field_type": "m2m"},
-        {"field": "regulated_products", "label": "Regulated products", "field_type": "m2m"},
+        {
+            "field": "regulated_products",
+            "label": "Regulated products",
+            "field_type": "m2m",
+        },
     ]
 
     @classmethod
@@ -38,10 +48,19 @@ class RequiredFieldsReportOperationInformationValidator(BaseRequiredFieldsValida
     ) -> list[RequiredFieldConfig]:
         if flow == ReportingFlow.EIO:
             return [
-                field for field in cls.REQUIRED_FIELDS if field["field"] not in {"activities", "regulated_products"}
+                field
+                for field in cls.REQUIRED_FIELDS
+                if field["field"] not in {"activities", "regulated_products"}
             ]
-        elif flow in {ReportingFlow.REPORTING_ONLY_SFO, ReportingFlow.REPORTING_ONLY_LFO}:
-            return [field for field in cls.REQUIRED_FIELDS if field["field"] != "regulated_products"]
+        elif flow in {
+            ReportingFlow.REPORTING_ONLY_SFO,
+            ReportingFlow.REPORTING_ONLY_LFO,
+        }:
+            return [
+                field
+                for field in cls.REQUIRED_FIELDS
+                if field["field"] != "regulated_products"
+            ]
 
         return cls.REQUIRED_FIELDS
 

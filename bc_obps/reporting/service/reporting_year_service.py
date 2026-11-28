@@ -12,10 +12,14 @@ class ReportingYearService:
     def get_current_reporting_year(cls) -> ReportingYear:
         now = timezone.now()
 
-        return ReportingYear.objects.get(reporting_window_start__lte=now, reporting_window_end__gte=now)
+        return ReportingYear.objects.get(
+            reporting_window_start__lte=now, reporting_window_end__gte=now
+        )
 
     @classmethod
-    def get_all_reporting_years(cls, exclude_past: bool = False) -> QuerySet[ReportingYear]:
+    def get_all_reporting_years(
+        cls, exclude_past: bool = False
+    ) -> QuerySet[ReportingYear]:
         """
         Returns all ReportingYear objects in the database, or only the ReportingYears that haven't already closed.
         @param exclude_past (optional, boolean) - will exclude from the returned list ReportingYears that have already ended.
@@ -34,7 +38,11 @@ class ReportingYearService:
         Returns True if current time is after the report_open_date.
         """
         now = timezone.now()
-        return now > reporting_year.report_open_date if reporting_year.report_open_date else False
+        return (
+            now > reporting_year.report_open_date
+            if reporting_year.report_open_date
+            else False
+        )
 
     @classmethod
     def get_report_reporting_year(cls, report_id: int) -> ReportingYear:

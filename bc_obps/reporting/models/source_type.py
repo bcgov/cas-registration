@@ -17,8 +17,8 @@ class SourceType(BaseModel):
         db_table = 'erc"."source_type'
         constraints = [
             models.UniqueConstraint(
-                fields=['json_key'],
-                name='unique_source_type_json_key',
+                fields=["json_key"],
+                name="unique_source_type_json_key",
             )
         ]
 

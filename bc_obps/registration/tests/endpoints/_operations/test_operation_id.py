@@ -1,14 +1,14 @@
+import json
+
+from common.tests.utils.test_files import create_test_file
 from model_bakery import baker
 from registration.models import (
     UserOperator,
 )
 from registration.models.operation import Operation
-from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.tests.utils.bakers import operation_baker, operator_baker
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-import json
-
-from common.tests.utils.test_files import create_test_file
 
 
 class TestOperationIdEndpoint(CommonTestSetup):
@@ -28,13 +28,21 @@ class TestOperationIdEndpoint(CommonTestSetup):
         users_operation = operation_baker(user_operator.operator.id)
 
         response_1 = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", custom_reverse_lazy("get_operation", kwargs={"operation_id": users_operation.id})
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                "get_operation", kwargs={"operation_id": users_operation.id}
+            ),
         )
 
         assert response_1.status_code == 200
 
         response_2 = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", custom_reverse_lazy("get_operation", kwargs={"operation_id": random_operation.id})
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                "get_operation", kwargs={"operation_id": random_operation.id}
+            ),
         )
         # RLS makes this 404 instead of 401
         # assert response_2.status_code == 404
@@ -56,7 +64,10 @@ class TestOperationIdEndpoint(CommonTestSetup):
         response_1 = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            custom_reverse_lazy("get_operation_with_documents", kwargs={"operation_id": users_operation.id}),
+            custom_reverse_lazy(
+                "get_operation_with_documents",
+                kwargs={"operation_id": users_operation.id},
+            ),
         )
 
         assert response_1.status_code == 200
@@ -64,47 +75,65 @@ class TestOperationIdEndpoint(CommonTestSetup):
         response_2 = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            custom_reverse_lazy("get_operation_with_documents", kwargs={"operation_id": random_operation.id}),
+            custom_reverse_lazy(
+                "get_operation_with_documents",
+                kwargs={"operation_id": random_operation.id},
+            ),
         )
         # RLS makes this 404 instead of 401
         # assert response_2.status_code == 404
         assert response_2.status_code == 401
 
     def test_operations_endpoint_get_success(self):
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe(
+            "registration.tests.utils.approved_user_operator", user=self.user
+        )
         operation = baker.make_recipe(
-            'registration.tests.utils.operation',
+            "registration.tests.utils.operation",
             operator=approved_user_operator.operator,
-            registration_purpose='Potential Reporting Operation',
+            registration_purpose="Potential Reporting Operation",
         )
         response = TestUtils.mock_get_with_auth_role(
-            self, "cas_admin", custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id})
+            self,
+            "cas_admin",
+            custom_reverse_lazy("get_operation", kwargs={"operation_id": operation.id}),
         )
         assert response.status_code == 200
         response_data = response.json()
         assert response_data.get("id") == str(operation.id)
-        assert response_data.get("registration_purpose") == 'Potential Reporting Operation'
+        assert (
+            response_data.get("registration_purpose") == "Potential Reporting Operation"
+        )
 
     def test_operations_with_documents_endpoint_get_success(self):
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
-        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = baker.make_recipe(
+            "registration.tests.utils.approved_user_operator", user=self.user
+        )
+        operation = baker.make_recipe(
+            "registration.tests.utils.operation",
+            operator=approved_user_operator.operator,
+        )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "cas_admin",
-            custom_reverse_lazy("get_operation_with_documents", kwargs={"operation_id": operation.id}),
+            custom_reverse_lazy(
+                "get_operation_with_documents", kwargs={"operation_id": operation.id}
+            ),
         )
         assert response.status_code == 200
         response_data = response.json()
         assert response_data.get("id") == str(operation.id)
 
     def test_operations_endpoint_post_success(self):
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe(
+            "registration.tests.utils.approved_user_operator", user=self.user
+        )
         operation = baker.make_recipe(
-            'registration.tests.utils.operation',
+            "registration.tests.utils.operation",
             operator=approved_user_operator.operator,
             status=Operation.Statuses.REGISTERED,
         )
-        contact = baker.make_recipe('registration.tests.utils.contact')
+        contact = baker.make_recipe("registration.tests.utils.contact")
 
         test_payload = {
             "payload": json.dumps(
@@ -139,7 +168,9 @@ class TestOperationIdEndpoint(CommonTestSetup):
         }
 
         response = TestUtils.client.post(
-            path=custom_reverse_lazy("update_operation", kwargs={"operation_id": operation.id}),
+            path=custom_reverse_lazy(
+                "update_operation", kwargs={"operation_id": operation.id}
+            ),
             data=test_payload,
             format="multipart",
             HTTP_AUTHORIZATION=self.auth_header_dumps,

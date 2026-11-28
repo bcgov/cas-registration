@@ -1,13 +1,16 @@
+from common.lib import pgtrigger
 from common.tests.utils.helpers import BaseTestCase
+from model_bakery.baker import make_recipe
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models.report_attachment import ReportAttachment
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
-from model_bakery.baker import make_recipe
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsTestSetup
-from common.lib import pgtrigger
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ReportAttachmentTest(BaseTestCase):
@@ -26,7 +29,9 @@ class ReportAttachmentTest(BaseTestCase):
 
     def test_supports_over_100_chars_in_file_name(self):
         long_file_name = "ten_chars " * 90 + ".longextension"
-        report_attachment = make_recipe("reporting.tests.utils.report_attachment", attachment=long_file_name)
+        report_attachment = make_recipe(
+            "reporting.tests.utils.report_attachment", attachment=long_file_name
+        )
         self.assertEqual(report_attachment.attachment.name, long_file_name)
 
     def test_immutable_after_report_version_submitted(self):
@@ -42,17 +47,19 @@ class ReportAttachmentRlsTest(BaseTestCase):
         # Inside access bounds
         with pgtrigger.ignore("reporting.ReportAttachment:immutable_report_version"):
             report_attachment_2010_submitted = make_recipe(
-                'reporting.tests.utils.report_attachment', report_version=t.report_version_2010_submitted
+                "reporting.tests.utils.report_attachment",
+                report_version=t.report_version_2010_submitted,
             )
         # Set the type so it can't clash with the wci_352_362 attachment insert_function adds to this report version
         report_attachment_2010_draft = make_recipe(
-            'reporting.tests.utils.report_attachment',
+            "reporting.tests.utils.report_attachment",
             report_version=t.report_version_2010_draft,
             attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
         )
         # Outside access bounds
         report_attachment_2013_draft = make_recipe(
-            'reporting.tests.utils.report_attachment', report_version=t.report_version_2013_draft
+            "reporting.tests.utils.report_attachment",
+            report_version=t.report_version_2013_draft,
         )
 
         # Additionl report_version needed for insert test: 2012 - Within access bounds
@@ -76,9 +83,9 @@ class ReportAttachmentRlsTest(BaseTestCase):
         def insert_function(cursor):
             ReportAttachment.objects.create(
                 report_version=t.report_version_2010_draft,
-                attachment='test.pdf',
-                attachment_type='wci_352_362',
-                attachment_name='test',
+                attachment="test.pdf",
+                attachment_type="wci_352_362",
+                attachment_name="test",
             )
 
         def forbidden_insert_function(cursor):
@@ -97,7 +104,7 @@ class ReportAttachmentRlsTest(BaseTestCase):
                     SET attachment_name = %s
                     WHERE id = %s
                 """,
-                ('changed', report_attachment_2010_draft.id),
+                ("changed", report_attachment_2010_draft.id),
             )
             return cursor.rowcount
 
@@ -108,7 +115,7 @@ class ReportAttachmentRlsTest(BaseTestCase):
                     SET attachment_name = %s
                     WHERE id = %s
                 """,
-                ('changed', report_attachment_2013_draft.id),
+                ("changed", report_attachment_2013_draft.id),
             )
             return cursor.rowcount
 

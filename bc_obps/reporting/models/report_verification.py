@@ -1,8 +1,10 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
+from reporting.models.rls_configs.report_verification import (
+    Rls as ReportVerificationRls,
+)
 from reporting.models.triggers import immutable_report_version_trigger
-from reporting.models.rls_configs.report_verification import Rls as ReportVerificationRls
 
 
 class ReportVerification(TimeStampedModel):
@@ -72,7 +74,9 @@ class ReportVerification(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_verification'
-        db_table_comment = "Table to store verification information associated with a report version"
+        db_table_comment = (
+            "Table to store verification information associated with a report version"
+        )
         app_label = "reporting"
         triggers = [
             *TimeStampedModel.Meta.triggers,

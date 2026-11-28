@@ -1,9 +1,10 @@
 import json
-from reporting.models import FuelType
+
+from model_bakery import baker
 from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from model_bakery import baker
+from reporting.models import FuelType
 
 
 class TestBuildFormSchema(CommonTestSetup):
@@ -17,205 +18,295 @@ class TestBuildFormSchema(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=1',
+            f"{self.endpoint}?activity=1",
         )
         assert response.status_code == 422
 
     def test_invalid_without_activity(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report__reporting_year_id=2024
+        )
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[report_version.report.operation]
+        )
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?report_version_id={report_version.id}',
+            f"{self.endpoint}?report_version_id={report_version.id}",
         )
         assert response.status_code == 422
 
     # SCHEMAS
     def test_returns_fallback_schema_if_no_valid_activity_schema(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
-        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report__reporting_year_id=2024
+        )
+        facility_report = baker.make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[report_version.report.operation]
+        )
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=0&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
+            f"{self.endpoint}?activity=0&report_version_id={report_version.id}&facility_id={facility_report.facility.id}",
         )
         assert response.status_code == 200
         response_object = json.loads(response.json())
         assert response_object["schema"]["isFallbackSchema"] is True
 
     def test_error_if_no_valid_source_type_schema(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
-        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report__reporting_year_id=2024
+        )
+        facility_report = baker.make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[report_version.report.operation]
+        )
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=1&source_types[]=0&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
+            f"{self.endpoint}?activity=1&source_types[]=0&report_version_id={report_version.id}&facility_id={facility_report.facility.id}",
         )
         assert response.status_code == 404
-        assert response.json().get('message') == "Not Found"
+        assert response.json().get("message") == "Not Found"
 
     def test_error_if_no_valid_configuration_schema(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
-        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report__reporting_year_id=2024
+        )
+        facility_report = baker.make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[report_version.report.operation]
+        )
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=1&report_version_id=0&facility_id={facility_report.facility.id}',
+            f"{self.endpoint}?activity=1&report_version_id=0&facility_id={facility_report.facility.id}",
         )
         assert response.status_code == 404
-        assert response.json().get('message') == "Not Found"
+        assert response.json().get("message") == "Not Found"
 
     def test_returns_activity_schema(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
-        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report__reporting_year_id=2024
+        )
+        facility_report = baker.make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[report_version.report.operation]
+        )
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=1&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
+            f"{self.endpoint}?activity=1&report_version_id={report_version.id}&facility_id={facility_report.facility.id}",
         )
         assert response.status_code == 200
         response_object = json.loads(response.json())
-        assert response_object['schema']['title'] == 'General stationary combustion excluding line tracing (at SFO)'
+        assert (
+            response_object["schema"]["title"]
+            == "General stationary combustion excluding line tracing (at SFO)"
+        )
         # No source types passed (and no mandatory single source type). Return only the activity schema
-        assert 'sourceTypes' not in response_object['schema']['properties']
+        assert "sourceTypes" not in response_object["schema"]["properties"]
         # There is 1 id property
         # There are 2 source type options in the general stationary combustion activity schema
-        assert len(response_object['schema']['properties'].keys()) == 3
+        assert len(response_object["schema"]["properties"].keys()) == 3
 
     def test_returns_source_type_schema(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
-        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report__reporting_year_id=2024
+        )
+        facility_report = baker.make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[report_version.report.operation]
+        )
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=1&source_types[]=1&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
+            f"{self.endpoint}?activity=1&source_types[]=1&report_version_id={report_version.id}&facility_id={facility_report.facility.id}",
         )
         assert response.status_code == 200
         response_object = json.loads(response.json())
         # Source Types object has been created
-        assert 'sourceTypes' in response_object['schema']['properties']
+        assert "sourceTypes" in response_object["schema"]["properties"]
         # One source type passed as parameter, one source type schema returned
-        assert len(response_object['schema']['properties']['sourceTypes']['properties'].keys()) == 1
-        source_type_key = [key for key in response_object['schema']['properties'] if key != "id"][0]
+        assert (
+            len(
+                response_object["schema"]["properties"]["sourceTypes"][
+                    "properties"
+                ].keys()
+            )
+            == 1
+        )
+        source_type_key = [
+            key for key in response_object["schema"]["properties"] if key != "id"
+        ][0]
         # Created an array object for units
         assert (
-            'units'
-            in response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties']
+            "units"
+            in response_object["schema"]["properties"]["sourceTypes"]["properties"][
+                source_type_key
+            ]["properties"]
         )
         # Created an array object for fuels
         assert (
-            'fuels'
-            in response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties'][
-                'units'
-            ]['items']['properties']
+            "fuels"
+            in response_object["schema"]["properties"]["sourceTypes"]["properties"][
+                source_type_key
+            ]["properties"]["units"]["items"]["properties"]
         )
         # Fetched list of fuels & added to enum
         assert (
             len(
-                response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties'][
-                    'units'
-                ]['items']['properties']['fuels']['items']['properties']['fuelType']['properties']['fuelName']['enum']
+                response_object["schema"]["properties"]["sourceTypes"]["properties"][
+                    source_type_key
+                ]["properties"]["units"]["items"]["properties"]["fuels"]["items"][
+                    "properties"
+                ]["fuelType"]["properties"]["fuelName"]["enum"]
             )
             == FuelType.objects.count()
         )
         # Created an array object for emissions
         assert (
-            'emissions'
-            in response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties'][
-                'units'
-            ]['items']['properties']['fuels']['items']['properties']
+            "emissions"
+            in response_object["schema"]["properties"]["sourceTypes"]["properties"][
+                source_type_key
+            ]["properties"]["units"]["items"]["properties"]["fuels"]["items"][
+                "properties"
+            ]
         )
         # emissions enum has correct gas types
-        assert response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties'][
-            'units'
-        ]['items']['properties']['fuels']['items']['properties']['emissions']['items']['properties']['gasType'][
-            'enum'
-        ] == [
-            'CO2',
-            'CH4',
-            'N2O',
+        assert response_object["schema"]["properties"]["sourceTypes"]["properties"][
+            source_type_key
+        ]["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"][
+            "emissions"
+        ]["items"]["properties"]["gasType"]["enum"] == [
+            "CO2",
+            "CH4",
+            "N2O",
         ]
 
     def test_returns_multiple_source_type_schemas(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
-        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report__reporting_year_id=2024
+        )
+        facility_report = baker.make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[report_version.report.operation]
+        )
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=1&source_types[]=1&source_types[]=2&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
+            f"{self.endpoint}?activity=1&source_types[]=1&source_types[]=2&report_version_id={report_version.id}&facility_id={facility_report.facility.id}",
         )
         assert response.status_code == 200
         # 2 schemas in the sourceTypes object
-        assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 2
+        assert (
+            len(
+                json.loads(response.json())["schema"]["properties"]["sourceTypes"][
+                    "properties"
+                ].keys()
+            )
+            == 2
+        )
 
     def test_single_mandatory_source_type(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
-        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report__reporting_year_id=2024
+        )
+        facility_report = baker.make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[report_version.report.operation]
+        )
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=3&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
+            f"{self.endpoint}?activity=3&report_version_id={report_version.id}&facility_id={facility_report.facility.id}",
         )
         assert response.status_code == 200
         # 1 schema is automatically added to the sourceTypes object when there is only 1 valid sourceType for the activity
-        assert len(json.loads(response.json())['schema']['properties']['sourceTypes']['properties'].keys()) == 1
+        assert (
+            len(
+                json.loads(response.json())["schema"]["properties"]["sourceTypes"][
+                    "properties"
+                ].keys()
+            )
+            == 1
+        )
 
     def test_source_type_schema_no_units(self):
-        report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
-        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report__reporting_year_id=2024
+        )
+        facility_report = baker.make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        TestUtils.generate_operation_operator_timeline(operator=operator, operations=[report_version.report.operation])
+        TestUtils.generate_operation_operator_timeline(
+            operator=operator, operations=[report_version.report.operation]
+        )
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=3&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
+            f"{self.endpoint}?activity=3&report_version_id={report_version.id}&facility_id={facility_report.facility.id}",
         )
         assert response.status_code == 200
         response_object = json.loads(response.json())
-        source_type_key = list(response_object['schema']['properties']['sourceTypes']['properties'].keys())[0]
+        source_type_key = list(
+            response_object["schema"]["properties"]["sourceTypes"]["properties"].keys()
+        )[0]
         # No units in schema
         assert (
-            'units'
-            not in response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties']
+            "units"
+            not in response_object["schema"]["properties"]["sourceTypes"]["properties"][
+                source_type_key
+            ]["properties"]
         )
         # Source Type properties has a child fuel object
         assert (
-            'fuels'
-            in response_object['schema']['properties']['sourceTypes']['properties'][source_type_key]['properties']
+            "fuels"
+            in response_object["schema"]["properties"]["sourceTypes"]["properties"][
+                source_type_key
+            ]["properties"]
         )
 
     # Add this test when Alumina Production configs are added

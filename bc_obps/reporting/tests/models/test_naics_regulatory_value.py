@@ -1,24 +1,38 @@
 from common.tests.utils.helpers import BaseTestCase
-from reporting.models import NaicsRegulatoryValue
-from registration.models import NaicsCode
 from django.test import TestCase
+from registration.models import NaicsCode
+from reporting.models import NaicsRegulatoryValue
 
 
 class TestInitialData(TestCase):
     def test_all_naics_have_regulatory_values(self):
         naics_regulatory_values_list = NaicsRegulatoryValue.objects.all().values_list(
-            'naics_code__naics_code', flat=True
+            "naics_code__naics_code", flat=True
         )
-        missing_records = NaicsCode.objects.all().exclude(naics_code__in=naics_regulatory_values_list).count()
+        missing_records = (
+            NaicsCode.objects.all()
+            .exclude(naics_code__in=naics_regulatory_values_list)
+            .count()
+        )
 
         self.assertEqual(missing_records, 0)
 
     def test_correct_regulatory_values(self):
-        naics_regulatory_values_65 = NaicsRegulatoryValue.objects.filter(reduction_factor='0.65').count()
-        naics_regulatory_values_95 = NaicsRegulatoryValue.objects.filter(reduction_factor='0.95').count()
-        naics_regulatory_values_9 = NaicsRegulatoryValue.objects.filter(reduction_factor='0.9').count()
-        naics_regulatory_values_85 = NaicsRegulatoryValue.objects.filter(reduction_factor='0.85').count()
-        naics_regulatory_values_8 = NaicsRegulatoryValue.objects.filter(reduction_factor='0.8').count()
+        naics_regulatory_values_65 = NaicsRegulatoryValue.objects.filter(
+            reduction_factor="0.65"
+        ).count()
+        naics_regulatory_values_95 = NaicsRegulatoryValue.objects.filter(
+            reduction_factor="0.95"
+        ).count()
+        naics_regulatory_values_9 = NaicsRegulatoryValue.objects.filter(
+            reduction_factor="0.9"
+        ).count()
+        naics_regulatory_values_85 = NaicsRegulatoryValue.objects.filter(
+            reduction_factor="0.85"
+        ).count()
+        naics_regulatory_values_8 = NaicsRegulatoryValue.objects.filter(
+            reduction_factor="0.8"
+        ).count()
 
         self.assertEqual(naics_regulatory_values_65, 41)
         self.assertEqual(naics_regulatory_values_95, 1)
@@ -34,8 +48,8 @@ class EmissionCategoryModelTest(BaseTestCase):
             naics_code_id=1,
             reduction_factor="0.1",
             tightening_rate="0.1",
-            valid_from='1999-01-01',
-            valid_to='1999-12-31',
+            valid_from="1999-01-01",
+            valid_to="1999-12-31",
         )
         cls.field_data = [
             ("id", "ID", None, None),

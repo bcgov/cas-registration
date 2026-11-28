@@ -1,7 +1,7 @@
 from decimal import Decimal
-from typing import Annotated, Optional
-from compliance.enums import ComplianceInvoiceTypes
+from typing import Annotated
 
+from compliance.enums import ComplianceInvoiceTypes
 from compliance.models.elicensing_invoice import ElicensingInvoice
 from ninja import Field, FilterSchema, ModelSchema, Schema
 from pydantic import ConfigDict
@@ -13,12 +13,12 @@ class ElicensingInvoiceOut(ModelSchema):
     class Meta:
         model = ElicensingInvoice
         fields = [
-            'id',
-            'invoice_number',
-            'invoice_fee_balance',
-            'invoice_interest_balance',
-            'outstanding_balance',
-            'due_date',
+            "id",
+            "invoice_number",
+            "invoice_fee_balance",
+            "invoice_interest_balance",
+            "outstanding_balance",
+            "due_date",
         ]
 
 
@@ -31,14 +31,14 @@ class ElicensingLastRefreshOut(Schema):
 
 class ElicensingInvoiceListOut(ModelSchema):
     model_config = ConfigDict(use_enum_values=True)
-    compliance_report_version_id: Optional[int] = Field(
+    compliance_report_version_id: int | None = Field(
         None,
         description=(
             "Compliance Report Version ID derived from the associated record: "
             "uses the Compliance Obligation path if present, otherwise the Penalty path."
         ),
     )
-    compliance_period: Optional[int] = Field(
+    compliance_period: int | None = Field(
         None,
         description=(
             "Reporting year derived from the associated record: "
@@ -46,18 +46,18 @@ class ElicensingInvoiceListOut(ModelSchema):
             "otherwise the Penalty’s reporting year."
         ),
     )
-    operation_name: Optional[str] = Field(
+    operation_name: str | None = Field(
         None,
         description=(
             "Operation name derived from the associated record: "
             "uses the Compliance Obligation path if present, otherwise the Penalty path."
         ),
     )
-    operator_legal_name: Optional[str] = Field(
+    operator_legal_name: str | None = Field(
         None,
         description="Operator legal name via the linked eLicensing client operator.",
     )
-    invoice_type: Optional[ComplianceInvoiceTypes] = Field(
+    invoice_type: ComplianceInvoiceTypes | None = Field(
         None,
         description=(
             "Invoice classification based on associations: "
@@ -66,19 +66,19 @@ class ElicensingInvoiceListOut(ModelSchema):
             "otherwise 'obligation'."
         ),
     )
-    invoice_total: Optional[Decimal] = Field(
+    invoice_total: Decimal | None = Field(
         None,
         description="Computed invoice total (e.g., fees + interest). Calculated server-side.",
     )
-    total_adjustments: Optional[Decimal] = Field(
+    total_adjustments: Decimal | None = Field(
         None,
         description="Sum of adjustments applied to the invoice. Calculated server-side.",
     )
-    total_payments: Optional[Decimal] = Field(
+    total_payments: Decimal | None = Field(
         None,
         description="Sum of payments applied to the invoice. Calculated server-side.",
     )
-    faa_interest_total: Optional[Decimal] = Field(
+    faa_interest_total: Decimal | None = Field(
         None,
         description="Computed FAA interest total. Calculated server-side.",
     )
@@ -97,11 +97,17 @@ class ElicensingInvoiceListOut(ModelSchema):
 
 
 class ElicensingInvoiceFilterSchema(FilterSchema):
-    operator_legal_name: Annotated[str | None, Field(q='operator_legal_name__icontains')] = None
-    operation_name: Annotated[str | None, Field(q='operation_name__icontains')] = None
-    invoice_type: Annotated[str | None, Field(q='invoice_type__icontains')] = None
-    invoice_number: Annotated[str | None, Field(q='invoice_number__icontains')] = None
-    compliance_period: Annotated[str | None, Field(q='compliance_period__icontains')] = None
-    invoice_total: Annotated[str | None, Field(q='invoice_total__icontains')] = None
-    total_payments: Annotated[str | None, Field(q='total_payments__icontains')] = None
-    total_adjustments: Annotated[str | None, Field(q='total_adjustments__icontains')] = None
+    operator_legal_name: Annotated[
+        str | None, Field(q="operator_legal_name__icontains")
+    ] = None
+    operation_name: Annotated[str | None, Field(q="operation_name__icontains")] = None
+    invoice_type: Annotated[str | None, Field(q="invoice_type__icontains")] = None
+    invoice_number: Annotated[str | None, Field(q="invoice_number__icontains")] = None
+    compliance_period: Annotated[
+        str | None, Field(q="compliance_period__icontains")
+    ] = None
+    invoice_total: Annotated[str | None, Field(q="invoice_total__icontains")] = None
+    total_payments: Annotated[str | None, Field(q="total_payments__icontains")] = None
+    total_adjustments: Annotated[
+        str | None, Field(q="total_adjustments__icontains")
+    ] = None

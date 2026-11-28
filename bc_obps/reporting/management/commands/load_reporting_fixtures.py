@@ -1,7 +1,8 @@
 import json
 from uuid import UUID
-from django.core.management.base import BaseCommand
+
 from django.core.management import call_command
+from django.core.management.base import BaseCommand
 from reporting.management.commands.utils import submit_report_from_fixture
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
@@ -18,35 +19,40 @@ def _strip_admin_suffix(value: str | None) -> str | None:
 
 
 class Command(BaseCommand):
-    help = 'Load fixtures for the reporting application'
-    fixture_base_dir = 'reporting/fixtures/mock'
+    help = "Load fixtures for the reporting application"
+    fixture_base_dir = "reporting/fixtures/mock"
 
     def add_arguments(self, parser):
-        parser.add_argument('workflow', nargs='?', type=str, help='Name of the workflow')
+        parser.add_argument(
+            "workflow", nargs="?", type=str, help="Name of the workflow"
+        )
 
     def handle(self, *args, **options):
-
         fixtures = [
-            f'{self.fixture_base_dir}/reporting_year.json',
+            f"{self.fixture_base_dir}/reporting_year.json",
         ]
 
         for fixture in fixtures:
             self.stdout.write(self.style.SUCCESS(f"Loading: {fixture}"))
-            call_command('loaddata', fixture)
+            call_command("loaddata", fixture)
 
-        self.stdout.write(self.style.SUCCESS(f"Creating Reports from {self.fixture_base_dir}/report.json"))
-        workflow = options.get('workflow')
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Creating Reports from {self.fixture_base_dir}/report.json"
+            )
+        )
+        workflow = options.get("workflow")
         self.load_reports(workflow)
 
     def load_reports(self, workflow):
-        reports_fixture = f'{self.fixture_base_dir}/report.json'
+        reports_fixture = f"{self.fixture_base_dir}/report.json"
         with open(reports_fixture) as f:
             reports = json.load(f)
             report_version_ids = []
             for report in reports:
                 report_version_id = ReportService.create_report(
-                    operation_id=report['fields']['operation_id'],
-                    reporting_year=report['fields']['reporting_year_id'],
+                    operation_id=report["fields"]["operation_id"],
+                    reporting_year=report["fields"]["reporting_year_id"],
                 )
                 report_version_ids.append(report_version_id)
 
@@ -59,35 +65,39 @@ class Command(BaseCommand):
 
             # Load fixtures before submission to preserve fixture state
             extra = [
-                f'{self.fixture_base_dir}/report_person_responsible.json',
-                f'{self.fixture_base_dir}/report_raw_activity_data.json',
-                f'{self.fixture_base_dir}/report_activity.json',
-                f'{self.fixture_base_dir}/report_source_type.json',
-                f'{self.fixture_base_dir}/report_unit.json',
-                f'{self.fixture_base_dir}/report_fuel.json',
-                f'{self.fixture_base_dir}/report_emission.json',
-                f'{self.fixture_base_dir}/report_methodology.json',
-                f'{self.fixture_base_dir}/report_product.json',
-                f'{self.fixture_base_dir}/report_emission_allocation.json',
-                f'{self.fixture_base_dir}/report_product_emission_allocation.json',
-                f'{self.fixture_base_dir}/report_additional_data.json',
-                f'{self.fixture_base_dir}/report_verification.json',
-                f'{self.fixture_base_dir}/report_attachment.json',
+                f"{self.fixture_base_dir}/report_person_responsible.json",
+                f"{self.fixture_base_dir}/report_raw_activity_data.json",
+                f"{self.fixture_base_dir}/report_activity.json",
+                f"{self.fixture_base_dir}/report_source_type.json",
+                f"{self.fixture_base_dir}/report_unit.json",
+                f"{self.fixture_base_dir}/report_fuel.json",
+                f"{self.fixture_base_dir}/report_emission.json",
+                f"{self.fixture_base_dir}/report_methodology.json",
+                f"{self.fixture_base_dir}/report_product.json",
+                f"{self.fixture_base_dir}/report_emission_allocation.json",
+                f"{self.fixture_base_dir}/report_product_emission_allocation.json",
+                f"{self.fixture_base_dir}/report_additional_data.json",
+                f"{self.fixture_base_dir}/report_verification.json",
+                f"{self.fixture_base_dir}/report_attachment.json",
             ]
             for fixture in extra:
-                self.stdout.write(self.style.SUCCESS(f"Loading additional report fixture: {fixture}"))
-                call_command('loaddata', fixture)
+                self.stdout.write(
+                    self.style.SUCCESS(f"Loading additional report fixture: {fixture}")
+                )
+                call_command("loaddata", fixture)
 
-            if workflow == 'compliance_summary_calculation':
-                from reporting.management.commands.utils import seed_compliance_summary_calculation_data
+            if workflow == "compliance_summary_calculation":
+                from reporting.management.commands.utils import (
+                    seed_compliance_summary_calculation_data,
+                )
 
                 seed_compliance_summary_calculation_data()
                 return
 
             # submit reports
             operation_ids_to_submit = [
-                UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
-                UUID('b65a3fbc-c81a-49c0-a43a-67bd3a0b488e'),  # Bangles
+                UUID("002d5a9e-32a6-4191-938c-2c02bfec592d"),  # Banana LFO
+                UUID("b65a3fbc-c81a-49c0-a43a-67bd3a0b488e"),  # Bangles
             ]
 
             for operation_id in operation_ids_to_submit:
@@ -98,8 +108,12 @@ class Command(BaseCommand):
                 )
 
                 for report_version in report_versions:
-                    submit_report_from_fixture(report_version, UUID('00000000-0000-0000-0000-000000000005'))
+                    submit_report_from_fixture(
+                        report_version, UUID("00000000-0000-0000-0000-000000000005")
+                    )
 
             # create supplementary report
-            for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
+            for report in Report.objects.filter(
+                operation_id=operation_ids_to_submit[0]
+            ):
                 ReportVersionService.create_report_version(report)

@@ -1,13 +1,11 @@
-from typing import Annotated, Optional
+from typing import Annotated
 from uuid import UUID
 
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import validate_email
-from ninja import ModelSchema
+from ninja import ModelSchema, Schema
 from pydantic import Field, StringConstraints, field_validator
-
-from registration.models import User, AppRole
-from ninja import Schema
+from registration.models import AppRole, User
 
 
 class UserExternalDashboardUsersTileData(ModelSchema):
@@ -57,8 +55,12 @@ class UserLoginSyncIn(Schema):
     Identity-provider-owned fields (from the Keycloak/BCeID profile) that are refreshed on every login.
     """
 
-    email: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=254)]
-    bceid_business_name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1000)]
+    email: Annotated[
+        str, StringConstraints(strip_whitespace=True, min_length=1, max_length=254)
+    ]
+    bceid_business_name: Annotated[
+        str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1000)
+    ]
 
     @field_validator("email")
     @classmethod
@@ -73,7 +75,7 @@ class UserLoginSyncIn(Schema):
 class UserAppRoleOut(ModelSchema):
     class Meta:
         model = AppRole
-        fields = ['role_name']
+        fields = ["role_name"]
 
 
 class ChangeUserRoleOut(ModelSchema):
@@ -86,7 +88,7 @@ class UserOut(ModelSchema):
     app_role: UserAppRoleOut = Field(..., alias="app_role")
 
     @staticmethod
-    def resolve_phone_number(obj: User) -> Optional[str]:
+    def resolve_phone_number(obj: User) -> str | None:
         # PhoneNumberField returns a PhoneNumber object and we need a string
         if not obj.phone_number:
             return None
@@ -94,7 +96,14 @@ class UserOut(ModelSchema):
 
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "position_title", "email", "phone_number", "bceid_business_name"]
+        fields = [
+            "first_name",
+            "last_name",
+            "position_title",
+            "email",
+            "phone_number",
+            "bceid_business_name",
+        ]
 
 
 class InternalUserListOut(ModelSchema):
@@ -104,7 +113,7 @@ class InternalUserListOut(ModelSchema):
 
     @staticmethod
     def resolve_name(obj: User) -> str:
-        return obj.first_name + ' ' + obj.last_name
+        return obj.first_name + " " + obj.last_name
 
     class Meta:
         model = User

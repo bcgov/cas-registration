@@ -1,1 +1,1 @@
-from .asdict import asdict  # noqa: F401
+from .asdict import asdict

@@ -1,5 +1,5 @@
-from django.db import models
 import pgtrigger
+from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report import Report
 from reporting.models.rls_configs.report_version import Rls as ReportVersionRls
@@ -47,7 +47,9 @@ class ReportVersion(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
-        db_table_comment = "A table representing the multiple versions that a single report can have."
+        db_table_comment = (
+            "A table representing the multiple versions that a single report can have."
+        )
         db_table = 'erc"."report_version'
         app_label = "reporting"
         constraints = [

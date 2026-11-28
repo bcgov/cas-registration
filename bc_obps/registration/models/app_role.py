@@ -1,23 +1,25 @@
 import typing
-from typing import List
-from django.core.cache import cache
+
 from common.constants import PERMISSION_CONFIGS_CACHE_KEY
 from common.enums import Schemas
 from common.models import BaseModel
+from django.core.cache import cache
 from django.db import models
-from simple_history.models import HistoricalRecords
 from registration.enums.enums import RegistrationTableNames
 from registration.models.rls_configs.app_role import Rls as AppRoleRls
+from simple_history.models import HistoricalRecords
 
 
 class AppRole(BaseModel):
     role_name = models.CharField(
         primary_key=True,
         serialize=False,
-        db_comment='The name identifying the role assigned to a user. This role defines their permissions within the app. Also acts as the primary key.',
+        db_comment="The name identifying the role assigned to a user. This role defines their permissions within the app. Also acts as the primary key.",
         max_length=100,
     )
-    role_description = models.CharField(db_comment='Description of the app role', max_length=1000)
+    role_description = models.CharField(
+        db_comment="Description of the app role", max_length=1000
+    )
     history = HistoricalRecords(
         table_name='erc_history"."app_role_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),
@@ -31,21 +33,21 @@ class AppRole(BaseModel):
 
     # We need try/except blocks here because the app_role table may not exist yet when we run migrations
     @staticmethod
-    def get_authorized_irc_roles() -> List[str]:
+    def get_authorized_irc_roles() -> list[str]:
         """
         Return the roles that are considered as authorized CAS users (excluding cas_pending).
         """
         try:
             return list(
-                AppRole.objects.filter(role_name__startswith='cas_')
-                .values_list('role_name', flat=True)
-                .exclude(role_name='cas_pending')
+                AppRole.objects.filter(role_name__startswith="cas_")
+                .values_list("role_name", flat=True)
+                .exclude(role_name="cas_pending")
             )
         except Exception:
             return []
 
     @staticmethod
-    def get_all_app_roles() -> List[str]:
+    def get_all_app_roles() -> list[str]:
         """
         Return all the roles in the app.
         """
@@ -55,12 +57,16 @@ class AppRole(BaseModel):
             return []
 
     @staticmethod
-    def get_all_authorized_app_roles() -> List[str]:
+    def get_all_authorized_app_roles() -> list[str]:
         """
         Return all the roles in the app except cas_pending.
         """
         try:
-            return list(AppRole.objects.exclude(role_name="cas_pending").values_list("role_name", flat=True))
+            return list(
+                AppRole.objects.exclude(role_name="cas_pending").values_list(
+                    "role_name", flat=True
+                )
+            )
         except Exception:
             return []
 
@@ -69,7 +75,9 @@ class AppRole(BaseModel):
         """
         Override the save method to clear the cache when the app role is saved.
         """
-        cache.delete(PERMISSION_CONFIGS_CACHE_KEY)  # Clear the cache when an app role is saved
+        cache.delete(
+            PERMISSION_CONFIGS_CACHE_KEY
+        )  # Clear the cache when an app role is saved
         super().save(*args, **kwargs)
 
     @typing.no_type_check

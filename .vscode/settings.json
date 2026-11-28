@@ -1,9 +1,13 @@
 {
+  "ruff.importStrategy": "fromEnvironment",
+  "ruff.configurationPreference": "filesystemFirst",
   "[python]": {
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports.ruff": "explicit"
+    }
   },
-  "python.formatting.provider": "black",
-  "black-formatter.importStrategy": "fromEnvironment",
   "python.testing.pytestArgs": ["bc_obps"],
   "python.envFile": "${workspaceFolder}/.env",
   "python.poetryPath": ".venv/bin/poetry",
@@ -12,5 +16,5 @@
   "python.testing.pytestEnabled": true,
   "python.testing.autoTestDiscoverOnSaveEnabled": true,
   "eslint.workingDirectories": ["bciers"],
-  "typescript.tsdk": "./bciers/node_modules/typescript/lib"
+  "js/ts.tsdk.path": "./bciers/node_modules/typescript/lib"
 }

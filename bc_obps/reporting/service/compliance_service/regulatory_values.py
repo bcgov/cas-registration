@@ -26,9 +26,13 @@ def get_industry_regulatory_values(report_version: ReportVersion) -> RegulatoryV
     Returns the regulatory values setup for the industry, for a specific report version.
     If specific exemptions exist for some products, this method won't be reflecting them.
     """
-    naics_code_id = ReportOperation.objects.get(report_version_id=report_version.id).naics_code_id
+    naics_code_id = ReportOperation.objects.get(
+        report_version_id=report_version.id
+    ).naics_code_id
     if naics_code_id is None:
-        raise ValueError(f"No NAICS code associated with report version {report_version.id}")
+        raise ValueError(
+            f"No NAICS code associated with report version {report_version.id}"
+        )
     compliance_year = report_version.report.reporting_year.reporting_year
 
     regulatory_values = NaicsRegulatoryValue.objects.get(
@@ -51,9 +55,13 @@ def get_product_regulatory_values_override(
     """
     Returns the product-specific regulatory values, defaulting to the industry values if no exception exists.
     """
-    naics_code_id = ReportOperation.objects.get(report_version_id=report_version.id).naics_code_id
+    naics_code_id = ReportOperation.objects.get(
+        report_version_id=report_version.id
+    ).naics_code_id
     if naics_code_id is None:
-        raise ValueError(f"No NAICS code associated with report version {report_version.id}")
+        raise ValueError(
+            f"No NAICS code associated with report version {report_version.id}"
+        )
     try:
         regulatory_values_overrides = NaicsRegulatoryOverride.objects.get(
             naics_code_id=naics_code_id,

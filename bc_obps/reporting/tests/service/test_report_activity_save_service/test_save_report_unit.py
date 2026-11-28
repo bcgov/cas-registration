@@ -1,6 +1,9 @@
 from unittest.mock import MagicMock, call, patch
-from django.test import TestCase
+
 import pytest
+from common.exceptions import UserError
+from django.test import TestCase
+from model_bakery.baker import make, make_recipe
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_source_type import ReportSourceType
@@ -8,13 +11,15 @@ from reporting.service.report_activity_save_service import ReportActivitySaveSer
 from reporting.tests.service.test_report_activity_save_service.infrastructure import (
     TestInfrastructure,
 )
-from model_bakery.baker import make_recipe, make
-from common.exceptions import UserError
 
 
 class TestSaveReportUnit(TestCase):
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel"
+    )
     def test_save_unit(self, mock_save_fuel: MagicMock, mock_save_emission: MagicMock):
         test_infrastructure = TestInfrastructure.build()
         act_st = test_infrastructure.make_activity_source_type(
@@ -62,9 +67,15 @@ class TestSaveReportUnit(TestCase):
         )
         mock_save_emission.assert_not_called()
 
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
-    def test_save_unit_without_fuel(self, mock_save_fuel: MagicMock, mock_save_emission: MagicMock):
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel"
+    )
+    def test_save_unit_without_fuel(
+        self, mock_save_fuel: MagicMock, mock_save_emission: MagicMock
+    ):
         test_infrastructure = TestInfrastructure.build()
         act_st = test_infrastructure.make_activity_source_type(
             source_type__json_key="sourceTypeWithUnitAndFuel",
@@ -111,9 +122,15 @@ class TestSaveReportUnit(TestCase):
         )
         mock_save_fuel.assert_not_called()
 
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
-    def test_save_unit_update(self, mock_save_fuel: MagicMock, mock_save_emission: MagicMock):
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel"
+    )
+    def test_save_unit_update(
+        self, mock_save_fuel: MagicMock, mock_save_emission: MagicMock
+    ):
         test_infrastructure = TestInfrastructure.build()
         act_st = test_infrastructure.make_activity_source_type(
             source_type__json_key="sourceTypeWithFuel",
@@ -158,9 +175,15 @@ class TestSaveReportUnit(TestCase):
         assert update_return_value.json_data == {"new_prop": "new_val"}
         assert update_return_value.id == report_unit.id
 
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission")
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel")
-    def test_removes_deleted_fuels(self, mock_save_fuel: MagicMock, mock_save_emission: MagicMock):
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_emission"
+    )
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_fuel"
+    )
+    def test_removes_deleted_fuels(
+        self, mock_save_fuel: MagicMock, mock_save_emission: MagicMock
+    ):
         test_infrastructure = TestInfrastructure.build()
         act_st = test_infrastructure.make_activity_source_type(
             source_type__json_key="sourceTypeWithFuel",
@@ -236,7 +259,10 @@ class TestSaveReportUnit(TestCase):
         )
 
         assert ReportFuel.objects.filter(report_unit=report_unit).count() == 2
-        assert ReportEmission.objects.filter(report_fuel__report_unit=report_unit).count() == 6
+        assert (
+            ReportEmission.objects.filter(report_fuel__report_unit=report_unit).count()
+            == 6
+        )
 
         service_under_test.save_unit(
             report_source_type,

@@ -1,17 +1,17 @@
-from django.db import models
 from common.enums import Schemas
-from registration.enums.enums import RegistrationTableNames
-from registration.models.operator import Operator
+from django.core.validators import RegexValidator
+from django.db import models
 from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,
     BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
     CRA_BUSINESS_NUMBER_MESSAGE,
     CRA_BUSINESS_NUMBER_REGEX,
 )
-from registration.models import TimeStampedModel, BusinessStructure, Address
-from simple_history.models import HistoricalRecords
-from django.core.validators import RegexValidator
+from registration.enums.enums import RegistrationTableNames
+from registration.models import Address, BusinessStructure, TimeStampedModel
+from registration.models.operator import Operator
 from registration.models.rls_configs.parent_operator import Rls as ParentOperatorRls
+from simple_history.models import HistoricalRecords
 
 
 class ParentOperator(TimeStampedModel):
@@ -26,12 +26,21 @@ class ParentOperator(TimeStampedModel):
         blank=True,
         null=True,
     )
-    legal_name = models.CharField(max_length=1000, db_comment="The legal name of a parent operator")
+    legal_name = models.CharField(
+        max_length=1000, db_comment="The legal name of a parent operator"
+    )
     trade_name = models.CharField(
-        max_length=1000, blank=True, null=True, db_comment="The trade name of a parent operator"
+        max_length=1000,
+        blank=True,
+        null=True,
+        db_comment="The trade name of a parent operator",
     )
     cra_business_number = models.CharField(
-        validators=[RegexValidator(regex=CRA_BUSINESS_NUMBER_REGEX, message=CRA_BUSINESS_NUMBER_MESSAGE)],
+        validators=[
+            RegexValidator(
+                regex=CRA_BUSINESS_NUMBER_REGEX, message=CRA_BUSINESS_NUMBER_MESSAGE
+            )
+        ],
         db_comment="The CRA (Canada Revenue Agency) business number of this parent operator, a unique 9-digit identifier",
         blank=True,
         null=True,
@@ -44,7 +53,12 @@ class ParentOperator(TimeStampedModel):
     )
     bc_corporate_registry_number = models.CharField(
         db_comment="The BC corporate registry number of a parent operator",
-        validators=[RegexValidator(regex=BC_CORPORATE_REGISTRY_REGEX, message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE)],
+        validators=[
+            RegexValidator(
+                regex=BC_CORPORATE_REGISTRY_REGEX,
+                message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
+            )
+        ],
         blank=True,
         null=True,
     )
@@ -91,6 +105,8 @@ class ParentOperator(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "Table containing data about operators' parent operators. Parent operators may have a record in the Operator table. If so, that record is controlled by someone who works for that parent operator. The information in this table is controlled by child operators who should not have access to other operator's records."
-        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.PARENT_OPERATOR.value}'
+        db_table = (
+            f'{Schemas.ERC.value}"."{RegistrationTableNames.PARENT_OPERATOR.value}'
+        )
 
     Rls = ParentOperatorRls

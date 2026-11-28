@@ -1,7 +1,8 @@
-from typing import Dict
 from common.exceptions import UserError
-from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
 from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
+from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import (
+    BCCarbonRegistryAPIClient,
+)
 
 DATE_FORMAT_STRING_LONG = "%Y-%m-%dT%H:%M:%S.000Z"
 
@@ -10,7 +11,9 @@ class BCCarbonRegistryCreditIssuanceService:
     def __init__(self) -> None:
         self.client = BCCarbonRegistryAPIClient()
 
-    def issue_credits(self, earned_credit: ComplianceEarnedCredit, bccr_project_data: Dict) -> Dict:
+    def issue_credits(
+        self, earned_credit: ComplianceEarnedCredit, bccr_project_data: dict
+    ) -> dict:
         """
         Issues earned credits in the BC Carbon Registry (BCCR) for a compliance report.
 
@@ -25,7 +28,9 @@ class BCCarbonRegistryCreditIssuanceService:
             bccr_project_data (Dict): Project data from BCCR containing mixed unit
                 information, project ID, and location details.
         """
-        compliance_period = earned_credit.compliance_report_version.compliance_report.compliance_period
+        compliance_period = (
+            earned_credit.compliance_report_version.compliance_report.compliance_period
+        )
 
         # Vintage Period End must be on or before the Verification Period End
         # Vintage Period Start must be on or after the Verification Period Start
@@ -52,13 +57,21 @@ class BCCarbonRegistryCreditIssuanceService:
                     "mixedUnits": [
                         {
                             "holding_quantity": earned_credit.earned_credits_amount,
-                            "vintage_start": compliance_period_start_date.strftime(DATE_FORMAT_STRING_LONG),
-                            "vintage_end": compliance_period_end_date.strftime(DATE_FORMAT_STRING_LONG),
+                            "vintage_start": compliance_period_start_date.strftime(
+                                DATE_FORMAT_STRING_LONG
+                            ),
+                            "vintage_end": compliance_period_end_date.strftime(
+                                DATE_FORMAT_STRING_LONG
+                            ),
                             "city": mixed_unit_data["city"],
                             "address_line_1": mixed_unit_data["address_line_1"],
                             "zipcode": mixed_unit_data["zipcode"],
-                            "latitude": str(mixed_unit_data["latitude"]) if mixed_unit_data["latitude"] else None,
-                            "longitude": str(mixed_unit_data["longitude"]) if mixed_unit_data["longitude"] else None,
+                            "latitude": str(mixed_unit_data["latitude"])
+                            if mixed_unit_data["latitude"]
+                            else None,
+                            "longitude": str(mixed_unit_data["longitude"])
+                            if mixed_unit_data["longitude"]
+                            else None,
                             "defined_unit_id": str(mixed_unit_data["id"]),
                             "project_type_id": str(mixed_unit_data["project_type_id"]),
                         }

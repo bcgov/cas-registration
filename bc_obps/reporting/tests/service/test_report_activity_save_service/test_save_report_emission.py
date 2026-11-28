@@ -1,21 +1,24 @@
 from unittest.mock import MagicMock, call, patch
-from django.test import TestCase
+
 import pytest
+from django.test import TestCase
+from model_bakery.baker import make, make_recipe
+from reporting.models.emission_category import EmissionCategory
+from reporting.models.emission_category_mapping import EmissionCategoryMapping
 from reporting.models.gas_type import GasType
 from reporting.models.report_fuel import ReportFuel
-from reporting.models.emission_category_mapping import EmissionCategoryMapping
-from reporting.models.emission_category import EmissionCategory
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
 from reporting.service.report_activity_save_service import ReportActivitySaveService
 from reporting.tests.service.test_report_activity_save_service.infrastructure import (
     TestInfrastructure,
 )
-from model_bakery.baker import make_recipe, make
 
 
 class TestSaveReportEmission(TestCase):
-    @patch("reporting.service.report_activity_save_service.ReportActivitySaveService.save_methodology")
+    @patch(
+        "reporting.service.report_activity_save_service.ReportActivitySaveService.save_methodology"
+    )
     def test_save_emission(self, mock_save_methodology: MagicMock):
         test_infrastructure = TestInfrastructure.build()
         act_st = test_infrastructure.make_activity_source_type(
@@ -45,7 +48,9 @@ class TestSaveReportEmission(TestCase):
             json_data={"test_report_unit": True},
             report_unit=None,
         )
-        make_recipe("reporting.tests.utils.gas_type", chemical_formula="GGIRCA", gwp=100)
+        make_recipe(
+            "reporting.tests.utils.gas_type", chemical_formula="GGIRCA", gwp=100
+        )
 
         service_under_test = ReportActivitySaveService(
             report_activity.report_version.id,
@@ -169,7 +174,9 @@ class TestSaveReportEmission(TestCase):
             json_data={"test_report_unit": True},
             report_unit=None,
         )
-        make_recipe("reporting.tests.utils.gas_type", chemical_formula="GGIRCA", gwp=100)
+        make_recipe(
+            "reporting.tests.utils.gas_type", chemical_formula="GGIRCA", gwp=100
+        )
 
         service_under_test = ReportActivitySaveService(
             report_activity.report_version.id,
@@ -197,7 +204,9 @@ class TestSaveReportEmission(TestCase):
                 "methodology": {"id": 9003, "methodology": "Default HHV/Default EF"},
             },
         )
-        make_recipe("reporting.tests.utils.gas_type", chemical_formula="BCOBPS", gwp=100)
+        make_recipe(
+            "reporting.tests.utils.gas_type", chemical_formula="BCOBPS", gwp=100
+        )
         updated_return_value = service_under_test.save_emission(
             report_source_type,
             None,
@@ -221,7 +230,9 @@ class TestSaveReportEmission(TestCase):
             "emission": 2,
             "equivalentEmission": 200.0000,
         }
-        assert updated_return_value.gas_type == GasType.objects.get(chemical_formula="BCOBPS")
+        assert updated_return_value.gas_type == GasType.objects.get(
+            chemical_formula="BCOBPS"
+        )
 
     def test_save_equivalent_emission(self):
         test_infrastructure = TestInfrastructure.build()
@@ -246,7 +257,9 @@ class TestSaveReportEmission(TestCase):
             json_data={"test_report_unit": True},
             report_unit=None,
         )
-        make_recipe("reporting.tests.utils.gas_type", chemical_formula="GGIRCA", gwp=100)
+        make_recipe(
+            "reporting.tests.utils.gas_type", chemical_formula="GGIRCA", gwp=100
+        )
 
         service_under_test = ReportActivitySaveService(
             report_activity.report_version.id,

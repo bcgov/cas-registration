@@ -1,13 +1,14 @@
-from typing import Literal, Optional
+from typing import Literal
 from uuid import UUID
+
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import UploadedFile
 from django.db.models import QuerySet
-from reporting.schema.report_attachment import InternalReportAttachmentFilterSchema
 from reporting.constants import MAX_UPLOAD_SIZE
 from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_attachment_confirmation import ReportAttachmentConfirmation
 from reporting.models.report_version import ReportVersion
+from reporting.schema.report_attachment import InternalReportAttachmentFilterSchema
 
 
 class ReportAttachmentService:
@@ -20,7 +21,9 @@ class ReportAttachmentService:
         attachment_file: UploadedFile,
     ) -> None:
         if attachment_file.size and attachment_file.size > MAX_UPLOAD_SIZE:
-            raise ValidationError(f"File attachment cannot exceed {MAX_UPLOAD_SIZE} bytes.")
+            raise ValidationError(
+                f"File attachment cannot exceed {MAX_UPLOAD_SIZE} bytes."
+            )
 
         report_attachment = ReportAttachment.objects.filter(
             report_version_id=report_version_id,
@@ -41,21 +44,28 @@ class ReportAttachmentService:
         attachment.save()
 
     @classmethod
-    def get_attachments_by_version(cls, report_version_id: int) -> QuerySet[ReportAttachment]:
-        return ReportAttachment.objects.filter(report_version_id=report_version_id).all()
+    def get_attachments_by_version(
+        cls, report_version_id: int
+    ) -> QuerySet[ReportAttachment]:
+        return ReportAttachment.objects.filter(
+            report_version_id=report_version_id
+        ).all()
 
     @classmethod
-    def get_attachment(cls, report_version_id: int, attachment_id: int) -> ReportAttachment:
-        return ReportAttachment.objects.get(report_version_id=report_version_id, id=attachment_id)
+    def get_attachment(
+        cls, report_version_id: int, attachment_id: int
+    ) -> ReportAttachment:
+        return ReportAttachment.objects.get(
+            report_version_id=report_version_id, id=attachment_id
+        )
 
     @classmethod
     def get_all_attachments(
         cls,
-        filters: Optional[InternalReportAttachmentFilterSchema] = None,
-        sort_field: Optional[str] | Optional[(str)] = "report_version_id",
-        sort_order: Optional[Literal["desc", "asc"]] = "desc",
+        filters: InternalReportAttachmentFilterSchema | None = None,
+        sort_field: str | None | str | None = "report_version_id",
+        sort_order: Literal["desc", "asc"] | None = "desc",
     ) -> QuerySet[ReportAttachment]:
-
         match sort_field:
             case "operator":
                 mapped_sort_field = "report_version__report__operator__legal_name"
@@ -106,12 +116,16 @@ class ReportAttachmentService:
         )
 
     @classmethod
-    def get_attachment_confirmation(cls, report_version_id: int) -> Optional[ReportAttachmentConfirmation]:
+    def get_attachment_confirmation(
+        cls, report_version_id: int
+    ) -> ReportAttachmentConfirmation | None:
         """
         Retrieves the attachment confirmation record for a supplementary report version.
         Returns None if no confirmation exists.
         """
         try:
-            return ReportAttachmentConfirmation.objects.get(report_version_id=report_version_id)
+            return ReportAttachmentConfirmation.objects.get(
+                report_version_id=report_version_id
+            )
         except ReportAttachmentConfirmation.DoesNotExist:
             return None  # include the absence of confirmation as part of a successful 200 OK response

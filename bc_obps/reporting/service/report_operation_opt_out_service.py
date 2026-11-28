@@ -1,6 +1,5 @@
-from reporting.models.report_version import ReportVersion
 from registration.models.operation import Operation
-
+from reporting.models.report_version import ReportVersion
 
 # Business rule: Jan–Mar partial-year production only applies for 2025
 JAN_MAR_PRODUCTION_APPLICABLE_YEAR = 2025

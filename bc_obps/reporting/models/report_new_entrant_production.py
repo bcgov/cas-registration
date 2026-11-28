@@ -3,8 +3,10 @@ from registration.models import RegulatedProduct
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_new_entrant import ReportNewEntrant
 from reporting.models.report_version import ReportVersion
+from reporting.models.rls_configs.report_new_entrant_production import (
+    Rls as ReportNewEntrantProductionRls,
+)
 from reporting.models.triggers import immutable_report_version_trigger
-from reporting.models.rls_configs.report_new_entrant_production import Rls as ReportNewEntrantProductionRls
 
 
 class ReportNewEntrantProduction(TimeStampedModel):

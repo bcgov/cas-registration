@@ -1,9 +1,10 @@
 from unittest.mock import patch
+
 import pytest
-from model_bakery import baker
 from django.utils import timezone
-from reporting.service.sync_validation_service import SyncValidationService
+from model_bakery import baker
 from reporting.models import ReportingYear
+from reporting.service.sync_validation_service import SyncValidationService
 
 pytestmark = pytest.mark.django_db
 
@@ -14,11 +15,15 @@ class TestSyncValidationService:
         # (e.g., in 2026, we report on 2025 activities)
         now = timezone.now()
         current_reporting_year = now.year - 1
-        self.current_reporting_year, _ = ReportingYear.objects.get_or_create(reporting_year=current_reporting_year)
+        self.current_reporting_year, _ = ReportingYear.objects.get_or_create(
+            reporting_year=current_reporting_year
+        )
 
         # Previous reporting year
         previous_reporting_year = current_reporting_year - 1
-        self.previous_reporting_year, _ = ReportingYear.objects.get_or_create(reporting_year=previous_reporting_year)
+        self.previous_reporting_year, _ = ReportingYear.objects.get_or_create(
+            reporting_year=previous_reporting_year
+        )
 
         # Create operator and operation
         self.operator = baker.make_recipe("registration.tests.utils.operator")
@@ -27,7 +32,9 @@ class TestSyncValidationService:
             operator=self.operator,
         )
 
-    def _create_report_version(self, reporting_year=None, operator=None, operation=None, status="Draft"):
+    def _create_report_version(
+        self, reporting_year=None, operator=None, operation=None, status="Draft"
+    ):
         """Helper method to create a report and report version."""
         report = baker.make_recipe(
             "reporting.tests.utils.report",
@@ -48,8 +55,12 @@ class TestSyncValidationService:
             operation=operation or self.operation,
         )
 
-    @patch("reporting.service.sync_validation_service.ReportingYearService.get_current_reporting_year")
-    def test_is_sync_allowed_for_current_year_same_operator(self, mock_get_current_reporting_year):
+    @patch(
+        "reporting.service.sync_validation_service.ReportingYearService.get_current_reporting_year"
+    )
+    def test_is_sync_allowed_for_current_year_same_operator(
+        self, mock_get_current_reporting_year
+    ):
         """Sync should be allowed for current year with same operator"""
         mock_get_current_reporting_year.return_value = self.current_reporting_year
 
@@ -60,7 +71,9 @@ class TestSyncValidationService:
 
     def test_is_sync_allowed_false_for_previous_year(self):
         """Sync should NOT be allowed for previous reporting year"""
-        report_version = self._create_report_version(reporting_year=self.previous_reporting_year)
+        report_version = self._create_report_version(
+            reporting_year=self.previous_reporting_year
+        )
 
         result = SyncValidationService.is_sync_allowed(report_version.id)
         assert result is False
@@ -86,7 +99,9 @@ class TestSyncValidationService:
         new_operator = baker.make_recipe("registration.tests.utils.operator")
 
         # Create a report with original operator for previous year
-        report_version = self._create_report_version(reporting_year=self.previous_reporting_year)
+        report_version = self._create_report_version(
+            reporting_year=self.previous_reporting_year
+        )
 
         # Transfer operation to a new operator
         self.operation.operator = new_operator
@@ -95,19 +110,29 @@ class TestSyncValidationService:
         result = SyncValidationService.is_sync_allowed(report_version.id)
         assert result is False
 
-    @patch("reporting.service.sync_validation_service.ReportingYearService.get_current_reporting_year")
-    def test_is_facility_sync_allowed_for_current_year_same_operation(self, mock_get_current_reporting_year):
+    @patch(
+        "reporting.service.sync_validation_service.ReportingYearService.get_current_reporting_year"
+    )
+    def test_is_facility_sync_allowed_for_current_year_same_operation(
+        self, mock_get_current_reporting_year
+    ):
         """Sync should be allowed for current year with same operation and facility ownership"""
         mock_get_current_reporting_year.return_value = self.current_reporting_year
 
         facility = self._create_facility()
         report_version = self._create_report_version()
 
-        result = SyncValidationService.is_facility_sync_allowed(report_version.id, facility.id)
+        result = SyncValidationService.is_facility_sync_allowed(
+            report_version.id, facility.id
+        )
         assert result is True
 
-    @patch("reporting.service.sync_validation_service.ReportingYearService.get_current_reporting_year")
-    def test_is_facility_sync_allowed_false_for_transferred_facility_lfo(self, mock_get_current_reporting_year):
+    @patch(
+        "reporting.service.sync_validation_service.ReportingYearService.get_current_reporting_year"
+    )
+    def test_is_facility_sync_allowed_false_for_transferred_facility_lfo(
+        self, mock_get_current_reporting_year
+    ):
         """Sync should NOT be allowed when a facility in LFO has been transferred to a different operation"""
         from registration.models import Operation
 
@@ -132,11 +157,17 @@ class TestSyncValidationService:
         facility.operation = new_operation
         facility.save()
 
-        result = SyncValidationService.is_facility_sync_allowed(report_version.id, facility.id)
+        result = SyncValidationService.is_facility_sync_allowed(
+            report_version.id, facility.id
+        )
         assert result is False
 
-    @patch("reporting.service.sync_validation_service.ReportingYearService.get_current_reporting_year")
-    def test_is_facility_sync_allowed_true_for_transferred_facility_sfo(self, mock_get_current_reporting_year):
+    @patch(
+        "reporting.service.sync_validation_service.ReportingYearService.get_current_reporting_year"
+    )
+    def test_is_facility_sync_allowed_true_for_transferred_facility_sfo(
+        self, mock_get_current_reporting_year
+    ):
         """Sync SHOULD be allowed for SFO even if facility is transferred (doesn't check facility transfer for SFO)"""
         from registration.models import Operation
 
@@ -162,11 +193,17 @@ class TestSyncValidationService:
         facility.save()
 
         # For SFO, facility transfer check is skipped, so sync should be allowed
-        result = SyncValidationService.is_facility_sync_allowed(report_version.id, facility.id)
+        result = SyncValidationService.is_facility_sync_allowed(
+            report_version.id, facility.id
+        )
         assert result is True
 
-    @patch("reporting.service.sync_validation_service.ReportingYearService.get_current_reporting_year")
-    def test_is_facility_sync_allowed_false_for_transferred_operation(self, mock_get_current_reporting_year):
+    @patch(
+        "reporting.service.sync_validation_service.ReportingYearService.get_current_reporting_year"
+    )
+    def test_is_facility_sync_allowed_false_for_transferred_operation(
+        self, mock_get_current_reporting_year
+    ):
         """Sync should NOT be allowed when an operation has been transferred even if the facility stayed with operation"""
         mock_get_current_reporting_year.return_value = self.current_reporting_year
 
@@ -181,5 +218,7 @@ class TestSyncValidationService:
         self.operation.operator = new_operator
         self.operation.save()
 
-        result = SyncValidationService.is_facility_sync_allowed(report_version.id, facility.id)
+        result = SyncValidationService.is_facility_sync_allowed(
+            report_version.id, facility.id
+        )
         assert result is False

@@ -1,24 +1,25 @@
 import logging
-from typing import Dict, Any, Optional, cast
+from typing import Any, cast
+
 import requests
 from django.conf import settings
 
 from .schema import (
-    ClientResponse,
-    ClientCreationResponse,
     ClientCreationRequest,
+    ClientCreationResponse,
+    ClientResponse,
+    FeeAdjustment,
     FeeCreationRequest,
     FeeItem,
     FeeResponse,
-    InvoiceResponse,
+    InterestRatePeriod,
+    InterestRateResponse,
     InvoiceCreationRequest,
-    PaymentDistribution,
-    Payment,
-    FeeAdjustment,
     InvoiceFee,
     InvoiceQueryResponse,
-    InterestRateResponse,
-    InterestRatePeriod,
+    InvoiceResponse,
+    Payment,
+    PaymentDistribution,
 )
 
 logger = logging.getLogger(__name__)
@@ -45,10 +46,10 @@ class ELicensingAPIClient:
     INVOICE_ENDPOINT = "/invoice"
     INTEREST_RATES_ENDPOINT = "/interestRates"
 
-    def __new__(cls) -> 'ELicensingAPIClient':
+    def __new__(cls) -> "ELicensingAPIClient":
         """Singleton pattern to ensure only one instance of ELicensingAPIClient is created"""
         if cls._instance is None:
-            cls._instance = super(ELicensingAPIClient, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
 
             # Get settings values
             base_url = settings.ELICENSING_API_URL
@@ -58,23 +59,25 @@ class ELicensingAPIClient:
             cls._instance.base_url = cast(str, base_url)
             cls._instance.auth_token = cast(str, token)
 
-            logger.info(f'Initializing ELicensingAPIClient to connect to {cls._instance.base_url}')
+            logger.info(
+                f"Initializing ELicensingAPIClient to connect to {cls._instance.base_url}"
+            )
         return cls._instance
 
-    def _get_headers(self) -> Dict[str, str]:
+    def _get_headers(self) -> dict[str, str]:
         """Get the headers for the API request"""
         return {
-            'Authorization': f'Bearer {self.auth_token}',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
+            "Authorization": f"Bearer {self.auth_token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
         }
 
     def _make_request(
         self,
         endpoint: str,
-        method: str = 'GET',
-        data: Optional[Dict[str, Any]] = None,
-        params: Optional[Dict[str, Any]] = None,
+        method: str = "GET",
+        data: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
     ) -> requests.Response:
         """
         Helper function to build and send HTTP requests to the eLicensing API with appropriate headers.
@@ -92,16 +95,18 @@ class ELicensingAPIClient:
         headers = self._get_headers()
 
         try:
-            if method == 'GET':
+            if method == "GET":
                 response = requests.get(url, headers=headers, params=params, timeout=30)
-            elif method == 'POST':
+            elif method == "POST":
                 response = requests.post(url, headers=headers, json=data, timeout=30)
-            elif method == 'PUT':
+            elif method == "PUT":
                 response = requests.put(url, headers=headers, json=data, timeout=30)
             else:
                 raise ValueError(f"Unsupported HTTP method: {method}")
 
-            logger.info(f"eLicensing API {method} request to {endpoint} - Status: {response.status_code}")
+            logger.info(
+                f"eLicensing API {method} request to {endpoint} - Status: {response.status_code}"
+            )
 
             # Check for error responses
             if response.status_code >= 400:
@@ -111,14 +116,18 @@ class ELicensingAPIClient:
                     # Handle the case where error body is an array of error objects
                     if isinstance(error_body, list) and len(error_body) > 0:
                         error_messages = [
-                            f"{err.get('message', 'Unknown error')}" for err in error_body if isinstance(err, dict)
+                            f"{err.get('message', 'Unknown error')}"
+                            for err in error_body
+                            if isinstance(err, dict)
                         ]
                         if error_messages:
                             error_body = f"Errors: {'; '.join(error_messages)}"
                 except ValueError:
                     error_body = response.text or "No response body"
 
-                logger.error(f"eLicensing API error: {response.status_code} - {error_body}")
+                logger.error(
+                    f"eLicensing API error: {response.status_code} - {error_body}"
+                )
 
             return response
 
@@ -127,7 +136,9 @@ class ELicensingAPIClient:
             raise
 
     @staticmethod
-    def _handle_error_response(response: requests.Response, operation_name: str) -> None:
+    def _handle_error_response(
+        response: requests.Response, operation_name: str
+    ) -> None:
         """
         Helper method to handle error responses consistently across API methods.
 
@@ -141,11 +152,15 @@ class ELicensingAPIClient:
             # Handle case where error is returned as an array of error objects
             if isinstance(error_body, list) and len(error_body) > 0:
                 error_messages = [
-                    f"{err.get('message', 'Unknown error')}" for err in error_body if isinstance(err, dict)
+                    f"{err.get('message', 'Unknown error')}"
+                    for err in error_body
+                    if isinstance(err, dict)
                 ]
                 if error_messages:
-                    error_message = f"Failed to {operation_name}: {'; '.join(error_messages)}"
-            elif isinstance(error_body, dict) and 'message' in error_body:
+                    error_message = (
+                        f"Failed to {operation_name}: {'; '.join(error_messages)}"
+                    )
+            elif isinstance(error_body, dict) and "message" in error_body:
                 error_message = f"Failed to {operation_name}: {error_body['message']}"
             else:
                 error_message = f"Failed to {operation_name}: {error_body}"
@@ -155,7 +170,9 @@ class ELicensingAPIClient:
         logger.error(error_message)
         response.raise_for_status()
 
-    def create_client(self, client_data: ClientCreationRequest) -> ClientCreationResponse:
+    def create_client(
+        self, client_data: ClientCreationRequest
+    ) -> ClientCreationResponse:
         """
         Creates a new client in the eLicensing system.
 
@@ -186,12 +203,13 @@ class ELicensingAPIClient:
             "country": client_data.country,
         }
 
-        response = self._make_request(endpoint, method='POST', data=client_dict)
+        response = self._make_request(endpoint, method="POST", data=client_dict)
         response.raise_for_status()
 
         json_response = response.json()
         return ClientCreationResponse(
-            clientObjectId=json_response['clientObjectId'], clientGUID=json_response['clientGUID']
+            clientObjectId=json_response["clientObjectId"],
+            clientGUID=json_response["clientGUID"],
         )
 
     def query_client(self, client_object_id: str) -> ClientResponse:
@@ -211,42 +229,50 @@ class ELicensingAPIClient:
         """
         endpoint = f"{self.CLIENT_ENDPOINT}/{client_object_id}"
 
-        response = self._make_request(endpoint, method='GET')
+        response = self._make_request(endpoint, method="GET")
 
         if response.status_code == 200:
             try:
                 json_response = response.json()
                 # Ensure the response has the expected structure
                 if not isinstance(json_response, dict):
-                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
+                    raise ValueError(
+                        f"Invalid response format: expected dict, got {type(json_response)}"
+                    )
 
                 # Validate required fields exist and aren't empty
                 required_fields = [
-                    'clientObjectId',
-                    'clientGUID',
-                    'companyName',
-                    'addressLine1',
-                    'city',
-                    'stateProvince',
-                    'postalCode',
+                    "clientObjectId",
+                    "clientGUID",
+                    "companyName",
+                    "addressLine1",
+                    "city",
+                    "stateProvince",
+                    "postalCode",
                 ]
                 for field in required_fields:
                     if field not in json_response or not json_response[field]:
-                        raise ValueError(f"Missing or empty required field '{field}' in response: {json_response}")
+                        raise ValueError(
+                            f"Missing or empty required field '{field}' in response: {json_response}"
+                        )
 
                 return ClientResponse(**json_response)
             except ValueError as e:
-                logger.error(f"Error with client query response: {str(e)}, Response: {response.text}")
+                logger.error(
+                    f"Error with client query response: {str(e)}, Response: {response.text}"
+                )
                 raise
             except Exception as e:
-                logger.error(f"Error parsing client query response: {str(e)}, Response: {response.text}")
+                logger.error(
+                    f"Error parsing client query response: {str(e)}, Response: {response.text}"
+                )
                 raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "query client")
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError(UNEXPECTED_API_ERROR_MESSAGE)
 
-    def update_client(self, client_data: Dict[str, Any]) -> Dict[str, Any]:
+    def update_client(self, client_data: dict[str, Any]) -> dict[str, Any]:
         """
         Updates an existing client in the eLicensing system.
 
@@ -264,28 +290,34 @@ class ELicensingAPIClient:
         endpoint = self.CLIENT_ENDPOINT
 
         # Ensure businessAreaCode is set to "CG" as required
-        client_data['businessAreaCode'] = "CG"
+        client_data["businessAreaCode"] = "CG"
 
-        response = self._make_request(endpoint, method='PUT', data=client_data)
+        response = self._make_request(endpoint, method="PUT", data=client_data)
 
         if response.status_code == 200:
             try:
                 json_response = response.json()
                 if not isinstance(json_response, dict):
-                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
-                return cast(Dict[str, Any], json_response)
+                    raise ValueError(
+                        f"Invalid response format: expected dict, got {type(json_response)}"
+                    )
+                return cast(dict[str, Any], json_response)
             except ValueError as e:
-                logger.error(f"Error with client update response: {str(e)}, Response: {response.text}")
+                logger.error(
+                    f"Error with client update response: {str(e)}, Response: {response.text}"
+                )
                 raise
             except Exception as e:
-                logger.error(f"Error parsing client update response: {str(e)}, Response: {response.text}")
+                logger.error(
+                    f"Error parsing client update response: {str(e)}, Response: {response.text}"
+                )
                 raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "update client")
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError(UNEXPECTED_API_ERROR_MESSAGE)
 
-    def query_balance(self, client_object_id: str) -> Dict[str, Any]:
+    def query_balance(self, client_object_id: str) -> dict[str, Any]:
         """
         Queries the balance for a client.
 
@@ -303,19 +335,25 @@ class ELicensingAPIClient:
         endpoint = self.BALANCE_ENDPOINT
         params = {"clientObjectId": client_object_id}
 
-        response = self._make_request(endpoint, method='GET', params=params)
+        response = self._make_request(endpoint, method="GET", params=params)
 
         if response.status_code == 200:
             try:
                 json_response = response.json()
                 if not isinstance(json_response, dict):
-                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
-                return cast(Dict[str, Any], json_response)
+                    raise ValueError(
+                        f"Invalid response format: expected dict, got {type(json_response)}"
+                    )
+                return cast(dict[str, Any], json_response)
             except ValueError as e:
-                logger.error(f"Error with balance query response: {str(e)}, Response: {response.text}")
+                logger.error(
+                    f"Error with balance query response: {str(e)}, Response: {response.text}"
+                )
                 raise
             except Exception as e:
-                logger.error(f"Error parsing balance query response: {str(e)}, Response: {response.text}")
+                logger.error(
+                    f"Error parsing balance query response: {str(e)}, Response: {response.text}"
+                )
                 raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "query balance")
@@ -354,17 +392,21 @@ class ELicensingAPIClient:
             ]
         }
 
-        response = self._make_request(endpoint, method='POST', data=fees_dict)
+        response = self._make_request(endpoint, method="POST", data=fees_dict)
         response.raise_for_status()
 
         json_response = response.json()
-        fees = [FeeItem(**fee) for fee in json_response['fees']]
+        fees = [FeeItem(**fee) for fee in json_response["fees"]]
 
         return FeeResponse(
-            clientObjectId=json_response['clientObjectId'], clientGUID=json_response['clientGUID'], fees=fees
+            clientObjectId=json_response["clientObjectId"],
+            clientGUID=json_response["clientGUID"],
+            fees=fees,
         )
 
-    def adjust_fees(self, client_object_id: int, adjustment_data: Dict[str, Any]) -> Dict[str, Any]:
+    def adjust_fees(
+        self, client_object_id: int, adjustment_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Adjusts fees for a client.
 
@@ -382,26 +424,34 @@ class ELicensingAPIClient:
         """
         endpoint = f"{self.CLIENT_ENDPOINT}/{client_object_id}{self.ADJUST_ENDPOINT}"
 
-        response = self._make_request(endpoint, method='POST', data=adjustment_data)
+        response = self._make_request(endpoint, method="POST", data=adjustment_data)
 
         if response.status_code == 200:
             try:
                 json_response = response.json()
                 if not isinstance(json_response, dict):
-                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
-                return cast(Dict[str, Any], json_response)
+                    raise ValueError(
+                        f"Invalid response format: expected dict, got {type(json_response)}"
+                    )
+                return cast(dict[str, Any], json_response)
             except ValueError as e:
-                logger.error(f"Error with fees adjustment response: {str(e)}, Response: {response.text}")
+                logger.error(
+                    f"Error with fees adjustment response: {str(e)}, Response: {response.text}"
+                )
                 raise
             except Exception as e:
-                logger.error(f"Error parsing fees adjustment response: {str(e)}, Response: {response.text}")
+                logger.error(
+                    f"Error parsing fees adjustment response: {str(e)}, Response: {response.text}"
+                )
                 raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "adjust fees")
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError(UNEXPECTED_API_ERROR_MESSAGE)
 
-    def query_fees(self, client_object_id: str, fee_status: Optional[str] = None) -> Dict[str, Any]:
+    def query_fees(
+        self, client_object_id: str, fee_status: str | None = None
+    ) -> dict[str, Any]:
         """
         Queries fees for a client.
 
@@ -423,26 +473,34 @@ class ELicensingAPIClient:
         if fee_status:
             params["feeStatus"] = fee_status
 
-        response = self._make_request(endpoint, method='GET', params=params)
+        response = self._make_request(endpoint, method="GET", params=params)
 
         if response.status_code == 200:
             try:
                 json_response = response.json()
                 if not isinstance(json_response, dict):
-                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
-                return cast(Dict[str, Any], json_response)
+                    raise ValueError(
+                        f"Invalid response format: expected dict, got {type(json_response)}"
+                    )
+                return cast(dict[str, Any], json_response)
             except ValueError as e:
-                logger.error(f"Error with fees query response: {str(e)}, Response: {response.text}")
+                logger.error(
+                    f"Error with fees query response: {str(e)}, Response: {response.text}"
+                )
                 raise
             except Exception as e:
-                logger.error(f"Error parsing fees query response: {str(e)}, Response: {response.text}")
+                logger.error(
+                    f"Error parsing fees query response: {str(e)}, Response: {response.text}"
+                )
                 raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "query fees")
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError(UNEXPECTED_API_ERROR_MESSAGE)
 
-    def query_invoice(self, client_id: int, invoice_number: str) -> InvoiceQueryResponse:
+    def query_invoice(
+        self, client_id: int, invoice_number: str
+    ) -> InvoiceQueryResponse:
         """
         Queries an invoice by invoice number.
 
@@ -460,35 +518,41 @@ class ELicensingAPIClient:
         endpoint = f"{self.CLIENT_ENDPOINT}/{client_id}{self.INVOICE_ENDPOINT}"
         params = {"InvoiceNumber": invoice_number}
 
-        response = self._make_request(endpoint, method='GET', params=params)
+        response = self._make_request(endpoint, method="GET", params=params)
         response.raise_for_status()
 
         return self._parse_invoice_response(response.json())
 
-    def _parse_invoice_response(self, data: Dict) -> InvoiceQueryResponse:
+    def _parse_invoice_response(self, data: dict) -> InvoiceQueryResponse:
         fees = [self._parse_fee(fee_data) for fee_data in data.get("fees", [])]
         data["fees"] = fees
         return InvoiceQueryResponse(**data)
 
-    def _parse_fee(self, fee_data: Dict) -> InvoiceFee:
+    def _parse_fee(self, fee_data: dict) -> InvoiceFee:
         payments = [self._parse_payment(p) for p in fee_data.get("payments", [])]
-        adjustments = [self._parse_adjustment(a) for a in fee_data.get("adjustments", [])]
+        adjustments = [
+            self._parse_adjustment(a) for a in fee_data.get("adjustments", [])
+        ]
 
         fee_data["payments"] = payments
         fee_data["adjustments"] = adjustments
         return InvoiceFee(**fee_data)
 
     @staticmethod
-    def _parse_adjustment(adjustment_data: Dict) -> FeeAdjustment:
+    def _parse_adjustment(adjustment_data: dict) -> FeeAdjustment:
         return FeeAdjustment(**adjustment_data)
 
     @staticmethod
-    def _parse_payment(payment_data: Dict) -> Payment:
-        distributions = [PaymentDistribution(**d) for d in payment_data.get("distributions", [])]
+    def _parse_payment(payment_data: dict) -> Payment:
+        distributions = [
+            PaymentDistribution(**d) for d in payment_data.get("distributions", [])
+        ]
         payment_data["distributions"] = distributions
         return Payment(**payment_data)
 
-    def create_invoice(self, client_id: int, invoice_data: InvoiceCreationRequest) -> InvoiceResponse:
+    def create_invoice(
+        self, client_id: int, invoice_data: InvoiceCreationRequest
+    ) -> InvoiceResponse:
         """
         Creates an invoice in eLicensing for a set of fees.
 
@@ -510,7 +574,7 @@ class ELicensingAPIClient:
             "businessAreaCode": invoice_data.businessAreaCode,
             "fees": invoice_data.fees,
         }
-        response = self._make_request(endpoint, method='POST', data=invoice_dict)
+        response = self._make_request(endpoint, method="POST", data=invoice_dict)
         response.raise_for_status()
 
         return InvoiceResponse(**response.json())
@@ -527,16 +591,20 @@ class ELicensingAPIClient:
             requests.HTTPError: If the API returns an error response
         """
         endpoint = self.INTEREST_RATES_ENDPOINT
-        response = self._make_request(endpoint, method='GET')
+        response = self._make_request(endpoint, method="GET")
         response.raise_for_status()
 
         data = response.json()
         periods = []
         for period_data in data.get("periods", []):
-            period = InterestRatePeriod(rate=period_data["rate"], startDate=period_data["startDate"])
+            period = InterestRatePeriod(
+                rate=period_data["rate"], startDate=period_data["startDate"]
+            )
             periods.append(period)
 
-        return InterestRateResponse(daysPerYear=data.get("daysPerYear", 365), periods=periods)
+        return InterestRateResponse(
+            daysPerYear=data.get("daysPerYear", 365), periods=periods
+        )
 
 
 # Create a singleton instance

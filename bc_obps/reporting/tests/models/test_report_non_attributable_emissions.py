@@ -1,21 +1,26 @@
+from common.lib import pgtrigger
 from common.tests.utils.helpers import BaseTestCase
+from model_bakery import baker
+from model_bakery.baker import make_recipe
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
-from reporting.models import ReportNonAttributableEmissions, GasType, EmissionCategory
+from reporting.models import EmissionCategory, GasType, ReportNonAttributableEmissions
 from reporting.tests.utils.bakers import report_version_baker
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
 from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsTestSetup
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from common.lib import pgtrigger
-from model_bakery import baker
-from model_bakery.baker import make_recipe
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ReportNonAttributableEmissionsModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.emission_category = EmissionCategory.objects.create(category_name="Default Category", category_type="basic")
+        cls.emission_category = EmissionCategory.objects.create(
+            category_name="Default Category", category_type="basic"
+        )
         cls.gas_type = GasType.objects.create(
             name="Default Gas", chemical_formula="H2O", cas_number="124-38-9", gwp=100
         )
@@ -46,41 +51,48 @@ class ReportNonAttributableEmissionsModelTest(BaseTestCase):
 
 
 class ReportNonAttributableEmissionsRlsTest(BaseTestCase):
-
     def test_report_non_attributable_emissions_rls_industry_user(self):
         # Common Test Setup
-        t = ReportRlsTestSetup(parent_object='facility_report')
+        t = ReportRlsTestSetup(parent_object="facility_report")
 
         # ReportNonAttributableEmissions Setup
         # Inside access bounds
-        with pgtrigger.ignore("reporting.ReportNonAttributableEmissions:immutable_report_version"):
+        with pgtrigger.ignore(
+            "reporting.ReportNonAttributableEmissions:immutable_report_version"
+        ):
             report_non_attributable_emissions_2010_submitted = make_recipe(
-                'reporting.tests.utils.report_non_attributable_emissions',
+                "reporting.tests.utils.report_non_attributable_emissions",
                 report_version=t.report_version_2010_submitted,
             )
         report_non_attributable_emissions_2010_draft = make_recipe(
-            'reporting.tests.utils.report_non_attributable_emissions', report_version=t.report_version_2010_draft
+            "reporting.tests.utils.report_non_attributable_emissions",
+            report_version=t.report_version_2010_draft,
         )
         # Outside access bounds
         report_non_attributable_emissions_2013_draft = make_recipe(
-            'reporting.tests.utils.report_non_attributable_emissions', report_version=t.report_version_2013_draft
+            "reporting.tests.utils.report_non_attributable_emissions",
+            report_version=t.report_version_2013_draft,
         )
 
-        test_emission_category = make_recipe('reporting.tests.utils.emission_category')
+        test_emission_category = make_recipe("reporting.tests.utils.emission_category")
 
         def select_function(cursor):
-            ReportNonAttributableEmissions.objects.get(id=report_non_attributable_emissions_2010_submitted.id)
+            ReportNonAttributableEmissions.objects.get(
+                id=report_non_attributable_emissions_2010_submitted.id
+            )
 
         def forbidden_select_function(cursor):
-            ReportNonAttributableEmissions.objects.get(id=report_non_attributable_emissions_2013_draft.id)
+            ReportNonAttributableEmissions.objects.get(
+                id=report_non_attributable_emissions_2013_draft.id
+            )
 
         def insert_function(cursor):
             ReportNonAttributableEmissions.objects.create(
                 report_version=t.report_version_2010_draft,
                 facility_report=t.parent_object_2010_draft,
                 emission_category=test_emission_category,
-                activity='asdf',
-                source_type='asdf',
+                activity="asdf",
+                source_type="asdf",
             )
 
         def forbidden_insert_function(cursor):
@@ -99,7 +111,7 @@ class ReportNonAttributableEmissionsRlsTest(BaseTestCase):
                     SET activity = %s
                     WHERE id = %s
                 """,
-                ('test', report_non_attributable_emissions_2010_draft.id),
+                ("test", report_non_attributable_emissions_2010_draft.id),
             )
             return cursor.rowcount
 
@@ -110,7 +122,7 @@ class ReportNonAttributableEmissionsRlsTest(BaseTestCase):
                     SET activity = %s
                     WHERE id = %s
                 """,
-                ('test', report_non_attributable_emissions_2013_draft.id),
+                ("test", report_non_attributable_emissions_2013_draft.id),
             )
             return cursor.rowcount
 
@@ -132,7 +144,10 @@ class ReportNonAttributableEmissionsRlsTest(BaseTestCase):
                     DELETE from "erc"."report_non_attributable_emissions"
                     WHERE id in (%s,%s)
                 """,
-                (report_non_attributable_emissions_2010_submitted.id, report_non_attributable_emissions_2013_draft.id),
+                (
+                    report_non_attributable_emissions_2010_submitted.id,
+                    report_non_attributable_emissions_2013_draft.id,
+                ),
             )
             return cursor.rowcount
 

@@ -2,8 +2,8 @@ from django.db import models
 from registration.models import Activity, RegulatedProduct
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
-from reporting.models.triggers import immutable_report_version_trigger
 from reporting.models.rls_configs.report_operation import Rls as ReportOperationRls
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportOperation(TimeStampedModel):
@@ -50,10 +50,14 @@ class ReportOperation(TimeStampedModel):
         null=True,
     )
     registration_purpose = models.CharField(
-        max_length=1000, db_comment="The Registration purpose of the operation", default='OBPS Regulated Operation'
+        max_length=1000,
+        db_comment="The Registration purpose of the operation",
+        default="OBPS Regulated Operation",
     )
     operation_opted_out_final_reporting_year = models.IntegerField(
-        db_comment="The last year an operation will report for, if it has opted out of BCIERS", blank=True, null=True
+        db_comment="The last year an operation will report for, if it has opted out of BCIERS",
+        blank=True,
+        null=True,
     )
     naics_code = models.ForeignKey(
         "registration.NaicsCode",

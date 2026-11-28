@@ -1,15 +1,17 @@
 from datetime import datetime
-from typing import Optional
-from django.db.models import QuerySet
 from uuid import UUID
-from registration.models.facility import Facility
-from registration.schema import FacilityDesignatedOperationTimelineFilterSchema
-from registration.service.data_access_service.user_service import UserDataAccessService
+
+from django.db import transaction
+from django.db.models import QuerySet
 from ninja import Query
 from registration.models import User
-from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
+from registration.models.facility import Facility
+from registration.models.facility_designated_operation_timeline import (
+    FacilityDesignatedOperationTimeline,
+)
+from registration.schema import FacilityDesignatedOperationTimelineFilterSchema
+from registration.service.data_access_service.user_service import UserDataAccessService
 from registration.service.user_operator_service import UserOperatorService
-from django.db import transaction
 
 
 class FacilityDesignatedOperationTimelineService:
@@ -31,8 +33,8 @@ class FacilityDesignatedOperationTimelineService:
         cls,
         user_guid: UUID,
         operation_id: UUID,
-        sort_field: Optional[str],
-        sort_order: Optional[str],
+        sort_field: str | None,
+        sort_order: str | None,
         filters: FacilityDesignatedOperationTimelineFilterSchema = Query(...),
     ) -> QuerySet[FacilityDesignatedOperationTimeline]:
         """List facilities belonging to a specific operation with specified sorting and filtering."""
@@ -40,12 +42,14 @@ class FacilityDesignatedOperationTimelineService:
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
         base_qs = cls.get_timeline_by_operation_id(user, operation_id)
-        return filters.filter(base_qs).order_by(sort_by, f"{sort_direction}created_at", f"{sort_direction}id")
+        return filters.filter(base_qs).order_by(
+            sort_by, f"{sort_direction}created_at", f"{sort_direction}id"
+        )
 
     @classmethod
     def get_current_timeline(
         cls, operation_id: UUID, facility_id: UUID
-    ) -> Optional[FacilityDesignatedOperationTimeline]:
+    ) -> FacilityDesignatedOperationTimeline | None:
         return FacilityDesignatedOperationTimeline.objects.filter(
             operation_id=operation_id, facility_id=facility_id, end_date__isnull=True
         ).first()
@@ -62,9 +66,13 @@ class FacilityDesignatedOperationTimelineService:
 
     @classmethod
     @transaction.atomic()
-    def delete_facilities_by_operation_id(cls, user_guid: UUID, operation_id: UUID) -> None:
+    def delete_facilities_by_operation_id(
+        cls, user_guid: UUID, operation_id: UUID
+    ) -> None:
         user = UserDataAccessService.get_by_guid(user_guid)
         UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
 
-        FacilityDesignatedOperationTimeline.objects.filter(operation_id=operation_id).delete()
+        FacilityDesignatedOperationTimeline.objects.filter(
+            operation_id=operation_id
+        ).delete()
         Facility.objects.filter(operation_id=operation_id).delete()

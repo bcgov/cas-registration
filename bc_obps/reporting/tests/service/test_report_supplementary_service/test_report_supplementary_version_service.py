@@ -1,12 +1,12 @@
-from django.test import TestCase
 from unittest.mock import patch
+
+from django.test import TestCase
 from model_bakery.baker import make_recipe
 from registration.models import Operation
+from reporting.models import ReportVersion
 from reporting.service.report_supplementary_version_service.report_supplementary_version_service import (
     ReportSupplementaryVersionService,
 )
-
-from reporting.models import ReportVersion
 
 
 class ReportSupplementaryVersionServiceTests(TestCase):
@@ -19,14 +19,21 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             registration_purpose=Operation.Purposes.OBPS_REGULATED_OPERATION,
         )
 
-        self.current_reporting_year = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2030)
-        self.past_reporting_year = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2029)
+        self.current_reporting_year = make_recipe(
+            "reporting.tests.utils.reporting_year", reporting_year=2030
+        )
+        self.past_reporting_year = make_recipe(
+            "reporting.tests.utils.reporting_year", reporting_year=2029
+        )
 
         self.past_year_old_report = make_recipe(
-            'reporting.tests.utils.report', operator=self.operator, operation=self.operation, reporting_year_id=2029
+            "reporting.tests.utils.report",
+            operator=self.operator,
+            operation=self.operation,
+            reporting_year_id=2029,
         )
         self.past_year_old_report_version = make_recipe(
-            'reporting.tests.utils.report_version',
+            "reporting.tests.utils.report_version",
             status=ReportVersion.ReportVersionStatus.Draft,
             report=self.past_year_old_report,
         )
@@ -39,60 +46,64 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         )
 
         self.past_year_representative = make_recipe(
-            'reporting.tests.utils.report_operation_representative',
+            "reporting.tests.utils.report_operation_representative",
             report_version=self.past_year_old_report_version,
             representative_name="Current Rep",
         )
         self.past_year_person_responsible = make_recipe(
-            'reporting.tests.utils.report_person_responsible',
+            "reporting.tests.utils.report_person_responsible",
             report_version=self.past_year_old_report_version,
         )
         self.past_year_additional_data = make_recipe(
-            'reporting.tests.utils.report_additional_data',
+            "reporting.tests.utils.report_additional_data",
             report_version=self.past_year_old_report_version,
             capture_emissions=True,
             electricity_generated=999.0,
         )
         self.past_year_facility_report = make_recipe(
-            'reporting.tests.utils.facility_report',
+            "reporting.tests.utils.facility_report",
             report_version=self.past_year_old_report_version,
         )
 
         self.current_year_report = make_recipe(
-            'reporting.tests.utils.report', operator=self.operator, operation=self.operation, reporting_year_id=2030
+            "reporting.tests.utils.report",
+            operator=self.operator,
+            operation=self.operation,
+            reporting_year_id=2030,
         )
         self.current_year_report_version = make_recipe(
-            'reporting.tests.utils.report_version',
+            "reporting.tests.utils.report_version",
             status=ReportVersion.ReportVersionStatus.Draft,
             report=self.current_year_report,
         )
         self.current_year_report_operation = make_recipe(
-            "reporting.tests.utils.report_operation", report_version=self.current_year_report_version
+            "reporting.tests.utils.report_operation",
+            report_version=self.current_year_report_version,
         )
 
         self.current_year_representative = make_recipe(
-            'reporting.tests.utils.report_operation_representative',
+            "reporting.tests.utils.report_operation_representative",
             report_version=self.current_year_report_version,
             representative_name="Current Rep",
         )
         self.current_year_person_responsible = make_recipe(
-            'reporting.tests.utils.report_person_responsible',
+            "reporting.tests.utils.report_person_responsible",
             report_version=self.current_year_report_version,
         )
         self.current_year_additional_data = make_recipe(
-            'reporting.tests.utils.report_additional_data',
+            "reporting.tests.utils.report_additional_data",
             report_version=self.current_year_report_version,
             capture_emissions=True,
             electricity_generated=999.0,
         )
         self.current_year_facility_report = make_recipe(
-            'reporting.tests.utils.facility_report',
+            "reporting.tests.utils.facility_report",
             report_version=self.current_year_report_version,
         )
 
         # old_report_version used by test_create_report_supplementary_version and test_create_or_clone_same_purpose_no_operator_change
         self.old_report_version = make_recipe(
-            'reporting.tests.utils.report_version',
+            "reporting.tests.utils.report_version",
             status=ReportVersion.ReportVersionStatus.Draft,
         )
         self.old_report_operation = make_recipe(
@@ -105,7 +116,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         self.old_report_version.save()
 
         self.new_report_version: ReportVersion = make_recipe(
-            'reporting.tests.utils.report_version',
+            "reporting.tests.utils.report_version",
             report=self.old_report_version.report,
             status=ReportVersion.ReportVersionStatus.Draft,
         )
@@ -114,7 +125,9 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         # ACT: Call the method to create a supplementary version.
         self.new_report_version.status = ReportVersion.ReportVersionStatus.Submitted
         self.new_report_version.save()
-        new_version = ReportSupplementaryVersionService._create_supplementary_version(self.old_report_version)
+        new_version = ReportSupplementaryVersionService._create_supplementary_version(
+            self.old_report_version
+        )
 
         # ASSERT: Verify that the new report version is correctly created.
         self.assertEqual(
@@ -149,7 +162,9 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         self.new_report_version.status = ReportVersion.ReportVersionStatus.Submitted
         self.new_report_version.save()
 
-        new_version = ReportSupplementaryVersionService.create_or_clone_report_version(self.old_report_version.id)
+        new_version = ReportSupplementaryVersionService.create_or_clone_report_version(
+            self.old_report_version.id
+        )
 
         self.assertEqual(new_version.report, self.old_report_version.report)
         self.assertEqual(
@@ -158,11 +173,17 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             "Cloned ReportOperation should preserve the registration purpose from the source version.",
         )
 
-    @patch('reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year')
-    def test_create_or_clone_purpose_changed_past_year_creates_supplementary(self, mock_get_year):
+    @patch(
+        "reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year"
+    )
+    def test_create_or_clone_purpose_changed_past_year_creates_supplementary(
+        self, mock_get_year
+    ):
         """Test that when registration purpose has changed since the past report was submitted,
         a supplementary (cloned) version is created for the past year."""
-        self.past_year_old_report_version.status = ReportVersion.ReportVersionStatus.Submitted
+        self.past_year_old_report_version.status = (
+            ReportVersion.ReportVersionStatus.Submitted
+        )
         self.past_year_old_report_version.save()
 
         self.operation.registration_purpose = Operation.Purposes.OPTED_IN_OPERATION
@@ -170,8 +191,10 @@ class ReportSupplementaryVersionServiceTests(TestCase):
 
         mock_get_year.return_value = self.current_reporting_year
 
-        new_past_year_report_version = ReportSupplementaryVersionService.create_or_clone_report_version(
-            self.past_year_old_report_version.id
+        new_past_year_report_version = (
+            ReportSupplementaryVersionService.create_or_clone_report_version(
+                self.past_year_old_report_version.id
+            )
         )
 
         self.assertEqual(
@@ -179,8 +202,12 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             Operation.Purposes.OBPS_REGULATED_OPERATION,
         )
 
-    @patch('reporting.service.report_version_service.ReportVersionService.create_report_version')
-    @patch('reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year')
+    @patch(
+        "reporting.service.report_version_service.ReportVersionService.create_report_version"
+    )
+    @patch(
+        "reporting.service.reporting_year_service.ReportingYearService.get_current_reporting_year"
+    )
     def test_create_or_clone_purpose_changed_current_year_creates_blank(
         self, mock_get_year, mock_create_report_version
     ):
@@ -188,25 +215,37 @@ class ReportSupplementaryVersionServiceTests(TestCase):
 
         mock_get_year.return_value = self.current_reporting_year
 
-        self.current_year_report_version.status = ReportVersion.ReportVersionStatus.Submitted
+        self.current_year_report_version.status = (
+            ReportVersion.ReportVersionStatus.Submitted
+        )
         self.current_year_report_version.save()
 
         self.operation.registration_purpose = Operation.Purposes.NEW_ENTRANT_OPERATION
         self.operation.save()
 
-        ReportSupplementaryVersionService.create_or_clone_report_version(self.current_year_report_version.id)
+        ReportSupplementaryVersionService.create_or_clone_report_version(
+            self.current_year_report_version.id
+        )
 
-        mock_create_report_version.assert_called_once_with(self.current_year_report_version.report)
+        mock_create_report_version.assert_called_once_with(
+            self.current_year_report_version.report
+        )
 
-    @patch('reporting.service.report_supplementary_version_service.report_supplementary_version_service.clone_all')
+    @patch(
+        "reporting.service.report_supplementary_version_service.report_supplementary_version_service.clone_all"
+    )
     def test_create_or_clone_operator_changed_purpose_changed_creates_supplementary_with_same_details(
         self, mock_clone_all
     ):
         """Test that when operator and purpose both change, clone_all is called with the correct source version."""
-        self.current_year_report_operation.registration_purpose = Operation.Purposes.OBPS_REGULATED_OPERATION
+        self.current_year_report_operation.registration_purpose = (
+            Operation.Purposes.OBPS_REGULATED_OPERATION
+        )
         self.current_year_report_operation.save()
 
-        self.current_year_report_version.status = ReportVersion.ReportVersionStatus.Submitted
+        self.current_year_report_version.status = (
+            ReportVersion.ReportVersionStatus.Submitted
+        )
         self.current_year_report_version.is_latest_submitted = True
         self.current_year_report_version.save()
 
@@ -220,4 +259,6 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             self.current_year_report_version.id
         )
 
-        mock_clone_all.assert_called_once_with(self.current_year_report_version, new_version, True)
+        mock_clone_all.assert_called_once_with(
+            self.current_year_report_version, new_version, True
+        )

@@ -1,6 +1,7 @@
 import uuid
+
+from common.exceptions import UserError
 from django.db import transaction
-from reporting.models.report_version import ReportVersion
 from registration.models.activity import Activity
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.activity_source_type_json_schema import (
@@ -12,22 +13,22 @@ from reporting.models.gas_type import GasType
 from reporting.models.methodology import Methodology
 from reporting.models.report_activity import ReportActivity
 from reporting.models.report_emission import ReportEmission
-from reporting.models.report_methodology import ReportMethodology
 from reporting.models.report_fuel import ReportFuel
+from reporting.models.report_methodology import ReportMethodology
+from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.report_unit import ReportUnit
+from reporting.models.report_version import ReportVersion
 from reporting.models.source_type import SourceType
-from reporting.service.utils import (
-    exclude_keys,
-    retrieve_ids,
-    round_using_appropriate_strategy,
-    get_report_valid_date_from_version_id,
-)
 from reporting.service.emission_category_mapping_service import (
     EmissionCategoryMappingService,
 )
-from reporting.models.report_raw_activity_data import ReportRawActivityData
-from common.exceptions import UserError
+from reporting.service.utils import (
+    exclude_keys,
+    get_report_valid_date_from_version_id,
+    retrieve_ids,
+    round_using_appropriate_strategy,
+)
 
 
 class ReportActivitySaveService:
@@ -57,9 +58,9 @@ class ReportActivitySaveService:
     ):
         self.user_guid = user_guid
         self.activity = Activity.objects.get(pk=activity_id)
-        self.facility_report = FacilityReport.objects.select_related("report_version", "report_version__report").get(
-            report_version_id=report_version_id, facility_id=facility_id
-        )
+        self.facility_report = FacilityReport.objects.select_related(
+            "report_version", "report_version__report"
+        ).get(report_version_id=report_version_id, facility_id=facility_id)
         self.report_version = ReportVersion.objects.get(pk=report_version_id)
         self.valid_date = get_report_valid_date_from_version_id(self.report_version.id)
 
@@ -96,7 +97,11 @@ class ReportActivitySaveService:
             ).delete()
 
             for source_type_key in data["sourceTypes"]:
-                self.save_source_type(report_activity, source_type_key, data["sourceTypes"][source_type_key])
+                self.save_source_type(
+                    report_activity,
+                    source_type_key,
+                    data["sourceTypes"][source_type_key],
+                )
 
         # Save raw data after processing source types
         self.save_raw_data(data)
@@ -110,7 +115,9 @@ class ReportActivitySaveService:
         source_type_data: dict,
     ) -> ReportSourceType:
         source_type = SourceType.objects.get(json_key=source_type_slug)
-        json_data = exclude_keys(source_type_data, ["units", "fuels", "emissions", "id"])
+        json_data = exclude_keys(
+            source_type_data, ["units", "fuels", "emissions", "id"]
+        )
         json_base_schema = ActivitySourceTypeJsonSchema.objects.get(
             activity=report_activity.activity,
             source_type=source_type,
@@ -120,10 +127,20 @@ class ReportActivitySaveService:
 
         if json_base_schema.has_unit and "units" not in source_type_data:
             raise UserError(f"Source type {source_type_slug} is expecting unit data")
-        elif not json_base_schema.has_unit and json_base_schema.has_fuel and "fuels" not in source_type_data:
+        elif (
+            not json_base_schema.has_unit
+            and json_base_schema.has_fuel
+            and "fuels" not in source_type_data
+        ):
             raise UserError(f"Source type {source_type_slug} is expecting fuel data")
-        elif not json_base_schema.has_unit and not json_base_schema.has_fuel and "emissions" not in source_type_data:
-            raise UserError(f"Source type {source_type_slug} is expecting emission data")
+        elif (
+            not json_base_schema.has_unit
+            and not json_base_schema.has_fuel
+            and "emissions" not in source_type_data
+        ):
+            raise UserError(
+                f"Source type {source_type_slug} is expecting emission data"
+            )
 
         report_source_type, _ = ReportSourceType.objects.update_or_create(
             # A None id is the intentional "create" path; django-stubs 6.0 rejects None in lookups.
@@ -153,16 +170,18 @@ class ReportActivitySaveService:
             for fuel_data in source_type_data["fuels"]:
                 self.save_fuel(report_source_type, None, fuel_data)
         else:
-            ReportEmission.objects.filter(report_source_type=report_source_type).exclude(
-                id__in=retrieve_ids(source_type_data["emissions"])
-            ).delete()
+            ReportEmission.objects.filter(
+                report_source_type=report_source_type
+            ).exclude(id__in=retrieve_ids(source_type_data["emissions"])).delete()
 
             for emission_data in source_type_data["emissions"]:
                 self.save_emission(report_source_type, None, None, emission_data)
 
         return report_source_type
 
-    def save_unit(self, report_source_type: ReportSourceType, unit_data: dict) -> ReportUnit:
+    def save_unit(
+        self, report_source_type: ReportSourceType, unit_data: dict
+    ) -> ReportUnit:
         """
         ReportUnit records are not keyed, we rely on the 'id' presence to know if we update a record or create a new one
         """
@@ -170,9 +189,15 @@ class ReportActivitySaveService:
         report_unit_id = unit_data.get("id", None)
         report_unit_type = unit_data.get("type", ReportUnit.ReportUnitType.UNIT)
 
-        if report_source_type.activity_source_type_base_schema.has_fuel and "fuels" not in unit_data:
+        if (
+            report_source_type.activity_source_type_base_schema.has_fuel
+            and "fuels" not in unit_data
+        ):
             raise UserError("Unit is expecting fuel data")
-        elif not report_source_type.activity_source_type_base_schema.has_fuel and "emissions" not in unit_data:
+        elif (
+            not report_source_type.activity_source_type_base_schema.has_fuel
+            and "emissions" not in unit_data
+        ):
             raise UserError("Unit is expecting emissions data")
 
         # Update record if id was provided, create otherwise
@@ -191,19 +216,21 @@ class ReportActivitySaveService:
         )
 
         if report_source_type.activity_source_type_base_schema.has_fuel:
-            ReportFuel.objects.filter(report_source_type=report_source_type, report_unit=report_unit).exclude(
-                id__in=retrieve_ids(unit_data["fuels"])
-            ).delete()
+            ReportFuel.objects.filter(
+                report_source_type=report_source_type, report_unit=report_unit
+            ).exclude(id__in=retrieve_ids(unit_data["fuels"])).delete()
 
             for fuel_data in unit_data["fuels"]:
                 self.save_fuel(report_source_type, report_unit, fuel_data)
         else:
-            ReportEmission.objects.filter(report_source_type=report_source_type, report_unit=report_unit).exclude(
-                id__in=retrieve_ids(unit_data["emissions"])
-            ).delete()
+            ReportEmission.objects.filter(
+                report_source_type=report_source_type, report_unit=report_unit
+            ).exclude(id__in=retrieve_ids(unit_data["emissions"])).delete()
 
             for emissions_data in unit_data["emissions"]:
-                self.save_emission(report_source_type, report_unit, None, emissions_data)
+                self.save_emission(
+                    report_source_type, report_unit, None, emissions_data
+                )
 
         return report_unit
 
@@ -245,9 +272,9 @@ class ReportActivitySaveService:
             defaults={"json_data": json_data, "fuel_type": fuel_type},
         )
 
-        ReportEmission.objects.filter(report_source_type=report_source_type, report_fuel=report_fuel).exclude(
-            id__in=retrieve_ids(fuel_data["emissions"])
-        ).delete()
+        ReportEmission.objects.filter(
+            report_source_type=report_source_type, report_fuel=report_fuel
+        ).exclude(id__in=retrieve_ids(fuel_data["emissions"])).delete()
 
         for emission_data in fuel_data["emissions"]:
             self.save_emission(report_source_type, None, report_fuel, emission_data)
@@ -263,7 +290,9 @@ class ReportActivitySaveService:
     ) -> ReportEmission:
         json_data = exclude_keys(emission_data, ["gasType", "id", "methodology"])
         gas_type = GasType.objects.get(chemical_formula=emission_data["gasType"])
-        has_2024_reporting_year = self.facility_report.report_version.report.reporting_year_id == 2024
+        has_2024_reporting_year = (
+            self.facility_report.report_version.report.reporting_year_id == 2024
+        )
         # Set equivalent emission value (emission * gwp)
         equivalent_emission = round_using_appropriate_strategy(
             json_data["emission"] * gas_type.gwp, has_2024_reporting_year
@@ -290,7 +319,10 @@ class ReportActivitySaveService:
             defaults={"json_data": json_data, "gas_type": gas_type},
         )
         EmissionCategoryMappingService.apply_emission_categories(
-            report_source_type, report_fuel, report_emission, emission_data["methodology"]
+            report_source_type,
+            report_fuel,
+            report_emission,
+            emission_data["methodology"],
         )
 
         self.save_methodology(report_emission, emission_data["methodology"])

@@ -1,26 +1,26 @@
 from unittest import mock
-from django.test import TestCase
+
 from django.core.exceptions import ObjectDoesNotExist
+from django.test import TestCase
 from model_bakery import baker
 from model_bakery.baker import make_recipe
-
-from registration.models import RegulatedProduct, Activity, Operation
+from registration.models import Activity, Operation, RegulatedProduct
 from registration.tests.utils.bakers import (
     bc_obps_regulated_operation_baker,
     operation_baker,
     operator_baker,
 )
 from reporting.models import (
-    ReportingYear,
-    ReportVersion,
-    ReportOperation,
     FacilityReport,
+    ReportingYear,
+    ReportOperation,
     ReportProduct,
     ReportProductEmissionAllocation,
+    ReportVersion,
 )
 from reporting.schema.report_operation import ReportOperationIn
-from reporting.tests.utils.bakers import report_baker, reporting_year_baker
 from reporting.service.report_service import ReportService
+from reporting.tests.utils.bakers import report_baker, reporting_year_baker
 
 
 class TestReportService(TestCase):
@@ -28,7 +28,9 @@ class TestReportService(TestCase):
         baker.make(ReportingYear, reporting_year=2000)
 
         with self.assertRaises(ObjectDoesNotExist) as exception_context:
-            ReportService.create_report(operation_id="00000000-00000000-00000000-00000000", reporting_year=2000)
+            ReportService.create_report(
+                operation_id="00000000-00000000-00000000-00000000", reporting_year=2000
+            )
 
         self.assertEqual(
             str(exception_context.exception),
@@ -39,7 +41,7 @@ class TestReportService(TestCase):
         operator = operator_baker({"trade_name": "test_trade_name"})
         operation = operation_baker(operator_id=operator.id, type=Operation.Types.SFO)
         make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
+            "registration.tests.utils.operation_designated_operator_timeline",
             operator=operator,
             operation=operation,
             start_date="2023-01-01T00:00:00Z",
@@ -76,7 +78,9 @@ class TestReportService(TestCase):
                 "registration.service.data_access_service.facility_service.FacilityDataAccessService.get_current_facilities_by_operation"
             ) as mock_facility_data_access_service_get_current_facilities_by_operation,
         ):
-            mock_facilities = baker.make_recipe('registration.tests.utils.facility', _quantity=3)
+            mock_facilities = baker.make_recipe(
+                "registration.tests.utils.facility", _quantity=3
+            )
 
             mock_report_data_access_service_report_exists.return_value = False
             mock_facility_data_access_service_get_current_facilities_by_operation.return_value = mock_facilities
@@ -97,7 +101,7 @@ class TestReportService(TestCase):
             )
             reporting_year = reporting_year_baker(reporting_year=2101)
             make_recipe(
-                'registration.tests.utils.operation_designated_operator_timeline',
+                "registration.tests.utils.operation_designated_operator_timeline",
                 operator=operation.operator,
                 operation=operation,
                 start_date="2023-01-01T00:00:00Z",
@@ -105,7 +109,9 @@ class TestReportService(TestCase):
             )
 
             # Calling the method under test
-            report_version_id = ReportService.create_report(operation.id, reporting_year=2101)
+            report_version_id = ReportService.create_report(
+                operation.id, reporting_year=2101
+            )
             report = ReportVersion.objects.get(pk=report_version_id).report
 
             # Testing the report data
@@ -118,7 +124,7 @@ class TestReportService(TestCase):
             report_version = report.report_versions.first()
             self.assertEqual(report_version.report, report)
             self.assertFalse(report_version.is_latest_submitted)
-            self.assertEqual(report_version.status, 'Draft')
+            self.assertEqual(report_version.status, "Draft")
 
             # Testing the report_operation data
             self.assertSequenceEqual(
@@ -178,7 +184,9 @@ class TestReportService(TestCase):
                 "registration.service.data_access_service.facility_service.FacilityDataAccessService.get_current_facilities_by_operation"
             ) as mock_facility_data_access_service_get_current_facilities_by_operation,
         ):
-            mock_facilities = baker.make_recipe('registration.tests.utils.facility', _quantity=2)
+            mock_facilities = baker.make_recipe(
+                "registration.tests.utils.facility", _quantity=2
+            )
 
             mock_report_data_access_service_report_exists.return_value = False
             mock_facility_data_access_service_get_current_facilities_by_operation.return_value = mock_facilities
@@ -206,14 +214,14 @@ class TestReportService(TestCase):
 
             # Create timeline entries to simulate a transfer happened from operator_old to operator_new after the end of the reporting year
             make_recipe(
-                'registration.tests.utils.operation_designated_operator_timeline',
+                "registration.tests.utils.operation_designated_operator_timeline",
                 operator=operator_old,
                 operation=operation,
                 start_date="2020-01-01T00:00:00Z",
                 end_date="2025-03-01T00:00:00Z",
             )
             make_recipe(
-                'registration.tests.utils.operation_designated_operator_timeline',
+                "registration.tests.utils.operation_designated_operator_timeline",
                 operator=operator_new,
                 operation=operation,
                 start_date="2025-03-02T00:00:00Z",
@@ -221,14 +229,14 @@ class TestReportService(TestCase):
             )
             # Create contacts for the old operator because they will be used as operation representatives instead of the operation contacts
             contacts = baker.make_recipe(
-                'registration.tests.utils.contact',
+                "registration.tests.utils.contact",
                 operator=operator_old,
                 business_role_id="Operation Representative",
                 _quantity=3,
             )
             # Contacts with any business role are selectable
             senior_officer = baker.make_recipe(
-                'registration.tests.utils.contact',
+                "registration.tests.utils.contact",
                 operator=operator_old,
                 business_role_id="Senior Officer",
             )
@@ -236,7 +244,9 @@ class TestReportService(TestCase):
             operation.contacts.add(contacts[0])
 
             # Calling the method under test
-            report_version_id = ReportService.create_report(operation.id, reporting_year=2024)
+            report_version_id = ReportService.create_report(
+                operation.id, reporting_year=2024
+            )
             report = ReportVersion.objects.get(pk=report_version_id).report
 
             # Testing the report data
@@ -248,7 +258,7 @@ class TestReportService(TestCase):
             report_version = report.report_versions.first()
             self.assertEqual(report_version.report, report)
             self.assertFalse(report_version.is_latest_submitted)
-            self.assertEqual(report_version.status, 'Draft')
+            self.assertEqual(report_version.status, "Draft")
 
             # Testing the report_operation data
             # NOTE: This test will need to be updated when we improve our handling for transferred operations
@@ -275,8 +285,10 @@ class TestReportService(TestCase):
                 ),
             )
             # Testing the operation representatives come from the contacts of the original operator
-            operation_representatives = report_version.report_operation_representatives.all().order_by(
-                "representative_name"
+            operation_representatives = (
+                report_version.report_operation_representatives.all().order_by(
+                    "representative_name"
+                )
             )
 
             self.assertEqual(operation_representatives.count(), 4)
@@ -285,12 +297,16 @@ class TestReportService(TestCase):
                 {contact.get_full_name() for contact in [*contacts, senior_officer]},
             )
             # No representative is pre-selected for a transferred operation
-            self.assertFalse(operation_representatives.filter(selected_for_report=True).exists())
+            self.assertFalse(
+                operation_representatives.filter(selected_for_report=True).exists()
+            )
 
     def test_save_report_operation_updates_fields_and_relationships(self):
         operation = operation_baker(type=Operation.Types.LFO)
         reporting_year = reporting_year_baker(reporting_year=2101)
-        report_version = report_baker(operation=operation, reporting_year=reporting_year)
+        report_version = report_baker(
+            operation=operation, reporting_year=reporting_year
+        )
 
         # Create input data for the ReportOperationIn object
         data = ReportOperationIn(
@@ -308,13 +324,23 @@ class TestReportService(TestCase):
         )
 
         with (
-            mock.patch('reporting.service.report_service.ReportOperation.objects.get') as mock_get,
-            mock.patch('reporting.service.report_service.ReportOperationRepresentative.objects.filter') as mock_filter,
-            mock.patch('reporting.service.report_service.FacilityReport.objects.filter') as mock_facility_filter,
-            mock.patch('reporting.service.report_service.FacilityReport.objects.get') as mock_facility_get,
-            mock.patch('reporting.service.report_service.Activity.objects.filter') as mock_activity_filter,
             mock.patch(
-                'reporting.service.report_service.RegulatedProduct.objects.filter'
+                "reporting.service.report_service.ReportOperation.objects.get"
+            ) as mock_get,
+            mock.patch(
+                "reporting.service.report_service.ReportOperationRepresentative.objects.filter"
+            ) as mock_filter,
+            mock.patch(
+                "reporting.service.report_service.FacilityReport.objects.filter"
+            ) as mock_facility_filter,
+            mock.patch(
+                "reporting.service.report_service.FacilityReport.objects.get"
+            ) as mock_facility_get,
+            mock.patch(
+                "reporting.service.report_service.Activity.objects.filter"
+            ) as mock_activity_filter,
+            mock.patch(
+                "reporting.service.report_service.RegulatedProduct.objects.filter"
             ) as mock_regulated_product_filter,
         ):
             mock_report_operation = mock.MagicMock(spec=ReportOperation)
@@ -323,9 +349,12 @@ class TestReportService(TestCase):
             mock_filter.return_value.update.return_value = None
 
             # Mock FacilityReport behavior
-            mock_facility_report = mock.MagicMock(spec=FacilityReport, report_version_id=report_version.id, id=999)
+            mock_facility_report = mock.MagicMock(
+                spec=FacilityReport, report_version_id=report_version.id, id=999
+            )
             mock_facility_reports = [
-                mock.MagicMock(spec=FacilityReport, report_version_id=report_version.id) for _ in range(3)
+                mock.MagicMock(spec=FacilityReport, report_version_id=report_version.id)
+                for _ in range(3)
             ]
             mock_facility_get.return_value = mock_facility_report
             mock_facility_filter.return_value = mock_facility_reports
@@ -336,13 +365,22 @@ class TestReportService(TestCase):
             mock_activity_filter.return_value = [mock_activity_1, mock_activity_2]
 
             # Mock RegulatedProduct filtering
-            mock_regulated_product_1 = mock.MagicMock(spec=RegulatedProduct, name="Cement equivalent")
-            mock_regulated_product_2 = mock.MagicMock(spec=RegulatedProduct, name="Mining: gold-equivalent")
-            mock_regulated_product_filter.return_value = [mock_regulated_product_1, mock_regulated_product_2]
+            mock_regulated_product_1 = mock.MagicMock(
+                spec=RegulatedProduct, name="Cement equivalent"
+            )
+            mock_regulated_product_2 = mock.MagicMock(
+                spec=RegulatedProduct, name="Mining: gold-equivalent"
+            )
+            mock_regulated_product_filter.return_value = [
+                mock_regulated_product_1,
+                mock_regulated_product_2,
+            ]
 
             ReportService.save_report_operation(report_version.id, data)
 
-            mock_report_operation.activities.set.assert_called_once_with([mock_activity_1, mock_activity_2])
+            mock_report_operation.activities.set.assert_called_once_with(
+                [mock_activity_1, mock_activity_2]
+            )
 
             mock_report_operation.regulated_products.set.assert_called_once_with(
                 [mock_regulated_product_1, mock_regulated_product_2]
@@ -354,7 +392,9 @@ class TestReportService(TestCase):
             mock_report_operation.operation_name = data.operation_name
             mock_report_operation.operation_type = data.operation_type
             mock_report_operation.operation_bcghgid = data.operation_bcghgid
-            mock_report_operation.bc_obps_regulated_operation_id = data.bc_obps_regulated_operation_id
+            mock_report_operation.bc_obps_regulated_operation_id = (
+                data.bc_obps_regulated_operation_id
+            )
             mock_report_operation.operation_report_type = data.operation_report_type
 
     def test_get_registration_purpose_by_version_id_returns_correct_data(self):
@@ -364,34 +404,45 @@ class TestReportService(TestCase):
         """
         self.report_version = baker.make_recipe("reporting.tests.utils.report_version")
         self.report_operation = make_recipe(
-            'reporting.tests.utils.report_operation', report_version=self.report_version
+            "reporting.tests.utils.report_operation", report_version=self.report_version
         )
-        retrieved_data = ReportService.get_registration_purpose_by_version_id(version_id=self.report_version.id)
+        retrieved_data = ReportService.get_registration_purpose_by_version_id(
+            version_id=self.report_version.id
+        )
         self.assertIsNotNone(retrieved_data)
-        self.assertEqual(retrieved_data["registration_purpose"], self.report_operation.registration_purpose)
+        self.assertEqual(
+            retrieved_data["registration_purpose"],
+            self.report_operation.registration_purpose,
+        )
 
     def test_deletes_child_report_product_records_on_product_set_change(self):
-        operator = baker.make_recipe('registration.tests.utils.operator')
+        operator = baker.make_recipe("registration.tests.utils.operator")
         operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
-        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        report = baker.make_recipe("reporting.tests.utils.report", operation=operation)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report=report
+        )
+        report_operation = baker.make_recipe(
+            "reporting.tests.utils.report_operation", report_version=report_version
+        )
         report_operation.regulated_products.set([1, 2, 3])
-        facility_report = baker.make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
+        facility_report = baker.make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         report_product_1 = baker.make_recipe(
-            'reporting.tests.utils.report_product',
+            "reporting.tests.utils.report_product",
             report_version=report_version,
             facility_report=facility_report,
             product_id=1,
         )
         report_product_2 = baker.make_recipe(
-            'reporting.tests.utils.report_product',
+            "reporting.tests.utils.report_product",
             report_version=report_version,
             facility_report=facility_report,
             product_id=2,
         )
         report_product_3 = baker.make_recipe(
-            'reporting.tests.utils.report_product',
+            "reporting.tests.utils.report_product",
             report_version=report_version,
             facility_report=facility_report,
             product_id=3,
@@ -428,16 +479,22 @@ class TestReportService(TestCase):
         from the operation are NOT removed from the facility, so any user-made
         facility-level selections are preserved.
         """
-        operator = baker.make_recipe('registration.tests.utils.operator')
+        operator = baker.make_recipe("registration.tests.utils.operator")
         operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
-        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        report = baker.make_recipe("reporting.tests.utils.report", operation=operation)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report=report
+        )
+        report_operation = baker.make_recipe(
+            "reporting.tests.utils.report_operation", report_version=report_version
+        )
         report_operation.activities.set([1, 2, 3])
-        facility_report = baker.make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
+        facility_report = baker.make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         facility_report.activities.set([1, 2, 3])
         report_activity = baker.make_recipe(
-            'reporting.tests.utils.report_activity',
+            "reporting.tests.utils.report_activity",
             facility_report=facility_report,
             activity_id=2,
         )
@@ -482,13 +539,19 @@ class TestReportService(TestCase):
         updating operation-level activities DOES set the facility's activities.
         This allows initial setup of activities.
         """
-        operator = baker.make_recipe('registration.tests.utils.operator')
+        operator = baker.make_recipe("registration.tests.utils.operator")
         operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
-        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        report = baker.make_recipe("reporting.tests.utils.report", operation=operation)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report=report
+        )
+        report_operation = baker.make_recipe(
+            "reporting.tests.utils.report_operation", report_version=report_version
+        )
         report_operation.activities.set([1, 2, 3])
-        facility_report = baker.make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
+        facility_report = baker.make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         # Facility has NO activities initially
 
         data = ReportOperationIn(
@@ -522,14 +585,18 @@ class TestReportService(TestCase):
         Once a facility report is marked as completed, changes to operation-level
         activities must NOT propagate to that facility's activities.
         """
-        operator = baker.make_recipe('registration.tests.utils.operator')
+        operator = baker.make_recipe("registration.tests.utils.operator")
         operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
-        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        report = baker.make_recipe("reporting.tests.utils.report", operation=operation)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report=report
+        )
+        report_operation = baker.make_recipe(
+            "reporting.tests.utils.report_operation", report_version=report_version
+        )
         report_operation.activities.set([1, 2, 3])
         facility_report = baker.make_recipe(
-            'reporting.tests.utils.facility_report',
+            "reporting.tests.utils.facility_report",
             report_version=report_version,
             is_completed=True,
         )
@@ -562,21 +629,26 @@ class TestReportService(TestCase):
 
     def _lfo_with_completed_facility_report(self):
         operation = operation_baker(
-            type=Operation.Types.LFO, operator_id=make_recipe('registration.tests.utils.operator').id
+            type=Operation.Types.LFO,
+            operator_id=make_recipe("registration.tests.utils.operator").id,
         )
-        report = make_recipe('reporting.tests.utils.report', operation=operation)
-        report_version = make_recipe('reporting.tests.utils.report_version', report=report)
-        make_recipe('reporting.tests.utils.report_operation', report_version=report_version).regulated_products.set(
-            [1, 2]
+        report = make_recipe("reporting.tests.utils.report", operation=operation)
+        report_version = make_recipe(
+            "reporting.tests.utils.report_version", report=report
         )
+        make_recipe(
+            "reporting.tests.utils.report_operation", report_version=report_version
+        ).regulated_products.set([1, 2])
         facility_report = make_recipe(
-            'reporting.tests.utils.facility_report', report_version=report_version, is_completed=True
+            "reporting.tests.utils.facility_report",
+            report_version=report_version,
+            is_completed=True,
         )
         return report_version, facility_report
 
     def _report_product(self, facility_report, **kwargs):
         return make_recipe(
-            'reporting.tests.utils.report_product',
+            "reporting.tests.utils.report_product",
             report_version=facility_report.report_version,
             facility_report=facility_report,
             **kwargs,
@@ -584,10 +656,10 @@ class TestReportService(TestCase):
 
     def _allocate_emissions(self, report_product, allocated_quantity):
         return make_recipe(
-            'reporting.tests.utils.report_product_emission_allocation',
+            "reporting.tests.utils.report_product_emission_allocation",
             report_version=report_product.report_version,
             report_emission_allocation=make_recipe(
-                'reporting.tests.utils.report_emission_allocation',
+                "reporting.tests.utils.report_emission_allocation",
                 report_version=report_product.report_version,
                 facility_report=report_product.facility_report,
             ),
@@ -614,31 +686,48 @@ class TestReportService(TestCase):
         )
 
     def test_lfo_removes_deselected_product_data_from_all_facility_reports(self):
-        report_version, completed_facility_report = self._lfo_with_completed_facility_report()
+        report_version, completed_facility_report = (
+            self._lfo_with_completed_facility_report()
+        )
         incomplete_facility_report = make_recipe(
-            'reporting.tests.utils.facility_report', report_version=report_version, is_completed=False
+            "reporting.tests.utils.facility_report",
+            report_version=report_version,
+            is_completed=False,
         )
         allocations = []
         for facility_report in [completed_facility_report, incomplete_facility_report]:
             self._report_product(facility_report, product_id=1)
             allocations.append(
-                self._allocate_emissions(self._report_product(facility_report, product_id=2), allocated_quantity=10)
+                self._allocate_emissions(
+                    self._report_product(facility_report, product_id=2),
+                    allocated_quantity=10,
+                )
             )
 
         self._save_lfo_report_operation(report_version, regulated_products=[1])
 
         for facility_report in [completed_facility_report, incomplete_facility_report]:
             assert list(
-                ReportProduct.objects.filter(facility_report=facility_report).values_list("product_id", flat=True)
+                ReportProduct.objects.filter(
+                    facility_report=facility_report
+                ).values_list("product_id", flat=True)
             ) == [1]
             facility_report.refresh_from_db()
             assert not facility_report.is_completed
-        assert not ReportProductEmissionAllocation.objects.filter(id__in=[a.id for a in allocations]).exists()
+        assert not ReportProductEmissionAllocation.objects.filter(
+            id__in=[a.id for a in allocations]
+        ).exists()
 
-    def test_lfo_only_resets_completion_of_facility_reports_with_removed_product_data(self):
-        report_version, affected_facility_report = self._lfo_with_completed_facility_report()
+    def test_lfo_only_resets_completion_of_facility_reports_with_removed_product_data(
+        self,
+    ):
+        report_version, affected_facility_report = (
+            self._lfo_with_completed_facility_report()
+        )
         unaffected_facility_report = make_recipe(
-            'reporting.tests.utils.facility_report', report_version=report_version, is_completed=True
+            "reporting.tests.utils.facility_report",
+            report_version=report_version,
+            is_completed=True,
         )
         self._report_product(affected_facility_report, product_id=2)
         self._report_product(unaffected_facility_report, product_id=1)
@@ -659,13 +748,21 @@ class TestReportService(TestCase):
         facility_report.refresh_from_db()
         assert facility_report.is_completed
 
-    def test_lfo_removed_unregulated_product_resets_completion_only_with_allocated_emissions(self):
-        unregulated_product = make_recipe('registration.tests.utils.regulated_product', is_regulated=False)
+    def test_lfo_removed_unregulated_product_resets_completion_only_with_allocated_emissions(
+        self,
+    ):
+        unregulated_product = make_recipe(
+            "registration.tests.utils.regulated_product", is_regulated=False
+        )
 
         for allocated_quantity, expected_is_completed in [(0, True), (10, False)]:
             with self.subTest(allocated_quantity=allocated_quantity):
-                report_version, facility_report = self._lfo_with_completed_facility_report()
-                report_product = self._report_product(facility_report, product=unregulated_product)
+                report_version, facility_report = (
+                    self._lfo_with_completed_facility_report()
+                )
+                report_product = self._report_product(
+                    facility_report, product=unregulated_product
+                )
                 self._allocate_emissions(report_product, allocated_quantity)
 
                 self._save_lfo_report_operation(report_version, regulated_products=[1])
@@ -676,25 +773,32 @@ class TestReportService(TestCase):
 
     def test_sfo_removes_deselected_product_data_and_emission_allocations(self):
         operation = operation_baker(
-            type=Operation.Types.SFO, operator_id=make_recipe('registration.tests.utils.operator').id
+            type=Operation.Types.SFO,
+            operator_id=make_recipe("registration.tests.utils.operator").id,
         )
-        report = make_recipe('reporting.tests.utils.report', operation=operation)
-        report_version = make_recipe('reporting.tests.utils.report_version', report=report)
-        make_recipe('reporting.tests.utils.report_operation', report_version=report_version).regulated_products.set(
-            [1, 2]
+        report = make_recipe("reporting.tests.utils.report", operation=operation)
+        report_version = make_recipe(
+            "reporting.tests.utils.report_version", report=report
         )
-        facility_report = make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
+        make_recipe(
+            "reporting.tests.utils.report_operation", report_version=report_version
+        ).regulated_products.set([1, 2])
+        facility_report = make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         report_emission_allocation = make_recipe(
-            'reporting.tests.utils.report_emission_allocation',
+            "reporting.tests.utils.report_emission_allocation",
             report_version=report_version,
             facility_report=facility_report,
         )
         kept_allocation, removed_allocation = [
             make_recipe(
-                'reporting.tests.utils.report_product_emission_allocation',
+                "reporting.tests.utils.report_product_emission_allocation",
                 report_version=report_version,
                 report_emission_allocation=report_emission_allocation,
-                report_product=self._report_product(facility_report, product_id=product_id),
+                report_product=self._report_product(
+                    facility_report, product_id=product_id
+                ),
                 allocated_quantity=10,
             )
             for product_id in [1, 2]
@@ -718,28 +822,40 @@ class TestReportService(TestCase):
         )
 
         assert list(
-            ReportProduct.objects.filter(facility_report=facility_report).values_list("product_id", flat=True)
+            ReportProduct.objects.filter(facility_report=facility_report).values_list(
+                "product_id", flat=True
+            )
         ) == [1]
-        assert not ReportProductEmissionAllocation.objects.filter(id=removed_allocation.id).exists()
+        assert not ReportProductEmissionAllocation.objects.filter(
+            id=removed_allocation.id
+        ).exists()
         kept_allocation.refresh_from_db()
         assert kept_allocation.allocated_quantity == 10
 
     def test_lfo_creates_unregulated_product_entries_for_all_facilities(self):
-        operator = baker.make_recipe('registration.tests.utils.operator')
+        operator = baker.make_recipe("registration.tests.utils.operator")
         operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
-        facilities = baker.make_recipe('registration.tests.utils.facility', operation=operation, _quantity=3)
-
-        unregulated_products = baker.make_recipe(
-            'registration.tests.utils.regulated_product', is_regulated=False, _quantity=2
+        facilities = baker.make_recipe(
+            "registration.tests.utils.facility", operation=operation, _quantity=3
         )
 
-        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        unregulated_products = baker.make_recipe(
+            "registration.tests.utils.regulated_product",
+            is_regulated=False,
+            _quantity=2,
+        )
+
+        report = baker.make_recipe("reporting.tests.utils.report", operation=operation)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report=report
+        )
+        baker.make_recipe(
+            "reporting.tests.utils.report_operation", report_version=report_version
+        )
 
         facility_reports = [
             baker.make_recipe(
-                'reporting.tests.utils.facility_report',
+                "reporting.tests.utils.facility_report",
                 report_version=report_version,
                 facility=f,
             )
@@ -747,7 +863,9 @@ class TestReportService(TestCase):
         ]
 
         for f_report in facility_reports:
-            assert not ReportProduct.objects.filter(facility_report=f_report, product__in=unregulated_products).exists()
+            assert not ReportProduct.objects.filter(
+                facility_report=f_report, product__in=unregulated_products
+            ).exists()
 
         data = ReportOperationIn(
             operator_legal_name="Updated Legal Name",
@@ -766,23 +884,33 @@ class TestReportService(TestCase):
 
         for f_report in facility_reports:
             for product in unregulated_products:
-                assert ReportProduct.objects.filter(facility_report=f_report, product=product).exists()
+                assert ReportProduct.objects.filter(
+                    facility_report=f_report, product=product
+                ).exists()
 
     def test_sfo_creates_unregulated_product_entries_for_all_facilities(self):
-        operator = baker.make_recipe('registration.tests.utils.operator')
+        operator = baker.make_recipe("registration.tests.utils.operator")
         operation = operation_baker(type=Operation.Types.SFO, operator_id=operator.id)
-        facility = baker.make_recipe('registration.tests.utils.facility', operation=operation)
-
-        unregulated_products = baker.make_recipe(
-            'registration.tests.utils.regulated_product', is_regulated=False, _quantity=2
+        facility = baker.make_recipe(
+            "registration.tests.utils.facility", operation=operation
         )
 
-        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        unregulated_products = baker.make_recipe(
+            "registration.tests.utils.regulated_product",
+            is_regulated=False,
+            _quantity=2,
+        )
+
+        report = baker.make_recipe("reporting.tests.utils.report", operation=operation)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report=report
+        )
+        baker.make_recipe(
+            "reporting.tests.utils.report_operation", report_version=report_version
+        )
 
         facility_report = baker.make_recipe(
-            'reporting.tests.utils.facility_report',
+            "reporting.tests.utils.facility_report",
             report_version=report_version,
             facility=facility,
         )
@@ -807,4 +935,6 @@ class TestReportService(TestCase):
         ReportService.save_report_operation(report_version.id, data)
 
         for product in unregulated_products:
-            assert ReportProduct.objects.filter(facility_report=facility_report, product=product).exists()
+            assert ReportProduct.objects.filter(
+                facility_report=facility_report, product=product
+            ).exists()

@@ -1,19 +1,21 @@
 from common.enums import Schemas
 from common.models import BaseModel
 from django.db import models
-from simple_history.models import HistoricalRecords
 from registration.enums.enums import RegistrationTableNames
 from registration.models.rls_configs.business_role import Rls as BusinessRoleRls
+from simple_history.models import HistoricalRecords
 
 
 class BusinessRole(BaseModel):
     role_name = models.CharField(
         primary_key=True,
         serialize=False,
-        db_comment='The name identifying the role assigned to a Contact. Also acts as the primary key.',
+        db_comment="The name identifying the role assigned to a Contact. Also acts as the primary key.",
         max_length=100,
     )
-    role_description = models.CharField(db_comment='Description of the business role', max_length=1000)
+    role_description = models.CharField(
+        db_comment="Description of the business role", max_length=1000
+    )
     history = HistoricalRecords(
         table_name='erc_history"."business_role_history',
         history_user_id_field=models.UUIDField(null=True, blank=True),

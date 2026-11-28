@@ -1,14 +1,17 @@
+from common.lib import pgtrigger
 from common.tests.utils.helpers import BaseTestCase
+from model_bakery.baker import make_recipe
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from reporting.models import ReportPersonResponsible
 from reporting.tests.utils.bakers import report_person_responsible_baker
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
-from reporting.models import ReportPersonResponsible
 from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsTestSetup
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from common.lib import pgtrigger
-from model_bakery.baker import make_recipe
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ReportPersonResponsibleTest(BaseTestCase):
@@ -33,61 +36,72 @@ class ReportPersonResponsibleTest(BaseTestCase):
         ]
 
     def test_immutable_after_report_version_submitted(self):
-        assert_immutable_report_version("reporting.tests.utils.report_person_responsible")
+        assert_immutable_report_version(
+            "reporting.tests.utils.report_person_responsible"
+        )
 
 
 class ReportPersonResponsibleRlsTest(BaseTestCase):
-
     def test_report_person_responsible_rls_industry_user(self):
         # Common Test Setup
         t = ReportRlsTestSetup()
 
         # ReportPersonResponsible Setup
         # Inside access bounds
-        with pgtrigger.ignore("reporting.ReportPersonResponsible:immutable_report_version"):
+        with pgtrigger.ignore(
+            "reporting.ReportPersonResponsible:immutable_report_version"
+        ):
             report_person_responsible_2010_submitted = make_recipe(
-                'reporting.tests.utils.report_person_responsible',
+                "reporting.tests.utils.report_person_responsible",
                 report_version=t.report_version_2010_submitted,
             )
         report_person_responsible_2010_draft = make_recipe(
-            'reporting.tests.utils.report_person_responsible', report_version=t.report_version_2010_draft
+            "reporting.tests.utils.report_person_responsible",
+            report_version=t.report_version_2010_draft,
         )
         # Outside access bounds
         report_person_responsible_2013_draft = make_recipe(
-            'reporting.tests.utils.report_person_responsible', report_version=t.report_version_2013_draft
+            "reporting.tests.utils.report_person_responsible",
+            report_version=t.report_version_2013_draft,
         )
 
         # Additional report_version needed for insert test: 2012 - Within access bounds
-        reporting_year_2012 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2012)
+        reporting_year_2012 = make_recipe(
+            "reporting.tests.utils.reporting_year", reporting_year=2012
+        )
         report_2012 = make_recipe(
-            'reporting.tests.utils.report',
+            "reporting.tests.utils.report",
             operation=t.report_version_2010_submitted.report.operation,
             operator=t.report_version_2010_submitted.report.operator,
             reporting_year=reporting_year_2012,
         )
         report_version_2012_draft = make_recipe(
-            'reporting.tests.utils.report_version', report=report_2012, status='Draft'
+            "reporting.tests.utils.report_version", report=report_2012, status="Draft"
         )
 
         def select_function(cursor):
-            ReportPersonResponsible.objects.get(id=report_person_responsible_2010_submitted.id)
+            ReportPersonResponsible.objects.get(
+                id=report_person_responsible_2010_submitted.id
+            )
 
         def forbidden_select_function(cursor):
-            ReportPersonResponsible.objects.get(id=report_person_responsible_2013_draft.id)
+            ReportPersonResponsible.objects.get(
+                id=report_person_responsible_2013_draft.id
+            )
 
         def insert_function(cursor):
             ReportPersonResponsible.objects.create(
                 report_version=report_version_2012_draft,
-                street_address='asdf',
-                municipality='asdf',
-                province='asdf',
-                postal_code='asdf',
-                business_role='asdf',
-                first_name='asdf',
-                last_name='asdf',
-                position_title='asdf',
-                email='asdf@test.test',
-                phone_number='',
+                street_address="asdf",
+                municipality="asdf",
+                province="asdf",
+                postal_code="asdf",
+                business_role="asdf",
+                first_name="asdf",
+                last_name="asdf",
+                position_title="asdf",
+                email="asdf@test.test",
+                phone_number="",
             )
 
         def forbidden_insert_function(cursor):
@@ -106,7 +120,7 @@ class ReportPersonResponsibleRlsTest(BaseTestCase):
                     SET first_name = %s
                     WHERE id = %s
                 """,
-                ('Goku', report_person_responsible_2010_draft.id),
+                ("Goku", report_person_responsible_2010_draft.id),
             )
             return cursor.rowcount
 
@@ -117,7 +131,7 @@ class ReportPersonResponsibleRlsTest(BaseTestCase):
                     SET first_name = %s
                     WHERE id = %s
                 """,
-                ('Vegeta', report_person_responsible_2013_draft.id),
+                ("Vegeta", report_person_responsible_2013_draft.id),
             )
             return cursor.rowcount
 
@@ -139,7 +153,10 @@ class ReportPersonResponsibleRlsTest(BaseTestCase):
                     DELETE from "erc"."report_person_responsible"
                     WHERE id in (%s,%s)
                 """,
-                (report_person_responsible_2010_submitted.id, report_person_responsible_2013_draft.id),
+                (
+                    report_person_responsible_2010_submitted.id,
+                    report_person_responsible_2013_draft.id,
+                ),
             )
             return cursor.rowcount
 

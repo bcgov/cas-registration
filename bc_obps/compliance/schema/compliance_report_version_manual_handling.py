@@ -1,9 +1,9 @@
-from typing import Optional, Literal
-from ninja import ModelSchema, Schema, Field
+from typing import Literal
 
 from compliance.models.compliance_report_version_manual_handling import (
     ComplianceReportVersionManualHandling,
 )
+from ninja import Field, ModelSchema, Schema
 
 
 class ComplianceReportVersionManualHandlingOut(ModelSchema):
@@ -12,8 +12,12 @@ class ComplianceReportVersionManualHandlingOut(ModelSchema):
     """
 
     # Project related users as full names instead of nested user objects
-    analyst_submitted_by: Optional[str] = Field(None, alias="analyst_submitted_by.get_full_name")
-    director_decision_by: Optional[str] = Field(None, alias="director_decision_by.get_full_name")
+    analyst_submitted_by: str | None = Field(
+        None, alias="analyst_submitted_by.get_full_name"
+    )
+    director_decision_by: str | None = Field(
+        None, alias="director_decision_by.get_full_name"
+    )
 
     class Meta:
         model = ComplianceReportVersionManualHandling
@@ -36,5 +40,7 @@ class ComplianceReportVersionManualHandlingIn(Schema):
         * Uses `director_decision`
     """
 
-    analyst_comment: Optional[str] = None
-    director_decision: Optional[Literal["pending_manual_handling", "issue_resolved"]] = None
+    analyst_comment: str | None = None
+    director_decision: Literal["pending_manual_handling", "issue_resolved"] | None = (
+        None
+    )

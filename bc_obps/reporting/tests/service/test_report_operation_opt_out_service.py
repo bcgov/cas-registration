@@ -1,12 +1,11 @@
 import pytest
 from model_bakery import baker
-
+from registration.models.operation import Operation
 from reporting.models import ReportingYear
 from reporting.service.report_operation_opt_out_service import (
     JAN_MAR_PRODUCTION_APPLICABLE_YEAR,
     ReportOperationOptOutService,
 )
-from registration.models.operation import Operation
 
 pytestmark = pytest.mark.django_db
 
@@ -26,7 +25,9 @@ class TestReportOperationOptOutService:
         registration_purpose,
         opted_out_final_year,
     ):
-        reporting_year_obj, _ = ReportingYear.objects.get_or_create(reporting_year=reporting_year)
+        reporting_year_obj, _ = ReportingYear.objects.get_or_create(
+            reporting_year=reporting_year
+        )
 
         report = baker.make_recipe(
             "reporting.tests.utils.report",
@@ -113,7 +114,9 @@ class TestReportOperationOptOutService:
             opted_out_final_year=JAN_MAR_PRODUCTION_APPLICABLE_YEAR,
         )
 
-        result = ReportOperationOptOutService.should_include_jan_mar_production(report_version)
+        result = ReportOperationOptOutService.should_include_jan_mar_production(
+            report_version
+        )
 
         assert result is True
 
@@ -124,7 +127,9 @@ class TestReportOperationOptOutService:
             opted_out_final_year=2024,
         )
 
-        result = ReportOperationOptOutService.should_include_jan_mar_production(report_version)
+        result = ReportOperationOptOutService.should_include_jan_mar_production(
+            report_version
+        )
 
         assert result is False
 
@@ -135,6 +140,8 @@ class TestReportOperationOptOutService:
             opted_out_final_year=2026,
         )
 
-        result = ReportOperationOptOutService.should_include_jan_mar_production(report_version)
+        result = ReportOperationOptOutService.should_include_jan_mar_production(
+            report_version
+        )
 
         assert result is False

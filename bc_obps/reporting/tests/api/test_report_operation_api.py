@@ -1,6 +1,6 @@
-from unittest.mock import patch, MagicMock
-from model_bakery import baker
+from unittest.mock import MagicMock, patch
 
+from model_bakery import baker
 from registration.models import Operation
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
@@ -27,8 +27,16 @@ class TestReportOperationDataApi(CommonTestSetup):
             "activities": [1, 2],
             "regulated_products": [1, 3],
             "report_operation_representatives": [
-                {"id": 1, "representative_name": "Bill Blue", "selected_for_report": True},
-                {"id": 2, "representative_name": "Bob Brown", "selected_for_report": True},
+                {
+                    "id": 1,
+                    "representative_name": "Bill Blue",
+                    "selected_for_report": True,
+                },
+                {
+                    "id": 2,
+                    "representative_name": "Bob Brown",
+                    "selected_for_report": True,
+                },
             ],
             "operation_report_type": "Interim",
             "operation_report_status": "Submitted",
@@ -39,7 +47,12 @@ class TestReportOperationDataApi(CommonTestSetup):
             "operation_type": self.operation.type,
         }
         self.activities = [
-            {"id": 1, "name": "Activity 1", "applicable_to": "TypeA", "regulated_name": "Regulated Activity 1"}
+            {
+                "id": 1,
+                "name": "Activity 1",
+                "applicable_to": "TypeA",
+                "regulated_name": "Regulated Activity 1",
+            }
         ]
         self.products = [
             {
@@ -55,9 +68,12 @@ class TestReportOperationDataApi(CommonTestSetup):
         self.reporting_year.reporting_year = 2024
 
         super().setup_method()
-        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator,
+            operations=[self.report_version.report.operation],
         )
 
     @patch.object(ReportOperationService, "get_report_operation_data_by_version_id")
@@ -67,7 +83,9 @@ class TestReportOperationDataApi(CommonTestSetup):
             "facility_id": self.facility_report["facility_id"],
             "all_activities": self.activities,
             "all_regulated_products": self.products,
-            "all_representatives": self.report_operation["report_operation_representatives"],
+            "all_representatives": self.report_operation[
+                "report_operation_representatives"
+            ],
             "report_type": self.report_operation["operation_report_type"],
             "show_regulated_products": True,
             "show_boro_id": True,
@@ -89,10 +107,16 @@ class TestReportOperationDataApi(CommonTestSetup):
 
         assert response.status_code == 200
         response_json = response.json()
-        assert response_json["report_operation"]["operation_name"] == self.report_operation["operation_name"]
+        assert (
+            response_json["report_operation"]["operation_name"]
+            == self.report_operation["operation_name"]
+        )
         assert response_json["all_activities"] == self.activities
         assert response_json["all_regulated_products"] == self.products
-        assert response_json["report_type"] == self.report_operation["operation_report_type"]
+        assert (
+            response_json["report_type"]
+            == self.report_operation["operation_report_type"]
+        )
         assert response_json["reporting_year"] == self.reporting_year.reporting_year
         assert response_json["reported_product_ids"] == [1]
 
@@ -119,26 +143,42 @@ class TestReportOperationDataApi(CommonTestSetup):
             ]
         )
 
-        assert response_json["all_representatives"] == self.report_operation["report_operation_representatives"]
+        assert (
+            response_json["all_representatives"]
+            == self.report_operation["report_operation_representatives"]
+        )
 
-    @patch("reporting.service.report_facilities_service.ReportFacilitiesService.get_all_facilities_for_review")
-    @patch("reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed")
-    @patch("reporting.service.report_operation_service.ReportOperationService.update_report_operation")
+    @patch(
+        "reporting.service.report_facilities_service.ReportFacilitiesService.get_all_facilities_for_review"
+    )
+    @patch(
+        "reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed"
+    )
+    @patch(
+        "reporting.service.report_operation_service.ReportOperationService.update_report_operation"
+    )
     def test_patch_report_operation_updates_successfully(
-        self, mock_update: MagicMock, mock_is_sync_allowed: MagicMock, mock_get_all_facilities: MagicMock
+        self,
+        mock_update: MagicMock,
+        mock_is_sync_allowed: MagicMock,
+        mock_get_all_facilities: MagicMock,
     ):
         """Test that PATCH endpoint successfully updates when sync is allowed"""
         mock_is_sync_allowed.return_value = True
 
         report_version = baker.make_recipe("reporting.tests.utils.report_version")
-        baker.make_recipe("reporting.tests.utils.report_operation", report_version=report_version)
+        baker.make_recipe(
+            "reporting.tests.utils.report_operation", report_version=report_version
+        )
 
         mock_update.return_value = {
             "report_operation": self.report_operation,
             "facility_id": self.facility_report["facility_id"],
             "all_activities": self.activities,
             "all_regulated_products": self.products,
-            "all_representatives": self.report_operation["report_operation_representatives"],
+            "all_representatives": self.report_operation[
+                "report_operation_representatives"
+            ],
             "report_type": self.report_operation["operation_report_type"],
             "show_regulated_products": True,
             "show_boro_id": True,
@@ -148,9 +188,12 @@ class TestReportOperationDataApi(CommonTestSetup):
             "reported_product_ids": [],
         }
 
-        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=report_version.report.operator, operations=[report_version.report.operation]
+            operator=report_version.report.operator,
+            operations=[report_version.report.operation],
         )
         response = TestUtils.mock_patch_with_auth_role(
             self,
@@ -169,15 +212,24 @@ class TestReportOperationDataApi(CommonTestSetup):
 
     # POST report-operation
     def test_authorized_users_can_post_updates_to_report_version(self):
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report_type='Simple Report')
-        baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
-
-        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
-        TestUtils.generate_operation_operator_timeline(
-            operator=report_version.report.operator, operations=[report_version.report.operation]
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report_type="Simple Report"
+        )
+        baker.make_recipe(
+            "reporting.tests.utils.report_operation", report_version=report_version
         )
 
-        endpoint_under_test = f"/api/reporting/report-version/{report_version.id}/report-operation"
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=report_version.report.operator
+        )
+        TestUtils.generate_operation_operator_timeline(
+            operator=report_version.report.operator,
+            operations=[report_version.report.operation],
+        )
+
+        endpoint_under_test = (
+            f"/api/reporting/report-version/{report_version.id}/report-operation"
+        )
         data = {
             "operator_legal_name": "new legal name",
             "operator_trade_name": "new trade name",
@@ -191,11 +243,23 @@ class TestReportOperationDataApi(CommonTestSetup):
             "operation_representative_name": [1, 2],
             "registration_purpose": "OBPS Regulated Operation",
         }
-        assert report_version.report_operation.operator_legal_name != data["operator_legal_name"]
-        assert report_version.report_operation.operator_trade_name != data["operator_trade_name"]
+        assert (
+            report_version.report_operation.operator_legal_name
+            != data["operator_legal_name"]
+        )
+        assert (
+            report_version.report_operation.operator_trade_name
+            != data["operator_trade_name"]
+        )
         assert report_version.report_operation.operation_name != data["operation_name"]
-        assert report_version.report_operation.operation_bcghgid != data["operation_bcghgid"]
-        assert report_version.report_operation.bc_obps_regulated_operation_id != data["bc_obps_regulated_operation_id"]
+        assert (
+            report_version.report_operation.operation_bcghgid
+            != data["operation_bcghgid"]
+        )
+        assert (
+            report_version.report_operation.bc_obps_regulated_operation_id
+            != data["bc_obps_regulated_operation_id"]
+        )
         assert report_version.report_type != data["operation_report_type"]
 
         response = TestUtils.mock_post_with_auth_role(
@@ -208,22 +272,34 @@ class TestReportOperationDataApi(CommonTestSetup):
         assert response_json["operator_trade_name"] == data["operator_trade_name"]
         assert response_json["operation_name"] == data["operation_name"]
         assert response_json["operation_bcghgid"] == data["operation_bcghgid"]
-        assert response_json["bc_obps_regulated_operation_id"] == data["bc_obps_regulated_operation_id"]
+        assert (
+            response_json["bc_obps_regulated_operation_id"]
+            == data["bc_obps_regulated_operation_id"]
+        )
 
-    @patch("reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed")
-    @patch("reporting.service.report_operation_service.ReportOperationService.update_report_operation")
+    @patch(
+        "reporting.service.sync_validation_service.SyncValidationService.is_sync_allowed"
+    )
+    @patch(
+        "reporting.service.report_operation_service.ReportOperationService.update_report_operation"
+    )
     def test_patch_report_operation_returns_403_when_sync_not_allowed(
         self, mock_update: MagicMock, mock_is_sync_allowed: MagicMock
     ):
         """Test that PATCH endpoint returns 403 when sync is not allowed"""
         report_version = baker.make_recipe("reporting.tests.utils.report_version")
-        baker.make_recipe("reporting.tests.utils.report_operation", report_version=report_version)
+        baker.make_recipe(
+            "reporting.tests.utils.report_operation", report_version=report_version
+        )
 
         mock_is_sync_allowed.return_value = False
 
-        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=report_version.report.operator, operations=[report_version.report.operation]
+            operator=report_version.report.operator,
+            operations=[report_version.report.operation],
         )
 
         response = TestUtils.mock_patch_with_auth_role(

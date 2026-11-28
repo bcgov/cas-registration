@@ -1,15 +1,15 @@
 from django.db import models
+from django.db.models import DecimalField, Q
+from django.db.models.fields.json import KeyTextTransform
+from django.db.models.functions import Cast
+from reporting.models.emission_category import EmissionCategory
 from reporting.models.gas_type import GasType
 from reporting.models.report_data_base_model import ReportDataBaseModel
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_source_type import ReportSourceType
-from reporting.models.emission_category import EmissionCategory
-from django.db.models import Q, DecimalField
-from django.db.models.fields.json import KeyTextTransform
-from django.db.models.functions import Cast
 from reporting.models.report_unit import ReportUnit
-from reporting.models.triggers import immutable_report_version_trigger
 from reporting.models.rls_configs.report_emission import Rls as ReportEmissionRls
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class AnnotateEmissionsManager(models.Manager):
@@ -62,12 +62,16 @@ class ReportEmission(ReportDataBaseModel):
     )
 
     class Meta(ReportDataBaseModel.Meta):
-        db_table_comment = "A table to store the reported emission-specific data, in a JSON format"
+        db_table_comment = (
+            "A table to store the reported emission-specific data, in a JSON format"
+        )
         db_table = 'erc"."report_emission'
         app_label = "reporting"
         constraints = [
             models.CheckConstraint(
-                condition=~(Q(report_fuel__isnull=False) & Q(report_unit__isnull=False)),
+                condition=~(
+                    Q(report_fuel__isnull=False) & Q(report_unit__isnull=False)
+                ),
                 name="fuel_or_unit_but_not_both",
                 violation_error_message="An emission record must belong to either a fuel, a unit, or none, but not both",
             )

@@ -1,6 +1,5 @@
 import pytest
 from model_bakery import baker
-
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
     ReportValidationError,
@@ -13,7 +12,6 @@ from reporting.service.report_validation.validators.required_fields.required_fie
     validate,
 )
 from reporting.service.reporting_flow_service import ReportingFlow
-
 
 pytestmark = pytest.mark.django_db
 

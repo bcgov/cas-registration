@@ -1,30 +1,31 @@
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Optional, Callable, Literal
+from typing import Literal
 
 
 @dataclass
 class ScheduledTaskConfig:
     func: Callable
     schedule_type: Literal["minutes", "hourly", "daily", "weekly", "monthly", "yearly"]
-    schedule_interval: Optional[int] = None
-    schedule_hour: Optional[int] = None
-    schedule_minute: Optional[int] = None
-    schedule_day_of_week: Optional[int] = None
-    schedule_day_of_month: Optional[int] = None
-    schedule_month: Optional[int] = None
-    tag: Optional[str] = None
+    schedule_interval: int | None = None
+    schedule_hour: int | None = None
+    schedule_minute: int | None = None
+    schedule_day_of_week: int | None = None
+    schedule_day_of_month: int | None = None
+    schedule_month: int | None = None
+    tag: str | None = None
 
     def __post_init__(self) -> None:
         self._validate()
 
     def _validate(self) -> None:
         validation_methods = {
-            'minutes': self._validate_minutes_schedule,
-            'hourly': self._validate_hourly_schedule,
-            'daily': self._validate_daily_schedule,
-            'weekly': self._validate_weekly_schedule,
-            'monthly': self._validate_monthly_schedule,
-            'yearly': self._validate_yearly_schedule,
+            "minutes": self._validate_minutes_schedule,
+            "hourly": self._validate_hourly_schedule,
+            "daily": self._validate_daily_schedule,
+            "weekly": self._validate_weekly_schedule,
+            "monthly": self._validate_monthly_schedule,
+            "yearly": self._validate_yearly_schedule,
         }
 
         validator = validation_methods.get(self.schedule_type)
@@ -54,7 +55,9 @@ class ScheduledTaskConfig:
         if self.schedule_day_of_week is None:
             raise ValueError("weekly schedule requires schedule_day_of_week")
         if not (0 <= self.schedule_day_of_week <= 6):
-            raise ValueError("schedule_day_of_week must be between 0 (Monday) and 6 (Sunday)")
+            raise ValueError(
+                "schedule_day_of_week must be between 0 (Monday) and 6 (Sunday)"
+            )
         self._validate_time_fields()
         if self.schedule_interval is not None:
             raise ValueError("weekly schedule should not specify schedule_interval")
@@ -92,12 +95,12 @@ class ScheduledTaskConfig:
     def to_dict(self) -> dict:
         """Convert configuration to dictionary for database storage."""
         return {
-            'schedule_type': self.schedule_type,
-            'schedule_interval': self.schedule_interval,
-            'schedule_hour': self.schedule_hour,
-            'schedule_minute': self.schedule_minute,
-            'schedule_day_of_week': self.schedule_day_of_week,
-            'schedule_day_of_month': self.schedule_day_of_month,
-            'schedule_month': self.schedule_month,
-            'tag': self.tag or '',
+            "schedule_type": self.schedule_type,
+            "schedule_interval": self.schedule_interval,
+            "schedule_hour": self.schedule_hour,
+            "schedule_minute": self.schedule_minute,
+            "schedule_day_of_week": self.schedule_day_of_week,
+            "schedule_day_of_month": self.schedule_day_of_month,
+            "schedule_month": self.schedule_month,
+            "tag": self.tag or "",
         }

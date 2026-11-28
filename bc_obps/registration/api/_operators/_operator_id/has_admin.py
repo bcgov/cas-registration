@@ -1,13 +1,16 @@
-from typing import Literal, Tuple
+from typing import Literal
 from uuid import UUID
+
 from common.permissions import authorize
-from django.http import HttpRequest
-from registration.constants import OPERATOR_TAGS
-from registration.service.data_access_service.user_operator_service import UserOperatorDataAccessService
-from registration.schema import Message
-from registration.api.router import router
-from registration.models import UserOperator
 from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest
+from registration.api.router import router
+from registration.constants import OPERATOR_TAGS
+from registration.models import UserOperator
+from registration.schema import Message
+from registration.service.data_access_service.user_operator_service import (
+    UserOperatorDataAccessService,
+)
 
 
 @router.get(
@@ -18,5 +21,9 @@ from common.service.error_service.custom_codes_4xx import custom_codes_4xx
     If such admin users exist, it returns 'True'; otherwise, it returns 'False'.""",
     auth=authorize("authorized_roles"),
 )
-def get_user_operator_has_admin(request: HttpRequest, operator_id: UUID) -> Tuple[Literal[200], bool]:
-    return 200, UserOperatorDataAccessService.get_admin_users(operator_id, UserOperator.Statuses.APPROVED).exists()
+def get_user_operator_has_admin(
+    request: HttpRequest, operator_id: UUID
+) -> tuple[Literal[200], bool]:
+    return 200, UserOperatorDataAccessService.get_admin_users(
+        operator_id, UserOperator.Statuses.APPROVED
+    ).exists()

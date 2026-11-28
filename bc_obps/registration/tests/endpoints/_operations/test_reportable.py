@@ -1,12 +1,15 @@
 from unittest.mock import patch
+
+from model_bakery.baker import make_recipe
 from registration.models import Operation
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from model_bakery.baker import make_recipe
 
 
 class TestOperationsPreviousReportableEndpoint(CommonTestSetup):
-    @patch("registration.service.operation_service.OperationService.list_previous_reportable_operations")
+    @patch(
+        "registration.service.operation_service.OperationService.list_previous_reportable_operations"
+    )
     def test_calls_and_returns_the_service_method_output(
         self,
         mock_list_previous_reportable_operations,

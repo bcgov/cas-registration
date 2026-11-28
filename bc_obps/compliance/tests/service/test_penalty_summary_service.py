@@ -1,11 +1,12 @@
 from decimal import Decimal
-from compliance.models.compliance_obligation import ComplianceObligation
-from django.test import TestCase
 from unittest.mock import patch
+
 import pytest
-from model_bakery.baker import make_recipe
 from compliance.models import ElicensingPayment
+from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.service.penalty_summary_service import PenaltySummaryService
+from django.test import TestCase
+from model_bakery.baker import make_recipe
 
 pytestmark = pytest.mark.django_db
 
@@ -19,7 +20,9 @@ class TestPenaltySummaryService(TestCase):
     @patch(
         "compliance.service.penalty_calculation_service.PenaltyCalculationService.get_automatic_overdue_penalty_data"
     )
-    def test_get_summary_happy_path_with_payments(self, mock_get_automatic_overdue_penalty_data, mock_get_payments):
+    def test_get_summary_happy_path_with_payments(
+        self, mock_get_automatic_overdue_penalty_data, mock_get_payments
+    ):
         # Arrange
         obligation = make_recipe("compliance.tests.utils.compliance_obligation")
 
@@ -56,7 +59,9 @@ class TestPenaltySummaryService(TestCase):
     @patch(
         "compliance.service.penalty_calculation_service.PenaltyCalculationService.get_automatic_overdue_penalty_data"
     )
-    def test_get_summary_handles_no_payments(self, mock_get_automatic_overdue_penalty_data, mock_get_payments):
+    def test_get_summary_handles_no_payments(
+        self, mock_get_automatic_overdue_penalty_data, mock_get_payments
+    ):
         # Arrange
         obligation = make_recipe("compliance.tests.utils.compliance_obligation")
 

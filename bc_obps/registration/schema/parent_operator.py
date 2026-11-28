@@ -1,9 +1,8 @@
-from typing import Optional
+from ninja import Field, ModelSchema
+from pydantic import ConfigDict, field_validator
 from registration.constants import CRA_BUSINESS_NUMBER_REGEX
-from registration.schema import validate_cra_business_number
-from ninja import ModelSchema, Field
-from pydantic import field_validator, ConfigDict
 from registration.models import ParentOperator
+from registration.schema import validate_cra_business_number
 
 
 class ParentOperatorIn(ModelSchema):
@@ -11,24 +10,26 @@ class ParentOperatorIn(ModelSchema):
     Schema for the Parent Operator part of the user operator form
     """
 
-    id: Optional[int] = None
+    id: int | None = None
     legal_name: str = Field(..., alias="po_legal_name")
     # the following are optional because international operators don't have them
-    cra_business_number: Optional[str] = Field(None, alias="po_cra_business_number", pattern=CRA_BUSINESS_NUMBER_REGEX)
-    street_address: Optional[str] = Field(None, alias="po_street_address")
-    municipality: Optional[str] = Field(None, alias="po_municipality")
-    province: Optional[str] = Field(None, alias="po_province")
-    postal_code: Optional[str] = Field(None, alias="po_postal_code")
-    mailing_address: Optional[int] = Field(None, alias="po_mailing_address")
+    cra_business_number: str | None = Field(
+        None, alias="po_cra_business_number", pattern=CRA_BUSINESS_NUMBER_REGEX
+    )
+    street_address: str | None = Field(None, alias="po_street_address")
+    municipality: str | None = Field(None, alias="po_municipality")
+    province: str | None = Field(None, alias="po_province")
+    postal_code: str | None = Field(None, alias="po_postal_code")
+    mailing_address: int | None = Field(None, alias="po_mailing_address")
     # the following are optional because Canadian operators don't have them
-    foreign_address: Optional[str] = None
-    foreign_tax_id_number: Optional[str] = None
+    foreign_address: str | None = None
+    foreign_tax_id_number: str | None = None
 
     model_config = ConfigDict(populate_by_name=True)
 
     @field_validator("cra_business_number")
     @classmethod
-    def validate_cra_business_number(cls, value: str) -> Optional[str]:
+    def validate_cra_business_number(cls, value: str) -> str | None:
         return validate_cra_business_number(value)
 
     class Meta:
@@ -43,16 +44,16 @@ class ParentOperatorOut(ModelSchema):
 
     po_legal_name: str = Field(..., alias="legal_name")
     # the following are optional because international operators don't have them
-    po_cra_business_number: Optional[str] = Field(..., alias="cra_business_number")
-    po_street_address: Optional[str] = Field(None, alias="mailing_address.street_address")
-    po_municipality: Optional[str] = Field(None, alias="mailing_address.municipality")
-    po_province: Optional[str] = Field(None, alias="mailing_address.province")
-    po_postal_code: Optional[str] = Field(None, alias="mailing_address.postal_code")
+    po_cra_business_number: str | None = Field(..., alias="cra_business_number")
+    po_street_address: str | None = Field(None, alias="mailing_address.street_address")
+    po_municipality: str | None = Field(None, alias="mailing_address.municipality")
+    po_province: str | None = Field(None, alias="mailing_address.province")
+    po_postal_code: str | None = Field(None, alias="mailing_address.postal_code")
     operator_registered_in_canada: bool
-    po_mailing_address: Optional[int] = Field(None, alias="mailing_address.id")
+    po_mailing_address: int | None = Field(None, alias="mailing_address.id")
     # the following are optional because Canadian operators don't have them
-    foreign_address: Optional[str] = None
-    foreign_tax_id_number: Optional[str] = None
+    foreign_address: str | None = None
+    foreign_tax_id_number: str | None = None
 
     model_config = ConfigDict(populate_by_name=True)
 

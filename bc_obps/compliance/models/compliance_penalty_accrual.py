@@ -1,6 +1,7 @@
+from compliance.models import CompliancePenalty
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
-from compliance.models import CompliancePenalty
+
 from .rls_configs.compliance_penalty_accrual import Rls as CompliancePenaltyAccrualRls
 
 
@@ -50,7 +51,9 @@ class CompliancePenaltyAccrual(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
-        db_table_comment = "This table contains the daily record of how a penalty was accrued"
+        db_table_comment = (
+            "This table contains the daily record of how a penalty was accrued"
+        )
         db_table = 'erc"."compliance_penalty_accrual'
 
     Rls = CompliancePenaltyAccrualRls

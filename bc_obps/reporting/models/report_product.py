@@ -1,4 +1,5 @@
 import typing
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
@@ -7,8 +8,8 @@ from registration.models.regulated_product import RegulatedProduct
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_version import ReportVersion
-from reporting.models.triggers import immutable_report_version_trigger
 from reporting.models.rls_configs.report_product import Rls as ReportProductRls
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class ReportProduct(TimeStampedModel):
@@ -89,9 +90,7 @@ class ReportProduct(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
-        db_table_comment = (
-            "A table storing the production information for a single product, as part of a facility report"
-        )
+        db_table_comment = "A table storing the production information for a single product, as part of a facility report"
         db_table = 'erc"."report_product'
         app_label = "reporting"
         constraints = [
@@ -120,12 +119,19 @@ class ReportProduct(TimeStampedModel):
         """
         Override the save method to validate the reporting year.
         """
-        if self.report_version.report.reporting_year_id == 2024 and self.production_data_apr_dec is None:
-            raise ValidationError("Apr-Dec production data needs to be reported for reporting year 2024.")
+        if (
+            self.report_version.report.reporting_year_id == 2024
+            and self.production_data_apr_dec is None
+        ):
+            raise ValidationError(
+                "Apr-Dec production data needs to be reported for reporting year 2024."
+            )
         elif (
             self.report_version.report.reporting_year_id == 2025
-            and self.report_version.report.operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
-            and self.report_version.report.operation.opted_in_operation.final_reporting_year_id == 2025
+            and self.report_version.report.operation.registration_purpose
+            == Operation.Purposes.OPTED_IN_OPERATION
+            and self.report_version.report.operation.opted_in_operation.final_reporting_year_id
+            == 2025
             and self.production_data_jan_mar is None
         ):
             raise ValidationError(

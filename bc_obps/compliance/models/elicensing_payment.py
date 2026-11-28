@@ -1,6 +1,7 @@
+from compliance.models import ElicensingLineItem
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
-from compliance.models import ElicensingLineItem
+
 from .rls_configs.elicensing_payment import Rls as ElicensingPaymentRls
 
 
@@ -10,7 +11,9 @@ class ElicensingPayment(TimeStampedModel):
 
     """
 
-    payment_object_id = models.IntegerField(db_comment="The object id of the payment in elicensing (paymentObjectId)")
+    payment_object_id = models.IntegerField(
+        db_comment="The object id of the payment in elicensing (paymentObjectId)"
+    )
 
     elicensing_line_item = models.ForeignKey(
         ElicensingLineItem,
@@ -32,10 +35,14 @@ class ElicensingPayment(TimeStampedModel):
     )
 
     method = models.CharField(
-        db_comment="The method used to make the payment (e.g. wire transfer) from elicensing.", blank=True, null=True
+        db_comment="The method used to make the payment (e.g. wire transfer) from elicensing.",
+        blank=True,
+        null=True,
     )
 
-    receipt_number = models.CharField(db_comment="Receipt number of the payment in elicensing.", blank=True, null=True)
+    receipt_number = models.CharField(
+        db_comment="Receipt number of the payment in elicensing.", blank=True, null=True
+    )
 
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"

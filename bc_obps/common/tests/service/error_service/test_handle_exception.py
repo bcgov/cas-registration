@@ -2,24 +2,23 @@ import json
 from unittest.mock import patch
 
 import pytest
+from common.exceptions import UserError
+from common.service.error_service.handle_exception import (
+    ExceptionHandler,
+    ExceptionResponse,
+    handle_exception,
+)
+from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
+from compliance.service.exceptions import ComplianceInvoiceError
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.utils import DatabaseError, InternalError, ProgrammingError
 from django.http import HttpRequest
 from ninja.responses import Response
-
-from common.exceptions import UserError
-from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
-from compliance.service.exceptions import ComplianceInvoiceError
 from registration.constants import UNAUTHORIZED_MESSAGE
 from reporting.service.exceptions import ReportValidationException
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
     Severity,
-)
-from common.service.error_service.handle_exception import (
-    ExceptionHandler,
-    ExceptionResponse,
-    handle_exception,
 )
 
 
@@ -74,9 +73,14 @@ class TestExceptionHandler:
         captured = capsys.readouterr()
         assert captured.out == ""
 
-    @patch("common.service.error_service.handle_exception.capture_exception", return_value="12345")
+    @patch(
+        "common.service.error_service.handle_exception.capture_exception",
+        return_value="12345",
+    )
     @patch("common.service.error_service.handle_exception.set_tag")
-    def test_capture_sentry_exception_prod(self, mock_set_tag, mock_capture, mock_settings):
+    def test_capture_sentry_exception_prod(
+        self, mock_set_tag, mock_capture, mock_settings
+    ):
         exc = Exception("Test")
 
         event_id = ExceptionHandler.capture_sentry_exception(exc, "test_tag")
@@ -89,7 +93,9 @@ class TestExceptionHandler:
         mock_settings.ENABLE_SENTRY = False
         mock_settings.ENABLE_BETTERSTACK = False
 
-        result = ExceptionHandler.capture_sentry_exception(Exception("Test"), "test_tag")
+        result = ExceptionHandler.capture_sentry_exception(
+            Exception("Test"), "test_tag"
+        )
 
         assert result is None
 

@@ -1,5 +1,4 @@
 from django.db import transaction
-
 from registration.models.activity import Activity
 from reporting.models.activity_json_schema import ActivityJsonSchema
 from reporting.models.facility_report import FacilityReport
@@ -24,7 +23,8 @@ def create_report_activities_for_facility_report(
 
     if not activities.exists():
         raise RuntimeError(
-            "No activities found for " f"report_operation={facility_report.report_version.report_operation.id}"
+            "No activities found for "
+            f"report_operation={facility_report.report_version.report_operation.id}"
         )
 
     for activity in activities:

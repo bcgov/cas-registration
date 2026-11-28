@@ -1,4 +1,5 @@
 from unittest.mock import patch
+
 import pytest
 from model_bakery import baker
 from registration.models import AppRole, User
@@ -23,19 +24,29 @@ class TestSyncUserProfileFromIdp:
         user = make_user()
 
         result = UserProfileService.sync_user_profile_from_idp(
-            user.user_guid, UserLoginSyncData(email="new.email@email.com", bceid_business_name="New Business Name")
+            user.user_guid,
+            UserLoginSyncData(
+                email="new.email@email.com", bceid_business_name="New Business Name"
+            ),
         )
 
         user.refresh_from_db()
         assert result.email == user.email == "new.email@email.com"
-        assert result.bceid_business_name == user.bceid_business_name == "New Business Name"
+        assert (
+            result.bceid_business_name
+            == user.bceid_business_name
+            == "New Business Name"
+        )
 
     @staticmethod
     def test_updates_only_the_field_that_changed():
         user = make_user()
 
         UserProfileService.sync_user_profile_from_idp(
-            user.user_guid, UserLoginSyncData(email="new.email@email.com", bceid_business_name="Old Business Name")
+            user.user_guid,
+            UserLoginSyncData(
+                email="new.email@email.com", bceid_business_name="Old Business Name"
+            ),
         )
 
         user.refresh_from_db()
@@ -48,7 +59,10 @@ class TestSyncUserProfileFromIdp:
 
         with patch.object(User, "save", autospec=True) as mock_save:
             UserProfileService.sync_user_profile_from_idp(
-                user.user_guid, UserLoginSyncData(email="old.email@email.com", bceid_business_name="Old Business Name")
+                user.user_guid,
+                UserLoginSyncData(
+                    email="old.email@email.com", bceid_business_name="Old Business Name"
+                ),
             )
 
         mock_save.assert_not_called()
@@ -58,7 +72,10 @@ class TestSyncUserProfileFromIdp:
         user = make_user("cas_analyst")
 
         UserProfileService.sync_user_profile_from_idp(
-            user.user_guid, UserLoginSyncData(email="new.email@email.com", bceid_business_name="New Business Name")
+            user.user_guid,
+            UserLoginSyncData(
+                email="new.email@email.com", bceid_business_name="New Business Name"
+            ),
         )
 
         user.refresh_from_db()

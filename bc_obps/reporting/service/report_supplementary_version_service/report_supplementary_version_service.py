@@ -1,13 +1,13 @@
 from django.db import transaction
-
 from reporting.models import ReportVersion
-from reporting.service.report_supplementary_version_service.report_supplementary_cloning import clone_all
+from reporting.service.report_supplementary_version_service.report_supplementary_cloning import (
+    clone_all,
+)
 from reporting.service.report_version_service import ReportVersionService
 from reporting.service.reporting_year_service import ReportingYearService
 
 
 class ReportSupplementaryVersionService:
-
     @staticmethod
     @transaction.atomic
     def create_or_clone_report_version(report_version_id: int) -> ReportVersion:
@@ -20,10 +20,16 @@ class ReportSupplementaryVersionService:
         ).get(id=report_version_id)
         operation = report_version.report.operation
         operator_changed = operation.operator_id != report_version.report.operator_id
-        purpose_changed = operation.registration_purpose != report_version.report_operation.registration_purpose
+        purpose_changed = (
+            operation.registration_purpose
+            != report_version.report_operation.registration_purpose
+        )
 
         current_year = ReportingYearService.get_current_reporting_year()
-        is_past_year = report_version.report.reporting_year.reporting_year < current_year.reporting_year
+        is_past_year = (
+            report_version.report.reporting_year.reporting_year
+            < current_year.reporting_year
+        )
 
         should_clone = not purpose_changed or operator_changed or is_past_year
 
@@ -83,6 +89,8 @@ class ReportSupplementaryVersionService:
                 status=ReportVersion.ReportVersionStatus.Submitted,
             )
             if operator_changed:
-                matching_versions = matching_versions.filter(report__operator_id=report_version.report.operator_id)
+                matching_versions = matching_versions.filter(
+                    report__operator_id=report_version.report.operator_id
+                )
             return matching_versions.order_by("-created_at").first()
         return report_version

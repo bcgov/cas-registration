@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum, StrEnum
-from typing import Optional
 from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -23,10 +23,16 @@ class ReportValidationErrorKey(StrEnum):
     MISSING_SUPPLEMENTARY_REPORT_EXISTING_ATTACHMENT_CONFIRMATION = (
         "missing_supplementary_report_existing_attachment_confirmation"
     )
-    MISSING_SUPPLEMENTARY_REPORT_ATTACHMENTS_CONFIRMATION = "missing_supplementary_report_attachments_confirmation"
-    MISSING_SUPPLEMENTARY_REPORT_VERSION_CHANGE = "missing_supplementary_report_version_change"
+    MISSING_SUPPLEMENTARY_REPORT_ATTACHMENTS_CONFIRMATION = (
+        "missing_supplementary_report_attachments_confirmation"
+    )
+    MISSING_SUPPLEMENTARY_REPORT_VERSION_CHANGE = (
+        "missing_supplementary_report_version_change"
+    )
     REPORT_DATA_OUT_OF_BOUNDS_BY_FUEL_TYPE = "report_data_out_of_bounds_by_fuel_type"
-    REPORT_DATA_OUT_OF_BOUNDS_BY_REPORTING_FIELD = "report_data_out_of_bounds_by_reporting_field"
+    REPORT_DATA_OUT_OF_BOUNDS_BY_REPORTING_FIELD = (
+        "report_data_out_of_bounds_by_reporting_field"
+    )
     ERROR_REQUIRED_FIELDS = "error_required_fields"
     REPORT_ACTIVITY_JSON_VALIDATION = "report_activity_json_validation"
     REPORT_FUEL_MISSING_AMOUNT = "report_fuel_missing_amount"
@@ -39,23 +45,23 @@ class ErrorContext(BaseModel):
     )
 
     report_version_id: int
-    facility_id: Optional[UUID] = None
-    facility_name: Optional[str] = None
-    emission_category_id: Optional[int] = None
-    emission_category_name: Optional[str] = None
-    activity_id: Optional[int] = None
-    activity_name: Optional[str] = None
-    source_type_id: Optional[int] = None
-    source_type_name: Optional[str] = None
-    fuel_type_name: Optional[str] = None
-    gas_type_name: Optional[str] = None
-    methodology_name: Optional[str] = None
-    reporting_field: Optional[str] = None
-    section: Optional[str] = None
-    section_title: Optional[str] = None
+    facility_id: UUID | None = None
+    facility_name: str | None = None
+    emission_category_id: int | None = None
+    emission_category_name: str | None = None
+    activity_id: int | None = None
+    activity_name: str | None = None
+    source_type_id: int | None = None
+    source_type_name: str | None = None
+    fuel_type_name: str | None = None
+    gas_type_name: str | None = None
+    methodology_name: str | None = None
+    reporting_field: str | None = None
+    section: str | None = None
+    section_title: str | None = None
     missing_fields: list[str] | None = None
-    expected_range: Optional[str] = None
-    user_input: Optional[str] = None
+    expected_range: str | None = None
+    user_input: str | None = None
 
 
 @dataclass
@@ -72,4 +78,4 @@ class ReportValidationError:
     severity: Severity
     message: str
     key: ReportValidationErrorKey
-    context: Optional[ErrorContext] = None
+    context: ErrorContext | None = None

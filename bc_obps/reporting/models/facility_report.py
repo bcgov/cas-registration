@@ -3,8 +3,8 @@ from registration.models import Activity
 from registration.models.facility import Facility
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models import ReportVersion
-from reporting.models.triggers import immutable_report_version_trigger
 from reporting.models.rls_configs.facility_report import Rls as FacilityReportRls
+from reporting.models.triggers import immutable_report_version_trigger
 
 
 class FacilityReport(TimeStampedModel):
@@ -52,7 +52,9 @@ class FacilityReport(TimeStampedModel):
     activities = models.ManyToManyField(Activity, related_name="+")
 
     class Meta(TimeStampedModel.Meta):
-        db_table_comment = "A table to store individual facility information as part of a report"
+        db_table_comment = (
+            "A table to store individual facility information as part of a report"
+        )
         db_table = 'erc"."facility_report'
         app_label = "reporting"
         constraints = [

@@ -1,5 +1,4 @@
 from django.db import transaction
-
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_emission_allocation import (
     ReportEmissionAllocation,
@@ -28,7 +27,9 @@ def prepare_emission_allocation_for_submission(
 
 def create_report_emission_allocation_for_facility_report(
     facility_report: FacilityReport,
-    allocation_methodology: str = (ReportEmissionAllocation.AllocationMethodologyChoices.NOT_APPLICABLE),
+    allocation_methodology: str = (
+        ReportEmissionAllocation.AllocationMethodologyChoices.NOT_APPLICABLE
+    ),
     allocation_other_methodology_description: str | None = None,
 ) -> ReportEmissionAllocation:
     """
@@ -37,7 +38,8 @@ def create_report_emission_allocation_for_facility_report(
     """
 
     if (
-        allocation_methodology == ReportEmissionAllocation.AllocationMethodologyChoices.OTHER
+        allocation_methodology
+        == ReportEmissionAllocation.AllocationMethodologyChoices.OTHER
         and not allocation_other_methodology_description
     ):
         allocation_other_methodology_description = "Test allocation methodology"
@@ -47,7 +49,9 @@ def create_report_emission_allocation_for_facility_report(
         facility_report=facility_report,
         defaults={
             "allocation_methodology": allocation_methodology,
-            "allocation_other_methodology_description": (allocation_other_methodology_description),
+            "allocation_other_methodology_description": (
+                allocation_other_methodology_description
+            ),
         },
     )
 

@@ -1,38 +1,59 @@
-from typing import Optional, Union, List
+from uuid import UUID
+
 from common.exceptions import UserError
+from django.db import transaction
+from django.db.models import QuerySet
+from ninja import Query
+from registration.models import Address, Operator
 from registration.models.parent_operator import ParentOperator
 from registration.models.partner_operator import PartnerOperator
-from registration.schema import PartnerOperatorIn, OperatorIn, OperatorFilterSchema, ParentOperatorIn, OperatorSearchOut
-from registration.service.data_access_service.partner_operator_service import PartnerOperatorService
-from registration.service.data_access_service.address_service import AddressDataAccessService
-from registration.service.data_access_service.parent_operator_service import ParentOperatorService
+from registration.schema import (
+    OperatorFilterSchema,
+    OperatorIn,
+    OperatorSearchOut,
+    ParentOperatorIn,
+    PartnerOperatorIn,
+)
+from registration.service.data_access_service.address_service import (
+    AddressDataAccessService,
+)
+from registration.service.data_access_service.operator_service import (
+    OperatorDataAccessService,
+)
+from registration.service.data_access_service.parent_operator_service import (
+    ParentOperatorService,
+)
+from registration.service.data_access_service.partner_operator_service import (
+    PartnerOperatorService,
+)
 from registration.service.data_access_service.user_service import UserDataAccessService
-from registration.models import Operator
-from registration.service.data_access_service.operator_service import OperatorDataAccessService
-from uuid import UUID
-from ninja import Query
-from django.db import transaction
-from registration.models import Address
-from django.db.models import QuerySet
 
 
 class OperatorService:
     @classmethod
     def get_operators_by_cra_number_or_legal_name(
-        cls, cra_business_number: Optional[str] = None, legal_name: Optional[str] = ""
-    ) -> Union[Operator, QuerySet[Operator], OperatorSearchOut, List[OperatorSearchOut]]:
+        cls, cra_business_number: str | None = None, legal_name: str | None = ""
+    ) -> Operator | QuerySet[Operator] | OperatorSearchOut | list[OperatorSearchOut]:
         if not cra_business_number and not legal_name:
             raise UserError("No search value provided")
         if cra_business_number:
             try:
-                operator: Operator = OperatorDataAccessService.get_operators_by_cra_number(cra_business_number)
+                operator: Operator = (
+                    OperatorDataAccessService.get_operators_by_cra_number(
+                        cra_business_number
+                    )
+                )
                 return OperatorSearchOut.model_validate(operator)
             except Exception:
                 raise UserError("No matching operator found. Retry or add operator.")
         elif legal_name:
             try:
-                operators: QuerySet[Operator] = OperatorDataAccessService.get_operators_by_legal_name(legal_name)
-                return [OperatorSearchOut.model_validate(operator) for operator in operators]
+                operators: QuerySet[Operator] = (
+                    OperatorDataAccessService.get_operators_by_legal_name(legal_name)
+                )
+                return [
+                    OperatorSearchOut.model_validate(operator) for operator in operators
+                ]
             except Exception:
                 raise UserError("No matching operator found. Retry or add operator.")
         return []
@@ -51,16 +72,24 @@ class OperatorService:
         # Check if all required fields are not None and not empty/whitespace
         return all(
             getattr(operator, field) is not None
-            and (not isinstance(getattr(operator, field), str) or getattr(operator, field).strip() != '')
+            and (
+                not isinstance(getattr(operator, field), str)
+                or getattr(operator, field).strip() != ""
+            )
             for field in required_fields
         )
 
     @classmethod
     @transaction.atomic()
     def upsert_partner_operators(
-        cls, operator: Operator, partner_operator_data: list[PartnerOperatorIn] | None, user_guid: UUID
+        cls,
+        operator: Operator,
+        partner_operator_data: list[PartnerOperatorIn] | None,
+        user_guid: UUID,
     ) -> None:
-        old_partner_operators: QuerySet[PartnerOperator] = operator.partner_operators.all()
+        old_partner_operators: QuerySet[PartnerOperator] = (
+            operator.partner_operators.all()
+        )
 
         # If all partner operators have been removed, archive them
         if not partner_operator_data:
@@ -70,7 +99,11 @@ class OperatorService:
 
         # Otherwise, create or update the partner operators
         new_partner_operators = [
-            PartnerOperatorService.create_or_update(partner.id, operator, partner.dict())  # type: ignore[attr-defined]
+            PartnerOperatorService.create_or_update(
+                partner.id,  # type: ignore[attr-defined]
+                operator,
+                partner.dict(),
+            )
             for partner in partner_operator_data
         ]
 
@@ -81,7 +114,10 @@ class OperatorService:
     @classmethod
     @transaction.atomic()
     def upsert_parent_operators(
-        cls, operator: Operator, parent_operators_data: list[ParentOperatorIn] | None, user_guid: UUID
+        cls,
+        operator: Operator,
+        parent_operators_data: list[ParentOperatorIn] | None,
+        user_guid: UUID,
     ) -> None:
         old_parent_operators: QuerySet[ParentOperator] = operator.parent_operators.all()
         # if all parent operators have been removed, archive them
@@ -93,22 +129,36 @@ class OperatorService:
         new_parent_operators = []
         for po_data in parent_operators_data:
             po_operator_data: dict = po_data.dict(
-                include={'legal_name', 'cra_business_number', 'foreign_address', 'foreign_tax_id_number'}
+                include={
+                    "legal_name",
+                    "cra_business_number",
+                    "foreign_address",
+                    "foreign_tax_id_number",
+                }
             )
             old_address_id = po_data.mailing_address
             new_address = po_data.dict(
-                include={'street_address', 'municipality', 'province', 'postal_code'}, exclude_none=True
+                include={"street_address", "municipality", "province", "postal_code"},
+                exclude_none=True,
             )
             if old_address_id and not new_address:
                 old_address = Address.objects.get(id=old_address_id)
-                po_operator_data['mailing_address'] = None
+                po_operator_data["mailing_address"] = None
                 old_address.delete()
 
             if new_address:
-                updated_mailing_address = AddressDataAccessService.upsert_address_from_data(new_address, old_address_id)
-                po_operator_data['mailing_address'] = updated_mailing_address
+                updated_mailing_address = (
+                    AddressDataAccessService.upsert_address_from_data(
+                        new_address, old_address_id
+                    )
+                )
+                po_operator_data["mailing_address"] = updated_mailing_address
 
-            new_parent_operators.append(ParentOperatorService.create_or_update(po_data.id, operator, po_operator_data))
+            new_parent_operators.append(
+                ParentOperatorService.create_or_update(
+                    po_data.id, operator, po_operator_data
+                )
+            )
 
         for old_parent in old_parent_operators:
             if old_parent not in new_parent_operators:
@@ -123,16 +173,20 @@ class OperatorService:
         partner_operator_data = payload.partner_operators_array
         operator_data: dict = payload.dict(
             include={
-                'legal_name',
-                'trade_name',
-                'business_structure',
-                'cra_business_number',
-                'bc_corporate_registry_number',
+                "legal_name",
+                "trade_name",
+                "business_structure",
+                "cra_business_number",
+                "bc_corporate_registry_number",
             }
         )
-        address_data = payload.dict(include={'street_address', 'municipality', 'province', 'postal_code'})
-        mailing_address = AddressDataAccessService.upsert_address_from_data(address_data, payload.mailing_address)
-        operator_data['mailing_address'] = mailing_address
+        address_data = payload.dict(
+            include={"street_address", "municipality", "province", "postal_code"}
+        )
+        mailing_address = AddressDataAccessService.upsert_address_from_data(
+            address_data, payload.mailing_address
+        )
+        operator_data["mailing_address"] = mailing_address
         operator = OperatorDataAccessService.update_operator(operator_id, operator_data)
 
         # partner operators
@@ -145,9 +199,14 @@ class OperatorService:
 
     @classmethod
     def list_operators(
-        cls, sort_field: Optional[str], sort_order: Optional[str], filters: OperatorFilterSchema = Query(...)
+        cls,
+        sort_field: str | None,
+        sort_order: str | None,
+        filters: OperatorFilterSchema = Query(...),
     ) -> QuerySet[Operator]:
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
         base_qs = OperatorDataAccessService.get_all_operators()
-        return filters.filter(base_qs).order_by(sort_by, f"{sort_direction}created_at", f"{sort_direction}id")
+        return filters.filter(base_qs).order_by(
+            sort_by, f"{sort_direction}created_at", f"{sort_direction}id"
+        )

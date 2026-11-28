@@ -1,12 +1,12 @@
-from datetime import datetime
-from typing import Optional
-from uuid import UUID
-from django.db.models import Q
 from dataclasses import dataclass
+from datetime import datetime
+from uuid import UUID
+
+from django.db.models import Q
+from django.utils import timezone
 from registration.models import OperationDesignatedOperatorTimeline
 from registration.models.operation import Operation
 from registration.models.operator import Operator
-from django.utils import timezone
 
 
 @dataclass
@@ -18,14 +18,16 @@ class OperationDesignatedOperatorTimelinePlus:
 
     @property
     def has_been_transferred(self) -> bool:
-        return self.end_date is not None and self.end_date.date() <= timezone.now().date()
+        return (
+            self.end_date is not None and self.end_date.date() <= timezone.now().date()
+        )
 
 
 class OperationDesignatedOperatorTimelineService:
     @classmethod
     def get_current_timeline(
         cls, operator_id: UUID, operation_id: UUID
-    ) -> Optional[OperationDesignatedOperatorTimeline]:
+    ) -> OperationDesignatedOperatorTimeline | None:
         return OperationDesignatedOperatorTimeline.objects.filter(
             operator_id=operator_id, operation_id=operation_id, end_date__isnull=True
         ).first()
@@ -43,7 +45,7 @@ class OperationDesignatedOperatorTimelineService:
     @classmethod
     def get_operation_designated_operator_for_reporting_year(
         cls, operation_id: UUID, reporting_year: int
-    ) -> Optional[OperationDesignatedOperatorTimelinePlus]:
+    ) -> OperationDesignatedOperatorTimelinePlus | None:
         """
         Retrieves the OperationDesignatedOperatorTimeline record for a specific operation and reporting year,
         with an annotated boolean field 'has_been_transferred'.

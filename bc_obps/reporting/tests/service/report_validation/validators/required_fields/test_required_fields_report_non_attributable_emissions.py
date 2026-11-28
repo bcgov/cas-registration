@@ -1,6 +1,5 @@
 import pytest
 from model_bakery import baker
-
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
     ReportValidationError,
@@ -36,7 +35,9 @@ class TestRequiredFieldsReportNonAttributableEmissionsValidator:
     def test_applies_returns_false_when_flow_is_not_applicable(self):
         assert applies(ReportingFlow.EIO) is False
 
-    def test_validate_returns_empty_dict_when_facility_has_no_non_attributable_emissions(self):
+    def test_validate_returns_empty_dict_when_facility_has_no_non_attributable_emissions(
+        self,
+    ):
         result = validate(self.report_version)
 
         assert result == {}

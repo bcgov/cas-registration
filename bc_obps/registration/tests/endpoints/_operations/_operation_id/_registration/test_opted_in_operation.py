@@ -1,35 +1,42 @@
+from model_bakery import baker
 from registration.models import Operation
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from model_bakery import baker
 
 
 class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
-    def test_opted_in_operation_detail_endpoint_users_can_only_get_their_operation(self):
-        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+    def test_opted_in_operation_detail_endpoint_users_can_only_get_their_operation(
+        self,
+    ):
+        baker.make_recipe(
+            "registration.tests.utils.approved_user_operator", user=self.user
+        )
         operation: Operation = baker.make_recipe(
-            'registration.tests.utils.operation',
+            "registration.tests.utils.operation",
         )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
             custom_reverse_lazy(
-                "operation_registration_get_opted_in_operation_detail", kwargs={'operation_id': operation.id}
+                "operation_registration_get_opted_in_operation_detail",
+                kwargs={"operation_id": operation.id},
             ),
         )
         # RLS makes this 404 instead of 401
         # assert response.status_code == 404
         # assert response.json()['message'] == "Not Found"
         assert response.status_code == 401
-        assert response.json()['message'] == "Unauthorized."
+        assert response.json()["message"] == "Unauthorized."
 
     def test_get_opted_in_operation_detail_endpoint_success(self):
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe(
+            "registration.tests.utils.approved_user_operator", user=self.user
+        )
         opted_in_operation = baker.make_recipe(
-            'registration.tests.utils.opted_in_operation_detail',
+            "registration.tests.utils.opted_in_operation_detail",
         )
         operation: Operation = baker.make_recipe(
-            'registration.tests.utils.operation',
+            "registration.tests.utils.operation",
             operator=approved_user_operator.operator,
             opted_in_operation=opted_in_operation,
         )
@@ -37,7 +44,8 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
             self,
             "industry_user",
             custom_reverse_lazy(
-                "operation_registration_get_opted_in_operation_detail", kwargs={'operation_id': operation.id}
+                "operation_registration_get_opted_in_operation_detail",
+                kwargs={"operation_id": operation.id},
             ),
         )
         assert response.status_code == 200
@@ -54,11 +62,15 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
         }
 
     # PUT
-    def test_opted_in_operation_detail_endpoint_users_can_only_update_their_operation(self):
+    def test_opted_in_operation_detail_endpoint_users_can_only_update_their_operation(
+        self,
+    ):
         # authorize current user
-        baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        baker.make_recipe(
+            "registration.tests.utils.approved_user_operator", user=self.user
+        )
         operation = baker.make_recipe(
-            'registration.tests.utils.operation',
+            "registration.tests.utils.operation",
         )
         response = TestUtils.mock_put_with_auth_role(
             self,
@@ -75,23 +87,26 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
                 "meets_notification_to_director_on_criteria_change": True,
             },
             custom_reverse_lazy(
-                "operation_registration_update_opted_in_operation_detail", kwargs={'operation_id': operation.id}
+                "operation_registration_update_opted_in_operation_detail",
+                kwargs={"operation_id": operation.id},
             ),
         )
         # RLS makes this 404 instead of 401
         # assert response.status_code == 404
         # assert response.json()['message'] == "Not Found"
         assert response.status_code == 401
-        assert response.json()['message'] == "Unauthorized."
+        assert response.json()["message"] == "Unauthorized."
 
     def test_update_opted_in_operation_detail_endpoint_success(self):
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe(
+            "registration.tests.utils.approved_user_operator", user=self.user
+        )
         opted_in_operation = baker.make_recipe(
-            'registration.tests.utils.opted_in_operation_detail',
+            "registration.tests.utils.opted_in_operation_detail",
             created_by=self.user,
         )
         operation: Operation = baker.make_recipe(
-            'registration.tests.utils.operation',
+            "registration.tests.utils.operation",
             operator=approved_user_operator.operator,
             opted_in_operation=opted_in_operation,
         )
@@ -110,7 +125,8 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
                 "meets_notification_to_director_on_criteria_change": False,
             },
             custom_reverse_lazy(
-                "operation_registration_update_opted_in_operation_detail", kwargs={'operation_id': operation.id}
+                "operation_registration_update_opted_in_operation_detail",
+                kwargs={"operation_id": operation.id},
             ),
         )
         # Assert
@@ -118,25 +134,51 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
         # Additional Assertions
         updated_operation: Operation = Operation.objects.get(id=operation.id)
         assert updated_operation.opted_in_operation is not None
-        assert updated_operation.opted_in_operation.meets_section_3_emissions_requirements is False
-        assert updated_operation.opted_in_operation.meets_electricity_import_operation_criteria is False
-        assert updated_operation.opted_in_operation.meets_entire_operation_requirements is False
-        assert updated_operation.opted_in_operation.meets_section_6_emissions_requirements is False
-        assert updated_operation.opted_in_operation.meets_naics_code_11_22_562_classification_requirements is False
-        assert updated_operation.opted_in_operation.meets_producing_gger_schedule_a1_regulated_product is False
-        assert updated_operation.opted_in_operation.meets_reporting_and_regulated_obligations is False
-        assert updated_operation.opted_in_operation.meets_notification_to_director_on_criteria_change is False
+        assert (
+            updated_operation.opted_in_operation.meets_section_3_emissions_requirements
+            is False
+        )
+        assert (
+            updated_operation.opted_in_operation.meets_electricity_import_operation_criteria
+            is False
+        )
+        assert (
+            updated_operation.opted_in_operation.meets_entire_operation_requirements
+            is False
+        )
+        assert (
+            updated_operation.opted_in_operation.meets_section_6_emissions_requirements
+            is False
+        )
+        assert (
+            updated_operation.opted_in_operation.meets_naics_code_11_22_562_classification_requirements
+            is False
+        )
+        assert (
+            updated_operation.opted_in_operation.meets_producing_gger_schedule_a1_regulated_product
+            is False
+        )
+        assert (
+            updated_operation.opted_in_operation.meets_reporting_and_regulated_obligations
+            is False
+        )
+        assert (
+            updated_operation.opted_in_operation.meets_notification_to_director_on_criteria_change
+            is False
+        )
         assert updated_operation.opted_in_operation.updated_by == self.user
         assert updated_operation.opted_in_operation.updated_at is not None
 
     def test_update_opted_in_operation_detail_endpoint_malformed_data(self):
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
+        approved_user_operator = baker.make_recipe(
+            "registration.tests.utils.approved_user_operator", user=self.user
+        )
         opted_in_operation = baker.make_recipe(
-            'registration.tests.utils.opted_in_operation_detail',
+            "registration.tests.utils.opted_in_operation_detail",
             created_by=self.user,
         )
         operation: Operation = baker.make_recipe(
-            'registration.tests.utils.operation',
+            "registration.tests.utils.operation",
             operator=approved_user_operator.operator,
             opted_in_operation=opted_in_operation,
         )
@@ -148,7 +190,8 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
                 "bad data": "im bad",
             },
             custom_reverse_lazy(
-                "operation_registration_update_opted_in_operation_detail", kwargs={'operation_id': operation.id}
+                "operation_registration_update_opted_in_operation_detail",
+                kwargs={"operation_id": operation.id},
             ),
         )
         assert response.status_code == 422

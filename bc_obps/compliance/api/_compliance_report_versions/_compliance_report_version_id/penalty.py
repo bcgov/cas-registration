@@ -1,14 +1,16 @@
-from typing import Literal, Tuple
+from typing import Literal
+
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from compliance.api.permissions import (
+    approved_industry_user_compliance_report_version_composite_auth,
+)
+from compliance.api.router import router
 from compliance.constants import COMPLIANCE
 from compliance.schema.automatic_overdue_penalty import PenaltyWithPaymentsOut
 from compliance.schema.elicensing_payments import ElicensingPaymentListOut
 from compliance.service.penalty_summary_service import PenaltySummaryService
-from registration.schema.generic import Message
-
 from django.http import HttpRequest
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from compliance.api.router import router
-from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth
+from registration.schema.generic import Message
 
 
 @router.get(
@@ -20,13 +22,15 @@ from compliance.api.permissions import approved_industry_user_compliance_report_
 )
 def get_penalty_by_compliance_report_version_id(
     request: HttpRequest, compliance_report_version_id: int
-) -> Tuple[Literal[200], PenaltyWithPaymentsOut]:
+) -> tuple[Literal[200], PenaltyWithPaymentsOut]:
     """
     Get automatic overdue penalty details along with payment information.
     Returns: outstanding amount, reporting year, penalty status, and associated payments.
     """
-    penalty_with_payments_data = PenaltySummaryService.get_summary_by_compliance_report_version_id(
-        compliance_report_version_id=compliance_report_version_id
+    penalty_with_payments_data = (
+        PenaltySummaryService.get_summary_by_compliance_report_version_id(
+            compliance_report_version_id=compliance_report_version_id
+        )
     )
 
     payment_data = ElicensingPaymentListOut(
@@ -47,12 +51,14 @@ def get_penalty_by_compliance_report_version_id(
     "/compliance-report-versions/{compliance_report_version_id}/late-submission-penalty-summary",
     response={200: PenaltyWithPaymentsOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
-    description=("Get late submission (GGEAPAR interest) penalty data with payments for a compliance report version"),
+    description=(
+        "Get late submission (GGEAPAR interest) penalty data with payments for a compliance report version"
+    ),
     auth=approved_industry_user_compliance_report_version_composite_auth,
 )
 def get_late_submission_penalty_summary_by_compliance_report_version_id(
     request: HttpRequest, compliance_report_version_id: int
-) -> Tuple[Literal[200], PenaltyWithPaymentsOut]:
+) -> tuple[Literal[200], PenaltyWithPaymentsOut]:
     """Get late submission (GGEAPAR interest) penalty details along with payment information."""
 
     penalty_with_payments_data = PenaltySummaryService.get_late_submission_summary_by_compliance_report_version_id(

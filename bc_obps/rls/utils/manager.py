@@ -1,11 +1,12 @@
 from contextlib import contextmanager
 from typing import Any
+
+from django.apps import apps
 from django.conf import settings
 from django.db import connection
 from django.db.backends.utils import CursorWrapper
-from psycopg.sql import Identifier, SQL
+from psycopg.sql import SQL, Identifier
 from rls.enums import RlsRoles
-from django.apps import apps
 from rls.utils.m2m import M2mRls
 
 
@@ -31,7 +32,7 @@ class RlsManager:
     def reset_privileges_for_roles() -> None:
         # Convert enum values into an SQL-safe list
         role_identifiers = [Identifier(role.value) for role in RlsRoles]
-        roles = SQL(', ').join(role_identifiers)
+        roles = SQL(", ").join(role_identifiers)
 
         queries = [
             SQL("revoke all privileges on all tables in schema erc from {}"),
@@ -46,16 +47,16 @@ class RlsManager:
 
         # Tables and sequences that need to be granted INSERT and UPDATE privileges
         tables = [
-            'registration_historicalfacility_well_authorization_numbers',
-            'registration_historicaloperation_contacts',
-            'registration_historicaloperation_activities',
-            'registration_historicaloperation_regulated_products',
+            "registration_historicalfacility_well_authorization_numbers",
+            "registration_historicaloperation_contacts",
+            "registration_historicaloperation_activities",
+            "registration_historicaloperation_regulated_products",
         ]
         sequences = [
-            'registration_historicalfacility_well_authori_m2m_history_id_seq',
-            'registration_historicaloperation_contacts_m2m_history_id_seq',
-            'registration_historicaloperation_activities_m2m_history_id_seq',
-            'registration_historicaloperation_regulated_p_m2m_history_id_seq',
+            "registration_historicalfacility_well_authori_m2m_history_id_seq",
+            "registration_historicaloperation_contacts_m2m_history_id_seq",
+            "registration_historicaloperation_activities_m2m_history_id_seq",
+            "registration_historicaloperation_regulated_p_m2m_history_id_seq",
         ]
 
         with connection.cursor() as cursor:
@@ -63,11 +64,17 @@ class RlsManager:
                 cursor.execute(query.format(roles))
 
             for table in tables:
-                cursor.execute(SQL("grant select, insert, update on public.{} to {};").format(Identifier(table), roles))
+                cursor.execute(
+                    SQL("grant select, insert, update on public.{} to {};").format(
+                        Identifier(table), roles
+                    )
+                )
 
             for sequence in sequences:
                 cursor.execute(
-                    SQL("grant usage, select, update on sequence public.{} to {};").format(Identifier(sequence), roles)
+                    SQL(
+                        "grant usage, select, update on sequence public.{} to {};"
+                    ).format(Identifier(sequence), roles)
                 )
 
             if settings.DEBUG:
@@ -100,7 +107,12 @@ class RlsManager:
             for m2m_rls in getattr(rls, "m2m_rls_list", []):
                 cls.apply_m2m_rls(cursor, m2m_rls)
             if getattr(rls, "enable_rls", None) and getattr(rls, "policies", None):
-                cursor.execute(f"alter table {rls.schema}.{rls.table.value} enable row level security")
+                cursor.execute(
+                    SQL("alter table {}.{} enable row level security").format(
+                        Identifier(rls.schema),
+                        Identifier(rls.table.value),
+                    )
+                )
                 for policy in rls.policies:
                     policy.apply_policy(cursor)
 
@@ -114,14 +126,14 @@ class RlsManager:
     @classmethod
     def drop_policies_for_model(cls, app_name: str, model_name: str) -> None:
         model = apps.all_models[app_name][model_name]
-        if hasattr(model, 'Rls'):
+        if hasattr(model, "Rls"):
             rls = model.Rls
             with connection.cursor() as cursor:
-                if hasattr(rls, 'policies'):
+                if hasattr(rls, "policies"):
                     for policy in rls.policies:
                         policy.drop_policy(cursor)
-                for m2m_rls in getattr(rls, 'm2m_rls_list', []):
-                    for policy in getattr(m2m_rls, 'policies', []):
+                for m2m_rls in getattr(rls, "m2m_rls_list", []):
+                    for policy in getattr(m2m_rls, "policies", []):
                         policy.drop_policy(cursor)
 
     @classmethod
@@ -129,7 +141,12 @@ class RlsManager:
         for grant in m2m_rls.grants:
             grant.apply_grant(cursor)
         if m2m_rls.enable_rls:
-            cursor.execute(f'alter table {m2m_rls.schema}.{m2m_rls.table} enable row level security')
+            cursor.execute(
+                SQL("alter table {}.{} enable row level security").format(
+                    Identifier(m2m_rls.schema),
+                    Identifier(m2m_rls.table),  # type: ignore[arg-type]
+                )
+            )
             for policy in m2m_rls.policies:
                 policy.apply_policy(cursor)
 

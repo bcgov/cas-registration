@@ -1,14 +1,20 @@
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user, run_with_rollback
+from datetime import date
+
 from common.tests.utils.helpers import BaseTestCase
 from compliance.models import ComplianceEarnedCredit
-from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
-from model_bakery.baker import make_recipe
-from django.db import transaction
+from compliance.tests.utils.compliance_rls_test_infrastructure import (
+    ComplianceReportRlsTestSetup,
+)
+from django.db import connection, transaction
 from django.db.utils import ProgrammingError
-from datetime import date
-from compliance.tests.utils.compliance_rls_test_infrastructure import ComplianceReportRlsTestSetup
-from django.db import connection
+from model_bakery.baker import make_recipe
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from rls.middleware.rls import RlsMiddleware
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+    run_with_rollback,
+)
 
 
 class ComplianceEarnedCreditTest(BaseTestCase):
@@ -46,11 +52,11 @@ class ComplianceEarnedCreditBccrFieldsTriggerTest(BaseTestCase):
         self.bccr_fields = [
             (
                 "bccr_trading_name",
-                "bccr_trading_name cannot be empty unless issuance_status is \"Credits Not Issued in BCCR\"",
+                'bccr_trading_name cannot be empty unless issuance_status is "Credits Not Issued in BCCR"',
             ),
             (
                 "bccr_holding_account_id",
-                "bccr_holding_account_id cannot be empty unless issuance_status is \"Credits Not Issued in BCCR\"",
+                'bccr_holding_account_id cannot be empty unless issuance_status is "Credits Not Issued in BCCR"',
             ),
         ]
         self.empty_values = ["", None]
@@ -65,18 +71,27 @@ class ComplianceEarnedCreditBccrFieldsTriggerTest(BaseTestCase):
         )
         self.assertIsNone(earned_credit.bccr_trading_name)
         self.assertIsNone(earned_credit.bccr_holding_account_id)
-        self.assertEqual(earned_credit.issuance_status, ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED)
+        self.assertEqual(
+            earned_credit.issuance_status,
+            ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
+        )
 
-    def _test_create_with_empty_field_fails(self, field_name, field_value, expected_error):
+    def _test_create_with_empty_field_fails(
+        self, field_name, field_value, expected_error
+    ):
         with self.assertRaises(ProgrammingError) as cm:
             with transaction.atomic():
                 make_recipe(
                     "compliance.tests.utils.compliance_earned_credit",
                     earned_credits_amount=100,
                     issuance_status=ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
-                    bccr_trading_name="valid_trading_name" if field_name != "bccr_trading_name" else field_value,
+                    bccr_trading_name="valid_trading_name"
+                    if field_name != "bccr_trading_name"
+                    else field_value,
                     bccr_holding_account_id=(
-                        "123456789012345" if field_name != "bccr_holding_account_id" else field_value
+                        "123456789012345"
+                        if field_name != "bccr_holding_account_id"
+                        else field_value
                     ),
                 )
         self.assertIn(expected_error, str(cm.exception))
@@ -85,7 +100,9 @@ class ComplianceEarnedCreditBccrFieldsTriggerTest(BaseTestCase):
         for field_name, expected_error in self.bccr_fields:
             for field_value in self.empty_values:
                 with self.subTest(field_name=field_name, field_value=field_value):
-                    self._test_create_with_empty_field_fails(field_name, field_value, expected_error)
+                    self._test_create_with_empty_field_fails(
+                        field_name, field_value, expected_error
+                    )
 
     def _test_update_to_empty_field_succeeds(self, field_name, field_value):
         earned_credit = make_recipe(
@@ -108,7 +125,9 @@ class ComplianceEarnedCreditBccrFieldsTriggerTest(BaseTestCase):
                 with self.subTest(field_name=field_name, field_value=field_value):
                     self._test_update_to_empty_field_succeeds(field_name, field_value)
 
-    def _test_update_to_empty_field_fails(self, field_name, field_value, expected_error):
+    def _test_update_to_empty_field_fails(
+        self, field_name, field_value, expected_error
+    ):
         earned_credit = make_recipe(
             "compliance.tests.utils.compliance_earned_credit",
             earned_credits_amount=100,
@@ -127,18 +146,28 @@ class ComplianceEarnedCreditBccrFieldsTriggerTest(BaseTestCase):
         for field_name, expected_error in self.bccr_fields:
             for field_value in self.empty_values:
                 with self.subTest(field_name=field_name, field_value=field_value):
-                    self._test_update_to_empty_field_fails(field_name, field_value, expected_error)
+                    self._test_update_to_empty_field_fails(
+                        field_name, field_value, expected_error
+                    )
 
-    def _test_update_issuance_status_with_empty_field_fails(self, field_name, field_value, expected_error):
+    def _test_update_issuance_status_with_empty_field_fails(
+        self, field_name, field_value, expected_error
+    ):
         earned_credit = make_recipe(
             "compliance.tests.utils.compliance_earned_credit",
             earned_credits_amount=100,
             issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
-            bccr_trading_name="valid_trading_name" if field_name != "bccr_trading_name" else field_value,
-            bccr_holding_account_id="123456789012345" if field_name != "bccr_holding_account_id" else field_value,
+            bccr_trading_name="valid_trading_name"
+            if field_name != "bccr_trading_name"
+            else field_value,
+            bccr_holding_account_id="123456789012345"
+            if field_name != "bccr_holding_account_id"
+            else field_value,
         )
 
-        earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
+        earned_credit.issuance_status = (
+            ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
+        )
         with self.assertRaises(ProgrammingError) as cm:
             with transaction.atomic():
                 earned_credit.save()
@@ -148,7 +177,9 @@ class ComplianceEarnedCreditBccrFieldsTriggerTest(BaseTestCase):
         for field_name, expected_error in self.bccr_fields:
             for field_value in self.empty_values:
                 with self.subTest(field_name=field_name, field_value=field_value):
-                    self._test_update_issuance_status_with_empty_field_fails(field_name, field_value, expected_error)
+                    self._test_update_issuance_status_with_empty_field_fails(
+                        field_name, field_value, expected_error
+                    )
 
     def test_create_with_valid_bccr_fields_and_any_status_succeeds(self):
         for status in ComplianceEarnedCredit.IssuanceStatus.choices:
@@ -188,20 +219,27 @@ class ComplianceEarnedCreditBccrFieldsTriggerTest(BaseTestCase):
             with self.subTest(field_name=field_name, new_value=new_value):
                 self._test_update_field_with_valid_value_succeeds(field_name, new_value)
 
-    def test_transition_from_default_status_to_new_status_with_bccr_fields_succeeds(self):
+    def test_transition_from_default_status_to_new_status_with_bccr_fields_succeeds(
+        self,
+    ):
         earned_credit = make_recipe(
             "compliance.tests.utils.compliance_earned_credit",
             earned_credits_amount=100,
             issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
         )
 
-        earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
+        earned_credit.issuance_status = (
+            ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
+        )
         earned_credit.bccr_trading_name = "new_trading_name"
         earned_credit.bccr_holding_account_id = "123456789012345"
         earned_credit.save()
 
         earned_credit.refresh_from_db()
-        self.assertEqual(earned_credit.issuance_status, ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED)
+        self.assertEqual(
+            earned_credit.issuance_status,
+            ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
+        )
         self.assertEqual(earned_credit.bccr_trading_name, "new_trading_name")
         self.assertEqual(earned_credit.bccr_holding_account_id, "123456789012345")
 
@@ -242,7 +280,10 @@ class ComplianceEarnedCreditAnalystSubmissionTriggerTest(BaseTestCase):
 
         # Assert - Should not populate submission info, a comment itself is not a true submission
         earned_credit.refresh_from_db()
-        self.assertEqual(earned_credit.analyst_suggestion, "Requiring change of BCCR Holding Account ID")
+        self.assertEqual(
+            earned_credit.analyst_suggestion,
+            "Requiring change of BCCR Holding Account ID",
+        )
         self.assertEqual(earned_credit.analyst_comment, "another comment")
         self.assertEqual(earned_credit.earned_credits_amount, 200)
         self.assertIsNone(earned_credit.analyst_submitted_date)
@@ -250,16 +291,24 @@ class ComplianceEarnedCreditAnalystSubmissionTriggerTest(BaseTestCase):
 
     def test_populate_analyst_submission_info_with_different_suggestion_scenarios(self):
         test_suggest_scenarios = [
-            ("Requiring change of BCCR Holding Account ID", None),  # Should populate submission info
+            (
+                "Requiring change of BCCR Holding Account ID",
+                None,
+            ),  # Should populate submission info
             ("Ready to approve", None),  # Should populate for empty comment
-            ("Requiring supplementary report", None),  # Should populate for null comment
+            (
+                "Requiring supplementary report",
+                None,
+            ),  # Should populate for null comment
             (
                 "Ready to approve",
                 "Requiring change of BCCR Holding Account ID",
             ),  # Should populate with requiring change suggestion
         ]
         for new_suggestion, initial_suggestion in test_suggest_scenarios:
-            with self.subTest(new_suggestion=new_suggestion, initial_suggestion=initial_suggestion):
+            with self.subTest(
+                new_suggestion=new_suggestion, initial_suggestion=initial_suggestion
+            ):
                 # Arrange
                 earned_credit = make_recipe(
                     "compliance.tests.utils.compliance_earned_credit",
@@ -278,10 +327,12 @@ class ComplianceEarnedCreditAnalystSubmissionTriggerTest(BaseTestCase):
                 self.assertIsNotNone(earned_credit.analyst_submitted_date)
                 self.assertIsNotNone(earned_credit.analyst_submitted_by)
 
-    def test_analyst_submission_info_updated_when_suggestion_changes_with_existing_info(self):
+    def test_analyst_submission_info_updated_when_suggestion_changes_with_existing_info(
+        self,
+    ):
         # Arrange - Create with existing submission info
         original_date = date(2024, 1, 15)
-        original_user = make_recipe('registration.tests.utils.cas_analyst')
+        original_user = make_recipe("registration.tests.utils.cas_analyst")
         earned_credit = make_recipe(
             "compliance.tests.utils.compliance_earned_credit",
             analyst_suggestion="Requiring change of BCCR Holding Account ID",
@@ -359,7 +410,9 @@ class ComplianceEarnedCreditIssuanceDateTriggerTest(BaseTestCase):
 
 class ComplianceEarnedCreditIssuanceRequestedDateTriggerTest(BaseTestCase):
     def setUp(self):
-        self.issuance_requested_status = ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
+        self.issuance_requested_status = (
+            ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
+        )
         self.other_statuses = [
             ComplianceEarnedCredit.IssuanceStatus.APPROVED,
             ComplianceEarnedCredit.IssuanceStatus.DECLINED,
@@ -414,26 +467,26 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
 
         # within access bounds
         ec_2010 = make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
+            "compliance.tests.utils.compliance_earned_credit",
             compliance_report_version=t.compliance_report_version_2010,
-            bccr_trading_name='asdf',
-            bccr_holding_account_id='asdf',
+            bccr_trading_name="asdf",
+            bccr_holding_account_id="asdf",
         )
         supp_compliance_report_version_2010 = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
+            "compliance.tests.utils.compliance_report_version",
             compliance_report=t.compliance_report_2010,
             is_supplementary=True,
         )
 
         # outside access bounds
         ec_2013 = make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
+            "compliance.tests.utils.compliance_earned_credit",
             compliance_report_version=t.compliance_report_version_2013,
-            bccr_trading_name='asdf',
-            bccr_holding_account_id='asdf',
+            bccr_trading_name="asdf",
+            bccr_holding_account_id="asdf",
         )
         supp_compliance_report_version_2013 = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
+            "compliance.tests.utils.compliance_report_version",
             compliance_report=t.compliance_report_2013,
             is_supplementary=True,
         )
@@ -489,7 +542,7 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
 
         # Extra assert for forbidden delete unless crv is superceded
         # Ensure status is not 'Superceded' to prevent delete
-        t.compliance_report_version_2010.status = 'Obligation not met'
+        t.compliance_report_version_2010.status = "Obligation not met"
         t.compliance_report_version_2010.save()
 
         def forbidden_delete_unless_superceded(cursor):
@@ -504,13 +557,15 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
 
         with connection.cursor() as cursor:
             RlsMiddleware._set_user_guid_and_role(cursor, t.approved_user_operator.user)
-            forbidden_deleted_records_count = run_with_rollback(cursor, forbidden_delete_unless_superceded)
-            assert (
-                forbidden_deleted_records_count == 0
-            ), f"Expected 0 deleted records when status is not 'Superceded', but got {forbidden_deleted_records_count} (did you remember to return in the delete function?)"
+            forbidden_deleted_records_count = run_with_rollback(
+                cursor, forbidden_delete_unless_superceded
+            )
+            assert forbidden_deleted_records_count == 0, (
+                f"Expected 0 deleted records when status is not 'Superceded', but got {forbidden_deleted_records_count} (did you remember to return in the delete function?)"
+            )
 
         # Update status to 'Superceded' to allow for delete
-        t.compliance_report_version_2010.status = 'Superceded'
+        t.compliance_report_version_2010.status = "Superceded"
         t.compliance_report_version_2010.save()
 
         def delete_function(cursor):
@@ -550,16 +605,16 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
         t = ComplianceReportRlsTestSetup()
 
         make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
+            "compliance.tests.utils.compliance_earned_credit",
             compliance_report_version=t.compliance_report_version_2010,
-            bccr_trading_name='asdf',
-            bccr_holding_account_id='asdf',
+            bccr_trading_name="asdf",
+            bccr_holding_account_id="asdf",
         )
         ec_2013 = make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
+            "compliance.tests.utils.compliance_earned_credit",
             compliance_report_version=t.compliance_report_version_2013,
-            bccr_trading_name='asdf',
-            bccr_holding_account_id='asdf',
+            bccr_trading_name="asdf",
+            bccr_holding_account_id="asdf",
         )
 
         def select_function(cursor):
@@ -577,5 +632,7 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
             )
 
         assert_policies_for_cas_roles(
-            ComplianceEarnedCredit, select_function=select_function, update_function=update_function
+            ComplianceEarnedCredit,
+            select_function=select_function,
+            update_function=update_function,
         )

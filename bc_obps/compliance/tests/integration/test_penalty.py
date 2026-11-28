@@ -1,10 +1,9 @@
-import pytest
 import uuid
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from unittest.mock import patch
-from django.utils import timezone
-from model_bakery.baker import make_recipe
+
+import pytest
 from common.lib import pgtrigger
 from compliance.models import (
     ComplianceObligation,
@@ -17,17 +16,21 @@ from compliance.models import (
     ElicensingLineItem,
     ElicensingPayment,
 )
-from compliance.service.automated_process.compliance_handlers import ComplianceHandlerManager
+from compliance.service.automated_process.compliance_handlers import (
+    ComplianceHandlerManager,
+)
 from compliance.signals.consumers import handle_report_submission
 from compliance.tests.integration.utils import (
-    ComplianceIntegrationTestBase,
+    CREATE_PENALTY_INVOICE,
     HANDLE_OBLIGATION_INTEGRATION,
-    SEND_OBLIGATION_EMAIL,
-    SEND_OBLIGATION_MET_EMAIL,
     REFRESH_DATA,
     REFRESH_DATA_BY_INVOICE,
-    CREATE_PENALTY_INVOICE,
+    SEND_OBLIGATION_EMAIL,
+    SEND_OBLIGATION_MET_EMAIL,
+    ComplianceIntegrationTestBase,
 )
+from django.utils import timezone
+from model_bakery.baker import make_recipe
 from reporting.models import ReportVersion
 
 pytestmark = pytest.mark.django_db
@@ -82,7 +85,9 @@ class TestPenalty(ComplianceIntegrationTestBase):
 
     @staticmethod
     def _fake_create_penalty_invoice(
-        compliance_penalty, total_penalty, penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
+        compliance_penalty,
+        total_penalty,
+        penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
     ):
         """Create a local penalty invoice record (no eLicensing API call)."""
         client_operator = ElicensingClientOperator.objects.get(
@@ -142,7 +147,10 @@ class TestPenalty(ComplianceIntegrationTestBase):
             compliance_report=self.compliance_report,
             is_supplementary=True,
         )
-        assert self.supplementary_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        assert (
+            self.supplementary_crv.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        )
         self.supplementary_obligation = ComplianceObligation.objects.get(
             compliance_report_version=self.supplementary_crv
         )
@@ -155,9 +163,13 @@ class TestPenalty(ComplianceIntegrationTestBase):
     @staticmethod
     def _set_obligation_dates(obligation, created_at_date, invoice_due_date):
         """Override obligation.created_at and invoice.due_date for testing."""
-        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
+        with pgtrigger.ignore(
+            "compliance.ComplianceObligation:set_updated_audit_columns"
+        ):
             obligation.created_at = timezone.make_aware(
-                datetime(created_at_date.year, created_at_date.month, created_at_date.day)
+                datetime(
+                    created_at_date.year, created_at_date.month, created_at_date.day
+                )
             )
             obligation.save(update_fields=["created_at"])
         invoice = obligation.elicensing_invoice
@@ -233,7 +245,10 @@ class TestPenalty(ComplianceIntegrationTestBase):
 
         # CRV status updated to OBLIGATION_FULLY_MET
         self.initial_crv.refresh_from_db()
-        assert self.initial_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            self.initial_crv.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
 
         # Automatic overdue penalty created
         auto_penalty = CompliancePenalty.objects.get(
@@ -241,13 +256,22 @@ class TestPenalty(ComplianceIntegrationTestBase):
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
         )
         assert auto_penalty.status == CompliancePenalty.Status.NOT_PAID
-        assert auto_penalty.accrual_start_date == self.COMPLIANCE_DEADLINE + timedelta(days=1)
+        assert auto_penalty.accrual_start_date == self.COMPLIANCE_DEADLINE + timedelta(
+            days=1
+        )
         assert auto_penalty.accrual_final_date == self.PAYMENT_DATE_BEFORE_DUE
         assert auto_penalty.penalty_amount > Decimal("0")
 
         # Accrual records created (one per day of accrual)
-        expected_days = (self.PAYMENT_DATE_BEFORE_DUE - self.COMPLIANCE_DEADLINE).days  # 10 days
-        assert CompliancePenaltyAccrual.objects.filter(compliance_penalty=auto_penalty).count() == expected_days
+        expected_days = (
+            self.PAYMENT_DATE_BEFORE_DUE - self.COMPLIANCE_DEADLINE
+        ).days  # 10 days
+        assert (
+            CompliancePenaltyAccrual.objects.filter(
+                compliance_penalty=auto_penalty
+            ).count()
+            == expected_days
+        )
 
         # No late submission penalty (non-supplementary never gets late submission penalty)
         assert not CompliancePenalty.objects.filter(
@@ -257,7 +281,10 @@ class TestPenalty(ComplianceIntegrationTestBase):
 
         # Obligation penalty_status updated to NOT_PAID
         self.initial_obligation.refresh_from_db()
-        assert self.initial_obligation.penalty_status == ComplianceObligation.PenaltyStatus.NOT_PAID
+        assert (
+            self.initial_obligation.penalty_status
+            == ComplianceObligation.PenaltyStatus.NOT_PAID
+        )
 
     # ------------------------------------------------------------------
     # Test 2: Non-supplementary, paid after due date
@@ -307,19 +334,31 @@ class TestPenalty(ComplianceIntegrationTestBase):
         manager.process_compliance_updates(self.initial_obligation.elicensing_invoice)
 
         self.initial_crv.refresh_from_db()
-        assert self.initial_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            self.initial_crv.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
 
         auto_penalty = CompliancePenalty.objects.get(
             compliance_obligation=self.initial_obligation,
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
         )
         assert auto_penalty.status == CompliancePenalty.Status.NOT_PAID
-        assert auto_penalty.accrual_start_date == self.COMPLIANCE_DEADLINE + timedelta(days=1)
+        assert auto_penalty.accrual_start_date == self.COMPLIANCE_DEADLINE + timedelta(
+            days=1
+        )
         assert auto_penalty.accrual_final_date == self.PAYMENT_DATE_AFTER_DUE
         assert auto_penalty.penalty_amount > Decimal("0")
 
-        expected_days = (self.PAYMENT_DATE_AFTER_DUE - self.COMPLIANCE_DEADLINE).days  # 41 days
-        assert CompliancePenaltyAccrual.objects.filter(compliance_penalty=auto_penalty).count() == expected_days
+        expected_days = (
+            self.PAYMENT_DATE_AFTER_DUE - self.COMPLIANCE_DEADLINE
+        ).days  # 41 days
+        assert (
+            CompliancePenaltyAccrual.objects.filter(
+                compliance_penalty=auto_penalty
+            ).count()
+            == expected_days
+        )
 
         # Longer accrual period should produce a larger penalty
         fee = self.initial_obligation.fee_amount_dollars
@@ -332,7 +371,10 @@ class TestPenalty(ComplianceIntegrationTestBase):
         ).exists()
 
         self.initial_obligation.refresh_from_db()
-        assert self.initial_obligation.penalty_status == ComplianceObligation.PenaltyStatus.NOT_PAID
+        assert (
+            self.initial_obligation.penalty_status
+            == ComplianceObligation.PenaltyStatus.NOT_PAID
+        )
 
     # ------------------------------------------------------------------
     # Test 2b: Fee paid but FAA interest still owing
@@ -380,7 +422,9 @@ class TestPenalty(ComplianceIntegrationTestBase):
         )
         invoice = self.initial_obligation.elicensing_invoice
         invoice.invoice_interest_balance = Decimal("25.00")
-        invoice.outstanding_balance = Decimal("25.00")  # fee balance is 0, only interest remains
+        invoice.outstanding_balance = Decimal(
+            "25.00"
+        )  # fee balance is 0, only interest remains
         invoice.save(update_fields=["invoice_interest_balance", "outstanding_balance"])
 
         manager = ComplianceHandlerManager()
@@ -389,7 +433,10 @@ class TestPenalty(ComplianceIntegrationTestBase):
         # Fee obligation is considered met despite outstanding interest, but the status reflects
         # that FAA interest is still unpaid rather than jumping straight to fully met.
         self.initial_crv.refresh_from_db()
-        assert self.initial_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
+        assert (
+            self.initial_crv.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
+        )
 
         # Automatic overdue penalty was still generated
         auto_penalty = CompliancePenalty.objects.get(
@@ -451,10 +498,15 @@ class TestPenalty(ComplianceIntegrationTestBase):
         )
 
         manager = ComplianceHandlerManager()
-        manager.process_compliance_updates(self.supplementary_obligation.elicensing_invoice)
+        manager.process_compliance_updates(
+            self.supplementary_obligation.elicensing_invoice
+        )
 
         self.supplementary_crv.refresh_from_db()
-        assert self.supplementary_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            self.supplementary_crv.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
 
         # Late submission penalty created
         late_penalty = CompliancePenalty.objects.get(
@@ -465,8 +517,15 @@ class TestPenalty(ComplianceIntegrationTestBase):
         assert late_penalty.penalty_amount > Decimal("0")
 
         # Late submission accrual records
-        expected_late_days = (self.PAYMENT_DATE_BEFORE_DUE - self.COMPLIANCE_DEADLINE).days  # 10 days
-        assert CompliancePenaltyAccrual.objects.filter(compliance_penalty=late_penalty).count() == expected_late_days
+        expected_late_days = (
+            self.PAYMENT_DATE_BEFORE_DUE - self.COMPLIANCE_DEADLINE
+        ).days  # 10 days
+        assert (
+            CompliancePenaltyAccrual.objects.filter(
+                compliance_penalty=late_penalty
+            ).count()
+            == expected_late_days
+        )
 
         # No automatic overdue penalty (payment before effective_deadline = invoice.due_date)
         assert not CompliancePenalty.objects.filter(
@@ -475,7 +534,10 @@ class TestPenalty(ComplianceIntegrationTestBase):
         ).exists()
 
         self.supplementary_obligation.refresh_from_db()
-        assert self.supplementary_obligation.penalty_status == ComplianceObligation.PenaltyStatus.NOT_PAID
+        assert (
+            self.supplementary_obligation.penalty_status
+            == ComplianceObligation.PenaltyStatus.NOT_PAID
+        )
 
     # ------------------------------------------------------------------
     # Test 4: Supplementary, paid after due date
@@ -525,10 +587,15 @@ class TestPenalty(ComplianceIntegrationTestBase):
         )
 
         manager = ComplianceHandlerManager()
-        manager.process_compliance_updates(self.supplementary_obligation.elicensing_invoice)
+        manager.process_compliance_updates(
+            self.supplementary_obligation.elicensing_invoice
+        )
 
         self.supplementary_crv.refresh_from_db()
-        assert self.supplementary_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            self.supplementary_crv.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
 
         # Late submission penalty created
         late_penalty = CompliancePenalty.objects.get(
@@ -538,8 +605,15 @@ class TestPenalty(ComplianceIntegrationTestBase):
         assert late_penalty.status == CompliancePenalty.Status.NOT_PAID
         assert late_penalty.penalty_amount > Decimal("0")
 
-        expected_late_days = (self.PAYMENT_DATE_AFTER_DUE - self.COMPLIANCE_DEADLINE).days  # 41 days
-        assert CompliancePenaltyAccrual.objects.filter(compliance_penalty=late_penalty).count() == expected_late_days
+        expected_late_days = (
+            self.PAYMENT_DATE_AFTER_DUE - self.COMPLIANCE_DEADLINE
+        ).days  # 41 days
+        assert (
+            CompliancePenaltyAccrual.objects.filter(
+                compliance_penalty=late_penalty
+            ).count()
+            == expected_late_days
+        )
 
         # Automatic overdue penalty created
         auto_penalty = CompliancePenalty.objects.get(
@@ -547,15 +621,32 @@ class TestPenalty(ComplianceIntegrationTestBase):
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
         )
         assert auto_penalty.status == CompliancePenalty.Status.NOT_PAID
-        assert auto_penalty.accrual_start_date == self.INVOICE_DUE_DATE + timedelta(days=1)
+        assert auto_penalty.accrual_start_date == self.INVOICE_DUE_DATE + timedelta(
+            days=1
+        )
         assert auto_penalty.accrual_final_date == self.PAYMENT_DATE_AFTER_DUE
         assert auto_penalty.penalty_amount > Decimal("0")
 
-        expected_auto_days = (self.PAYMENT_DATE_AFTER_DUE - self.INVOICE_DUE_DATE).days  # 6 days
-        assert CompliancePenaltyAccrual.objects.filter(compliance_penalty=auto_penalty).count() == expected_auto_days
+        expected_auto_days = (
+            self.PAYMENT_DATE_AFTER_DUE - self.INVOICE_DUE_DATE
+        ).days  # 6 days
+        assert (
+            CompliancePenaltyAccrual.objects.filter(
+                compliance_penalty=auto_penalty
+            ).count()
+            == expected_auto_days
+        )
 
         # Both penalties exist for this obligation
-        assert CompliancePenalty.objects.filter(compliance_obligation=self.supplementary_obligation).count() == 2
+        assert (
+            CompliancePenalty.objects.filter(
+                compliance_obligation=self.supplementary_obligation
+            ).count()
+            == 2
+        )
 
         self.supplementary_obligation.refresh_from_db()
-        assert self.supplementary_obligation.penalty_status == ComplianceObligation.PenaltyStatus.NOT_PAID
+        assert (
+            self.supplementary_obligation.penalty_status
+            == ComplianceObligation.PenaltyStatus.NOT_PAID
+        )

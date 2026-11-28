@@ -1,8 +1,9 @@
 import json
 from unittest.mock import patch
-from registration.utils import custom_reverse_lazy
-from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+
 from model_bakery.baker import make_recipe
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from registration.utils import custom_reverse_lazy
 
 
 class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
@@ -12,7 +13,11 @@ class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
     def test_get_invoice_success(self, mock_generate_obligation_invoice_pdf):
         # Arrange
         pdf_bytes = b"%PDF content"
-        mock_generate_obligation_invoice_pdf.return_value = (iter([pdf_bytes]), "invoice.pdf", len(pdf_bytes))
+        mock_generate_obligation_invoice_pdf.return_value = (
+            iter([pdf_bytes]),
+            "invoice.pdf",
+            len(pdf_bytes),
+        )
 
         operator = make_recipe("registration.tests.utils.operator")
         TestUtils.authorize_current_user_as_operator_user(self, operator)
@@ -22,7 +27,8 @@ class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
             compliance_report__report__operation__operator=operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=operator, operations=[compliance_report_version.compliance_report.report.operation]
+            operator=operator,
+            operations=[compliance_report_version.compliance_report.report.operation],
         )
 
         # Act
@@ -42,7 +48,9 @@ class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
         assert response["Content-Length"] == str(len(pdf_bytes))
         assert b"".join(response.streaming_content) == pdf_bytes
 
-        mock_generate_obligation_invoice_pdf.assert_called_once_with(compliance_report_version.id)
+        mock_generate_obligation_invoice_pdf.assert_called_once_with(
+            compliance_report_version.id
+        )
 
     @patch(
         "compliance.service.elicensing.invoice_generation.elicensing_invoice_generator.ElicensingInvoiceGeneratorService.generate_obligation_invoice_pdf"
@@ -60,7 +68,8 @@ class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
             compliance_report__report__operation__operator=operator,
         )
         TestUtils.generate_operation_operator_timeline(
-            operator=operator, operations=[compliance_report_version.compliance_report.report.operation]
+            operator=operator,
+            operations=[compliance_report_version.compliance_report.report.operation],
         )
 
         # Act
@@ -80,6 +89,10 @@ class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
         # ✅ Properly consume the streaming response
         raw_bytes = b"".join(response.streaming_content)
         parsed = json.loads(raw_bytes.decode("utf-8"))
-        assert parsed == {"errors": {"unexpected_error": "Mocked: PDF generation failed"}}
+        assert parsed == {
+            "errors": {"unexpected_error": "Mocked: PDF generation failed"}
+        }
 
-        mock_generate_obligation_invoice_pdf.assert_called_once_with(compliance_report_version.id)
+        mock_generate_obligation_invoice_pdf.assert_called_once_with(
+            compliance_report_version.id
+        )

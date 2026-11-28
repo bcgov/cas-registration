@@ -1,9 +1,11 @@
 import logging
-from .router import router
-from registration.constants import MISC_TAGS
-from django.core.management import call_command
+
 from django.conf import settings
+from django.core.management import call_command
 from django.http import HttpRequest, HttpResponse
+from registration.constants import MISC_TAGS
+
+from .router import router
 
 logger = logging.getLogger(__name__)
 
@@ -16,10 +18,13 @@ logger = logging.getLogger(__name__)
 def setup(request: HttpRequest) -> HttpResponse:
     if settings.ENVIRONMENT in ["dev", "test"]:
         try:
-            call_command('create_superuser')
+            call_command("create_superuser")
             return HttpResponse("Superuser created successfully.", status=200)
         except Exception as e:
             logger.error(f"An error occurred while creating the superuser: {str(e)}")
             return HttpResponse("An error occurred while creating the superuser.")
     else:
-        return HttpResponse("This endpoint only exists in the development and test environments.", status=404)
+        return HttpResponse(
+            "This endpoint only exists in the development and test environments.",
+            status=404,
+        )

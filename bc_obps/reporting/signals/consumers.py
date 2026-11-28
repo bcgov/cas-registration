@@ -1,5 +1,6 @@
 import logging
-from typing import Type, Any
+from typing import Any
+
 from django.db.models import F
 from django.dispatch import receiver
 from registration.signals.signals import operation_registration_purpose_changed
@@ -11,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @receiver(operation_registration_purpose_changed)
-def handle_registration_purpose_changed(sender: Type[Any], **kwargs: Any) -> None:
+def handle_registration_purpose_changed(sender: type[Any], **kwargs: Any) -> None:
     """
     Signal handler that deletes the draft report version for an operation
     whose registration purpose has changed.
@@ -28,7 +29,9 @@ def handle_registration_purpose_changed(sender: Type[Any], **kwargs: Any) -> Non
     current_reporting_year = ReportingYearService.get_current_reporting_year()
 
     draft_version = (
-        ReportVersion.objects.select_related("report__operation", "report__reporting_year", "report__operator")
+        ReportVersion.objects.select_related(
+            "report__operation", "report__reporting_year", "report__operator"
+        )
         .filter(
             report__operation_id=operation_id,
             report__operation__operator_id=F("report__operator_id"),
@@ -44,5 +47,9 @@ def handle_registration_purpose_changed(sender: Type[Any], **kwargs: Any) -> Non
 
     version_id = draft_version.id
 
-    logger.info("Deleting draft report version id=%s for operation_id=%s", version_id, operation_id)
+    logger.info(
+        "Deleting draft report version id=%s for operation_id=%s",
+        version_id,
+        operation_id,
+    )
     ReportVersionService.delete_report_version(version_id)

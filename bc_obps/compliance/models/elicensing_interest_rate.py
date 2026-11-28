@@ -1,11 +1,12 @@
-from django.db import models
+from common.models import BaseModel
 from django.contrib.postgres.constraints import ExclusionConstraint
 from django.contrib.postgres.fields import (
     DateRangeField,
     RangeBoundary,
     RangeOperators,
 )
-from common.models import BaseModel
+from django.db import models
+
 from .rls_configs.elicensing_interest_rate import Rls as ElicensingInterestRateRls
 
 
@@ -48,12 +49,15 @@ class ElicensingInterestRate(BaseModel):
             ExclusionConstraint(
                 name="exclude_overlapping_interest_rate_periods",
                 expressions=[
-                    (DateRange("start_date", "end_date", RangeBoundary()), RangeOperators.OVERLAPS),
+                    (
+                        DateRange("start_date", "end_date", RangeBoundary()),
+                        RangeOperators.OVERLAPS,
+                    ),
                 ],
             ),
             models.UniqueConstraint(
                 name="unique_current_rate",
-                fields=['is_current_rate'],
+                fields=["is_current_rate"],
                 condition=models.Q(is_current_rate=True),
             ),
         ]

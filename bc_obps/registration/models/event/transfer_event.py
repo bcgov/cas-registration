@@ -1,10 +1,10 @@
 from common.enums import Schemas
-from registration.enums.enums import RegistrationTableNames
-from registration.models import Operator, Operation
 from django.db import models
+from registration.enums.enums import RegistrationTableNames
+from registration.models import Operation, Operator
 from registration.models.event.event_base_model import EventBaseModel
-from simple_history.models import HistoricalRecords
 from registration.models.rls_configs.event.transfer_event import Rls as TransferEventRls
+from simple_history.models import HistoricalRecords
 
 
 class TransferEvent(EventBaseModel):
@@ -54,7 +54,9 @@ class TransferEvent(EventBaseModel):
 
     class Meta(EventBaseModel.Meta):
         db_table_comment = "Records transfer events where ownership of operations or facilities moves from one operator to another. The from_operator and to_operator fields identify the parties involved. The facilities M2M field (inherited from EventBaseModel) lists which facilities are being transferred."
-        db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.TRANSFER_EVENT.value}'
+        db_table = (
+            f'{Schemas.ERC.value}"."{RegistrationTableNames.TRANSFER_EVENT.value}'
+        )
         default_related_name = "transfer_events"
 
     Rls = TransferEventRls

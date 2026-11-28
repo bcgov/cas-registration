@@ -1,8 +1,14 @@
 from decimal import Decimal
 
 from django.test import SimpleTestCase
-from reporting.schema.compliance_data import ComplianceDataSchemaOut, ComplianceSummaryDataSchemaOut
-from reporting.service.compliance_service.compliance_service import ComplianceData, ReportProductComplianceData
+from reporting.schema.compliance_data import (
+    ComplianceDataSchemaOut,
+    ComplianceSummaryDataSchemaOut,
+)
+from reporting.service.compliance_service.compliance_service import (
+    ComplianceData,
+    ReportProductComplianceData,
+)
 from reporting.service.compliance_service.emissions_attributable_for_compliance_totals import (
     EmissionsAttributableForComplianceEmissionRow,
     EmissionsAttributableForComplianceTotals,
@@ -67,12 +73,18 @@ def build_compliance_data() -> ComplianceData:
             annual_emissions_attributable_for_compliance=Decimal("99.99"),
             attributable_for_reporting_rows=[
                 EmissionsAttributableForComplianceEmissionRow(
-                    activity="Oil and gas", source_type="Flaring stacks", fuel_name=None, emissions=Decimal("100")
+                    activity="Oil and gas",
+                    source_type="Flaring stacks",
+                    fuel_name=None,
+                    emissions=Decimal("100"),
                 )
             ],
             remaining_npnc_rows=[
                 EmissionsAttributableForComplianceEmissionRow(
-                    activity="GSC", source_type="GSC of fuel", fuel_name="Diesel", emissions=Decimal("0.01")
+                    activity="GSC",
+                    source_type="GSC of fuel",
+                    fuel_name="Diesel",
+                    emissions=Decimal("0.01"),
                 )
             ],
         ),
@@ -80,15 +92,18 @@ def build_compliance_data() -> ComplianceData:
 
 
 class TestComplianceDataSchema(SimpleTestCase):
-
     def test_translates_without_errors(self):
         data = build_compliance_data()
 
         schema_under_test = ComplianceDataSchemaOut.from_orm(data)
 
-        self.assertAlmostEqual(schema_under_test.emissions_attributable_for_reporting, 100)
+        self.assertAlmostEqual(
+            schema_under_test.emissions_attributable_for_reporting, 100
+        )
         self.assertAlmostEqual(schema_under_test.reporting_only_emissions, 100.01)
-        self.assertAlmostEqual(schema_under_test.emissions_attributable_for_compliance, 100.02)
+        self.assertAlmostEqual(
+            schema_under_test.emissions_attributable_for_compliance, 100.02
+        )
         self.assertAlmostEqual(schema_under_test.emissions_limit, 100.03)
         self.assertAlmostEqual(schema_under_test.excess_emissions, 100.04)
         self.assertAlmostEqual(schema_under_test.credited_emissions, 100.05)
@@ -132,7 +147,9 @@ class TestComplianceDataSchema(SimpleTestCase):
     def test_compliance_summary_schema_adds_breakdown_fields(self):
         data = build_compliance_data()
 
-        schema_under_test = ComplianceSummaryDataSchemaOut.model_validate(data, from_attributes=True)
+        schema_under_test = ComplianceSummaryDataSchemaOut.model_validate(
+            data, from_attributes=True
+        )
         dumped = schema_under_test.model_dump()
 
         assert dumped["production_period"] == "annual"
@@ -149,13 +166,23 @@ class TestComplianceDataSchema(SimpleTestCase):
             "unregulated_products_non_useful_venting": 0.0,
             "unregulated_products_fugitive": 0.0,
             "attributable_for_reporting_rows": [
-                {"activity": "Oil and gas", "source_type": "Flaring stacks", "fuel_name": None, "emissions": 100.0}
+                {
+                    "activity": "Oil and gas",
+                    "source_type": "Flaring stacks",
+                    "fuel_name": None,
+                    "emissions": 100.0,
+                }
             ],
             "excluded_by_fuels_rows": [],
             "non_useful_venting_rows": [],
             "fugitive_rows": [],
             "remaining_npnc_rows": [
-                {"activity": "GSC", "source_type": "GSC of fuel", "fuel_name": "Diesel", "emissions": 0.01}
+                {
+                    "activity": "GSC",
+                    "source_type": "GSC of fuel",
+                    "fuel_name": "Diesel",
+                    "emissions": 0.01,
+                }
             ],
             "unregulated_product_rows": [],
         }

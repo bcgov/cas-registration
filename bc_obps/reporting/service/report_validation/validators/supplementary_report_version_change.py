@@ -1,4 +1,3 @@
-from reporting.service.report_version_service import ReportVersionService
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
     ErrorContext,
@@ -7,6 +6,7 @@ from reporting.service.report_validation.report_validation_error import (
     Severity,
 )
 from reporting.service.report_validation.report_validation_tags import ValidationTags
+from reporting.service.report_version_service import ReportVersionService
 
 TAGS = [ValidationTags.ON_SUBMIT, ValidationTags.REPORT_VALIDATION]
 
@@ -16,7 +16,9 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     Validates that if the report is supplementary, the user has a ReportVersion record with reason_for_change
     """
     # Check if the report version is supplementary
-    is_initial_version = ReportVersionService.is_initial_report_version(report_version.id)
+    is_initial_version = ReportVersionService.is_initial_report_version(
+        report_version.id
+    )
     if is_initial_version:
         return {}
 

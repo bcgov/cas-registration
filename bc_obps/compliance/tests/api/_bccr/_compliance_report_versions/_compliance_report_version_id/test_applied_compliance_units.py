@@ -1,9 +1,10 @@
 from unittest.mock import MagicMock, patch
-from compliance.dataclass import BCCRUnit, RefreshWrapperReturn
-from django.test import SimpleTestCase, override_settings, Client
-from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
-from registration.utils import custom_reverse_lazy
+
 from common.tests.utils.helpers import assert_error_response
+from compliance.dataclass import BCCRUnit, RefreshWrapperReturn
+from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
+from django.test import Client, SimpleTestCase, override_settings
+from registration.utils import custom_reverse_lazy
 
 VALIDATE_PERMISSION_PATH = "common.permissions.validate_all"
 GET_CURRENT_USER_PATH = "compliance.api._bccr._compliance_report_versions._compliance_report_version_id.applied_compliance_units.get_current_user"
@@ -22,7 +23,8 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
 
     def _get_endpoint_url(self):
         return custom_reverse_lazy(
-            "get_applied_compliance_units", kwargs={"compliance_report_version_id": self.compliance_report_version_id}
+            "get_applied_compliance_units",
+            kwargs={"compliance_report_version_id": self.compliance_report_version_id},
         )
 
     @staticmethod
@@ -37,7 +39,12 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
     @patch(SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
     def test_successful_applied_units_retrieval(
-        self, mock_permission, mock_service, mock_can_apply, mock_refresh_data, mock_get_current_user
+        self,
+        mock_permission,
+        mock_service,
+        mock_can_apply,
+        mock_refresh_data,
+        mock_get_current_user,
     ):
         # Arrange
         mock_get_current_user.return_value = self._mock_user(is_irc_user=False)
@@ -53,7 +60,9 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
             )
         ]
         mock_can_apply.return_value = True
-        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=None)
+        mock_refresh_data.return_value = RefreshWrapperReturn(
+            data_is_fresh=True, invoice=None
+        )
 
         # Act
         response = self.client.get(self._get_endpoint_url())
@@ -80,13 +89,20 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
     @patch(SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
     def test_empty_applied_units(
-        self, mock_permission, mock_service, mock_can_apply, mock_refresh_data, mock_get_current_user
+        self,
+        mock_permission,
+        mock_service,
+        mock_can_apply,
+        mock_refresh_data,
+        mock_get_current_user,
     ):
         mock_get_current_user.return_value = self._mock_user(is_irc_user=False)
         mock_permission.return_value = True
         mock_service.return_value = []
         mock_can_apply.return_value = False
-        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=None)
+        mock_refresh_data.return_value = RefreshWrapperReturn(
+            data_is_fresh=True, invoice=None
+        )
 
         response = self.client.get(self._get_endpoint_url())
 
@@ -141,4 +157,6 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
             status_code=400,
             message=message,
         )
-        mock_service.assert_called_once_with(compliance_report_version_id=self.compliance_report_version_id)
+        mock_service.assert_called_once_with(
+            compliance_report_version_id=self.compliance_report_version_id
+        )

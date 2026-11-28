@@ -1,3 +1,6 @@
+# Order of imports is important to avoid circular dependencies
+# ruff: noqa: I001
+
 from .compliance_charge_rate import ComplianceChargeRate
 from .compliance_obligation import ComplianceObligation
 from .compliance_period import CompliancePeriod
@@ -13,23 +16,25 @@ from .compliance_penalty_rate import CompliancePenaltyRate
 from .compliance_penalty import CompliancePenalty
 from .compliance_penalty_accrual import CompliancePenaltyAccrual
 from .elicensing_interest_rate import ElicensingInterestRate
-from .compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
+from .compliance_report_version_manual_handling import (
+    ComplianceReportVersionManualHandling,
+)
 
 __all__ = [
-    'ComplianceChargeRate',
-    'ComplianceObligation',
-    'CompliancePeriod',
-    'ComplianceReport',
-    'ComplianceReportVersion',
-    'ComplianceEarnedCredit',
-    'ElicensingClientOperator',
-    'ElicensingInvoice',
-    'ElicensingLineItem',
-    'ElicensingPayment',
-    'ElicensingAdjustment',
-    'CompliancePenaltyRate',
-    'CompliancePenalty',
-    'CompliancePenaltyAccrual',
-    'ElicensingInterestRate',
-    'ComplianceReportVersionManualHandling',
+    "ComplianceChargeRate",
+    "ComplianceEarnedCredit",
+    "ComplianceObligation",
+    "CompliancePenalty",
+    "CompliancePenaltyAccrual",
+    "CompliancePenaltyRate",
+    "CompliancePeriod",
+    "ComplianceReport",
+    "ComplianceReportVersion",
+    "ComplianceReportVersionManualHandling",
+    "ElicensingAdjustment",
+    "ElicensingClientOperator",
+    "ElicensingInterestRate",
+    "ElicensingInvoice",
+    "ElicensingLineItem",
+    "ElicensingPayment",
 ]

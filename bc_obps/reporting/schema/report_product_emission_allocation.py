@@ -1,7 +1,10 @@
 from decimal import Decimal
-from typing import Any, List
+from typing import Any
+
 from ninja import ModelSchema, Schema
-from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
+from reporting.models.report_product_emission_allocation import (
+    ReportProductEmissionAllocation,
+)
 
 
 class ReportProductEmissionAllocationSchema(ModelSchema):
@@ -21,7 +24,7 @@ class ReportProductEmissionAllocationSchemaIn(Schema):
 class EmissionCategoryAllocationsSchemaIn(Schema):
     emission_category_id: int
     emission_total: Decimal
-    products: List[ReportProductEmissionAllocationSchemaIn]
+    products: list[ReportProductEmissionAllocationSchemaIn]
 
 
 class ReportProductEmissionAllocationsSchemaIn(Schema):

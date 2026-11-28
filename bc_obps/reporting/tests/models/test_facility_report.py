@@ -1,9 +1,9 @@
 from common.tests.utils.helpers import BaseTestCase
+from model_bakery import baker
 from registration.models import Activity
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models import FacilityReport
 from reporting.tests.utils.bakers import report_version_baker
-from model_bakery import baker
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
@@ -12,7 +12,7 @@ from reporting.tests.utils.immutable_report_version import (
 class FacilityReportModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
-        f = baker.make_recipe('registration.tests.utils.facility')
+        f = baker.make_recipe("registration.tests.utils.facility")
 
         cls.test_object = FacilityReport.objects.create(
             facility=f,
@@ -51,4 +51,6 @@ class FacilityReportModelTest(BaseTestCase):
         ]
 
     def test_immutable_after_report_version_submitted(self):
-        assert_immutable_report_version("reporting.tests.utils.facility_report", "facility_name")
+        assert_immutable_report_version(
+            "reporting.tests.utils.facility_report", "facility_name"
+        )

@@ -1,16 +1,16 @@
 from datetime import date
 from decimal import Decimal
-from model_bakery.baker import make_recipe
-import pytest
 
-from compliance.models.elicensing_adjustment import ElicensingAdjustment
-from compliance.service.elicensing.invoice_generation.elicensing_invoice_calculator import (
-    ElicensingInvoiceCalculatorService,
-)
+import pytest
 from compliance.models import (
     ElicensingInvoice,
     ElicensingLineItem,
 )
+from compliance.models.elicensing_adjustment import ElicensingAdjustment
+from compliance.service.elicensing.invoice_generation.elicensing_invoice_calculator import (
+    ElicensingInvoiceCalculatorService,
+)
+from model_bakery.baker import make_recipe
 
 pytestmark = pytest.mark.django_db
 
@@ -22,7 +22,13 @@ class TestElicensingInvoiceCalculatorService:
             (Decimal("300.00"), [], [], Decimal("300.00"), 1),
             (
                 Decimal("300.00"),
-                [{"amount": Decimal("100.00"), "date": date(2025, 6, 10), "description": "Partial Payment"}],
+                [
+                    {
+                        "amount": Decimal("100.00"),
+                        "date": date(2025, 6, 10),
+                        "description": "Partial Payment",
+                    }
+                ],
                 [],
                 Decimal("200.00"),
                 2,
@@ -30,14 +36,32 @@ class TestElicensingInvoiceCalculatorService:
             (
                 Decimal("300.00"),
                 [],
-                [{"amount": Decimal("-50.00"), "date": date(2025, 6, 12), "description": "Rebate"}],
+                [
+                    {
+                        "amount": Decimal("-50.00"),
+                        "date": date(2025, 6, 12),
+                        "description": "Rebate",
+                    }
+                ],
                 Decimal("250.00"),
                 2,
             ),
             (
                 Decimal("300.00"),
-                [{"amount": Decimal("100.00"), "date": date(2025, 6, 10), "description": "Partial Payment"}],
-                [{"amount": Decimal("-25.00"), "date": date(2025, 6, 12), "description": "Rebate"}],
+                [
+                    {
+                        "amount": Decimal("100.00"),
+                        "date": date(2025, 6, 10),
+                        "description": "Partial Payment",
+                    }
+                ],
+                [
+                    {
+                        "amount": Decimal("-25.00"),
+                        "date": date(2025, 6, 12),
+                        "description": "Rebate",
+                    }
+                ],
                 Decimal("175.00"),
                 3,
             ),
@@ -47,7 +71,9 @@ class TestElicensingInvoiceCalculatorService:
     def test_calculate_invoice_amount_due_parametrized(
         self, fee_amount, payments, adjustments, expected_due, expected_billing_count
     ):
-        invoice: ElicensingInvoice = make_recipe("compliance.tests.utils.elicensing_invoice")
+        invoice: ElicensingInvoice = make_recipe(
+            "compliance.tests.utils.elicensing_invoice"
+        )
 
         if fee_amount is not None:
             line_item: ElicensingLineItem = make_recipe(
@@ -77,7 +103,9 @@ class TestElicensingInvoiceCalculatorService:
                 )
 
         # Act
-        amount_due, billing_items, _, _, _ = ElicensingInvoiceCalculatorService.calculate_invoice_amount_due(invoice)
+        amount_due, billing_items, _, _, _ = (
+            ElicensingInvoiceCalculatorService.calculate_invoice_amount_due(invoice)
+        )
 
         # Assert
         assert amount_due == expected_due

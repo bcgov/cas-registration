@@ -22,9 +22,7 @@ class EmissionCategory(BaseModel):
     )
 
     class Meta:
-        db_table_comment = (
-            "This table contains the set of emission categories that greenhouse gas emissions can be counted under."
-        )
+        db_table_comment = "This table contains the set of emission categories that greenhouse gas emissions can be counted under."
         db_table = 'erc"."emission_category'
 
     Rls = EmissionCategoryRls

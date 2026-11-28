@@ -1,32 +1,51 @@
+from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
 from model_bakery import baker
-from unittest.mock import patch, MagicMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from reporting.tests.utils.report_access_validation import (
+    assert_report_version_ownership_is_validated,
+)
 
 
 class TestFacilitiesReviewEndpoints(CommonTestSetup):
     def setup_method(self):
-        self.report_version = baker.make_recipe('reporting.tests.utils.report_version')
+        self.report_version = baker.make_recipe("reporting.tests.utils.report_version")
         self.mock_facility_data = {
             "current_facilities": [
-                {"facility_id": str(uuid4()), "facility__name": "Facility A", "is_selected": True},
-                {"facility_id": str(uuid4()), "facility__name": "Facility B", "is_selected": False},
+                {
+                    "facility_id": str(uuid4()),
+                    "facility__name": "Facility A",
+                    "is_selected": True,
+                },
+                {
+                    "facility_id": str(uuid4()),
+                    "facility__name": "Facility B",
+                    "is_selected": False,
+                },
             ],
             "past_facilities": [
-                {"facility_id": str(uuid4()), "facility__name": "Facility C", "is_selected": False},
+                {
+                    "facility_id": str(uuid4()),
+                    "facility__name": "Facility C",
+                    "is_selected": False,
+                },
             ],
             "operation_id": str(uuid4()),
         }
         super().setup_method()
-        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator,
+            operations=[self.report_version.report.operation],
         )
 
-    @patch("reporting.service.report_facilities_service.ReportFacilitiesService.get_all_facilities_for_review")
+    @patch(
+        "reporting.service.report_facilities_service.ReportFacilitiesService.get_all_facilities_for_review"
+    )
     def test_get_selected_facilities_success(self, mock_get_all_facilities: MagicMock):
         # Mock the service response
         mock_get_all_facilities.return_value = self.mock_facility_data
@@ -42,11 +61,19 @@ class TestFacilitiesReviewEndpoints(CommonTestSetup):
         assert response.status_code == 200
         response_json = response.json()
 
-        assert response_json["current_facilities"] == self.mock_facility_data["current_facilities"]
-        assert response_json["past_facilities"] == self.mock_facility_data["past_facilities"]
+        assert (
+            response_json["current_facilities"]
+            == self.mock_facility_data["current_facilities"]
+        )
+        assert (
+            response_json["past_facilities"]
+            == self.mock_facility_data["past_facilities"]
+        )
         assert response_json["operation_id"] == self.mock_facility_data["operation_id"]
 
-    @patch("reporting.service.report_facilities_service.ReportFacilitiesService.save_selected_facilities")
+    @patch(
+        "reporting.service.report_facilities_service.ReportFacilitiesService.save_selected_facilities"
+    )
     def test_save_selected_facilities_success(self, mock_save_facilities):
         # Mock the service behavior (doesn't need a return value since it returns None)
         mock_save_facilities.return_value = None
@@ -68,4 +95,6 @@ class TestFacilitiesReviewEndpoints(CommonTestSetup):
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_selected_facilities")
-        assert_report_version_ownership_is_validated("save_selected_facilities", method="post")
+        assert_report_version_ownership_is_validated(
+            "save_selected_facilities", method="post"
+        )

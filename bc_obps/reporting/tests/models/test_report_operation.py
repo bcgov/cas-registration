@@ -1,5 +1,7 @@
+from common.lib import pgtrigger
 from common.tests.utils.helpers import BaseTestCase
-from registration.models import Activity, RegulatedProduct, Operation
+from model_bakery.baker import make_recipe
+from registration.models import Activity, Operation, RegulatedProduct
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models import ReportOperation
 from reporting.tests.utils.bakers import report_version_baker
@@ -7,9 +9,10 @@ from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
 from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsTestSetup
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from common.lib import pgtrigger
-from model_bakery.baker import make_recipe
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ReportOperationModelTest(BaseTestCase):
@@ -45,7 +48,12 @@ class ReportOperationModelTest(BaseTestCase):
             ("activities", "activities", None, 1),
             ("regulated_products", "regulated products", None, 1),
             ("registration_purpose", "registration purpose", 1000, None),
-            ("operation_opted_out_final_reporting_year", "operation opted out final reporting year", None, None),
+            (
+                "operation_opted_out_final_reporting_year",
+                "operation opted out final reporting year",
+                None,
+                None,
+            ),
             ("naics_code", "naics code", None, None),
         ]
 
@@ -54,7 +62,6 @@ class ReportOperationModelTest(BaseTestCase):
 
 
 class ReportOperationRlsTest(BaseTestCase):
-
     def test_report_operation_rls_industry_user(self):
         # Common Test Setup
         t = ReportRlsTestSetup()
@@ -63,27 +70,31 @@ class ReportOperationRlsTest(BaseTestCase):
         # Inside access bounds
         with pgtrigger.ignore("reporting.ReportOperation:immutable_report_version"):
             report_operation_2010_submitted = make_recipe(
-                'reporting.tests.utils.report_operation',
+                "reporting.tests.utils.report_operation",
                 report_version=t.report_version_2010_submitted,
             )
         report_operation_2010_draft = make_recipe(
-            'reporting.tests.utils.report_operation', report_version=t.report_version_2010_draft
+            "reporting.tests.utils.report_operation",
+            report_version=t.report_version_2010_draft,
         )
         # Outside access bounds
         report_operation_2013_draft = make_recipe(
-            'reporting.tests.utils.report_operation', report_version=t.report_version_2013_draft
+            "reporting.tests.utils.report_operation",
+            report_version=t.report_version_2013_draft,
         )
 
         # Additional report_version needed for insert test: 2012 - Within access bounds
-        reporting_year_2012 = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2012)
+        reporting_year_2012 = make_recipe(
+            "reporting.tests.utils.reporting_year", reporting_year=2012
+        )
         report_2012 = make_recipe(
-            'reporting.tests.utils.report',
+            "reporting.tests.utils.report",
             operation=t.report_version_2010_submitted.report.operation,
             operator=t.report_version_2010_submitted.report.operator,
             reporting_year=reporting_year_2012,
         )
         report_version_2012_draft = make_recipe(
-            'reporting.tests.utils.report_version', report=report_2012, status='Draft'
+            "reporting.tests.utils.report_version", report=report_2012, status="Draft"
         )
 
         def select_function(cursor):
@@ -95,9 +106,9 @@ class ReportOperationRlsTest(BaseTestCase):
         def insert_function(cursor):
             ReportOperation.objects.create(
                 report_version=report_version_2012_draft,
-                operator_legal_name='asdf',
-                operation_name='fdsa',
-                operation_type='SFO',
+                operator_legal_name="asdf",
+                operation_name="fdsa",
+                operation_type="SFO",
             )
 
         def forbidden_insert_function(cursor):
@@ -116,7 +127,7 @@ class ReportOperationRlsTest(BaseTestCase):
                     SET operation_name = %s
                     WHERE id = %s
                 """,
-                ('test}', report_operation_2010_draft.id),
+                ("test}", report_operation_2010_draft.id),
             )
             return cursor.rowcount
 
@@ -127,7 +138,7 @@ class ReportOperationRlsTest(BaseTestCase):
                     SET operation_name = %s
                     WHERE id = %s
                 """,
-                ('test2', report_operation_2013_draft.id),
+                ("test2", report_operation_2013_draft.id),
             )
             return cursor.rowcount
 

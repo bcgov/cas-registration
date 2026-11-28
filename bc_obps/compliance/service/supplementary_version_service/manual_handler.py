@@ -1,11 +1,12 @@
-from typing import Optional
-from django.db import transaction
 from compliance.models import ComplianceReport, ComplianceReportVersion
-from compliance.models.compliance_report_version_manual_handling import ComplianceReportVersionManualHandling
-from reporting.models import ReportComplianceSummary
+from compliance.models.compliance_report_version_manual_handling import (
+    ComplianceReportVersionManualHandling,
+)
 from compliance.service.supplementary_version_service.helpers import (
     get_previous_compliance_version_by_report_and_summary,
 )
+from django.db import transaction
+from reporting.models import ReportComplianceSummary
 
 
 # Concrete strategy for:
@@ -21,10 +22,14 @@ class ManualHandler:
         """
         This handler applies when the *previous* compliance report version has a manual-handling record
         """
-        previous_crv = ComplianceReportVersion.objects.get(report_compliance_summary=previous_summary)
+        previous_crv = ComplianceReportVersion.objects.get(
+            report_compliance_summary=previous_summary
+        )
 
         # Use the existence of the one-to-one manual_handling_record
-        return ComplianceReportVersionManualHandling.objects.filter(compliance_report_version=previous_crv).exists()
+        return ComplianceReportVersionManualHandling.objects.filter(
+            compliance_report_version=previous_crv
+        ).exists()
 
     @staticmethod
     @transaction.atomic()
@@ -33,7 +38,7 @@ class ManualHandler:
         new_summary: ReportComplianceSummary,
         previous_summary: ReportComplianceSummary,
         version_count: int,
-    ) -> Optional[ComplianceReportVersion]:
+    ) -> ComplianceReportVersion | None:
         """
         Create a new supplementary REQUIRES_MANUAL_HANDLING CRV and an
         associated manual-handling record when the previous CRV has a manual-handling record
@@ -45,8 +50,10 @@ class ManualHandler:
         """
 
         # Get the previous compliance report version
-        previous_compliance_version = get_previous_compliance_version_by_report_and_summary(
-            compliance_report, previous_summary
+        previous_compliance_version = (
+            get_previous_compliance_version_by_report_and_summary(
+                compliance_report, previous_summary
+            )
         )
 
         # Fetch its manual-handling record

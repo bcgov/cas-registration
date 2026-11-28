@@ -1,11 +1,15 @@
 import logging
-from typing import Dict, Any, Tuple, Generator
-from django.utils import timezone
-from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
-from compliance.service.exceptions import ComplianceInvoiceError
+from collections.abc import Generator
+from typing import Any
+
 from common.service.pdf.pdf_generator_service import PDFGeneratorService
-from compliance.enums import ComplianceInvoiceTypes
 from compliance.constants import CLEAN_BC_LOGO_COMPLIANCE_INVOICE
+from compliance.enums import ComplianceInvoiceTypes
+from compliance.service.elicensing.elicensing_data_refresh_service import (
+    ElicensingDataRefreshService,
+)
+from compliance.service.exceptions import ComplianceInvoiceError
+from django.utils import timezone
 
 # Type ignore for weasyprint since it lacks stubs
 
@@ -20,7 +24,7 @@ class PaymentInstructionsService:
         cls,
         compliance_report_version_id: int,
         invoice_type: ComplianceInvoiceTypes = ComplianceInvoiceTypes.OBLIGATION,
-    ) -> Tuple[Generator[bytes, None, None], str, int]:
+    ) -> tuple[Generator[bytes, None, None], str, int]:
         """
         Generate a PDF payment instructions and return a generator that yields chunks of the PDF data.
 
@@ -55,7 +59,7 @@ class PaymentInstructionsService:
     def _prepare_payment_instructions_context(
         compliance_report_version_id: int,
         invoice_type: ComplianceInvoiceTypes,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Prepare context data for the payment instructions template.
 
@@ -69,15 +73,17 @@ class PaymentInstructionsService:
         )
 
         context = {
-            'invoice_number': (
-                refreshResult.invoice.invoice_number if refreshResult.invoice else "Missing Invoice Number"
+            "invoice_number": (
+                refreshResult.invoice.invoice_number
+                if refreshResult.invoice
+                else "Missing Invoice Number"
             ),
-            'is_penalty': invoice_type
+            "is_penalty": invoice_type
             in {
                 ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
                 ComplianceInvoiceTypes.LATE_SUBMISSION_PENALTY,
             },
-            'logo_base64': CLEAN_BC_LOGO_COMPLIANCE_INVOICE,
+            "logo_base64": CLEAN_BC_LOGO_COMPLIANCE_INVOICE,
         }
 
         return context

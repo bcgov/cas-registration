@@ -1,9 +1,12 @@
-from typing import Any, Callable, Iterable, List, Optional, Tuple
+from collections.abc import Callable, Iterable
+from typing import Any
 
 
 def _field_filter(
-    obj: List[Tuple[str, Any]], include: Optional[set] = None, exclude_none: bool = False
-) -> Iterable[Tuple[str, Any]]:
+    obj: list[tuple[str, Any]],
+    include: set | None = None,
+    exclude_none: bool = False,
+) -> Iterable[tuple[str, Any]]:
     """
     Helper function to include only specified fields from a dataclass in the output dict.
     The field information passed to the factory by dataclasses.asdict is a list of tuples in the form (field_name, field_value).
@@ -19,7 +22,9 @@ def _field_filter(
         yield field
 
 
-def dict_factory(include: Optional[set] = None, exclude_none: bool = False) -> Callable[[List[Tuple[str, Any]]], dict]:
+def dict_factory(
+    include: set | None = None, exclude_none: bool = False
+) -> Callable[[list[tuple[str, Any]]], dict]:
     """
     Factory function that returns a function to include only specified fields in the output dict.
     """

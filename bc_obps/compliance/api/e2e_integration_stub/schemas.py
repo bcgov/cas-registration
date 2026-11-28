@@ -1,6 +1,7 @@
-from typing import Any, Dict, Optional
-from pydantic import Field
+from typing import Any
+
 from ninja import Schema
+from pydantic import Field
 
 
 class ScenarioPayload(Schema):
@@ -13,5 +14,5 @@ class ScenarioPayload(Schema):
     """
 
     scenario: str
-    compliance_report_version_id: Optional[int] = None
-    payload: Dict[str, Any] = Field(default_factory=dict)
+    compliance_report_version_id: int | None = None
+    payload: dict[str, Any] = Field(default_factory=dict)

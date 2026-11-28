@@ -1,5 +1,6 @@
+from unittest.mock import MagicMock, patch
+
 from model_bakery import baker
-from unittest.mock import patch, MagicMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 
@@ -16,17 +17,27 @@ class TestReportFinalReviewApi(CommonTestSetup):
             report_version=self.report_version,
         )
         self.report_person_responsible = baker.make_recipe(
-            "reporting.tests.utils.report_person_responsible", report_version=self.report_version
+            "reporting.tests.utils.report_person_responsible",
+            report_version=self.report_version,
         )
         super().setup_method()
-        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator,
+            operations=[self.report_version.report.operation],
         )
 
-    @patch("reporting.service.report_version_service.ReportVersionService.fetch_full_report_version")
-    @patch("reporting.schema.report_final_review.ComplianceService.get_calculated_compliance_data")
-    @patch("reporting.schema.report_final_review.ReportVersionService.is_initial_report_version")
+    @patch(
+        "reporting.service.report_version_service.ReportVersionService.fetch_full_report_version"
+    )
+    @patch(
+        "reporting.schema.report_final_review.ComplianceService.get_calculated_compliance_data"
+    )
+    @patch(
+        "reporting.schema.report_final_review.ReportVersionService.is_initial_report_version"
+    )
     def test_get_report_final_review_data_returns_required_data(
         self,
         mock_is_initial: MagicMock,
@@ -50,8 +61,14 @@ class TestReportFinalReviewApi(CommonTestSetup):
         data = response.json()
         assert data["report_type"] == self.report_version.report_type
         assert data["status"] == self.report_version.status
-        assert data["report_operation"]["operation_name"] == self.report_operation.operation_name
-        assert data["report_person_responsible"]["first_name"] == self.report_person_responsible.first_name
+        assert (
+            data["report_operation"]["operation_name"]
+            == self.report_operation.operation_name
+        )
+        assert (
+            data["report_person_responsible"]["first_name"]
+            == self.report_person_responsible.first_name
+        )
 
     def test_get_report_version_facility_report_returns_required_data(self):
         response = TestUtils.mock_get_with_auth_role(

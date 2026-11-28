@@ -1,14 +1,16 @@
 from decimal import Decimal
 from unittest.mock import patch
-from compliance.schema.compliance_report_version import ComplianceReportVersionFilterSchema
-import pytest
-from model_bakery.baker import make_recipe
-from compliance.dataclass import RefreshWrapperReturn
-from compliance.service.compliance_dashboard_service import ComplianceDashboardService
-from compliance.models import ComplianceReportVersion, ComplianceEarnedCredit
-from django.core.exceptions import ObjectDoesNotExist
-from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
 
+import pytest
+from compliance.dataclass import RefreshWrapperReturn
+from compliance.models import ComplianceEarnedCredit, ComplianceReportVersion
+from compliance.schema.compliance_report_version import (
+    ComplianceReportVersionFilterSchema,
+)
+from compliance.service.compliance_dashboard_service import ComplianceDashboardService
+from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
+from django.core.exceptions import ObjectDoesNotExist
+from model_bakery.baker import make_recipe
 
 pytestmark = pytest.mark.django_db
 
@@ -18,17 +20,19 @@ pytestmark = pytest.mark.django_db
 DASHBOARD_BASE_PATH = "compliance.service.compliance_dashboard_service"
 
 # Services referenced inside ComplianceDashboardService
-ELICENSING_DATA_REFRESH_SERVICE_PATH = f"{DASHBOARD_BASE_PATH}.ElicensingDataRefreshService"
-COMPLIANCE_REPORT_VERSION_SERVICE_PATH = f"{DASHBOARD_BASE_PATH}.ComplianceReportVersionService"
-COMPLIANCE_CHARGE_RATE_SERVICE_PATH = f"{DASHBOARD_BASE_PATH}.ComplianceChargeRateService"
+ELICENSING_DATA_REFRESH_SERVICE_PATH = (
+    f"{DASHBOARD_BASE_PATH}.ElicensingDataRefreshService"
+)
+COMPLIANCE_REPORT_VERSION_SERVICE_PATH = (
+    f"{DASHBOARD_BASE_PATH}.ComplianceReportVersionService"
+)
+COMPLIANCE_CHARGE_RATE_SERVICE_PATH = (
+    f"{DASHBOARD_BASE_PATH}.ComplianceChargeRateService"
+)
 
 # Specific methods to patch
-ELICENSING_DATA_REFRESH_WRAPPER_PATH = (
-    f"{ELICENSING_DATA_REFRESH_SERVICE_PATH}.refresh_data_wrapper_by_compliance_report_version_id"
-)
-GET_PREVIOUSLY_OWNED_CRV_PATH = (
-    f"{COMPLIANCE_REPORT_VERSION_SERVICE_PATH}.get_compliance_report_versions_for_previously_owned_operations"
-)
+ELICENSING_DATA_REFRESH_WRAPPER_PATH = f"{ELICENSING_DATA_REFRESH_SERVICE_PATH}.refresh_data_wrapper_by_compliance_report_version_id"
+GET_PREVIOUSLY_OWNED_CRV_PATH = f"{COMPLIANCE_REPORT_VERSION_SERVICE_PATH}.get_compliance_report_versions_for_previously_owned_operations"
 GET_RATE_FOR_YEAR_PATH = f"{COMPLIANCE_CHARGE_RATE_SERVICE_PATH}.get_rate_for_year"
 
 
@@ -61,17 +65,21 @@ class _NoopFilters:
 class TestComplianceDashboardService:
     """Tests for the ComplianceDashboardService class"""
 
-    def test_get_compliance_obligation_payments_by_compliance_report_version_id(self, mock_refresh):
-        payment_1 = make_recipe('compliance.tests.utils.elicensing_payment')
+    def test_get_compliance_obligation_payments_by_compliance_report_version_id(
+        self, mock_refresh
+    ):
+        payment_1 = make_recipe("compliance.tests.utils.elicensing_payment")
         payment_2 = make_recipe(
-            'compliance.tests.utils.elicensing_payment', elicensing_line_item=payment_1.elicensing_line_item
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=payment_1.elicensing_line_item,
         )
         obligation = make_recipe(
-            'compliance.tests.utils.compliance_obligation',
+            "compliance.tests.utils.compliance_obligation",
             elicensing_invoice=payment_1.elicensing_line_item.elicensing_invoice,
         )
         mock_refresh.return_value = RefreshWrapperReturn(
-            data_is_fresh=True, invoice=payment_1.elicensing_line_item.elicensing_invoice
+            data_is_fresh=True,
+            invoice=payment_1.elicensing_line_item.elicensing_invoice,
         )
         returned_data = ComplianceDashboardService.get_compliance_obligation_payments_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
@@ -83,18 +91,18 @@ class TestComplianceDashboardService:
         """Test retrieval of penalty payments linked to a compliance report version"""
         # Create two payments on the same invoice, both after the invoice due date
         payment_1 = make_recipe(
-            'compliance.tests.utils.elicensing_payment',
-            received_date='2024-12-02',
+            "compliance.tests.utils.elicensing_payment",
+            received_date="2024-12-02",
         )
         payment_2 = make_recipe(
-            'compliance.tests.utils.elicensing_payment',
+            "compliance.tests.utils.elicensing_payment",
             elicensing_line_item=payment_1.elicensing_line_item,
-            received_date='2024-12-03',
+            received_date="2024-12-03",
         )
 
         # Create a penalty tied to the same invoice
         penalty = make_recipe(
-            'compliance.tests.utils.compliance_penalty',
+            "compliance.tests.utils.compliance_penalty",
             elicensing_invoice=payment_1.elicensing_line_item.elicensing_invoice,
         )
 
@@ -115,7 +123,7 @@ class TestComplianceDashboardService:
         self,
         mock_previously_owned,
     ):
-        user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        user_operator = make_recipe("registration.tests.utils.approved_user_operator")
 
         test_data_1 = ComplianceTestHelper.build_test_data(
             crv_status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
@@ -137,11 +145,13 @@ class TestComplianceDashboardService:
             id=test_data_2.compliance_report_version.id
         )
 
-        result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=user_operator.user.user_guid,
-            sort_field="id",
-            sort_order="asc",
-            filters=_NoopFilters(),
+        result = (
+            ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+                user_guid=user_operator.user.user_guid,
+                sort_field="id",
+                sort_order="asc",
+                filters=_NoopFilters(),
+            )
         )
 
         # Returns the union of reports for currently owned operations & reports for previously owned operations
@@ -149,14 +159,18 @@ class TestComplianceDashboardService:
         assert result.first() == test_data_1.compliance_report_version
         assert result.last() == test_data_2.compliance_report_version
 
-    def test_get_compliance_report_versions_for_dashboard_excludes_versions_correctly(self):
-
-        current_operator = make_recipe('registration.tests.utils.operator')
-        previous_operator = make_recipe('registration.tests.utils.operator')
+    def test_get_compliance_report_versions_for_dashboard_excludes_versions_correctly(
+        self,
+    ):
+        current_operator = make_recipe("registration.tests.utils.operator")
+        previous_operator = make_recipe("registration.tests.utils.operator")
         current_user_operator = make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=current_operator
+            "registration.tests.utils.approved_user_operator", operator=current_operator
         )
-        make_recipe('registration.tests.utils.approved_user_operator', operator=previous_operator)
+        make_recipe(
+            "registration.tests.utils.approved_user_operator",
+            operator=previous_operator,
+        )
 
         # TRANSFERRED DATA
         # Transferred reports should not be viewed by the current owning operator
@@ -169,7 +183,7 @@ class TestComplianceDashboardService:
 
         # Create timeline data for xferred operation
         make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
+            "registration.tests.utils.operation_designated_operator_timeline",
             operation=xferred_test_data.operation,
             start_date="2024-01-01 01:46:20.789146+00:00",
             end_date="2026-02-27 01:46:20.789146+00:00",
@@ -185,24 +199,28 @@ class TestComplianceDashboardService:
 
         # Create timeline data for actively owned operation
         make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
+            "registration.tests.utils.operation_designated_operator_timeline",
             operation=active_test_data.operation,
             end_date=None,  # still current
             # operator defaults to the operation's current operator; explicit set optional
             # operator=current_operator,
         )
 
-        active_result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=current_user_operator.user.user_guid,
-            sort_field="id",
-            sort_order="asc",
-            filters=_NoopFilters(),
+        active_result = (
+            ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+                user_guid=current_user_operator.user.user_guid,
+                sort_field="id",
+                sort_order="asc",
+                filters=_NoopFilters(),
+            )
         )
 
         # Does not return the report associated to the previous owning operator
         assert active_result.count() == 1
         assert active_result.first() == active_test_data.compliance_report_version
-        assert xferred_test_data.compliance_report_version not in active_result  # explicit ownership-check
+        assert (
+            xferred_test_data.compliance_report_version not in active_result
+        )  # explicit ownership-check
 
     def test_get_compliance_report_versions_for_dashboard_excludes_supplementary_reports_with_no_obligation_and_no_credits(
         self,
@@ -217,14 +235,17 @@ class TestComplianceDashboardService:
         )
 
         user_operator = make_recipe(
-            "registration.tests.utils.approved_user_operator", operator=test_data_1.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data_1.operation.operator,
         )
 
-        result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=user_operator.user.user_guid,
-            sort_field="id",
-            sort_order="asc",
-            filters=_NoopFilters(),
+        result = (
+            ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+                user_guid=user_operator.user.user_guid,
+                sort_field="id",
+                sort_order="asc",
+                filters=_NoopFilters(),
+            )
         )
 
         # Expect supplementary report with no obligation or earned credits to be excluded
@@ -236,23 +257,27 @@ class TestComplianceDashboardService:
     ):
         """Test that CAS director can see all compliance report versions while industry users can only see their own"""
 
-        cas_director = make_recipe('registration.tests.utils.cas_director')
+        cas_director = make_recipe("registration.tests.utils.cas_director")
 
         test_data_1 = ComplianceTestHelper.build_test_data()
         test_data_2 = ComplianceTestHelper.build_test_data()
         approved_user_operator_1 = make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=test_data_1.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data_1.operation.operator,
         )
         approved_user_operator_2 = make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=test_data_2.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data_2.operation.operator,
         )
 
         # Test CAS director can see all compliance report versions
-        cas_director_result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=cas_director.user_guid,
-            sort_field=None,
-            sort_order=None,
-            filters=_NoopFilters(),
+        cas_director_result = (
+            ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+                user_guid=cas_director.user_guid,
+                sort_field=None,
+                sort_order=None,
+                filters=_NoopFilters(),
+            )
         )
 
         assert cas_director_result.count() == 2
@@ -260,11 +285,13 @@ class TestComplianceDashboardService:
         assert test_data_2.compliance_report_version in cas_director_result
 
         # Test industry user 1 can only see their own compliance report versions
-        industry_user_1_result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=approved_user_operator_1.user.user_guid,
-            sort_field=None,
-            sort_order=None,
-            filters=_NoopFilters(),
+        industry_user_1_result = (
+            ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+                user_guid=approved_user_operator_1.user.user_guid,
+                sort_field=None,
+                sort_order=None,
+                filters=_NoopFilters(),
+            )
         )
 
         assert industry_user_1_result.count() == 1
@@ -272,11 +299,13 @@ class TestComplianceDashboardService:
         assert test_data_2.compliance_report_version not in industry_user_1_result
 
         # Test industry user 2 can only see their own compliance report versions
-        industry_user_2_result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=approved_user_operator_2.user.user_guid,
-            sort_field=None,
-            sort_order=None,
-            filters=_NoopFilters(),
+        industry_user_2_result = (
+            ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+                user_guid=approved_user_operator_2.user.user_guid,
+                sort_field=None,
+                sort_order=None,
+                filters=_NoopFilters(),
+            )
         )
 
         assert industry_user_2_result.count() == 1
@@ -284,11 +313,17 @@ class TestComplianceDashboardService:
         assert test_data_1.compliance_report_version not in industry_user_2_result
 
         # Test CAS director can access any compliance report version by ID
-        cas_director_result_1 = ComplianceDashboardService.get_compliance_report_version_by_id(
-            user_guid=cas_director.user_guid, compliance_report_version_id=test_data_1.compliance_report_version.id
+        cas_director_result_1 = (
+            ComplianceDashboardService.get_compliance_report_version_by_id(
+                user_guid=cas_director.user_guid,
+                compliance_report_version_id=test_data_1.compliance_report_version.id,
+            )
         )
-        cas_director_result_2 = ComplianceDashboardService.get_compliance_report_version_by_id(
-            user_guid=cas_director.user_guid, compliance_report_version_id=test_data_2.compliance_report_version.id
+        cas_director_result_2 = (
+            ComplianceDashboardService.get_compliance_report_version_by_id(
+                user_guid=cas_director.user_guid,
+                compliance_report_version_id=test_data_2.compliance_report_version.id,
+            )
         )
 
         assert cas_director_result_1 is not None
@@ -297,13 +332,17 @@ class TestComplianceDashboardService:
         assert cas_director_result_2.id == test_data_2.compliance_report_version.id
 
         # Test industry user 1 can only access their own compliance report version by ID
-        industry_user_1_result_by_id = ComplianceDashboardService.get_compliance_report_version_by_id(
-            user_guid=approved_user_operator_1.user.user_guid,
-            compliance_report_version_id=test_data_1.compliance_report_version.id,
+        industry_user_1_result_by_id = (
+            ComplianceDashboardService.get_compliance_report_version_by_id(
+                user_guid=approved_user_operator_1.user.user_guid,
+                compliance_report_version_id=test_data_1.compliance_report_version.id,
+            )
         )
 
         assert industry_user_1_result_by_id is not None
-        assert industry_user_1_result_by_id.id == test_data_1.compliance_report_version.id
+        assert (
+            industry_user_1_result_by_id.id == test_data_1.compliance_report_version.id
+        )
 
         # Test industry user 1 cannot access industry user 2's compliance report version by ID
         with pytest.raises(ObjectDoesNotExist):
@@ -313,13 +352,17 @@ class TestComplianceDashboardService:
             )
 
         # Test industry user 2 can only access their own compliance report version by ID
-        industry_user_2_result_by_id = ComplianceDashboardService.get_compliance_report_version_by_id(
-            user_guid=approved_user_operator_2.user.user_guid,
-            compliance_report_version_id=test_data_2.compliance_report_version.id,
+        industry_user_2_result_by_id = (
+            ComplianceDashboardService.get_compliance_report_version_by_id(
+                user_guid=approved_user_operator_2.user.user_guid,
+                compliance_report_version_id=test_data_2.compliance_report_version.id,
+            )
         )
 
         assert industry_user_2_result_by_id is not None
-        assert industry_user_2_result_by_id.id == test_data_2.compliance_report_version.id
+        assert (
+            industry_user_2_result_by_id.id == test_data_2.compliance_report_version.id
+        )
 
         # Test industry user 2 cannot access industry user 1's compliance report version by ID
         with pytest.raises(ObjectDoesNotExist):
@@ -333,18 +376,21 @@ class TestComplianceDashboardService:
         mock_refresh,
         mock_get_rate,
     ):
-
         test_data = ComplianceTestHelper.build_test_data(
-            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
         )
         # --- User & operator
         user_operator = make_recipe(
-            "registration.tests.utils.approved_user_operator", operator=test_data.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data.operation.operator,
         )
 
         # --- Mocks
         mock_get_rate.return_value = Decimal("2.00")
-        mock_refresh.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=test_data.invoice)
+        mock_refresh.return_value = RefreshWrapperReturn(
+            data_is_fresh=True, invoice=test_data.invoice
+        )
 
         # --- Act
         result = ComplianceDashboardService.get_compliance_report_version_by_id(
@@ -367,7 +413,9 @@ class TestComplianceDashboardService:
         assert result.outstanding_balance_tco2e == Decimal("500.0")
         assert result.outstanding_balance_equivalent_value == Decimal("1000.0")
 
-        mock_refresh.assert_called_once_with(compliance_report_version_id=test_data.compliance_report_version.id)
+        mock_refresh.assert_called_once_with(
+            compliance_report_version_id=test_data.compliance_report_version.id
+        )
 
     def test_get_compliance_report_versions_for_dashboard_sets_calculated_fields(
         self,
@@ -376,18 +424,22 @@ class TestComplianceDashboardService:
         """Test that the service sets calculated fields correctly for compliance report versions"""
 
         test_data_1 = ComplianceTestHelper.build_test_data(
-            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET, create_invoice_data=True
+            crv_status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            create_invoice_data=True,
         )
         approved_user_operator = make_recipe(
-            'registration.tests.utils.approved_user_operator', operator=test_data_1.operation.operator
+            "registration.tests.utils.approved_user_operator",
+            operator=test_data_1.operation.operator,
         )
         mock_get_rate.return_value = Decimal("2.00")
 
-        result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=approved_user_operator.user_id,
-            sort_field="id",
-            sort_order="asc",
-            filters=_NoopFilters(),
+        result = (
+            ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+                user_guid=approved_user_operator.user_id,
+                sort_field="id",
+                sort_order="asc",
+                filters=_NoopFilters(),
+            )
         )
 
         assert result[0].id == test_data_1.compliance_report_version.id
@@ -397,8 +449,7 @@ class TestComplianceDashboardService:
     def test_get_compliance_report_versions_for_dashboard_sorts_and_filters(
         self,
     ):
-
-        user = make_recipe('registration.tests.utils.cas_analyst')
+        user = make_recipe("registration.tests.utils.cas_analyst")
 
         # Create enough rows for multiple pages; deterministic names for stable sort
         versions = []
@@ -410,35 +461,41 @@ class TestComplianceDashboardService:
             versions.append(v)
 
         # Sort
-        result_asc = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=user.user_guid,
-            sort_field="id",
-            sort_order="asc",
-            filters=_NoopFilters(),
+        result_asc = (
+            ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+                user_guid=user.user_guid,
+                sort_field="id",
+                sort_order="asc",
+                filters=_NoopFilters(),
+            )
         )
 
-        result_desc = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=user.user_guid,
-            sort_field="id",
-            sort_order="desc",
-            filters=_NoopFilters(),
+        result_desc = (
+            ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+                user_guid=user.user_guid,
+                sort_field="id",
+                sort_order="desc",
+                filters=_NoopFilters(),
+            )
         )
 
         assert result_asc.first() != result_desc.first()
 
         # Filter
-        result_filtered = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=user.user_guid,
-            sort_field="id",
-            sort_order="asc",
-            filters=ComplianceReportVersionFilterSchema(operation_name='01'),
+        result_filtered = (
+            ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+                user_guid=user.user_guid,
+                sort_field="id",
+                sort_order="asc",
+                filters=ComplianceReportVersionFilterSchema(operation_name="01"),
+            )
         )
         assert result_filtered.count() == 11  # 001 and 010-019
 
     def test_get_compliance_report_versions_annotates_status_correctly(
         self,
     ):
-        user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        user_operator = make_recipe("registration.tests.utils.approved_user_operator")
 
         def build(crv_status):
             td = ComplianceTestHelper.build_test_data(crv_status=crv_status)
@@ -450,17 +507,38 @@ class TestComplianceDashboardService:
 
         # Obligation statuses
         td_not_met = build(ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET)
-        td_interest_not_paid = build(ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID)
-        td_fully_met = build(ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET)
-        td_pending_invoice = build(ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION)
+        td_interest_not_paid = build(
+            ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
+        )
+        td_fully_met = build(
+            ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
+        td_pending_invoice = build(
+            ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
+        )
 
         # Earned credits — vary by issuance_status
         earned_credit_cases = [
-            (ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED, "Earned credits - not requested"),
-            (ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED, "Earned credits - issuance requested"),
-            (ComplianceEarnedCredit.IssuanceStatus.APPROVED, "Earned credits - approved"),
-            (ComplianceEarnedCredit.IssuanceStatus.DECLINED, "Earned credits - declined"),
-            (ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED, "Earned credits - changes required"),
+            (
+                ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
+                "Earned credits - not requested",
+            ),
+            (
+                ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
+                "Earned credits - issuance requested",
+            ),
+            (
+                ComplianceEarnedCredit.IssuanceStatus.APPROVED,
+                "Earned credits - approved",
+            ),
+            (
+                ComplianceEarnedCredit.IssuanceStatus.DECLINED,
+                "Earned credits - declined",
+            ),
+            (
+                ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
+                "Earned credits - changes required",
+            ),
         ]
         earned_credit_data = []
         for issuance_status, _ in earned_credit_cases:
@@ -470,17 +548,23 @@ class TestComplianceDashboardService:
             earned_credit_data.append(td)
 
         # Earned credits — no issuance record
-        td_no_credit_record = build(ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS)
+        td_no_credit_record = build(
+            ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
         td_no_credit_record.compliance_earned_credit.delete()
 
         # Requires manual handling
-        td_manual = build(ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING)
+        td_manual = build(
+            ComplianceReportVersion.ComplianceStatus.REQUIRES_MANUAL_HANDLING
+        )
 
-        result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=user_operator.user_id,
-            sort_field="id",
-            sort_order="asc",
-            filters=_NoopFilters(),
+        result = (
+            ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+                user_guid=user_operator.user_id,
+                sort_field="id",
+                sort_order="asc",
+                filters=_NoopFilters(),
+            )
         )
 
         expected = [

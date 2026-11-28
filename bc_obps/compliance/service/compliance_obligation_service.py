@@ -1,18 +1,22 @@
-from datetime import date
-from decimal import Decimal, ROUND_HALF_UP
-
-from django.core.exceptions import ValidationError
-from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
-from reporting.models.report_version import ReportVersion
-from django.db import transaction
-from compliance.models.compliance_obligation import ComplianceObligation
-from compliance.models.compliance_report_version import ComplianceReportVersion
-from compliance.models.compliance_period import CompliancePeriod
-from compliance.dataclass import ObligationData
-from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
-from zoneinfo import ZoneInfo
-from django.utils import timezone
 import logging
+from datetime import date
+from decimal import ROUND_HALF_UP, Decimal
+from zoneinfo import ZoneInfo
+
+from compliance.dataclass import ObligationData
+from compliance.models.compliance_obligation import ComplianceObligation
+from compliance.models.compliance_period import CompliancePeriod
+from compliance.models.compliance_report_version import ComplianceReportVersion
+from compliance.service.compliance_charge_rate_service import (
+    ComplianceChargeRateService,
+)
+from compliance.service.elicensing.elicensing_data_refresh_service import (
+    ElicensingDataRefreshService,
+)
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from django.utils import timezone
+from reporting.models.report_version import ReportVersion
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +39,9 @@ class ComplianceObligationService:
         """
         today_vancouver = timezone.now().astimezone(cls.VANCOUVER_TZ).date()
 
-        compliance_period: CompliancePeriod = compliance_report_version.compliance_report.compliance_period
+        compliance_period: CompliancePeriod = (
+            compliance_report_version.compliance_report.compliance_period
+        )
 
         return today_vancouver < compliance_period.invoice_generation_date
 
@@ -63,7 +69,7 @@ class ComplianceObligationService:
         """
         # Get the compliance report_version
         compliance_report_version = ComplianceReportVersion.objects.select_related(
-            'report_compliance_summary__report_version__report'
+            "report_compliance_summary__report_version__report"
         ).get(id=compliance_report_version_id)
 
         # Get the compliance charge rate for the reporting year
@@ -72,24 +78,32 @@ class ComplianceObligationService:
         )
 
         # Calculate fee amount: emissions_amount_tco2e * fee rate
-        fee_amount_dollars = (emissions_amount * fee_rate_dollars).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        fee_amount_dollars = (emissions_amount * fee_rate_dollars).quantize(
+            Decimal("0.01"), rounding=ROUND_HALF_UP
+        )
 
         # Create the obligation with fee data
         obligation = ComplianceObligation.objects.create(
             compliance_report_version=compliance_report_version,
-            obligation_id=cls._get_obligation_id(compliance_report_version.report_compliance_summary.report_version),
+            obligation_id=cls._get_obligation_id(
+                compliance_report_version.report_compliance_summary.report_version
+            ),
             fee_amount_dollars=fee_amount_dollars,
             fee_date=date.today(),
             penalty_status=ComplianceObligation.PenaltyStatus.NONE,
         )
 
-        logger.info(f"Created compliance obligation {obligation.id} for report version {compliance_report_version_id}")
+        logger.info(
+            f"Created compliance obligation {obligation.id} for report version {compliance_report_version_id}"
+        )
 
         # Only send "Obligation Available to View" if obligation is created BEFORE invoice generation date
         if cls._should_send_notice_of_obligation_email(compliance_report_version):
             from compliance.tasks import retryable_send_notice_of_obligation_email
 
-            retryable_send_notice_of_obligation_email.execute(compliance_report_version_id)
+            retryable_send_notice_of_obligation_email.execute(
+                compliance_report_version_id
+            )
         else:
             logger.info(
                 "Skipping notice_of_obligation_email for report version %s (today >= invoice_generation_date=%s)",
@@ -132,7 +146,9 @@ class ComplianceObligationService:
         return f"{operation_part}-{report_id}-{version_id}"
 
     @classmethod
-    def update_penalty_status(cls, obligation_id: int, new_status: str) -> ComplianceObligation:
+    def update_penalty_status(
+        cls, obligation_id: int, new_status: str
+    ) -> ComplianceObligation:
         """
         Updates the penalty status of a compliance obligation
 
@@ -155,7 +171,9 @@ class ComplianceObligationService:
         return obligation
 
     @classmethod
-    def get_obligation_for_report_version(cls, compliance_report_version_id: int) -> ComplianceObligation:
+    def get_obligation_for_report_version(
+        cls, compliance_report_version_id: int
+    ) -> ComplianceObligation:
         """
         Gets the compliance obligation for a compliance report_version
 
@@ -168,7 +186,9 @@ class ComplianceObligationService:
         Raises:
             ComplianceObligation.DoesNotExist: If no obligation exists for the compliance report version
         """
-        return ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
+        return ComplianceObligation.objects.get(
+            compliance_report_version_id=compliance_report_version_id
+        )
 
     @staticmethod
     def _get_outstanding_balance_dollars(obligation: ComplianceObligation) -> Decimal:
@@ -185,10 +205,12 @@ class ComplianceObligationService:
             return obligation.elicensing_invoice.invoice_fee_balance  # type:ignore[return-value]
         elif obligation.fee_amount_dollars:
             return obligation.fee_amount_dollars
-        return Decimal('0.00')
+        return Decimal("0.00")
 
     @classmethod
-    def get_obligation_data_by_report_version(cls, compliance_report_version_id: int) -> ObligationData:
+    def get_obligation_data_by_report_version(
+        cls, compliance_report_version_id: int
+    ) -> ObligationData:
         """
         Gets essential obligation data without payments for a compliance report version.
 
@@ -207,19 +229,23 @@ class ComplianceObligationService:
         )
 
         obligation = ComplianceObligation.objects.select_related(
-            'compliance_report_version__report_compliance_summary__report_version__report__reporting_year',
-            'elicensing_invoice',
+            "compliance_report_version__report_compliance_summary__report_version__report__reporting_year",
+            "elicensing_invoice",
         ).get(compliance_report_version_id=compliance_report_version_id)
 
-        outstanding_balance_dollars = ComplianceObligationService._get_outstanding_balance_dollars(obligation)
-
-        reporting_year = (
-            obligation.compliance_report_version.report_compliance_summary.report_version.report.reporting_year
+        outstanding_balance_dollars = (
+            ComplianceObligationService._get_outstanding_balance_dollars(obligation)
         )
-        from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 
-        outstanding_balance_tco2e = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(
-            obligation.compliance_report_version
+        reporting_year = obligation.compliance_report_version.report_compliance_summary.report_version.report.reporting_year
+        from compliance.service.compliance_report_version_service import (
+            ComplianceReportVersionService,
+        )
+
+        outstanding_balance_tco2e = (
+            ComplianceReportVersionService.calculate_outstanding_balance_tco2e(
+                obligation.compliance_report_version
+            )
         )
 
         return ObligationData(

@@ -1,13 +1,17 @@
 from uuid import UUID
-from ninja.types import DictStrAny
-from typing import List
-from registration.models.operation import Operation
-from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
-from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
-from registration.models import User
-from django.db.models import QuerySet, Subquery, OuterRef, UUIDField, CharField
-from registration.service.user_operator_service import UserOperatorService
+
 from django.contrib.postgres.aggregates import ArrayAgg
+from django.db.models import CharField, OuterRef, QuerySet, Subquery, UUIDField
+from ninja.types import DictStrAny
+from registration.models import User
+from registration.models.facility_designated_operation_timeline import (
+    FacilityDesignatedOperationTimeline,
+)
+from registration.models.operation import Operation
+from registration.models.operation_designated_operator_timeline import (
+    OperationDesignatedOperatorTimeline,
+)
+from registration.service.user_operator_service import UserOperatorService
 
 
 class OperationDesignatedOperatorTimelineDataAccessService:
@@ -17,9 +21,11 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         user_guid: UUID,
         operation_designated_operator_timeline_data: DictStrAny,
     ) -> OperationDesignatedOperatorTimeline:
-        operation_designated_operator_timeline = OperationDesignatedOperatorTimeline.objects.create(
-            **operation_designated_operator_timeline_data,
-            created_by_id=user_guid,
+        operation_designated_operator_timeline = (
+            OperationDesignatedOperatorTimeline.objects.create(
+                **operation_designated_operator_timeline_data,
+                created_by_id=user_guid,
+            )
         )
 
         return operation_designated_operator_timeline
@@ -45,11 +51,11 @@ class OperationDesignatedOperatorTimelineDataAccessService:
 
         facilities_subquery = (
             FacilityDesignatedOperationTimeline.objects.filter(
-                operation_id=OuterRef('operation'),
+                operation_id=OuterRef("operation"),
                 operation_id__type=Operation.Types.SFO,
             )
-            .only('facility__id', 'facility__name')
-            .order_by('start_date')
+            .only("facility__id", "facility__name")
+            .order_by("start_date")
         )
         if exclude_previously_owned:
             facilities_subquery.filter(
@@ -57,10 +63,10 @@ class OperationDesignatedOperatorTimelineDataAccessService:
             )
 
         # Subquery for sfo_facility_id (UUID) and facility_name (string)
-        sfo_facility_id_subquery = facilities_subquery.values('facility__pk')[:1]
-        sfo_facility_name_subquery = facilities_subquery.values('facility__name')[:1]
+        sfo_facility_id_subquery = facilities_subquery.values("facility__pk")[:1]
+        sfo_facility_name_subquery = facilities_subquery.values("facility__name")[:1]
 
-        only_fields: List[str] = [
+        only_fields: list[str] = [
             "operation__name",
             "operation__type",
             "operation__bc_obps_regulated_operation__id",
@@ -72,15 +78,21 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         ]
         queryset = (
             OperationDesignatedOperatorTimeline.objects.select_related(
-                'operator',
-                'operation',
-                'operation__bcghg_id',
-                'operation__bc_obps_regulated_operation',
+                "operator",
+                "operation",
+                "operation__bcghg_id",
+                "operation__bc_obps_regulated_operation",
             )
             .annotate(
-                sfo_facility_id=Subquery(sfo_facility_id_subquery, output_field=UUIDField()),
-                sfo_facility_name=Subquery(sfo_facility_name_subquery, output_field=CharField()),
-                operation__contact_ids=ArrayAgg('operation__contacts__id', distinct=True),
+                sfo_facility_id=Subquery(
+                    sfo_facility_id_subquery, output_field=UUIDField()
+                ),
+                sfo_facility_name=Subquery(
+                    sfo_facility_name_subquery, output_field=CharField()
+                ),
+                operation__contact_ids=ArrayAgg(
+                    "operation__contacts__id", distinct=True
+                ),
             )
             .only(*only_fields)
         )
@@ -92,7 +104,11 @@ class OperationDesignatedOperatorTimelineDataAccessService:
             return queryset
         else:
             # Industry users can only see operations associated with their own operator
-            user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
+            user_operator = (
+                UserOperatorService.get_current_user_approved_user_operator_or_raise(
+                    user
+                )
+            )
             return queryset.filter(operator_id=user_operator.operator_id)
 
     @classmethod
@@ -103,4 +119,6 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         Gets a list of operations & the dates that they were previously owned by an operator.
         """
 
-        return OperationDesignatedOperatorTimeline.objects.filter(operator_id=operator_id, end_date__isnull=False)
+        return OperationDesignatedOperatorTimeline.objects.filter(
+            operator_id=operator_id, end_date__isnull=False
+        )

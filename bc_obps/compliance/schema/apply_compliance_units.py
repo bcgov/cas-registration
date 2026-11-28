@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Optional, List
+
 from compliance.service.bc_carbon_registry.schema import FifteenDigitString
 from ninja import Schema
 
@@ -12,38 +12,38 @@ class BCCRUnit(Schema):
     serial_number: str
     vintage_year: str
     quantity_available: int
-    quantity_to_be_applied: Optional[int] = None
+    quantity_to_be_applied: int | None = None
 
 
 class AppliedComplianceUnit(Schema):
     """Schema for applied compliance units in grid format"""
 
-    id: Optional[str] = None
-    type: Optional[str] = None
-    serial_number: Optional[str] = None
-    vintage_year: Optional[str] = None
-    quantity_applied: Optional[str] = None
-    equivalent_value: Optional[str] = None
+    id: str | None = None
+    type: str | None = None
+    serial_number: str | None = None
+    vintage_year: str | None = None
+    quantity_applied: str | None = None
+    equivalent_value: str | None = None
 
 
 class AppliedComplianceUnitsOut(Schema):
     """Wrapper schema for applied units and credit cap metadata."""
 
-    applied_compliance_units: List[AppliedComplianceUnit]
+    applied_compliance_units: list[AppliedComplianceUnit]
     can_apply_compliance_units: bool
 
 
 class ApplyComplianceUnitsOut(Schema):
     """Schema for showing all the data on the Apply Compliance Units page"""
 
-    bccr_trading_name: Optional[str] = None
-    bccr_compliance_account_id: Optional[str] = None
-    bccr_units: List[BCCRUnit] = []
-    charge_rate: Optional[Decimal] = None
-    outstanding_balance: Optional[Decimal] = None
-    compliance_unit_cap_limit: Optional[Decimal] = None
-    compliance_unit_cap_remaining: Optional[Decimal] = None
-    max_credit_usage_percentage: Optional[Decimal] = None
+    bccr_trading_name: str | None = None
+    bccr_compliance_account_id: str | None = None
+    bccr_units: list[BCCRUnit] = []
+    charge_rate: Decimal | None = None
+    outstanding_balance: Decimal | None = None
+    compliance_unit_cap_limit: Decimal | None = None
+    compliance_unit_cap_remaining: Decimal | None = None
+    max_credit_usage_percentage: Decimal | None = None
 
 
 class ApplyComplianceUnitsIn(Schema):
@@ -51,5 +51,5 @@ class ApplyComplianceUnitsIn(Schema):
 
     bccr_holding_account_id: FifteenDigitString
     bccr_compliance_account_id: FifteenDigitString
-    bccr_units: List[BCCRUnit] = []
+    bccr_units: list[BCCRUnit] = []
     total_equivalent_value: Decimal

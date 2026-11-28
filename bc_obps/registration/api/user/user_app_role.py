@@ -1,14 +1,15 @@
-from typing import Literal, Tuple, Union
+from typing import Literal
 from uuid import UUID
-from django.http import HttpRequest
+
 from common.api.utils import get_current_user_guid
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest
+from ninja.types import DictStrAny
+from registration.api.router import router
 from registration.constants import USER_TAGS
 from registration.models import AppRole
+from registration.schema import Message, UserAppRoleOut
 from registration.service.data_access_service.user_service import UserDataAccessService
-from registration.schema import UserAppRoleOut, Message
-from registration.api.router import router
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
-from ninja.types import DictStrAny
 
 
 @router.get(
@@ -18,7 +19,9 @@ from ninja.types import DictStrAny
     description="""Retrieves the application role of the current user.
     The endpoint uses the user's GUID to look up and return their associated application role.""",
 )
-def get_user_role(request: HttpRequest) -> Tuple[Literal[200], Union[AppRole, DictStrAny]]:
+def get_user_role(
+    request: HttpRequest,
+) -> tuple[Literal[200], AppRole | DictStrAny]:
     """
     Retrieves the application role of the current user by looking up their GUID.
     Returns the user's app role if the user exists in our database,

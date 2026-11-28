@@ -1,8 +1,9 @@
 from decimal import Decimal
-from typing import Dict, List
 
 from django.db.models import OuterRef, Subquery, Sum
-from reporting.constants import FACILITY_REPORTING_ONLY_CATEGORY_IDS as REPORTING_ONLY_CATEGORY_IDS
+from reporting.constants import (
+    FACILITY_REPORTING_ONLY_CATEGORY_IDS as REPORTING_ONLY_CATEGORY_IDS,
+)
 from reporting.models import EmissionCategory
 from reporting.models.report_emission import ReportEmission
 
@@ -13,60 +14,101 @@ class EmissionCategoryService:
     """
 
     @classmethod
-    def get_all_emission_categories(cls) -> List[EmissionCategory]:
+    def get_all_emission_categories(cls) -> list[EmissionCategory]:
         return list(EmissionCategory.objects.all())
 
     @staticmethod
-    def get_total_emissions_by_emission_category(facility_report_id: int, emission_category_id: int) -> Decimal | int:
+    def get_total_emissions_by_emission_category(
+        facility_report_id: int, emission_category_id: int
+    ) -> Decimal | int:
         records = ReportEmission.objects_with_decimal_emissions.filter(
             report_source_type__report_activity__facility_report_id=facility_report_id,
             emission_categories__id=emission_category_id,
         )
-        category_sum = records.aggregate(emission_sum=Sum('emission'))
+        category_sum = records.aggregate(emission_sum=Sum("emission"))
 
-        return category_sum['emission_sum'] or 0
+        return category_sum["emission_sum"] or 0
 
     @staticmethod
     def get_reporting_only_emissions(facility_report_id: int) -> Decimal | int:
-
         records = ReportEmission.objects_with_decimal_emissions.filter(
             report_source_type__report_activity__facility_report_id=facility_report_id,
             emission_categories__id__in=REPORTING_ONLY_CATEGORY_IDS,
         ).distinct()
 
-        total_reporting_only = records.aggregate(emission_sum=Sum('emission'))
-        return total_reporting_only['emission_sum'] or 0
+        total_reporting_only = records.aggregate(emission_sum=Sum("emission"))
+        return total_reporting_only["emission_sum"] or 0
 
     @classmethod
-    def get_all_category_totals(cls, facility_report_id: int) -> Dict[str, Decimal | int]:
+    def get_all_category_totals(
+        cls, facility_report_id: int
+    ) -> dict[str, Decimal | int]:
         # BASIC
-        flaring_total = EmissionCategoryService.get_total_emissions_by_emission_category(facility_report_id, 1)
-        fugitive_total = EmissionCategoryService.get_total_emissions_by_emission_category(facility_report_id, 2)
-        industrial_process_total = EmissionCategoryService.get_total_emissions_by_emission_category(
-            facility_report_id, 3
+        flaring_total = (
+            EmissionCategoryService.get_total_emissions_by_emission_category(
+                facility_report_id, 1
+            )
         )
-        onsite_transportation_total = EmissionCategoryService.get_total_emissions_by_emission_category(
-            facility_report_id, 4
+        fugitive_total = (
+            EmissionCategoryService.get_total_emissions_by_emission_category(
+                facility_report_id, 2
+            )
         )
-        stationary_combustion_total = EmissionCategoryService.get_total_emissions_by_emission_category(
-            facility_report_id, 5
+        industrial_process_total = (
+            EmissionCategoryService.get_total_emissions_by_emission_category(
+                facility_report_id, 3
+            )
         )
-        venting_useful_total = EmissionCategoryService.get_total_emissions_by_emission_category(facility_report_id, 6)
-        venting_non_useful_total = EmissionCategoryService.get_total_emissions_by_emission_category(
-            facility_report_id, 7
+        onsite_transportation_total = (
+            EmissionCategoryService.get_total_emissions_by_emission_category(
+                facility_report_id, 4
+            )
         )
-        waste_total = EmissionCategoryService.get_total_emissions_by_emission_category(facility_report_id, 8)
-        wastewater_total = EmissionCategoryService.get_total_emissions_by_emission_category(facility_report_id, 9)
+        stationary_combustion_total = (
+            EmissionCategoryService.get_total_emissions_by_emission_category(
+                facility_report_id, 5
+            )
+        )
+        venting_useful_total = (
+            EmissionCategoryService.get_total_emissions_by_emission_category(
+                facility_report_id, 6
+            )
+        )
+        venting_non_useful_total = (
+            EmissionCategoryService.get_total_emissions_by_emission_category(
+                facility_report_id, 7
+            )
+        )
+        waste_total = EmissionCategoryService.get_total_emissions_by_emission_category(
+            facility_report_id, 8
+        )
+        wastewater_total = (
+            EmissionCategoryService.get_total_emissions_by_emission_category(
+                facility_report_id, 9
+            )
+        )
         # FUEL EXCLUDED
-        woody_biomass_total = EmissionCategoryService.get_total_emissions_by_emission_category(facility_report_id, 10)
-        excluded_biomass_total = EmissionCategoryService.get_total_emissions_by_emission_category(
-            facility_report_id, 11
+        woody_biomass_total = (
+            EmissionCategoryService.get_total_emissions_by_emission_category(
+                facility_report_id, 10
+            )
         )
-        excluded_non_biomass_total = EmissionCategoryService.get_total_emissions_by_emission_category(
-            facility_report_id, 12
+        excluded_biomass_total = (
+            EmissionCategoryService.get_total_emissions_by_emission_category(
+                facility_report_id, 11
+            )
+        )
+        excluded_non_biomass_total = (
+            EmissionCategoryService.get_total_emissions_by_emission_category(
+                facility_report_id, 12
+            )
         )
         # OTHER EXCLUDED
-        lfo_excluded_total = EmissionCategoryService.get_total_emissions_by_emission_category(facility_report_id, 13)
+        lfo_excluded_total = (
+            EmissionCategoryService.get_total_emissions_by_emission_category(
+                facility_report_id, 13
+            )
+        )
 
         # ATTRIBUTABLE EMISSIONS
         attributable_for_reporting = (
@@ -81,25 +123,27 @@ class EmissionCategoryService:
             + wastewater_total
         )
         attributable_for_threshold = attributable_for_reporting - woody_biomass_total
-        reporting_only = EmissionCategoryService.get_reporting_only_emissions(facility_report_id)
+        reporting_only = EmissionCategoryService.get_reporting_only_emissions(
+            facility_report_id
+        )
 
         return {
-            'flaring': flaring_total,
-            'fugitive': fugitive_total,
-            'industrial_process': industrial_process_total,
-            'onsite': onsite_transportation_total,
-            'stationary': stationary_combustion_total,
-            'venting_useful': venting_useful_total,
-            'venting_non_useful': venting_non_useful_total,
-            'waste': waste_total,
-            'wastewater': wastewater_total,
-            'woody_biomass': woody_biomass_total,
-            'excluded_biomass': excluded_biomass_total,
-            'excluded_non_biomass': excluded_non_biomass_total,
-            'lfo_excluded': lfo_excluded_total,
-            'attributable_for_reporting': attributable_for_reporting,
-            'attributable_for_threshold': attributable_for_threshold,
-            'reporting_only': reporting_only,
+            "flaring": flaring_total,
+            "fugitive": fugitive_total,
+            "industrial_process": industrial_process_total,
+            "onsite": onsite_transportation_total,
+            "stationary": stationary_combustion_total,
+            "venting_useful": venting_useful_total,
+            "venting_non_useful": venting_non_useful_total,
+            "waste": waste_total,
+            "wastewater": wastewater_total,
+            "woody_biomass": woody_biomass_total,
+            "excluded_biomass": excluded_biomass_total,
+            "excluded_non_biomass": excluded_non_biomass_total,
+            "lfo_excluded": lfo_excluded_total,
+            "attributable_for_reporting": attributable_for_reporting,
+            "attributable_for_threshold": attributable_for_threshold,
+            "reporting_only": reporting_only,
         }
 
     # Methods by version (below) work for SFO and LFO total summaries, but not for summaries for individual facilities of an LFO
@@ -111,9 +155,9 @@ class EmissionCategoryService:
             report_version_id=version_id,
             emission_categories__id=emission_category_id,
         )
-        category_sum = records.aggregate(emission_sum=Sum('emission'))
+        category_sum = records.aggregate(emission_sum=Sum("emission"))
 
-        return category_sum['emission_sum'] or 0
+        return category_sum["emission_sum"] or 0
 
     @staticmethod
     def get_reporting_only_emissions_by_version(version_id: int) -> Decimal | int:
@@ -122,11 +166,11 @@ class EmissionCategoryService:
             emission_categories__id__in=REPORTING_ONLY_CATEGORY_IDS,
         ).distinct()
 
-        total_reporting_only = records.aggregate(emission_sum=Sum('emission'))
-        return total_reporting_only['emission_sum'] or 0
+        total_reporting_only = records.aggregate(emission_sum=Sum("emission"))
+        return total_reporting_only["emission_sum"] or 0
 
     @staticmethod
-    def get_all_category_totals_by_version(version_id: int) -> Dict[str, Decimal | int]:
+    def get_all_category_totals_by_version(version_id: int) -> dict[str, Decimal | int]:
         totals = EmissionCategory.objects.annotate(
             total=Subquery(
                 ReportEmission.objects_with_decimal_emissions.filter(
@@ -171,89 +215,125 @@ class EmissionCategoryService:
             + wastewater_total
         )
         attributable_for_threshold = attributable_for_reporting - woody_biomass_total
-        reporting_only = EmissionCategoryService.get_reporting_only_emissions_by_version(version_id)
+        reporting_only = (
+            EmissionCategoryService.get_reporting_only_emissions_by_version(version_id)
+        )
 
         return {
-            'flaring': flaring_total,
-            'fugitive': fugitive_total,
-            'industrial_process': industrial_process_total,
-            'onsite': onsite_transportation_total,
-            'stationary': stationary_combustion_total,
-            'venting_useful': venting_useful_total,
-            'venting_non_useful': venting_non_useful_total,
-            'waste': waste_total,
-            'wastewater': wastewater_total,
-            'woody_biomass': woody_biomass_total,
-            'excluded_biomass': excluded_biomass_total,
-            'excluded_non_biomass': excluded_non_biomass_total,
-            'lfo_excluded': lfo_excluded_total,
-            'attributable_for_reporting': attributable_for_reporting,
-            'attributable_for_threshold': attributable_for_threshold,
-            'reporting_only': reporting_only,
+            "flaring": flaring_total,
+            "fugitive": fugitive_total,
+            "industrial_process": industrial_process_total,
+            "onsite": onsite_transportation_total,
+            "stationary": stationary_combustion_total,
+            "venting_useful": venting_useful_total,
+            "venting_non_useful": venting_non_useful_total,
+            "waste": waste_total,
+            "wastewater": wastewater_total,
+            "woody_biomass": woody_biomass_total,
+            "excluded_biomass": excluded_biomass_total,
+            "excluded_non_biomass": excluded_non_biomass_total,
+            "lfo_excluded": lfo_excluded_total,
+            "attributable_for_reporting": attributable_for_reporting,
+            "attributable_for_threshold": attributable_for_threshold,
+            "reporting_only": reporting_only,
         }
 
     @classmethod
-    def transform_category_totals_to_summary_form_data(cls, emission_totals: Dict[str, Decimal | int]) -> dict:
+    def transform_category_totals_to_summary_form_data(
+        cls, emission_totals: dict[str, Decimal | int]
+    ) -> dict:
         return {
-            'attributable_for_reporting': emission_totals['attributable_for_reporting'],
-            'attributable_for_reporting_threshold': emission_totals['attributable_for_threshold'],
-            'reporting_only_emission': emission_totals['reporting_only'],
-            'emission_categories': {
-                'flaring': emission_totals['flaring'],
-                'fugitive': emission_totals['fugitive'],
-                'industrial_process': emission_totals['industrial_process'],
-                'onsite_transportation': emission_totals['onsite'],
-                'stationary_combustion': emission_totals['stationary'],
-                'venting_useful': emission_totals['venting_useful'],
-                'venting_non_useful': emission_totals['venting_non_useful'],
-                'waste': emission_totals['waste'],
-                'wastewater': emission_totals['wastewater'],
+            "attributable_for_reporting": emission_totals["attributable_for_reporting"],
+            "attributable_for_reporting_threshold": emission_totals[
+                "attributable_for_threshold"
+            ],
+            "reporting_only_emission": emission_totals["reporting_only"],
+            "emission_categories": {
+                "flaring": emission_totals["flaring"],
+                "fugitive": emission_totals["fugitive"],
+                "industrial_process": emission_totals["industrial_process"],
+                "onsite_transportation": emission_totals["onsite"],
+                "stationary_combustion": emission_totals["stationary"],
+                "venting_useful": emission_totals["venting_useful"],
+                "venting_non_useful": emission_totals["venting_non_useful"],
+                "waste": emission_totals["waste"],
+                "wastewater": emission_totals["wastewater"],
             },
-            'fuel_excluded': {
-                'woody_biomass': emission_totals['woody_biomass'],
-                'excluded_biomass': emission_totals['excluded_biomass'],
-                'excluded_non_biomass': emission_totals['excluded_non_biomass'],
+            "fuel_excluded": {
+                "woody_biomass": emission_totals["woody_biomass"],
+                "excluded_biomass": emission_totals["excluded_biomass"],
+                "excluded_non_biomass": emission_totals["excluded_non_biomass"],
             },
-            'other_excluded': {
-                'lfo_excluded': emission_totals['lfo_excluded'],
-                'fog_excluded': 0,  # To be handled once we implement a way to capture FOG emissions
+            "other_excluded": {
+                "lfo_excluded": emission_totals["lfo_excluded"],
+                "fog_excluded": 0,  # To be handled once we implement a way to capture FOG emissions
             },
         }
 
     @classmethod
     def get_operation_emission_summary_form_data(cls, version_id: int) -> dict:
-        emission_totals = EmissionCategoryService.get_all_category_totals_by_version(version_id)
-        return EmissionCategoryService.transform_category_totals_to_summary_form_data(emission_totals)
+        emission_totals = EmissionCategoryService.get_all_category_totals_by_version(
+            version_id
+        )
+        return EmissionCategoryService.transform_category_totals_to_summary_form_data(
+            emission_totals
+        )
 
     @classmethod
     def get_facility_emission_summary_form_data(cls, facility_report_id: int) -> dict:
-        emission_totals = EmissionCategoryService.get_all_category_totals(facility_report_id)
-        return EmissionCategoryService.transform_category_totals_to_summary_form_data(emission_totals)
+        emission_totals = EmissionCategoryService.get_all_category_totals(
+            facility_report_id
+        )
+        return EmissionCategoryService.transform_category_totals_to_summary_form_data(
+            emission_totals
+        )
 
     # These functions calculate the sum of emissions where both the industrial process & excluded biomass (and woody biomass) have been applied.
     # This is used in handling exceptions for pulp & paper emission reporting & compliance calculation
     @classmethod
-    def get_industrial_process_excluded_biomass_overlap_by_facility(cls, facility_report_id: int) -> Decimal:
+    def get_industrial_process_excluded_biomass_overlap_by_facility(
+        cls, facility_report_id: int
+    ) -> Decimal:
         industrial_process_records = ReportEmission.objects_with_decimal_emissions.filter(
             emission_categories__id=3,
             report_source_type__report_activity__facility_report_id=facility_report_id,
         )
-        woody_biomass_overlap_records = industrial_process_records.filter(emission_categories__id=10)
-        other_biomass_overlap_records = industrial_process_records.filter(emission_categories__id=11)
-        overlapping_records = woody_biomass_overlap_records.union(other_biomass_overlap_records)
-        total_overlapping_emissions = overlapping_records.aggregate(emission_sum=Sum('emission'))
-        return total_overlapping_emissions['emission_sum'] or Decimal(0)
+        woody_biomass_overlap_records = industrial_process_records.filter(
+            emission_categories__id=10
+        )
+        other_biomass_overlap_records = industrial_process_records.filter(
+            emission_categories__id=11
+        )
+        overlapping_records = woody_biomass_overlap_records.union(
+            other_biomass_overlap_records
+        )
+        total_overlapping_emissions = overlapping_records.aggregate(
+            emission_sum=Sum("emission")
+        )
+        return total_overlapping_emissions["emission_sum"] or Decimal(0)
 
     @classmethod
-    def get_industrial_process_excluded_biomass_overlap_by_report_version(cls, report_version_id: int) -> Decimal:
-        industrial_process_records = ReportEmission.objects_with_decimal_emissions.filter(
-            emission_categories__id=3,
-            report_version_id=report_version_id,
+    def get_industrial_process_excluded_biomass_overlap_by_report_version(
+        cls, report_version_id: int
+    ) -> Decimal:
+        industrial_process_records = (
+            ReportEmission.objects_with_decimal_emissions.filter(
+                emission_categories__id=3,
+                report_version_id=report_version_id,
+            )
         )
 
-        woody_biomass_overlap_records = industrial_process_records.filter(emission_categories__id=10)
-        other_biomass_overlap_records = industrial_process_records.filter(emission_categories__id=11)
-        overlapping_records = woody_biomass_overlap_records.union(other_biomass_overlap_records)
-        total_overlapping_emissions = overlapping_records.aggregate(emission_sum=Sum('emission'))
+        woody_biomass_overlap_records = industrial_process_records.filter(
+            emission_categories__id=10
+        )
+        other_biomass_overlap_records = industrial_process_records.filter(
+            emission_categories__id=11
+        )
+        overlapping_records = woody_biomass_overlap_records.union(
+            other_biomass_overlap_records
+        )
+        total_overlapping_emissions = overlapping_records.aggregate(
+            emission_sum=Sum("emission")
+        )
 
-        return total_overlapping_emissions['emission_sum'] or Decimal(0)
+        return total_overlapping_emissions["emission_sum"] or Decimal(0)

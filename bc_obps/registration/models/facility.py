@@ -1,13 +1,14 @@
 import uuid
-from django.db import models
-from common.enums import Schemas
-from registration.enums.enums import RegistrationTableNames
-from registration.models.well_authorization_number import WellAuthorizationNumber
-from registration.models import Address, TimeStampedModel, Operation
-from simple_history.models import HistoricalRecords
-from django.core.validators import MaxValueValidator, MinValueValidator
-from registration.models.rls_configs.facility import Rls as FacilityRls
+
 import pgtrigger
+from common.enums import Schemas
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from registration.enums.enums import RegistrationTableNames
+from registration.models import Address, Operation, TimeStampedModel
+from registration.models.rls_configs.facility import Rls as FacilityRls
+from registration.models.well_authorization_number import WellAuthorizationNumber
+from simple_history.models import HistoricalRecords
 
 
 class Facility(TimeStampedModel):
@@ -19,7 +20,10 @@ class Facility(TimeStampedModel):
         ELECTRICITY_IMPORT = "Electricity Import"
 
     id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, db_comment="Primary key to identify the facility", verbose_name="ID"
+        primary_key=True,
+        default=uuid.uuid4,
+        db_comment="Primary key to identify the facility",
+        verbose_name="ID",
     )
     operation = models.ForeignKey(
         Operation,
@@ -33,7 +37,9 @@ class Facility(TimeStampedModel):
         unique=True,
     )
     is_current_year = models.BooleanField(
-        blank=True, null=True, db_comment="The facility's starting date is within the current year or preceding year"
+        blank=True,
+        null=True,
+        db_comment="The facility's starting date is within the current year or preceding year",
     )
     starting_date = models.DateTimeField(
         blank=True, null=True, db_comment="The date of the facility starting operations"
@@ -49,7 +55,7 @@ class Facility(TimeStampedModel):
         db_comment="The address of the facility. Foreign key to erc.address",
         blank=True,
         null=True,
-        related_name='%(class)s_address',
+        related_name="%(class)s_address",
     )
     swrs_facility_id = models.IntegerField(
         db_comment="A facility's SWRS (Single Window Reporting System) facility ID. Only populated for facilities imported from the SWRS dataset.",
@@ -65,7 +71,7 @@ class Facility(TimeStampedModel):
         null=True,
     )
     latitude_of_largest_emissions = models.DecimalField(
-        db_comment='The latitude of the largest point of emissions',
+        db_comment="The latitude of the largest point of emissions",
         decimal_places=6,
         max_digits=8,
         null=True,
@@ -73,14 +79,16 @@ class Facility(TimeStampedModel):
         validators=[MinValueValidator(-90), MaxValueValidator(90)],
     )
     longitude_of_largest_emissions = models.DecimalField(
-        db_comment='The longitude of the largest point of emissions',
+        db_comment="The longitude of the largest point of emissions",
         decimal_places=6,
         max_digits=9,
         null=True,
         blank=True,
         validators=[MinValueValidator(-180), MaxValueValidator(180)],
     )
-    well_authorization_numbers = models.ManyToManyField(WellAuthorizationNumber, related_name='facilities')
+    well_authorization_numbers = models.ManyToManyField(
+        WellAuthorizationNumber, related_name="facilities"
+    )
     history = HistoricalRecords(
         table_name='erc_history"."facility_history',
         m2m_fields=[well_authorization_numbers],
@@ -119,6 +127,8 @@ class Facility(TimeStampedModel):
         return f"{self.name} - {self.type}. Operation {self.operation.name}. Address: {self.address.street_address if self.address else 'No address'}. BCGHG ID: {self.bcghg_id.id if self.bcghg_id else 'No BCGHG ID'}. SWRS Facility ID: {self.swrs_facility_id if self.swrs_facility_id else 'No SWRS Facility ID'}. Well Authorization Numbers: {', '.join(str(wan.well_authorization_number) for wan in self.well_authorization_numbers.all()) if self.well_authorization_numbers.exists() else 'No Well Authorization Numbers'}"
 
     def generate_unique_bcghg_id(self, user_guid: uuid.UUID) -> None:
-        from registration.models.utils import generate_unique_bcghg_id_for_operation_or_facility
+        from registration.models.utils import (
+            generate_unique_bcghg_id_for_operation_or_facility,
+        )
 
         generate_unique_bcghg_id_for_operation_or_facility(self, user_guid)

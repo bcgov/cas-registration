@@ -8,8 +8,8 @@ from reporting.service.report_validation.report_validation_error import (
     ReportValidationErrorKey,
     Severity,
 )
-from reporting.service.report_verification_service import ReportVerificationService
 from reporting.service.report_validation.report_validation_tags import ValidationTags
+from reporting.service.report_verification_service import ReportVerificationService
 
 TAGS = [ValidationTags.ON_SUBMIT]
 
@@ -21,16 +21,18 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         - If a verification statement is required, ensures the presence of a corresponding attachment.
     """
     # Check if verification is mandatory
-    isVerificationMandatory = ReportVerificationService.get_report_verification_status(report_version.id).get(
-        "verification_required"
-    )
+    isVerificationMandatory = ReportVerificationService.get_report_verification_status(
+        report_version.id
+    ).get("verification_required")
 
     errors = {}
 
     if isVerificationMandatory:
         # Check for the ReportVerification entry
         try:
-            ReportVerification.objects.get(report_version_id=report_version.id)  # attempt to get the object.
+            ReportVerification.objects.get(
+                report_version_id=report_version.id
+            )  # attempt to get the object.
         except ObjectDoesNotExist:
             errors["missing_report_verification"] = ReportValidationError(
                 severity=Severity.ERROR,

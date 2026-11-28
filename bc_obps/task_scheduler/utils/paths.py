@@ -1,5 +1,5 @@
 import importlib
-from typing import Callable
+from collections.abc import Callable
 
 
 def get_function_path(func: Callable) -> str:
@@ -8,18 +8,18 @@ def get_function_path(func: Callable) -> str:
     module_name = func.__module__
 
     # Get the function name - handle different types of callables
-    if hasattr(func, '__qualname__'):
+    if hasattr(func, "__qualname__"):
         # Class method, static method, or bound method
         qualname = func.__qualname__
 
         # Handle different qualname formats
-        if '.' in qualname:
+        if "." in qualname:
             # Class method: "ClassName.method_name"
             return f"{module_name}.{qualname}"
         else:
             # Regular function or static method
             return f"{module_name}.{func.__name__}"
-    elif hasattr(func, '__self__') and func.__self__ is not None:
+    elif hasattr(func, "__self__") and func.__self__ is not None:
         # Bound method
         # Get the class name from the bound object
         class_name = func.__self__.__class__.__name__
@@ -31,7 +31,7 @@ def get_function_path(func: Callable) -> str:
 
 def resolve_function_from_path(function_path: str) -> Callable:
     """Resolve a function from its path string dynamically."""
-    parts = function_path.split('.')
+    parts = function_path.split(".")
 
     if len(parts) < 2:
         raise ValueError(f"Invalid function path format: {function_path}")
@@ -45,6 +45,8 @@ def resolve_function_from_path(function_path: str) -> Callable:
 
     # Ensure we have a callable function
     if not callable(current_obj):
-        raise ValueError(f"Path {function_path} does not resolve to a callable function")
+        raise ValueError(
+            f"Path {function_path} does not resolve to a callable function"
+        )
 
     return current_obj

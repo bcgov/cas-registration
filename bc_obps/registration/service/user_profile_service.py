@@ -1,13 +1,13 @@
 from dataclasses import asdict
+from uuid import UUID
+
 from django.conf import settings
 from django.db import transaction
+from registration.enums.enums import IdPs
+from registration.models import AppRole, User
 from registration.schema import UserIn
 from registration.service.data_access_service.user_service import UserDataAccessService
 from registration.service.data_types.user_profile_service import UserLoginSyncData
-from registration.models import AppRole
-from registration.enums.enums import IdPs
-from uuid import UUID
-from registration.models import User
 
 
 class UserProfileService:
@@ -27,7 +27,9 @@ class UserProfileService:
 
     @classmethod
     @transaction.atomic()
-    def sync_user_profile_from_idp(cls, user_guid: UUID, idp_data: UserLoginSyncData) -> User:
+    def sync_user_profile_from_idp(
+        cls, user_guid: UUID, idp_data: UserLoginSyncData
+    ) -> User:
         """
         Refreshes the identity-provider-owned fields (email, BCeID business name) of an existing industry user.
         Called on every login so that changes made in the BCeID portal are reflected in BCIERS

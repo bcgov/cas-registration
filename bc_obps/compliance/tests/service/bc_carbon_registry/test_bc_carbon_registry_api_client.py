@@ -1,21 +1,23 @@
-import pytest
-from unittest.mock import Mock
-from datetime import datetime, timedelta
-from django.utils import timezone
-import requests
 import logging
 import zlib
-from typing import Optional
-from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
+from datetime import datetime, timedelta
+from unittest.mock import Mock
+
+import pytest
+import requests
+from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import (
+    BCCarbonRegistryAPIClient,
+)
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from compliance.service.bc_carbon_registry.schema import (
-    SearchFilter,
-    Pagination,
-    FilterModel,
     AccountDetailsResponse,
+    FilterModel,
+    Pagination,
     ProjectPayload,
+    SearchFilter,
 )
 from django.conf import settings
+from django.utils import timezone
 
 # Configure logging for tests
 logging.basicConfig(level=logging.INFO)
@@ -159,7 +161,9 @@ def valid_sub_account_payload():
 
 @pytest.fixture
 def mock_success_response():
-    return Mock(status_code=200, json=lambda: {"success": True, "result": {"id": "123"}})
+    return Mock(
+        status_code=200, json=lambda: {"success": True, "result": {"id": "123"}}
+    )
 
 
 def assert_account_keys(entities):
@@ -236,7 +240,9 @@ class TestBCCarbonRegistryAPIClient:
     def test_authenticate_timeout(self, setup, mocker, caplog):
         # Arrange
         client = setup
-        mocker.patch("requests.post", side_effect=requests.Timeout("Connection timed out"))
+        mocker.patch(
+            "requests.post", side_effect=requests.Timeout("Connection timed out")
+        )
         # Act & Assert
         with caplog.at_level(logging.ERROR):
             with pytest.raises(BCCarbonRegistryError, match="Request timed out"):
@@ -246,7 +252,9 @@ class TestBCCarbonRegistryAPIClient:
     def test_authenticate_connection_error(self, setup, mocker, caplog):
         # Arrange
         client = setup
-        mocker.patch("requests.post", side_effect=requests.ConnectionError("Connection refused"))
+        mocker.patch(
+            "requests.post", side_effect=requests.ConnectionError("Connection refused")
+        )
         # Act & Assert
         with caplog.at_level(logging.ERROR):
             with pytest.raises(BCCarbonRegistryError, match="Connection error"):
@@ -257,7 +265,9 @@ class TestBCCarbonRegistryAPIClient:
         # Arrange
         client = setup
         mock_response = Mock(status_code=401, text="Unauthorized")
-        mock_response.raise_for_status.side_effect = requests.HTTPError("401 Client Error")
+        mock_response.raise_for_status.side_effect = requests.HTTPError(
+            "401 Client Error"
+        )
         mocker.patch("requests.post", return_value=mock_response)
         # Act & Assert
         with caplog.at_level(logging.ERROR):
@@ -268,7 +278,10 @@ class TestBCCarbonRegistryAPIClient:
     def test_authenticate_validation_error(self, setup, mocker, caplog):
         # Arrange
         client = setup
-        mocker.patch("requests.post", return_value=Mock(status_code=200, json=lambda: {"invalid_field": "value"}))
+        mocker.patch(
+            "requests.post",
+            return_value=Mock(status_code=200, json=lambda: {"invalid_field": "value"}),
+        )
         # Act & Assert
         with caplog.at_level(logging.ERROR):
             with pytest.raises(BCCarbonRegistryError, match="Invalid token response"):
@@ -308,12 +321,16 @@ class TestBCCarbonRegistryAPIClient:
         # Assert
         assert client.token == "new_token"
 
-    def test_ensure_authenticated_within_reauth_advance_delay(self, setup, mocker, caplog):
+    def test_ensure_authenticated_within_reauth_advance_delay(
+        self, setup, mocker, caplog
+    ):
         """Test re-authentication when token is within the 60-second reauth advance delay"""
         # Arrange
         client = setup
         client.token = "expiring_token"
-        client.token_expiry = timezone.now() + timedelta(seconds=30)  # inside 60s reauth advance delay
+        client.token_expiry = timezone.now() + timedelta(
+            seconds=30
+        )  # inside 60s reauth advance delay
         mock_post = mocker.patch("requests.post")
         mock_post.return_value = Mock(
             status_code=200,
@@ -356,7 +373,9 @@ class TestBCCarbonRegistryAPIClient:
         client, mock_request = authenticated_client
         mock_response = Mock(
             status_code=200,
-            json=lambda: {"invalid_field": "value"},  # Invalid schema for response_model
+            json=lambda: {
+                "invalid_field": "value"
+            },  # Invalid schema for response_model
         )
         mock_request.return_value = mock_response
         payload = SearchFilter(pagination=Pagination(), filterModel=FilterModel())
@@ -374,7 +393,9 @@ class TestBCCarbonRegistryAPIClient:
         # Arrange
         client, mock_request = authenticated_client
         mock_response = Mock(status_code=400, text="Bad Request")
-        mock_response.raise_for_status.side_effect = requests.HTTPError("400 Bad Request")
+        mock_response.raise_for_status.side_effect = requests.HTTPError(
+            "400 Bad Request"
+        )
         mock_request.return_value = mock_response
 
         # Act & Assert
@@ -383,7 +404,9 @@ class TestBCCarbonRegistryAPIClient:
                 client._make_request(method="GET", endpoint="/test")
             assert "Request to" in caplog.text
 
-    def test_make_request_retries_once_on_401(self, authenticated_client, mocker, caplog):
+    def test_make_request_retries_once_on_401(
+        self, authenticated_client, mocker, caplog
+    ):
         # Arrange
         client, mock_request = authenticated_client
         mock_401 = Mock(status_code=401)
@@ -401,7 +424,11 @@ class TestBCCarbonRegistryAPIClient:
         mock_post = mocker.patch("requests.post")
         mock_post.return_value = Mock(
             status_code=200,
-            json=lambda: {"access_token": "new_token", "expires_in": 3600, "token_type": "Bearer"},
+            json=lambda: {
+                "access_token": "new_token",
+                "expires_in": 3600,
+                "token_type": "Bearer",
+            },
         )
 
         # Act
@@ -415,7 +442,9 @@ class TestBCCarbonRegistryAPIClient:
         assert mock_request.call_count == 2
         mock_post.assert_called_once()  # auth was called exactly once
 
-    def test_make_request_raises_after_retry_401(self, authenticated_client, mocker, caplog):
+    def test_make_request_raises_after_retry_401(
+        self, authenticated_client, mocker, caplog
+    ):
         # Arrange
         client, mock_request = authenticated_client
 
@@ -433,7 +462,11 @@ class TestBCCarbonRegistryAPIClient:
             "requests.post",
             return_value=Mock(
                 status_code=200,
-                json=lambda: {"access_token": "new_token", "expires_in": 3600, "token_type": "Bearer"},
+                json=lambda: {
+                    "access_token": "new_token",
+                    "expires_in": 3600,
+                    "token_type": "Bearer",
+                },
             ),
         )
 
@@ -449,9 +482,13 @@ class TestBCCarbonRegistryAPIClient:
 
         # Act & Assert
         with caplog.at_level(logging.ERROR):
-            with pytest.raises(ValueError, match="limit must be positive and start non-negative"):
+            with pytest.raises(
+                ValueError, match="limit must be positive and start non-negative"
+            ):
                 client._check_pagination_params(limit=0, start=0)
-            with pytest.raises(ValueError, match="limit must be positive and start non-negative"):
+            with pytest.raises(
+                ValueError, match="limit must be positive and start non-negative"
+            ):
                 client._check_pagination_params(limit=10, start=-1)
             assert "Invalid pagination parameters" in caplog.text
 
@@ -463,7 +500,10 @@ class TestBCCarbonRegistryAPIClient:
         # Act & Assert
         with pytest.raises(BCCarbonRegistryError, match="Invalid payload"):
             client._submit_payload(
-                data=empty_payload, url="/test", payload_model=ProjectPayload, error_message="Invalid payload"
+                data=empty_payload,
+                url="/test",
+                payload_model=ProjectPayload,
+                error_message="Invalid payload",
             )
 
     def test_get_account_details_success(self, authenticated_client):
@@ -550,7 +590,9 @@ class TestBCCarbonRegistryAPIClient:
         # Assert
         assert result["totalEntities"] == 0
 
-    def test_get_account_details_defaults_to_operator_of_regulated_operation_type(self, authenticated_client):
+    def test_get_account_details_defaults_to_operator_of_regulated_operation_type(
+        self, authenticated_client
+    ):
         # Arrange - account with type 11 (Operator of Regulated Operation)
         client, mock_request = authenticated_client
         account_response = BASE_ACCOUNT_RESPONSE.copy()
@@ -564,7 +606,9 @@ class TestBCCarbonRegistryAPIClient:
         assert result["totalEntities"] == 1
         assert result["entities"][0]["accountTypeId"] == 11
 
-    def test_get_account_details_validates_account_type_mismatch(self, authenticated_client):
+    def test_get_account_details_validates_account_type_mismatch(
+        self, authenticated_client
+    ):
         # Arrange - account with type 14 (Compliance) but expecting type 11 (Operator of Regulated Operation)
         from common.exceptions import UserError
 
@@ -580,7 +624,9 @@ class TestBCCarbonRegistryAPIClient:
         ):
             client.get_account_details(MOCK_FIFTEEN_DIGIT_STRING)
 
-    def test_get_account_details_validates_account_type_with_explicit_type(self, authenticated_client):
+    def test_get_account_details_validates_account_type_with_explicit_type(
+        self, authenticated_client
+    ):
         # Arrange - account with type 14 (Compliance) and explicitly requesting type 14
         client, mock_request = authenticated_client
         account_response = BASE_ACCOUNT_RESPONSE.copy()
@@ -588,13 +634,17 @@ class TestBCCarbonRegistryAPIClient:
         mock_request.return_value = Mock(status_code=200, json=lambda: account_response)
 
         # Act
-        result = client.get_account_details(MOCK_FIFTEEN_DIGIT_STRING, account_type_id=14)
+        result = client.get_account_details(
+            MOCK_FIFTEEN_DIGIT_STRING, account_type_id=14
+        )
 
         # Assert - should succeed when account type matches requested type
         assert result["totalEntities"] == 1
         assert result["entities"][0]["accountTypeId"] == 14
 
-    def test_get_account_details_validates_account_type_with_none_explicitly_passed(self, authenticated_client):
+    def test_get_account_details_validates_account_type_with_none_explicitly_passed(
+        self, authenticated_client
+    ):
         # Arrange - account with type 11 (Operator of Regulated Operation)
         client, mock_request = authenticated_client
         account_response = BASE_ACCOUNT_RESPONSE.copy()
@@ -602,7 +652,9 @@ class TestBCCarbonRegistryAPIClient:
         mock_request.return_value = Mock(status_code=200, json=lambda: account_response)
 
         # Act - explicitly pass None, should default to 11
-        result = client.get_account_details(MOCK_FIFTEEN_DIGIT_STRING, account_type_id=None)
+        result = client.get_account_details(
+            MOCK_FIFTEEN_DIGIT_STRING, account_type_id=None
+        )
 
         # Assert - should succeed with default account type (11)
         assert result["totalEntities"] == 1
@@ -673,7 +725,9 @@ class TestBCCarbonRegistryAPIClient:
         )
         mock_request.side_effect = [offset_response, earned_credit_response]
         # Act
-        result = client.list_all_units(account_id="123", vintage_year=2022, limit=10, start=0)
+        result = client.list_all_units(
+            account_id="123", vintage_year=2022, limit=10, start=0
+        )
         # Assert
         assert result["totalEntities"] == 2
         assert result["numberOfElements"] == 2
@@ -696,27 +750,37 @@ class TestBCCarbonRegistryAPIClient:
             ]
         )
         # Verify BCO request: unitType=BCO, vintage>=2019 (2022-3), accountId, REGULATED_OPERATION, ACTIVE
-        offset_payload = mock_request.call_args_list[0].kwargs.get("json") or mock_request.call_args_list[0][1].get(
+        offset_payload = mock_request.call_args_list[0].kwargs.get(
             "json"
-        )
+        ) or mock_request.call_args_list[0][1].get("json")
         offset_filter = offset_payload["searchFilter"]["filterModel"]
         assert "accountId" in offset_filter
         assert "subAccountId" not in offset_filter
-        assert offset_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "REGULATED_OPERATION"
+        assert (
+            offset_filter["accountTypeCode"]["columnFilters"][0]["filter"]
+            == "REGULATED_OPERATION"
+        )
         assert offset_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE"
         assert offset_filter["stateCode"]["columnFilters"][0]["type"] == "equals"
         assert offset_filter["unitType"]["columnFilters"][0]["filter"] == "BCO"
         assert offset_filter["vintage"]["columnFilters"][0]["filter"] == 2019
-        assert offset_filter["vintage"]["columnFilters"][0]["type"] == "greaterThanOrEqual"
+        assert (
+            offset_filter["vintage"]["columnFilters"][0]["type"] == "greaterThanOrEqual"
+        )
         # Verify BCE request: unitType=BCE, no vintage filter, same account/state filters
-        earned_credit_payload = mock_request.call_args_list[1].kwargs.get("json") or mock_request.call_args_list[1][
-            1
-        ].get("json")
+        earned_credit_payload = mock_request.call_args_list[1].kwargs.get(
+            "json"
+        ) or mock_request.call_args_list[1][1].get("json")
         earned_credit_filter = earned_credit_payload["searchFilter"]["filterModel"]
         assert "accountId" in earned_credit_filter
         assert "subAccountId" not in earned_credit_filter
-        assert earned_credit_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "REGULATED_OPERATION"
-        assert earned_credit_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE"
+        assert (
+            earned_credit_filter["accountTypeCode"]["columnFilters"][0]["filter"]
+            == "REGULATED_OPERATION"
+        )
+        assert (
+            earned_credit_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE"
+        )
         assert earned_credit_filter["unitType"]["columnFilters"][0]["filter"] == "BCE"
         assert "vintage" not in earned_credit_filter
 
@@ -762,7 +826,11 @@ class TestBCCarbonRegistryAPIClient:
         mock_request.side_effect = [offset_response, earned_credit_response]
         # Act
         result = client.list_all_units(
-            account_id="456", vintage_year=2022, limit=10, start=0, account_type="sub_account"
+            account_id="456",
+            vintage_year=2022,
+            limit=10,
+            start=0,
+            account_type="sub_account",
         )
         # Assert
         assert result["totalEntities"] == 2
@@ -770,34 +838,51 @@ class TestBCCarbonRegistryAPIClient:
         assert len(result["entities"]) == 2
         assert mock_request.call_count == 2
         # Verify BCO request: subAccountId, COMPLIANCE_SUB_ACCOUNT, ACTIVE,RETIRED, vintage filter, unitType=BCO
-        offset_payload = mock_request.call_args_list[0].kwargs.get("json") or mock_request.call_args_list[0][1].get(
+        offset_payload = mock_request.call_args_list[0].kwargs.get(
             "json"
-        )
+        ) or mock_request.call_args_list[0][1].get("json")
         offset_filter = offset_payload["searchFilter"]["filterModel"]
         assert "subAccountId" in offset_filter
         assert "accountId" not in offset_filter
-        assert offset_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "COMPLIANCE_SUB_ACCOUNT"
-        assert offset_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE,RETIRED"
+        assert (
+            offset_filter["accountTypeCode"]["columnFilters"][0]["filter"]
+            == "COMPLIANCE_SUB_ACCOUNT"
+        )
+        assert (
+            offset_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE,RETIRED"
+        )
         assert offset_filter["stateCode"]["columnFilters"][0]["type"] == "in"
         assert offset_filter["unitType"]["columnFilters"][0]["filter"] == "BCO"
         assert "vintage" in offset_filter
         # Verify BCE request: subAccountId, COMPLIANCE_SUB_ACCOUNT, ACTIVE,RETIRED, no vintage filter, unitType=BCE
-        earned_credit_payload = mock_request.call_args_list[1].kwargs.get("json") or mock_request.call_args_list[1][
-            1
-        ].get("json")
+        earned_credit_payload = mock_request.call_args_list[1].kwargs.get(
+            "json"
+        ) or mock_request.call_args_list[1][1].get("json")
         earned_credit_filter = earned_credit_payload["searchFilter"]["filterModel"]
         assert "subAccountId" in earned_credit_filter
         assert "accountId" not in earned_credit_filter
-        assert earned_credit_filter["accountTypeCode"]["columnFilters"][0]["filter"] == "COMPLIANCE_SUB_ACCOUNT"
-        assert earned_credit_filter["stateCode"]["columnFilters"][0]["filter"] == "ACTIVE,RETIRED"
+        assert (
+            earned_credit_filter["accountTypeCode"]["columnFilters"][0]["filter"]
+            == "COMPLIANCE_SUB_ACCOUNT"
+        )
+        assert (
+            earned_credit_filter["stateCode"]["columnFilters"][0]["filter"]
+            == "ACTIVE,RETIRED"
+        )
         assert earned_credit_filter["stateCode"]["columnFilters"][0]["type"] == "in"
         assert earned_credit_filter["unitType"]["columnFilters"][0]["filter"] == "BCE"
         assert "vintage" not in earned_credit_filter
 
     @staticmethod
-    def _units_page(unit_type: str, serials: list, last: bool, total: int, vintages: Optional[list] = None) -> Mock:
+    def _units_page(
+        unit_type: str,
+        serials: list,
+        last: bool,
+        total: int,
+        vintages: list | None = None,
+    ) -> Mock:
         # Unique 15-digit unit id per serial, so units can be told apart (and deduplicated)
-        unit_id = lambda serial: str(100000000000000 + zlib.crc32(serial.encode()))  # noqa: E731
+        unit_id = lambda serial: str(100000000000000 + zlib.crc32(serial.encode()))
         entities = [
             {
                 "id": unit_id(serial),
@@ -842,15 +927,27 @@ class TestBCCarbonRegistryAPIClient:
         ]
 
         # Act
-        result = client.list_all_units(account_id="123", vintage_year=2022, limit=2, fetch_all_pages=True)
+        result = client.list_all_units(
+            account_id="123", vintage_year=2022, limit=2, fetch_all_pages=True
+        )
 
         # Assert
         assert mock_request.call_count == 3
-        assert sorted(e["serialNo"] for e in result["entities"]) == ["BCE-1", "BCO-1", "BCO-2", "BCO-3"]
+        assert sorted(e["serialNo"] for e in result["entities"]) == [
+            "BCE-1",
+            "BCO-1",
+            "BCO-2",
+            "BCO-3",
+        ]
         assert result["numberOfElements"] == 4
         assert result["totalEntities"] == 4
-        first_bco, second_bco, bce = (self._request_payload(mock_request, i) for i in range(3))
-        assert (first_bco["searchFilter"]["pagination"]["start"], first_bco["searchFilter"]["pagination"]["limit"]) == (
+        first_bco, second_bco, bce = (
+            self._request_payload(mock_request, i) for i in range(3)
+        )
+        assert (
+            first_bco["searchFilter"]["pagination"]["start"],
+            first_bco["searchFilter"]["pagination"]["limit"],
+        ) == (
             0,
             2,
         )
@@ -858,9 +955,20 @@ class TestBCCarbonRegistryAPIClient:
             second_bco["searchFilter"]["pagination"]["start"],
             second_bco["searchFilter"]["pagination"]["limit"],
         ) == (2, 2)
-        assert second_bco["searchFilter"]["filterModel"]["unitType"]["columnFilters"][0]["filter"] == "BCO"
-        assert (bce["searchFilter"]["pagination"]["start"], bce["searchFilter"]["pagination"]["limit"]) == (0, 2)
-        assert bce["searchFilter"]["filterModel"]["unitType"]["columnFilters"][0]["filter"] == "BCE"
+        assert (
+            second_bco["searchFilter"]["filterModel"]["unitType"]["columnFilters"][0][
+                "filter"
+            ]
+            == "BCO"
+        )
+        assert (
+            bce["searchFilter"]["pagination"]["start"],
+            bce["searchFilter"]["pagination"]["limit"],
+        ) == (0, 2)
+        assert (
+            bce["searchFilter"]["filterModel"]["unitType"]["columnFilters"][0]["filter"]
+            == "BCE"
+        )
         # Every page is sorted newest vintage first, with the unique entityId as a tiebreaker so paging is stable
         for payload in (first_bco, second_bco, bce):
             assert payload["searchFilter"]["pagination"]["sortOptions"] == [
@@ -868,7 +976,9 @@ class TestBCCarbonRegistryAPIClient:
                 {"sort": "entityId", "dir": "DESC"},
             ]
 
-    def test_list_all_units_fetch_all_pages_stops_on_empty_page(self, authenticated_client):
+    def test_list_all_units_fetch_all_pages_stops_on_empty_page(
+        self, authenticated_client
+    ):
         # Arrange: BCCR claims more pages but returns an empty one
         client, mock_request = authenticated_client
         mock_request.side_effect = [
@@ -878,13 +988,17 @@ class TestBCCarbonRegistryAPIClient:
         ]
 
         # Act
-        result = client.list_all_units(account_id="123", vintage_year=2022, limit=1, fetch_all_pages=True)
+        result = client.list_all_units(
+            account_id="123", vintage_year=2022, limit=1, fetch_all_pages=True
+        )
 
         # Assert
         assert mock_request.call_count == 3
         assert [e["serialNo"] for e in result["entities"]] == ["BCO-1"]
 
-    def test_list_all_units_fetch_all_pages_drops_duplicate_units(self, authenticated_client):
+    def test_list_all_units_fetch_all_pages_drops_duplicate_units(
+        self, authenticated_client
+    ):
         # Arrange: BCCR repeats a unit across pages
         client, mock_request = authenticated_client
         mock_request.side_effect = [
@@ -895,29 +1009,50 @@ class TestBCCarbonRegistryAPIClient:
         ]
 
         # Act
-        result = client.list_all_units(account_id="123", vintage_year=2022, limit=2, fetch_all_pages=True)
+        result = client.list_all_units(
+            account_id="123", vintage_year=2022, limit=2, fetch_all_pages=True
+        )
 
         # Assert: each unit id appears once
         ids = [e["id"] for e in result["entities"]]
         assert len(ids) == len(set(ids))
         assert result["numberOfElements"] == len(ids)
 
-    def test_list_all_units_sorts_offsets_and_earned_credits_together(self, authenticated_client):
+    def test_list_all_units_sorts_offsets_and_earned_credits_together(
+        self, authenticated_client
+    ):
         # Arrange: offsets (2024, 2023) and earned credits (2025, "2024 - 2025") are fetched separately
         client, mock_request = authenticated_client
         mock_request.side_effect = [
-            self._units_page("BCO", ["BCO-2024", "BCO-2023"], last=False, total=2, vintages=["2024", "2023"]),
+            self._units_page(
+                "BCO",
+                ["BCO-2024", "BCO-2023"],
+                last=False,
+                total=2,
+                vintages=["2024", "2023"],
+            ),
             # BCCR vintages can be ranges, which must not break the sort
             self._units_page(
-                "BCE", ["BCE-2025", "BCE-2024-2025"], last=False, total=2, vintages=["2025", "2024 - 2025"]
+                "BCE",
+                ["BCE-2025", "BCE-2024-2025"],
+                last=False,
+                total=2,
+                vintages=["2025", "2024 - 2025"],
             ),
         ]
 
         # Act
-        result = client.list_all_units(account_id="123", vintage_year=2025, limit=100, fetch_all_pages=True)
+        result = client.list_all_units(
+            account_id="123", vintage_year=2025, limit=100, fetch_all_pages=True
+        )
 
         # Assert: newest vintage first across both unit types, not all offsets before all earned credits
-        assert [e["serialNo"] for e in result["entities"]] == ["BCE-2025", "BCE-2024-2025", "BCO-2024", "BCO-2023"]
+        assert [e["serialNo"] for e in result["entities"]] == [
+            "BCE-2025",
+            "BCE-2024-2025",
+            "BCO-2024",
+            "BCO-2023",
+        ]
 
     def test_list_all_units_single_page_by_default(self, authenticated_client):
         # Arrange: without fetch_all_pages, a non-last page is not followed
@@ -961,7 +1096,9 @@ class TestBCCarbonRegistryAPIClient:
         mock_request.side_effect = [empty_response, empty_response]
 
         # Act
-        result = client.list_all_units(account_id="123", vintage_year=2022, limit=10, start=0)
+        result = client.list_all_units(
+            account_id="123", vintage_year=2022, limit=10, start=0
+        )
 
         # Assert
         assert result["totalEntities"] == 0
@@ -1045,10 +1182,15 @@ class TestBCCarbonRegistryAPIClient:
         with pytest.raises(BCCarbonRegistryError, match="Invalid project payload"):
             client.create_project(invalid_payload)
 
-    def test_transfer_compliance_units_success(self, authenticated_client, valid_transfer_payload):
+    def test_transfer_compliance_units_success(
+        self, authenticated_client, valid_transfer_payload
+    ):
         # Arrange
         client, mock_request = authenticated_client
-        mock_response = Mock(status_code=200, json=lambda: {"success": True, "result": {"transfer_id": "456"}})
+        mock_response = Mock(
+            status_code=200,
+            json=lambda: {"success": True, "result": {"transfer_id": "456"}},
+        )
         mock_request.return_value = mock_response
         # Act
         result = client.transfer_compliance_units(valid_transfer_payload)
@@ -1057,7 +1199,9 @@ class TestBCCarbonRegistryAPIClient:
         assert result["result"]["transfer_id"] == "456"
         mock_request.assert_called_once()
 
-    def test_transfer_compliance_units_invalid_quantity(self, setup, valid_transfer_payload):
+    def test_transfer_compliance_units_invalid_quantity(
+        self, setup, valid_transfer_payload
+    ):
         # Arrange
         client = setup
         invalid_payload = valid_transfer_payload.copy()
@@ -1066,10 +1210,15 @@ class TestBCCarbonRegistryAPIClient:
         with pytest.raises(BCCarbonRegistryError, match="Invalid transfer payload"):
             client.transfer_compliance_units(invalid_payload)
 
-    def test_create_issuance_success(self, authenticated_client, valid_issuance_payload):
+    def test_create_issuance_success(
+        self, authenticated_client, valid_issuance_payload
+    ):
         # Arrange
         client, mock_request = authenticated_client
-        mock_response = Mock(status_code=200, json=lambda: {"success": True, "result": {"issuance_id": "101"}})
+        mock_response = Mock(
+            status_code=200,
+            json=lambda: {"success": True, "result": {"issuance_id": "101"}},
+        )
         mock_request.return_value = mock_response
         # Act
         result = client.create_issuance(valid_issuance_payload)
@@ -1087,10 +1236,15 @@ class TestBCCarbonRegistryAPIClient:
         with pytest.raises(BCCarbonRegistryError, match="Invalid issuance payload"):
             client.create_issuance(invalid_payload)
 
-    def test_create_sub_account_success(self, authenticated_client, valid_sub_account_payload):
+    def test_create_sub_account_success(
+        self, authenticated_client, valid_sub_account_payload
+    ):
         # Arrange
         client, mock_request = authenticated_client
-        mock_response = Mock(status_code=200, json=lambda: {"success": True, "result": {"account_id": "789"}})
+        mock_response = Mock(
+            status_code=200,
+            json=lambda: {"success": True, "result": {"account_id": "789"}},
+        )
         mock_request.return_value = mock_response
         # Act
         result = client.create_sub_account(valid_sub_account_payload)
@@ -1128,7 +1282,9 @@ class TestBCCarbonRegistryAPIClient:
         mock_request.return_value = mock_response
         # Act
         result = client.get_compliance_account(
-            master_account_id=MOCK_FIFTEEN_DIGIT_STRING, compliance_year=2024, boro_id="TEST123"
+            master_account_id=MOCK_FIFTEEN_DIGIT_STRING,
+            compliance_year=2024,
+            boro_id="TEST123",
         )
         # Assert
         assert result["totalEntities"] == 1
@@ -1154,15 +1310,45 @@ class TestBCCarbonRegistryAPIClient:
                     "filterModel": {
                         "masterAccountId": {
                             "columnFilters": [
-                                {"filterType": "Number", "type": "equals", "filter": MOCK_FIFTEEN_DIGIT_STRING}
+                                {
+                                    "filterType": "Number",
+                                    "type": "equals",
+                                    "filter": MOCK_FIFTEEN_DIGIT_STRING,
+                                }
                             ]
                         },
-                        "accountTypeId": {"columnFilters": [{"filterType": "Number", "type": "equals", "filter": 14}]},
-                        "stateCode": {"columnFilters": [{"filterType": "Text", "type": "equals", "filter": "ACTIVE"}]},
-                        "complianceYear": {
-                            "columnFilters": [{"filterType": "Number", "type": "equals", "filter": 2024}]
+                        "accountTypeId": {
+                            "columnFilters": [
+                                {"filterType": "Number", "type": "equals", "filter": 14}
+                            ]
                         },
-                        "boroId": {"columnFilters": [{"filterType": "Text", "type": "equals", "filter": "TEST123"}]},
+                        "stateCode": {
+                            "columnFilters": [
+                                {
+                                    "filterType": "Text",
+                                    "type": "equals",
+                                    "filter": "ACTIVE",
+                                }
+                            ]
+                        },
+                        "complianceYear": {
+                            "columnFilters": [
+                                {
+                                    "filterType": "Number",
+                                    "type": "equals",
+                                    "filter": 2024,
+                                }
+                            ]
+                        },
+                        "boroId": {
+                            "columnFilters": [
+                                {
+                                    "filterType": "Text",
+                                    "type": "equals",
+                                    "filter": "TEST123",
+                                }
+                            ]
+                        },
                     },
                     "groupKeys": [],
                 }
@@ -1175,6 +1361,10 @@ class TestBCCarbonRegistryAPIClient:
         client = setup
         # Act & Assert
         with caplog.at_level(logging.ERROR):
-            with pytest.raises(ValueError, match="master_account_id must be a numeric string"):
-                client.get_compliance_account(master_account_id="invalid", compliance_year=2024, boro_id="TEST123")
+            with pytest.raises(
+                ValueError, match="master_account_id must be a numeric string"
+            ):
+                client.get_compliance_account(
+                    master_account_id="invalid", compliance_year=2024, boro_id="TEST123"
+                )
             assert "Invalid master_account_id" in caplog.text

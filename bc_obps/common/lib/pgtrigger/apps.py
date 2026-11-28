@@ -37,7 +37,9 @@ def patch_migrations():
                 {},
             )
 
-        if not issubclass(migrate.MigrationAutodetector, migrations.MigrationAutodetectorMixin):  # pragma: no branch
+        if not issubclass(
+            migrate.MigrationAutodetector, migrations.MigrationAutodetectorMixin
+        ):  # pragma: no branch
             migrate.MigrationAutodetector = type(
                 "MigrationAutodetector",
                 (migrations.MigrationAutodetectorMixin, migrate.MigrationAutodetector),
@@ -61,7 +63,9 @@ def patch_schema_editor():
                     schema_editor_class,
                     postgresql_schema.DatabaseSchemaEditor,
                 )
-                and not issubclass(schema_editor_class, migrations.DatabaseSchemaEditorMixin)
+                and not issubclass(
+                    schema_editor_class, migrations.DatabaseSchemaEditorMixin
+                )
             ):
                 backend.DatabaseWrapper.SchemaEditorClass = type(
                     "DatabaseSchemaEditor",
@@ -79,7 +83,9 @@ def register_triggers_from_meta():
             triggers = getattr(model._meta, "triggers", [])
             for trigger in triggers:
                 if not isinstance(trigger, core.Trigger):  # pragma: no cover
-                    raise TypeError(f"Triggers in {model} Meta must be pgtrigger.Trigger classes")
+                    raise TypeError(
+                        f"Triggers in {model} Meta must be pgtrigger.Trigger classes"
+                    )
 
                 trigger.register(model)
 

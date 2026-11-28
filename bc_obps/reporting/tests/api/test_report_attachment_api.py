@@ -1,5 +1,6 @@
+from unittest.mock import ANY, MagicMock, call, patch
+
 import pytest
-from unittest.mock import ANY, call, patch, MagicMock
 from django.core.files.base import ContentFile
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -12,25 +13,35 @@ from reporting.tests.utils.report_access_validation import (
 class TestReportAttachmentEndpoints(CommonTestSetup):
     def setup_method(self):
         self.report_version = make_recipe("reporting.tests.utils.report_version")
-        self.endpoint_under_test = f"/api/reporting/report-version/{self.report_version.id}/attachments"
+        self.endpoint_under_test = (
+            f"/api/reporting/report-version/{self.report_version.id}/attachments"
+        )
         self.file_url_endpoint = f"{self.endpoint_under_test}/1234"
 
         super().setup_method()
-        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.report_version.report.operator
+        )
         TestUtils.generate_operation_operator_timeline(
-            operator=self.report_version.report.operator, operations=[self.report_version.report.operation]
+            operator=self.report_version.report.operator,
+            operations=[self.report_version.report.operation],
         )
 
-    @patch("reporting.service.report_attachment_service.ReportAttachmentService.set_attachment", autospec=True)
+    @patch(
+        "reporting.service.report_attachment_service.ReportAttachmentService.set_attachment",
+        autospec=True,
+    )
     @patch(
         "reporting.service.report_attachment_service.ReportAttachmentService.save_attachment_confirmation",
         autospec=True,
     )
     @patch(
-        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachments_by_version", autospec=True
+        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachments_by_version",
+        autospec=True,
     )
     @patch(
-        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachment_confirmation", autospec=True
+        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachment_confirmation",
+        autospec=True,
     )
     def test_save_attachments_calls_services_and_returns_the_get_method(
         self,
@@ -93,10 +104,12 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         }
 
     @patch(
-        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachments_by_version", autospec=True
+        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachments_by_version",
+        autospec=True,
     )
     @patch(
-        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachment_confirmation", autospec=True
+        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachment_confirmation",
+        autospec=True,
     )
     @pytest.mark.parametrize("role", ["industry_user", "cas_admin"])
     def test_get_attachments_returns_expected_schema_for_authorized_roles(
@@ -178,7 +191,8 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         autospec=True,
     )
     @patch(
-        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachment_confirmation", autospec=True
+        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachment_confirmation",
+        autospec=True,
     )
     def test_save_attachments_error_if_bad_form_data(
         self,
@@ -189,8 +203,12 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
 
         form = {
             "files": [
-                ContentFile(bytes("testtesttesttest", encoding="utf-8"), "testfile.pdf"),
-                ContentFile(bytes("testtesttesttest", encoding="utf-8"), "testfile2.txt"),
+                ContentFile(
+                    bytes("testtesttesttest", encoding="utf-8"), "testfile.pdf"
+                ),
+                ContentFile(
+                    bytes("testtesttesttest", encoding="utf-8"), "testfile2.txt"
+                ),
             ],
             "file_types": ["sometype"],  # missing a file type for the second file
         }
@@ -207,5 +225,9 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_report_attachments")
-        assert_report_version_ownership_is_validated("get_report_attachment_url", file_id=1234)
-        assert_report_version_ownership_is_validated("save_report_attachments", method="post")
+        assert_report_version_ownership_is_validated(
+            "get_report_attachment_url", file_id=1234
+        )
+        assert_report_version_ownership_is_validated(
+            "save_report_attachments", method="post"
+        )

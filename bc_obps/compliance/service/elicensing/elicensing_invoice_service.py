@@ -1,23 +1,31 @@
-from uuid import UUID
-from compliance.enums import ComplianceInvoiceTypes
-from compliance.models.compliance_penalty import CompliancePenalty
-from compliance.models.elicensing_adjustment import ElicensingAdjustment
-from compliance.models.elicensing_payment import ElicensingPayment
-from django.db.models import QuerySet, OuterRef, Subquery
-from typing import Optional
 from decimal import Decimal
-from ninja import Query
-from registration.service.data_access_service.user_service import UserDataAccessService
-from django.db.models import Q, F, Value, When, Case, Sum, DecimalField
-from django.db.models.functions import Coalesce
+from uuid import UUID
 
+from compliance.enums import ComplianceInvoiceTypes
 from compliance.models import (
     ElicensingInvoice,
     ElicensingLineItem,
 )
-
-from registration.service.user_operator_service import UserOperatorService
+from compliance.models.compliance_penalty import CompliancePenalty
+from compliance.models.elicensing_adjustment import ElicensingAdjustment
+from compliance.models.elicensing_payment import ElicensingPayment
 from compliance.schema.elicensing_invoice import ElicensingInvoiceFilterSchema
+from django.db.models import (
+    Case,
+    DecimalField,
+    F,
+    OuterRef,
+    Q,
+    QuerySet,
+    Subquery,
+    Sum,
+    Value,
+    When,
+)
+from django.db.models.functions import Coalesce
+from ninja import Query
+from registration.service.data_access_service.user_service import UserDataAccessService
+from registration.service.user_operator_service import UserOperatorService
 
 # string formatter for dates that appear in invoices
 STRFTIME_FORMAT = "%b %-d, %Y"
@@ -28,8 +36,8 @@ class ElicensingInvoiceService:
     def get_elicensing_invoice_for_dashboard(
         cls,
         user_guid: UUID,
-        sort_field: Optional[str],
-        sort_order: Optional[str],
+        sort_field: str | None,
+        sort_order: str | None,
         filters: ElicensingInvoiceFilterSchema = Query(...),
     ) -> QuerySet[ElicensingInvoice]:
         """
@@ -37,7 +45,8 @@ class ElicensingInvoiceService:
         """
         invoice_total_subquery = (
             ElicensingLineItem.objects.filter(
-                elicensing_invoice_id=OuterRef("pk"), line_item_type=ElicensingLineItem.LineItemType.FEE
+                elicensing_invoice_id=OuterRef("pk"),
+                line_item_type=ElicensingLineItem.LineItemType.FEE,
             )
             .values("elicensing_invoice_id")
             .annotate(total=Sum("base_amount"))
@@ -81,7 +90,9 @@ class ElicensingInvoiceService:
         ).annotate(
             compliance_report_version_id=Coalesce(
                 F("compliance_obligation__compliance_report_version_id"),
-                F("compliance_penalty__compliance_obligation__compliance_report_version_id"),
+                F(
+                    "compliance_penalty__compliance_obligation__compliance_report_version_id"
+                ),
             ),
             compliance_period=Coalesce(
                 F(
@@ -110,7 +121,9 @@ class ElicensingInvoiceService:
             invoice_type=Case(
                 When(
                     Q(compliance_penalty__isnull=False)
-                    & Q(compliance_penalty__penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION),
+                    & Q(
+                        compliance_penalty__penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION
+                    ),
                     then=Value(ComplianceInvoiceTypes.LATE_SUBMISSION_PENALTY.value),
                 ),
                 When(
@@ -152,9 +165,15 @@ class ElicensingInvoiceService:
         if user.is_irc_user():
             compliance_invoices = qs.all()
         else:
-            operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user).operator
+            operator = (
+                UserOperatorService.get_current_user_approved_user_operator_or_raise(
+                    user
+                ).operator
+            )
             compliance_invoices = qs.filter(
-                Q(compliance_obligation__compliance_report_version__compliance_report__report__operator=operator)
+                Q(
+                    compliance_obligation__compliance_report_version__compliance_report__report__operator=operator
+                )
                 | Q(
                     compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__operator=operator
                 )

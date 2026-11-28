@@ -1,6 +1,5 @@
 import pytest
 from model_bakery import baker
-
 from registration.models.operation import Operation
 from reporting.service.reporting_flow_service import ReportingFlow, resolve_flow
 
@@ -50,7 +49,9 @@ class TestResolveFlow:
 
         assert result == ReportingFlow.NEW_ENTRANT_SFO
 
-    def test_returns_reporting_only_sfo_for_reporting_only_single_facility_operation(self):
+    def test_returns_reporting_only_sfo_for_reporting_only_single_facility_operation(
+        self,
+    ):
         self.set_operation_context(
             operation_type=Operation.Types.SFO,
             registration_purpose=Operation.Purposes.REPORTING_OPERATION,
@@ -80,7 +81,9 @@ class TestResolveFlow:
 
         assert result == ReportingFlow.NEW_ENTRANT_LFO
 
-    def test_returns_reporting_only_lfo_for_reporting_only_linear_facility_operation(self):
+    def test_returns_reporting_only_lfo_for_reporting_only_linear_facility_operation(
+        self,
+    ):
         self.set_operation_context(
             operation_type=Operation.Types.LFO,
             registration_purpose=Operation.Purposes.REPORTING_OPERATION,

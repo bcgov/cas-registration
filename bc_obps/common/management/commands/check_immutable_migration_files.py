@@ -1,7 +1,7 @@
+import logging
 import re
 import sys
-from typing import Optional
-import logging
+
 from bc_obps.settings import LOCAL_APPS
 from django.core.management.base import BaseCommand
 from django.db import connections
@@ -9,7 +9,6 @@ from django.db.migrations.loader import MigrationLoader
 
 
 class Command(BaseCommand):
-
     help = """
         Checks whether git has any modifications of migration files behind a tag.
         If modifications are found, exit with code 1.
@@ -21,7 +20,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--tag',
+            "--tag",
             type=str,
             required=True,
             help="""
@@ -32,7 +31,7 @@ class Command(BaseCommand):
         )
 
         parser.add_argument(
-            '--diff',
+            "--diff",
             type=str,
             required=False,
             help="""
@@ -43,24 +42,28 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **kwargs) -> None:
-        git_tag: str = kwargs['tag']
-        diff: Optional[str] = kwargs['diff']
+        git_tag: str = kwargs["tag"]
+        diff: str | None = kwargs["diff"]
 
-        if not re.match(r'^v\d+\.\d+\.\d+$', git_tag):
-            self.stdout.write(self.style.ERROR('Invalid tag format. Use v<major>.<minor>.<patch>.'))
+        if not re.match(r"^v\d+\.\d+\.\d+$", git_tag):
+            self.stdout.write(
+                self.style.ERROR("Invalid tag format. Use v<major>.<minor>.<patch>.")
+            )
             sys.exit(1)
 
         if not diff:
             self.stdout.write(
-                self.style.WARNING("No changes on migration files - skipping immutable migrations check.")
+                self.style.WARNING(
+                    "No changes on migration files - skipping immutable migrations check."
+                )
             )
             return
 
         # Converting git tag to django tag: v1.2.3 -> V1_2_3
-        django_tag = git_tag.replace('v', 'V').replace('.', '_')
+        django_tag = git_tag.replace("v", "V").replace(".", "_")
         diff_files = diff.splitlines()
 
-        loader = MigrationLoader(connections['default'])
+        loader = MigrationLoader(connections["default"])
         migrations = loader.disk_migrations
 
         immutable_migration_errors = {}
@@ -78,18 +81,22 @@ class Command(BaseCommand):
 
             # If this app is not part of the tagging system yet
             if tagged_migration is None:
-                self.stdout.write(self.style.WARNING(f'No tag was found for {app} app, skipping.'))
+                self.stdout.write(
+                    self.style.WARNING(f"No tag was found for {app} app, skipping.")
+                )
                 continue
 
             # Verify that no migration prior to the tagged migration has been changed
 
-            app_path = f'bc_obps/{app}/migrations/'
+            app_path = f"bc_obps/{app}/migrations/"
             edited_app_migrations = [
-                diff_file.replace(app_path, '') for diff_file in diff_files if diff_file.startswith(app_path)
+                diff_file.replace(app_path, "")
+                for diff_file in diff_files
+                if diff_file.startswith(app_path)
             ]
 
             immutable_files_modified = [
-                f'{app_path}{app_migration}'
+                f"{app_path}{app_migration}"
                 for app_migration in edited_app_migrations
                 if app_migration < tagged_migration
             ]
@@ -98,9 +105,11 @@ class Command(BaseCommand):
                 immutable_migration_errors[app] = immutable_files_modified
 
         if immutable_migration_errors:
-            self.stdout.write(self.style.ERROR("Immutable migrations were modified by this branch:"))
+            self.stdout.write(
+                self.style.ERROR("Immutable migrations were modified by this branch:")
+            )
             for app, files in immutable_migration_errors.items():
                 self.stdout.write(self.style.ERROR(f"App: {app}"))
                 for file in files:
-                    self.stdout.write(self.style.ERROR(f'  {file}'))
+                    self.stdout.write(self.style.ERROR(f"  {file}"))
             sys.exit(1)

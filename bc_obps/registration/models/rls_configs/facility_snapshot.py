@@ -1,5 +1,5 @@
 from registration.enums.enums import RegistrationTableNames
-from rls.enums import RlsRoles, RlsOperations
+from rls.enums import RlsOperations, RlsRoles
 from rls.utils.helpers import generate_rls_grants
 
 
@@ -14,4 +14,6 @@ class Rls:
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT, RlsOperations.INSERT],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
-    grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.FACILITY_SNAPSHOT)
+    grants = generate_rls_grants(
+        role_grants_mapping, RegistrationTableNames.FACILITY_SNAPSHOT
+    )

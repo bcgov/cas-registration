@@ -1,15 +1,19 @@
+from decimal import Decimal
+
+from common.lib import pgtrigger
 from common.tests.utils.helpers import BaseTestCase
+from model_bakery.baker import make_recipe
+from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from reporting.models import ReportNewEntrantProduction
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
 from reporting.tests.utils.report_data_bakers import report_new_entrant_production_baker
-from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
-from reporting.models import ReportNewEntrantProduction
 from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsTestSetup
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from common.lib import pgtrigger
-from model_bakery.baker import make_recipe
-from decimal import Decimal
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ReportNewEntrantProductionModelTest(BaseTestCase):
@@ -33,33 +37,40 @@ class ReportNewEntrantProductionModelTest(BaseTestCase):
 
 
 class ReportNewEntrantProductRlsTest(BaseTestCase):
-
     def test_report_new_entrant_production_rls_industry_user(self):
         # Common Test Setup
-        t = ReportRlsTestSetup(parent_object='report_new_entrant')
+        t = ReportRlsTestSetup(parent_object="report_new_entrant")
 
         # ReportNewEntrantProduction Setup
         # Inside access bounds
-        with pgtrigger.ignore("reporting.ReportNewEntrantProduction:immutable_report_version"):
+        with pgtrigger.ignore(
+            "reporting.ReportNewEntrantProduction:immutable_report_version"
+        ):
             report_new_entrant_production_2010_submitted = make_recipe(
-                'reporting.tests.utils.report_new_entrant_production',
+                "reporting.tests.utils.report_new_entrant_production",
                 report_version=t.report_version_2010_submitted,
             )
         report_new_entrant_production_2010_draft = make_recipe(
-            'reporting.tests.utils.report_new_entrant_production', report_version=t.report_version_2010_draft
+            "reporting.tests.utils.report_new_entrant_production",
+            report_version=t.report_version_2010_draft,
         )
         # Outside access bounds
         report_new_entrant_production_2013_draft = make_recipe(
-            'reporting.tests.utils.report_new_entrant_production', report_version=t.report_version_2013_draft
+            "reporting.tests.utils.report_new_entrant_production",
+            report_version=t.report_version_2013_draft,
         )
 
-        test_product = make_recipe('registration.tests.utils.regulated_product')
+        test_product = make_recipe("registration.tests.utils.regulated_product")
 
         def select_function(cursor):
-            ReportNewEntrantProduction.objects.get(id=report_new_entrant_production_2010_submitted.id)
+            ReportNewEntrantProduction.objects.get(
+                id=report_new_entrant_production_2010_submitted.id
+            )
 
         def forbidden_select_function(cursor):
-            ReportNewEntrantProduction.objects.get(id=report_new_entrant_production_2013_draft.id)
+            ReportNewEntrantProduction.objects.get(
+                id=report_new_entrant_production_2013_draft.id
+            )
 
         def insert_function(cursor):
             ReportNewEntrantProduction.objects.create(
@@ -84,7 +95,7 @@ class ReportNewEntrantProductRlsTest(BaseTestCase):
                     SET production_amount = %s
                     WHERE id = %s
                 """,
-                (Decimal('20'), report_new_entrant_production_2010_draft.id),
+                (Decimal("20"), report_new_entrant_production_2010_draft.id),
             )
             return cursor.rowcount
 
@@ -95,7 +106,7 @@ class ReportNewEntrantProductRlsTest(BaseTestCase):
                     SET production_amount = %s
                     WHERE id = %s
                 """,
-                (Decimal('20'), report_new_entrant_production_2013_draft.id),
+                (Decimal("20"), report_new_entrant_production_2013_draft.id),
             )
             return cursor.rowcount
 
@@ -117,7 +128,10 @@ class ReportNewEntrantProductRlsTest(BaseTestCase):
                     DELETE from "erc"."report_new_entrant_production"
                     WHERE id in (%s,%s)
                 """,
-                (report_new_entrant_production_2010_submitted.id, report_new_entrant_production_2013_draft.id),
+                (
+                    report_new_entrant_production_2010_submitted.id,
+                    report_new_entrant_production_2013_draft.id,
+                ),
             )
             return cursor.rowcount
 

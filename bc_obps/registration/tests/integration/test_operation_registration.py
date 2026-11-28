@@ -1,11 +1,10 @@
 import json
 
-from django.core.files.base import ContentFile
 import pytest
+from common.lib import pgtrigger
+from django.core.files.base import ContentFile
 from django.db.models import Q
 from model_bakery import baker
-from common.lib import pgtrigger
-
 from registration.models import FacilityDesignatedOperationTimeline, Operation
 from registration.models.document import Document
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -15,12 +14,14 @@ from registration.utils import custom_reverse_lazy
 class TestOperationRegistration(CommonTestSetup):
     def _prepare_test_data(self, operation_type: Operation.Types):
         self.approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator', user=self.user
+            "registration.tests.utils.approved_user_operator", user=self.user
         )
         # add some random contacts and facilities so we can test that they are not overridden
-        random_contacts = baker.make_recipe('registration.tests.utils.contact', _quantity=5)
+        random_contacts = baker.make_recipe(
+            "registration.tests.utils.contact", _quantity=5
+        )
         self.operation = baker.make_recipe(
-            'registration.tests.utils.operation',
+            "registration.tests.utils.operation",
             created_by=self.user,
             operator=self.approved_user_operator.operator,
             contacts=random_contacts,
@@ -29,7 +30,7 @@ class TestOperationRegistration(CommonTestSetup):
         # add some facilities so we can test that they are not overridden
         if operation_type == Operation.Types.LFO:
             baker.make_recipe(
-                'registration.tests.utils.facility_designated_operation_timeline',
+                "registration.tests.utils.facility_designated_operation_timeline",
                 operation=self.operation,
                 _quantity=5,
             )
@@ -43,7 +44,9 @@ class TestOperationRegistration(CommonTestSetup):
             Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
         ]
 
-    def _set_operation_information(self, purpose: Operation.Purposes, operation_type: Operation.Types):
+    def _set_operation_information(
+        self, purpose: Operation.Purposes, operation_type: Operation.Types
+    ):
         if operation_type == Operation.Types.EIO:
             form = {
                 "payload": json.dumps(
@@ -59,7 +62,9 @@ class TestOperationRegistration(CommonTestSetup):
                 "payload": json.dumps(
                     {
                         "registration_purpose": purpose,
-                        "regulated_products": [] if purpose in self.purposes_with_no_regulated_products else [1, 2],
+                        "regulated_products": []
+                        if purpose in self.purposes_with_no_regulated_products
+                        else [1, 2],
                         "name": f"{purpose} name",
                         "type": operation_type,
                         "naics_code_id": 1,
@@ -75,12 +80,13 @@ class TestOperationRegistration(CommonTestSetup):
             }
         TestUtils.save_app_role(self, "industry_user")
         endpoint = custom_reverse_lazy(
-            "register_edit_operation_information", kwargs={'operation_id': self.operation.id}
+            "register_edit_operation_information",
+            kwargs={"operation_id": self.operation.id},
         )
         response = TestUtils.client.post(
             path=endpoint,
             data=form,
-            format='multipart',
+            format="multipart",
             HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
@@ -118,12 +124,15 @@ class TestOperationRegistration(CommonTestSetup):
         TestUtils.save_app_role(self, "industry_user")
         response = TestUtils.client.post(
             custom_reverse_lazy(
-                "create_or_replace_new_entrant_application", kwargs={'operation_id': self.operation.id}
+                "create_or_replace_new_entrant_application",
+                kwargs={"operation_id": self.operation.id},
             ),
             data={
-                "new_entrant_application": ContentFile(b"stuff", "new_entrant_application.pdf"),
+                "new_entrant_application": ContentFile(
+                    b"stuff", "new_entrant_application.pdf"
+                ),
             },
-            format='multipart',
+            format="multipart",
             HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
@@ -147,7 +156,8 @@ class TestOperationRegistration(CommonTestSetup):
                 "meets_notification_to_director_on_criteria_change": True,
             },
             custom_reverse_lazy(
-                "operation_registration_update_opted_in_operation_detail", kwargs={'operation_id': self.operation.id}
+                "operation_registration_update_opted_in_operation_detail",
+                kwargs={"operation_id": self.operation.id},
             ),
         )
         if response.status_code != 200:
@@ -156,26 +166,29 @@ class TestOperationRegistration(CommonTestSetup):
 
     def _set_operation_representative(self):
         operation_representative_payload = {
-            'first_name': 'John',
-            'last_name': 'Doe',
-            'email': 'test@email.com',
-            'phone_number': '+16044011234',
-            'position_title': 'Manager',
-            'street_address': '123 Main St',
-            'municipality': 'Vancouver',
-            'province': 'BC',
-            'postal_code': 'H0H 0H0',
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "test@email.com",
+            "phone_number": "+16044011234",
+            "position_title": "Manager",
+            "street_address": "123 Main St",
+            "municipality": "Vancouver",
+            "province": "BC",
+            "postal_code": "H0H 0H0",
         }
         response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
             self.content_type,
             operation_representative_payload,
-            custom_reverse_lazy("create_operation_representative", kwargs={'operation_id': self.operation.id}),
+            custom_reverse_lazy(
+                "create_operation_representative",
+                kwargs={"operation_id": self.operation.id},
+            ),
         )
         if response.status_code != 201:
             raise Exception(response.json())
-        self.operation_representative_id = response.json()['id']
+        self.operation_representative_id = response.json()["id"]
         self.operation.refresh_from_db()
 
     def _set_clean_documents(self):
@@ -192,16 +205,21 @@ class TestOperationRegistration(CommonTestSetup):
             "industry_user",
             self.content_type,
             {
-                'acknowledgement_of_review': True,
-                'acknowledgement_of_information': True,
-                'acknowledgement_of_records': True,
+                "acknowledgement_of_review": True,
+                "acknowledgement_of_information": True,
+                "acknowledgement_of_records": True,
             },
-            custom_reverse_lazy("operation_registration_submission", kwargs={'operation_id': self.operation.id}),
+            custom_reverse_lazy(
+                "operation_registration_submission",
+                kwargs={"operation_id": self.operation.id},
+            ),
         )
         if response.status_code != 200:
             raise Exception(response.json())
         self.operation.refresh_from_db()
-        self.updated_at = self.operation.updated_at  # save the updated_at timestamp to compare later
+        self.updated_at = (
+            self.operation.updated_at
+        )  # save the updated_at timestamp to compare later
 
     def _assign_boro_id(self):
         response = TestUtils.mock_patch_with_auth_role(
@@ -209,7 +227,9 @@ class TestOperationRegistration(CommonTestSetup):
             "cas_director",
             self.content_type,
             {},
-            custom_reverse_lazy("operation_boro_id", kwargs={'operation_id': self.operation.id}),
+            custom_reverse_lazy(
+                "operation_boro_id", kwargs={"operation_id": self.operation.id}
+            ),
         )
         if response.status_code != 200:
             raise Exception(response.json())
@@ -223,7 +243,9 @@ class TestOperationRegistration(CommonTestSetup):
             "cas_director",
             self.content_type,
             {},
-            custom_reverse_lazy("operation_bcghg_id", kwargs={'operation_id': self.operation.id}),
+            custom_reverse_lazy(
+                "operation_bcghg_id", kwargs={"operation_id": self.operation.id}
+            ),
         )
         if response.status_code != 200:
             raise Exception(response.json())
@@ -231,9 +253,16 @@ class TestOperationRegistration(CommonTestSetup):
         # save the generated bcghg_id to compare later
         self.bcghg_id = self.operation.bcghg_id.id
 
-    @pytest.mark.parametrize("operation_type", [Operation.Types.SFO, Operation.Types.LFO])
     @pytest.mark.parametrize(
-        "purpose", [p for p in Operation.Purposes if p != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION]
+        "operation_type", [Operation.Types.SFO, Operation.Types.LFO]
+    )
+    @pytest.mark.parametrize(
+        "purpose",
+        [
+            p
+            for p in Operation.Purposes
+            if p != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        ],
     )  # EIOs have OperationTypes.EIO so are tested separately below
     def test_operation_registration_workflow(self, operation_type, purpose):
         #### prepare test data
@@ -265,7 +294,7 @@ class TestOperationRegistration(CommonTestSetup):
             self._assign_boro_id()
 
         # Assertions
-        assert self.operation.name == f'{purpose} name'
+        assert self.operation.name == f"{purpose} name"
         assert self.operation.type == operation_type
         assert self.operation.operator_id == self.approved_user_operator.operator_id
 
@@ -274,21 +303,49 @@ class TestOperationRegistration(CommonTestSetup):
             assert self.operation.secondary_naics_code_id == 2
             assert self.operation.tertiary_naics_code_id == 3
             assert self.operation.activities.count() == 2
-            assert sorted(list(self.operation.activities.values_list('id', flat=True))) == [1, 2]
+            assert sorted(
+                list(self.operation.activities.values_list("id", flat=True))
+            ) == [1, 2]
 
         if purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
-            assert self.operation.documents.filter(type__name='new_entrant_application').exists()
+            assert self.operation.documents.filter(
+                type__name="new_entrant_application"
+            ).exists()
 
         if purpose == Operation.Purposes.OPTED_IN_OPERATION:
             assert self.operation.opted_in_operation is not None
-            assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False
-            assert self.operation.opted_in_operation.meets_electricity_import_operation_criteria is True
-            assert self.operation.opted_in_operation.meets_entire_operation_requirements is False
-            assert self.operation.opted_in_operation.meets_section_6_emissions_requirements is True
-            assert self.operation.opted_in_operation.meets_naics_code_11_22_562_classification_requirements is False
-            assert self.operation.opted_in_operation.meets_producing_gger_schedule_a1_regulated_product is True
-            assert self.operation.opted_in_operation.meets_reporting_and_regulated_obligations is False
-            assert self.operation.opted_in_operation.meets_notification_to_director_on_criteria_change is True
+            assert (
+                self.operation.opted_in_operation.meets_section_3_emissions_requirements
+                is False
+            )
+            assert (
+                self.operation.opted_in_operation.meets_electricity_import_operation_criteria
+                is True
+            )
+            assert (
+                self.operation.opted_in_operation.meets_entire_operation_requirements
+                is False
+            )
+            assert (
+                self.operation.opted_in_operation.meets_section_6_emissions_requirements
+                is True
+            )
+            assert (
+                self.operation.opted_in_operation.meets_naics_code_11_22_562_classification_requirements
+                is False
+            )
+            assert (
+                self.operation.opted_in_operation.meets_producing_gger_schedule_a1_regulated_product
+                is True
+            )
+            assert (
+                self.operation.opted_in_operation.meets_reporting_and_regulated_obligations
+                is False
+            )
+            assert (
+                self.operation.opted_in_operation.meets_notification_to_director_on_criteria_change
+                is True
+            )
             assert self.operation.opted_in_operation.updated_by == self.user
             assert self.operation.opted_in_operation.updated_at is not None
         else:
@@ -298,7 +355,9 @@ class TestOperationRegistration(CommonTestSetup):
         # (unless the registration_purpose is EIO, in which case no documents are required)
         if purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
             assert (
-                self.operation.documents.filter(Q(type__name='process_flow_diagram') | Q(type__name='boundary_map'))
+                self.operation.documents.filter(
+                    Q(type__name="process_flow_diagram") | Q(type__name="boundary_map")
+                )
                 .distinct()
                 .count()
                 == 2
@@ -325,20 +384,24 @@ class TestOperationRegistration(CommonTestSetup):
         # make sure we are not overriding existing contacts of the operation
         assert self.operation.contacts.count() == 6
         assert self.operation.contacts.filter(
-            business_role__role_name='Operation Representative',
+            business_role__role_name="Operation Representative",
             address__street_address__isnull=False,
             address__municipality__isnull=False,
             address__province__isnull=False,
             address__postal_code__isnull=False,
         ).exists()
         # make sure operation representative is created for operator as well
-        assert self.approved_user_operator.operator.contacts.filter(id=self.operation_representative_id).exists()
+        assert self.approved_user_operator.operator.contacts.filter(
+            id=self.operation_representative_id
+        ).exists()
 
         if purpose in self.purposes_with_no_regulated_products:
             assert not self.operation.regulated_products.exists()
         else:
             assert self.operation.regulated_products.count() == 2
-            assert list(self.operation.regulated_products.values_list('id', flat=True)) == [1, 2]
+            assert list(
+                self.operation.regulated_products.values_list("id", flat=True)
+            ) == [1, 2]
 
         assert self.operation.status == Operation.Statuses.REGISTERED
         assert self.operation.registration_purpose is not None
@@ -356,14 +419,19 @@ class TestOperationRegistration(CommonTestSetup):
         #### prepare test data
         self._prepare_test_data(Operation.Types.EIO)
         #### Operation Information Form ####
-        self._set_operation_information(Operation.Purposes.ELECTRICITY_IMPORT_OPERATION, Operation.Types.EIO)
+        self._set_operation_information(
+            Operation.Purposes.ELECTRICITY_IMPORT_OPERATION, Operation.Types.EIO
+        )
         #### Operation Representative Form ####
         self._set_operation_representative()
         #### Registration Submission ####
         self._set_registration_submission()
 
         # Assertions
-        assert self.operation.name == f'{Operation.Purposes.ELECTRICITY_IMPORT_OPERATION} name'
+        assert (
+            self.operation.name
+            == f"{Operation.Purposes.ELECTRICITY_IMPORT_OPERATION} name"
+        )
         assert self.operation.type == Operation.Types.EIO
         assert self.operation.operator_id == self.approved_user_operator.operator_id
         assert self.operation.opted_in_operation_id is None
@@ -373,4 +441,7 @@ class TestOperationRegistration(CommonTestSetup):
         assert self.operation.facilities.count() == 1
 
         assert self.operation.status == Operation.Statuses.REGISTERED
-        assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        assert (
+            self.operation.registration_purpose
+            == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        )

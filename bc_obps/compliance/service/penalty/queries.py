@@ -1,8 +1,9 @@
 # bc_obps/compliance/service/penalty/queries.py
 
 from decimal import Decimal
-from django.db.models import QuerySet, Sum
+
 from compliance.models import CompliancePenalty
+from django.db.models import QuerySet, Sum
 
 ZERO_DOLLARS = Decimal("0.00")
 
@@ -33,6 +34,8 @@ def sum_outstanding_penalty_balance(
     penalties: QuerySet[CompliancePenalty],
 ) -> Decimal:
     return (
-        outstanding_penalties(penalties).aggregate(total=Sum("elicensing_invoice__outstanding_balance")).get("total")
+        outstanding_penalties(penalties)
+        .aggregate(total=Sum("elicensing_invoice__outstanding_balance"))
+        .get("total")
         or ZERO_DOLLARS
     )

@@ -1,9 +1,12 @@
 from common.tests.utils.helpers import BaseTestCase
+from model_bakery.baker import make_recipe
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models.report import Report
 from reporting.tests.utils.bakers import report_baker, reporting_year_baker
-from model_bakery.baker import make_recipe
-from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
+from rls.tests.helpers import (
+    assert_policies_for_cas_roles,
+    assert_policies_for_industry_user,
+)
 
 
 class ReportTest(BaseTestCase):
@@ -23,16 +26,20 @@ class ReportTest(BaseTestCase):
 
 
 class ReportRlsTest(BaseTestCase):
-
     def test_report_rls_industry_user(self):
-        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
-        operation = make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        approved_user_operator = make_recipe(
+            "registration.tests.utils.approved_user_operator"
+        )
+        operation = make_recipe(
+            "registration.tests.utils.operation",
+            operator=approved_user_operator.operator,
+        )
         make_recipe(
-            'registration.tests.utils.operation_designated_operator_timeline',
+            "registration.tests.utils.operation_designated_operator_timeline",
             operator=approved_user_operator.operator,
             operation=operation,
-            start_date='2009-01-01',
-            end_date='2012-12-31',
+            start_date="2009-01-01",
+            end_date="2012-12-31",
         )
         reporting_year_baker(reporting_year=2009)
         reporting_year_2010 = reporting_year_baker(reporting_year=2010)
@@ -43,11 +50,15 @@ class ReportRlsTest(BaseTestCase):
 
         # 2010 & 2011 reports - Within access bounds
         report_2010 = report_baker(
-            operation=operation, operator=approved_user_operator.operator, reporting_year=reporting_year_2010
+            operation=operation,
+            operator=approved_user_operator.operator,
+            reporting_year=reporting_year_2010,
         )
         # 2013 report - Outside bounds of
         report_2013 = report_baker(
-            operation=operation, operator=approved_user_operator.operator, reporting_year=reporting_year_2013
+            operation=operation,
+            operator=approved_user_operator.operator,
+            reporting_year=reporting_year_2013,
         )
 
         def select_function(cursor):

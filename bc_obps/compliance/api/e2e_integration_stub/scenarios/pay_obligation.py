@@ -1,14 +1,16 @@
 from datetime import date
 from decimal import Decimal
-from typing import Any, Dict, List
-from django.http import HttpRequest
-from django.utils import timezone
+from typing import Any
+
 from compliance.models import (
     ComplianceObligation,
     ElicensingLineItem,
     ElicensingPayment,
 )
+from django.http import HttpRequest
+from django.utils import timezone
 from rls.utils.manager import RlsManager
+
 from ..schemas import ScenarioPayload
 from .base import ScenarioHandler
 
@@ -21,7 +23,7 @@ class PayObligationScenario(ScenarioHandler):
 
     # Two partial payments that leave a balance owing (initial obligation is
     # $1,000,968.64), so the obligation remains not fully met.
-    DEFAULT_PAYMENTS: List[Dict[str, Any]] = [
+    DEFAULT_PAYMENTS: list[dict[str, Any]] = [
         {
             "amount": "500000.00",
             "received_date": "2025-12-18",
@@ -38,17 +40,21 @@ class PayObligationScenario(ScenarioHandler):
 
     BASE_PAYMENT_OBJECT_ID = 900001
 
-    def execute(self, request: HttpRequest, data: ScenarioPayload) -> Dict[str, Any]:
+    def execute(self, request: HttpRequest, data: ScenarioPayload) -> dict[str, Any]:
         if data.compliance_report_version_id is None:
-            raise ValueError("compliance_report_version_id is required for pay_obligation")
+            raise ValueError(
+                "compliance_report_version_id is required for pay_obligation"
+            )
 
         payload = data.payload or {}
-        payments_input: List[Dict[str, Any]] = payload.get("payments") or self.DEFAULT_PAYMENTS
+        payments_input: list[dict[str, Any]] = (
+            payload.get("payments") or self.DEFAULT_PAYMENTS
+        )
 
         with RlsManager.bypass_rls():
-            obligation = ComplianceObligation.objects.select_related("elicensing_invoice").get(
-                compliance_report_version_id=data.compliance_report_version_id
-            )
+            obligation = ComplianceObligation.objects.select_related(
+                "elicensing_invoice"
+            ).get(compliance_report_version_id=data.compliance_report_version_id)
             invoice = obligation.elicensing_invoice
             if invoice is None:
                 raise ValueError(
@@ -64,7 +70,9 @@ class PayObligationScenario(ScenarioHandler):
                 .first()
             )
             if line_item is None:
-                raise ValueError(f"No fee line item found for invoice {invoice.invoice_number}")
+                raise ValueError(
+                    f"No fee line item found for invoice {invoice.invoice_number}"
+                )
 
             total_paid = Decimal("0.00")
             for index, payment in enumerate(payments_input):
@@ -83,12 +91,22 @@ class PayObligationScenario(ScenarioHandler):
 
             # Reduce the balances by the amount paid and mark the invoice fresh so the page load
             # doesn't trigger a (mocked-empty) refresh that would wipe the payments we just wrote.
-            current_balance = Decimal(invoice.invoice_fee_balance or line_item.base_amount)
-            remaining = max(current_balance - total_paid, Decimal("0.00")).quantize(Decimal("0.00"))
+            current_balance = Decimal(
+                invoice.invoice_fee_balance or line_item.base_amount
+            )
+            remaining = max(current_balance - total_paid, Decimal("0.00")).quantize(
+                Decimal("0.00")
+            )
             invoice.outstanding_balance = remaining
             invoice.invoice_fee_balance = remaining
             invoice.last_refreshed = timezone.now()
-            invoice.save(update_fields=["outstanding_balance", "invoice_fee_balance", "last_refreshed"])
+            invoice.save(
+                update_fields=[
+                    "outstanding_balance",
+                    "invoice_fee_balance",
+                    "last_refreshed",
+                ]
+            )
 
         return {
             "compliance_report_version_id": data.compliance_report_version_id,

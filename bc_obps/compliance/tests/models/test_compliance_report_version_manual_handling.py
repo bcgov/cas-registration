@@ -1,15 +1,18 @@
 from datetime import date
-from model_bakery.baker import make_recipe
+
 from common.tests.utils.helpers import BaseTestCase
+from compliance.models.compliance_report_version_manual_handling import (
+    ComplianceReportVersionManualHandling,
+)
+from compliance.tests.utils.compliance_rls_test_infrastructure import (
+    ComplianceReportRlsTestSetup,
+)
+from model_bakery.baker import make_recipe
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from rls.tests.helpers import (
     assert_policies_for_cas_roles,
     assert_policies_for_industry_user,
 )
-from compliance.models.compliance_report_version_manual_handling import (
-    ComplianceReportVersionManualHandling,
-)
-from compliance.tests.utils.compliance_rls_test_infrastructure import ComplianceReportRlsTestSetup
 
 # ---------------------------------------------------------------------------
 # Basic field / meta tests
@@ -127,7 +130,9 @@ class ComplianceReportVersionManualHandlingDirectorDecisionTriggerTest(BaseTestC
     """
 
     def setUp(self):
-        self.resolved_status = ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
+        self.resolved_status = (
+            ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
+        )
         self.other_statuses = [
             ComplianceReportVersionManualHandling.DirectorDecision.PENDING_MANUAL_HANDLING,
         ]
@@ -184,23 +189,23 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
 
         # within access bounds
         manual_2010 = make_recipe(
-            'compliance.tests.utils.compliance_report_version_manual_handling',
+            "compliance.tests.utils.compliance_report_version_manual_handling",
             compliance_report_version=t.compliance_report_version_2010,
         )
         supp_compliance_report_version_2010 = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
+            "compliance.tests.utils.compliance_report_version",
             compliance_report=t.compliance_report_2010,
             is_supplementary=True,
         )
 
         # outside access bounds
         supp_compliance_report_version_2013 = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
+            "compliance.tests.utils.compliance_report_version",
             compliance_report=t.compliance_report_2013,
             is_supplementary=True,
         )
         manual_2013 = make_recipe(
-            'compliance.tests.utils.compliance_report_version_manual_handling',
+            "compliance.tests.utils.compliance_report_version_manual_handling",
             compliance_report_version=t.compliance_report_version_2013,
         )
 
@@ -286,11 +291,11 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
     def test_manual_handling_rls_cas_users(self):
         t = ComplianceReportRlsTestSetup()
         make_recipe(
-            'compliance.tests.utils.compliance_report_version_manual_handling',
+            "compliance.tests.utils.compliance_report_version_manual_handling",
             compliance_report_version=t.compliance_report_version_2010,
         )
         manual_2013 = make_recipe(
-            'compliance.tests.utils.compliance_report_version_manual_handling',
+            "compliance.tests.utils.compliance_report_version_manual_handling",
             compliance_report_version=t.compliance_report_version_2013,
         )
 
@@ -299,7 +304,9 @@ class TestComplianceReportVersionManualHandlingRls(BaseTestCase):
 
         def update_function(cursor):
             obj = manual_2013
-            obj.director_decision = ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
+            obj.director_decision = (
+                ComplianceReportVersionManualHandling.DirectorDecision.ISSUE_RESOLVED
+            )
             obj.context = ComplianceReportVersionManualHandling.Context.OBLIGATION_REFUND_POOL_CASH
             obj.save()
 

@@ -1,12 +1,17 @@
-from typing import List, Optional
-from registration.enums.enums import AccessRequestStates, AccessRequestTypes, EmailTemplateNames
-from registration.models.operation import Operation
-from common.service.email.email_service import EmailService
 import logging
 
-from registration.models import User
-from common.service.data_access_service.email_template_service import EmailNotificationTemplateService
+from common.service.data_access_service.email_template_service import (
+    EmailNotificationTemplateService,
+)
+from common.service.email.email_service import EmailService
 from common.service.email.utils import Recipient
+from registration.enums.enums import (
+    AccessRequestStates,
+    AccessRequestTypes,
+    EmailTemplateNames,
+)
+from registration.models import User
+from registration.models.operation import Operation
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +22,7 @@ def send_registration_and_boro_id_email(
     template_name: EmailTemplateNames,
     operator_legal_name: str,
     operation: Operation,
-    registration_creator: Optional[User] = None,
+    registration_creator: User | None = None,
 ) -> None:
     """
     Sends an email to the person who submitted the registration and the operation representatives regarding the registration and BORO ID issuance.
@@ -37,14 +42,19 @@ def send_registration_and_boro_id_email(
     template = EmailNotificationTemplateService.get_template_by_name(template_name)
 
     # prepare recipients list
-    recipients: List[Recipient] = []
+    recipients: list[Recipient] = []
     if registration_creator:
         recipients.append(
-            Recipient(full_name=registration_creator.get_full_name(), email_address=registration_creator.email)
+            Recipient(
+                full_name=registration_creator.get_full_name(),
+                email_address=registration_creator.email,
+            )
         )
 
     for rep in operation.get_operation_representatives():
-        recipients.append(Recipient(full_name=rep.get_full_name(), email_address=rep.email))
+        recipients.append(
+            Recipient(full_name=rep.get_full_name(), email_address=rep.email)
+        )
 
     # populating email context for each recipient
     email_contexts = []
@@ -59,17 +69,21 @@ def send_registration_and_boro_id_email(
 
     for context in email_contexts:
         try:
-            email_address_to_send_email_to: Optional[str] = context.get('external_user_email_address')
-            response_json = email_service.send_email_by_template(template, context, [email_address_to_send_email_to])
+            email_address_to_send_email_to: str | None = context.get(
+                "external_user_email_address"
+            )
+            response_json = email_service.send_email_by_template(
+                template, context, [email_address_to_send_email_to]
+            )
             # Create email notification record to store transaction and message IDs
             email_service.create_email_notification_record(
-                response_json['txId'],
-                response_json['messages'][0]['msgId'],
+                response_json["txId"],
+                response_json["messages"][0]["msgId"],
                 [email_address_to_send_email_to],
                 template.id,
             )
         except Exception as exc:
-            logger.error(f'Logger: Exception sending {template} email - {str(exc)}')
+            logger.error(f"Logger: Exception sending {template} email - {str(exc)}")
 
 
 def send_operator_access_request_email(
@@ -105,13 +119,17 @@ def send_operator_access_request_email(
         "external_user_email_address": external_user_email_address,
     }
     try:
-        response_json = email_service.send_email_by_template(template, email_context, [external_user_email_address])
+        response_json = email_service.send_email_by_template(
+            template, email_context, [external_user_email_address]
+        )
         # Create email notification record to store the transaction and message IDs
         email_service.create_email_notification_record(
-            response_json.get('txId'),
-            response_json.get('messages')[0]['msgId'],
+            response_json.get("txId"),
+            response_json.get("messages")[0]["msgId"],
             [external_user_email_address],
             template.id,
         )
     except Exception as exc:  # not raising exception here to avoid breaking the flow of the application
-        logger.error(f'Logger: Exception sending operator access request email - {str(exc)}')
+        logger.error(
+            f"Logger: Exception sending operator access request email - {str(exc)}"
+        )

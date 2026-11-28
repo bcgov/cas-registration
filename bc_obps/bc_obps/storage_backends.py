@@ -1,12 +1,13 @@
-from datetime import datetime
 import os
 import re
 import shutil
+from datetime import datetime
 from typing import Any
+
 from django.conf import settings
+from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage, Storage
 from storages.backends.gcloud import GoogleCloudStorage  # type: ignore
-from django.core.files.base import ContentFile
 
 
 def add_filename_suffix(filename: str, suffix: str | None = None) -> str:
@@ -17,10 +18,12 @@ def add_filename_suffix(filename: str, suffix: str | None = None) -> str:
       the/path/the_file.txt -> the/path/the_file_20250522245133.txt
     """
     name, extension = os.path.splitext(filename)
-    file_suffix = suffix if suffix is not None else f'_{datetime.now().strftime("%Y%m%d%H%M%S")}'
+    file_suffix = (
+        suffix if suffix is not None else f"_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    )
 
     # Remove the last 15 characters if we match a timestamp we inserted previously
-    if re.search(r'_20\d{12}$', name) is not None:
+    if re.search(r"_20\d{12}$", name) is not None:
         name = name[:-15]
 
     return f"{name}{file_suffix}{extension}"

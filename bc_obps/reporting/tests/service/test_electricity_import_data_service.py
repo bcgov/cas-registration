@@ -22,7 +22,7 @@ class TestElectricityImportDataService(TestCase):
     }
 
     def setUp(self):
-        self.report_version = make_recipe('reporting.tests.utils.report_version')
+        self.report_version = make_recipe("reporting.tests.utils.report_version")
 
     def _save_and_assert(self, input_data: dict):
         form_data = ElectricityImportFormData(**input_data)
@@ -42,8 +42,13 @@ class TestElectricityImportDataService(TestCase):
         self._save_and_assert(self.TEST_PAYLOAD)
 
     def test_get_electricity_import_data(self):
-        expected_data = make_recipe('reporting.tests.utils.electricity_import_data', report_version=self.report_version)
-        retrieved = ElectricityImportDataService.get_electricity_import_data(report_version_id=self.report_version.id)
+        expected_data = make_recipe(
+            "reporting.tests.utils.electricity_import_data",
+            report_version=self.report_version,
+        )
+        retrieved = ElectricityImportDataService.get_electricity_import_data(
+            report_version_id=self.report_version.id
+        )
 
         self.assertIsNotNone(retrieved)
         self.assertEqual(retrieved.report_version.id, self.report_version.id)

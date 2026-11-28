@@ -1,6 +1,6 @@
 from common.tests.utils.helpers import BaseTestCase
-from reporting.models import Methodology
 from django.test import TestCase
+from reporting.models import Methodology
 
 
 class TestInitialData(TestCase):
@@ -105,8 +105,8 @@ class TestInitialData(TestCase):
                 "WCI.203(e)(B)",
                 "WCI.203(e)(3)(A)",
                 "WCI.203(e)(3)(B)",
-                'WCI.203(f)(1)',
-                'WCI.203(f)(2)',
+                "WCI.203(f)(1)",
+                "WCI.203(f)(2)",
                 "WCI.203(i)(1)",
                 "WCI.203(i)(2)",
                 "WCI.203(j)(2)",
@@ -116,7 +116,9 @@ class TestInitialData(TestCase):
                 "Not Applicable",
             ]
         )
-        existing_methodologies = sorted(list(Methodology.objects.values_list("name", flat=True)))
+        existing_methodologies = sorted(
+            list(Methodology.objects.values_list("name", flat=True))
+        )
         self.assertEqual(len(existing_methodologies), len(expected_methodologies))
         self.assertEqual(existing_methodologies, expected_methodologies)
 
@@ -130,5 +132,10 @@ class MethodologyModelTest(BaseTestCase):
             ("name", "name", 1000, None),
             ("configuration_elements", "configuration element", None, None),
             ("reportmethodology_records", "report methodology", None, 0),
-            ("expected_value_range_methodology_field", "expected value range methodology field", None, 0),
+            (
+                "expected_value_range_methodology_field",
+                "expected value range methodology field",
+                None,
+                0,
+            ),
         ]

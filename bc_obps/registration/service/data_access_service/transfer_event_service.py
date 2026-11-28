@@ -1,6 +1,7 @@
 from uuid import UUID
-from registration.models import TransferEvent
+
 from ninja.types import DictStrAny
+from registration.models import TransferEvent
 
 
 class TransferEventDataAccessService:
@@ -10,7 +11,9 @@ class TransferEventDataAccessService:
         user_guid: UUID,
         transfer_event_data: DictStrAny,
     ) -> TransferEvent:
-        return TransferEvent.objects.create(**transfer_event_data, created_by_id=user_guid)
+        return TransferEvent.objects.create(
+            **transfer_event_data, created_by_id=user_guid
+        )
 
     @classmethod
     def get_by_id(cls, transfer_id: UUID) -> TransferEvent:

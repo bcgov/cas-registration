@@ -1,15 +1,19 @@
-from typing import Literal, Tuple
+from typing import Literal
 from uuid import UUID
-from django.http import HttpRequest
+
 from common.api.utils import get_current_user_guid
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+from django.http import HttpRequest
+from reporting.api.permissions import (
+    approved_industry_user_report_version_composite_auth,
+)
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.schema.report_activity_data import ReportActivityDataIn
 from reporting.service.report_activity_load_service import ReportActivityLoadService
 from reporting.service.report_activity_save_service import ReportActivitySaveService
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+
 from .router import router
-from reporting.api.permissions import approved_industry_user_report_version_composite_auth
 
 
 @router.post(
@@ -25,8 +29,7 @@ def save_report_activity_data(
     facility_id: UUID,
     activity_id: int,
     payload: ReportActivityDataIn,
-) -> Tuple[Literal[200], dict]:
-
+) -> tuple[Literal[200], dict]:
     user_guid = get_current_user_guid(request)
 
     service = ReportActivitySaveService(version_id, facility_id, activity_id, user_guid)
@@ -47,8 +50,7 @@ def load_report_activity_data(
     version_id: int,
     facility_id: UUID,
     activity_id: int,
-) -> Tuple[Literal[200], dict]:
-
+) -> tuple[Literal[200], dict]:
     data = ReportActivityLoadService.load(version_id, facility_id, activity_id)
 
     return 200, data

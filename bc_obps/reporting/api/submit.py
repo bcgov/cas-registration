@@ -1,14 +1,21 @@
-from typing import Literal, Tuple
+from typing import Literal
 from uuid import UUID
-from reporting.service.report_sign_off_service import ReportSignOffAcknowledgements, ReportSignOffData
-from reporting.schema.report_sign_off import ReportSignOffIn
+
 from common.api.utils.current_user_utils import get_current_user_guid
+from common.service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
-from reporting.api.permissions import approved_industry_user_report_version_composite_auth
+from reporting.api.permissions import (
+    approved_industry_user_report_version_composite_auth,
+)
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
+from reporting.schema.report_sign_off import ReportSignOffIn
+from reporting.service.report_sign_off_service import (
+    ReportSignOffAcknowledgements,
+    ReportSignOffData,
+)
 from reporting.service.report_submission_service import ReportSubmissionService
-from common.service.error_service.custom_codes_4xx import custom_codes_4xx
+
 from .router import router
 
 
@@ -19,7 +26,9 @@ from .router import router
     description="""Submits a report version""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def submit_report_version(request: HttpRequest, version_id: int, payload: ReportSignOffIn) -> Tuple[Literal[200], int]:
+def submit_report_version(
+    request: HttpRequest, version_id: int, payload: ReportSignOffIn
+) -> tuple[Literal[200], int]:
     user_guid: UUID = get_current_user_guid(request)
     data = ReportSignOffData(
         acknowledgements=ReportSignOffAcknowledgements(

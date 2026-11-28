@@ -1,37 +1,42 @@
-from unittest.mock import patch, MagicMock
-from compliance.models import ElicensingLineItem, ElicensingInvoice, ElicensingPayment, ElicensingAdjustment
+from datetime import timedelta
+from decimal import Decimal
+from unittest.mock import MagicMock, patch
+
+import pytest
+from common.utils import format_timestamp_en_ca
+from compliance.dataclass import RefreshWrapperReturn
+from compliance.enums import ComplianceInvoiceTypes
+from compliance.models import (
+    ElicensingAdjustment,
+    ElicensingInvoice,
+    ElicensingLineItem,
+    ElicensingPayment,
+)
 from compliance.models.compliance_penalty import CompliancePenalty
 from compliance.service.elicensing.elicensing_data_refresh_service import (
     ElicensingDataRefreshService,
 )
 from compliance.service.elicensing.schema import (
-    InvoiceQueryResponse,
-    InvoiceFee,
-    Payment,
     FeeAdjustment,
+    InvoiceFee,
+    InvoiceQueryResponse,
+    Payment,
     PaymentDistribution,
 )
-from decimal import Decimal
-
-import pytest
-from model_bakery.baker import make_recipe
 from django.utils import timezone
-from datetime import timedelta
-from compliance.enums import ComplianceInvoiceTypes
-from compliance.dataclass import RefreshWrapperReturn
-from common.utils import format_timestamp_en_ca
+from model_bakery.baker import make_recipe
 
 pytestmark = pytest.mark.django_db
 
 ELICENSING_SERVICE_PATH = "compliance.service.elicensing"
-ELICENSING_QUERY_INVOICE_PATH = f"{ELICENSING_SERVICE_PATH}.elicensing_api_client.ELicensingAPIClient.query_invoice"
-ELICENSING_DATA_REFRESH_SERVICE = (
-    f"{ELICENSING_SERVICE_PATH}.elicensing_data_refresh_service.ElicensingDataRefreshService"
+ELICENSING_QUERY_INVOICE_PATH = (
+    f"{ELICENSING_SERVICE_PATH}.elicensing_api_client.ELicensingAPIClient.query_invoice"
 )
-ELICENSING_REFRESH_DATA_BY_INVOICE_PATH = f"{ELICENSING_DATA_REFRESH_SERVICE}.refresh_data_by_invoice"
-ELICENSING_REFRESH_DATA_WRAPPER = (
-    f"{ELICENSING_DATA_REFRESH_SERVICE}.refresh_data_wrapper_by_compliance_report_version_id"
+ELICENSING_DATA_REFRESH_SERVICE = f"{ELICENSING_SERVICE_PATH}.elicensing_data_refresh_service.ElicensingDataRefreshService"
+ELICENSING_REFRESH_DATA_BY_INVOICE_PATH = (
+    f"{ELICENSING_DATA_REFRESH_SERVICE}.refresh_data_by_invoice"
 )
+ELICENSING_REFRESH_DATA_WRAPPER = f"{ELICENSING_DATA_REFRESH_SERVICE}.refresh_data_wrapper_by_compliance_report_version_id"
 RLS_BYPASS_RLS_PATH = "rls.utils.manager.RlsManager.bypass_rls"
 
 
@@ -60,7 +65,9 @@ class TestElicensingOperatorService:
     def test_refreshes_data_from_elicensing(self, mock_bypass_rls, mock_query_invoice):
         """Test refresh success"""
         # Setup mocks
-        client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
+        client_operator = make_recipe(
+            "compliance.tests.utils.elicensing_client_operator"
+        )
 
         # Setup successful API call
         mock_inv = InvoiceQueryResponse(
@@ -68,83 +75,83 @@ class TestElicensingOperatorService:
             clientGUID="00000000-0000-0000-0000-000000000000",
             invoiceNumber="inv-001",
             invoicePaymentDueDate="2025-11-30",
-            invoiceOutstandingBalance=Decimal('100.00'),
-            invoiceFeeBalance=Decimal('100.00'),
-            invoiceInterestBalance=Decimal('0.00'),
+            invoiceOutstandingBalance=Decimal("100.00"),
+            invoiceFeeBalance=Decimal("100.00"),
+            invoiceInterestBalance=Decimal("0.00"),
             fees=[
                 InvoiceFee(
                     feeObjectId=1,
                     feeGUID="00000000-0000-0000-0000-000000000000",
-                    businessAreaCode='asdf',
+                    businessAreaCode="asdf",
                     feeDate="2025-11-30",
                     description="2024 GGIRCA Compliance Obligation",
-                    baseAmount=Decimal('1'),
-                    taxTotal=Decimal('0'),
-                    adjustmentTotal=Decimal('0'),
-                    taxAdjustmentTotal=Decimal('0'),
-                    paymentBaseAmount=Decimal('0'),
-                    paymentTotal=Decimal('0'),
+                    baseAmount=Decimal("1"),
+                    taxTotal=Decimal("0"),
+                    adjustmentTotal=Decimal("0"),
+                    taxAdjustmentTotal=Decimal("0"),
+                    paymentBaseAmount=Decimal("0"),
+                    paymentTotal=Decimal("0"),
                     invoiceNumber="inv-001",
                     feeType="Regular",
                     payments=[
                         Payment(
                             paymentObjectId=2,
-                            receivedDate='2025-11-30',
-                            depositDate='2025-11-30',
-                            amount=Decimal('50.00'),
-                            cashHandlingArea='1',
-                            referenceNumber='1',
-                            method='EFT/Wire - OBPS',
-                            receiptNumber='R192883',
+                            receivedDate="2025-11-30",
+                            depositDate="2025-11-30",
+                            amount=Decimal("50.00"),
+                            cashHandlingArea="1",
+                            referenceNumber="1",
+                            method="EFT/Wire - OBPS",
+                            receiptNumber="R192883",
                             distributions=[
                                 PaymentDistribution(
                                     distributionObjectId=1,
-                                    description='dist',
-                                    transactionDate='2025-11-30',
-                                    method='test',
-                                    reason='test',
+                                    description="dist",
+                                    transactionDate="2025-11-30",
+                                    method="test",
+                                    reason="test",
                                     amount=1000.00,
                                     taxAmount=0,
-                                    distributionType='Payment',
+                                    distributionType="Payment",
                                     reversedDistributionObjectId=0,
                                     invoiceNumber="inv-001",
                                     feeObjectId=2,
                                 ),
                                 PaymentDistribution(
                                     distributionObjectId=2,
-                                    description='dist',
-                                    transactionDate='2025-11-30',
-                                    method='test',
-                                    reason='test',
+                                    description="dist",
+                                    transactionDate="2025-11-30",
+                                    method="test",
+                                    reason="test",
                                     amount=150.00,
                                     taxAmount=0,
-                                    distributionType='Payment',
+                                    distributionType="Payment",
                                     reversedDistributionObjectId=0,
                                     invoiceNumber="inv-001",
                                     feeObjectId=1,
                                 ),
                                 PaymentDistribution(
                                     distributionObjectId=3,
-                                    description='dist',
-                                    transactionDate='2025-11-30',
-                                    method='test',
-                                    reason='test',
+                                    description="dist",
+                                    transactionDate="2025-11-30",
+                                    method="test",
+                                    reason="test",
                                     amount=-100.00,
                                     taxAmount=0,
-                                    distributionType='Reversal',
+                                    distributionType="Reversal",
                                     reversedDistributionObjectId=2,
                                     invoiceNumber="inv-001",
                                     feeObjectId=1,
                                 ),
                                 PaymentDistribution(
                                     distributionObjectId=4,
-                                    description='dist',
-                                    transactionDate='2025-11-30',
-                                    method='test',
-                                    reason='test',
+                                    description="dist",
+                                    transactionDate="2025-11-30",
+                                    method="test",
+                                    reason="test",
                                     amount=50.00,
                                     taxAmount=0,
-                                    distributionType='Correction',
+                                    distributionType="Correction",
                                     reversedDistributionObjectId=0,
                                     invoiceNumber="inv-001",
                                     feeObjectId=1,
@@ -155,26 +162,26 @@ class TestElicensingOperatorService:
                     adjustments=[
                         FeeAdjustment(
                             adjustmentObjectId=3,
-                            adjustmentTotal=Decimal('10.11'),
-                            amount=Decimal('10.11'),
-                            date='2025-11-30',
+                            adjustmentTotal=Decimal("10.11"),
+                            amount=Decimal("10.11"),
+                            date="2025-11-30",
                             reason=ElicensingAdjustment.Reason.COMPLIANCE_UNITS_APPLIED,
-                            type='adj',
+                            type="adj",
                         )
                     ],
                 ),
                 InvoiceFee(
                     feeObjectId=2,
                     feeGUID="",  # intentionally empty to mimic eLicensing auto generated fees
-                    businessAreaCode='asdf',
+                    businessAreaCode="asdf",
                     feeDate="2025-11-30",
                     description="Interest",
-                    baseAmount=Decimal('2'),
-                    taxTotal=Decimal('0'),
-                    adjustmentTotal=Decimal('0'),
-                    taxAdjustmentTotal=Decimal('0'),
-                    paymentBaseAmount=Decimal('0'),
-                    paymentTotal=Decimal('0'),
+                    baseAmount=Decimal("2"),
+                    taxTotal=Decimal("0"),
+                    adjustmentTotal=Decimal("0"),
+                    taxAdjustmentTotal=Decimal("0"),
+                    paymentBaseAmount=Decimal("0"),
+                    paymentTotal=Decimal("0"),
                     invoiceNumber="inv-001",
                     feeType="Interest",
                 ),
@@ -192,8 +199,10 @@ class TestElicensingOperatorService:
         mock_bypass_rls.assert_called_once()
 
         # Assert record creation successful & accurate
-        invoice = ElicensingInvoice.objects.get(invoice_number='inv-001')
-        fees = ElicensingLineItem.objects.filter(elicensing_invoice=invoice).order_by('object_id')
+        invoice = ElicensingInvoice.objects.get(invoice_number="inv-001")
+        fees = ElicensingLineItem.objects.filter(elicensing_invoice=invoice).order_by(
+            "object_id"
+        )
 
         payment = ElicensingPayment.objects.get(elicensing_line_item=fees[0])
         adjustment = ElicensingAdjustment.objects.get(elicensing_line_item=fees[0])
@@ -202,23 +211,25 @@ class TestElicensingOperatorService:
         assert fees.count() == 2
 
         assert fees[0].object_id == 1
-        assert fees[0].description == '2024 GGIRCA Compliance Obligation'
+        assert fees[0].description == "2024 GGIRCA Compliance Obligation"
         assert fees[0].line_item_type == ElicensingLineItem.LineItemType.FEE
 
         assert fees[1].object_id == 2
-        assert fees[1].description == 'Interest'
+        assert fees[1].description == "Interest"
         assert fees[1].line_item_type == ElicensingLineItem.LineItemType.INTEREST
 
-        assert payment.amount == Decimal('50')
+        assert payment.amount == Decimal("50")
         assert payment.method == "EFT/Wire - OBPS"
-        assert payment.receipt_number == 'R192883'
-        assert adjustment.amount == Decimal('10.11')
+        assert payment.receipt_number == "R192883"
+        assert adjustment.amount == Decimal("10.11")
 
     @patch(RLS_BYPASS_RLS_PATH)
     def test_throws_with_unknown_fee_type(self, mock_bypass_rls, mock_query_invoice):
         """Test fee filter parses penalty fees"""
         # Setup mocks
-        client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
+        client_operator = make_recipe(
+            "compliance.tests.utils.elicensing_client_operator"
+        )
 
         # Setup successful API call
         mock_inv = InvoiceQueryResponse(
@@ -226,22 +237,22 @@ class TestElicensingOperatorService:
             clientGUID="00000000-0000-0000-0000-000000000000",
             invoiceNumber="inv-002",
             invoicePaymentDueDate="2025-11-30",
-            invoiceOutstandingBalance=Decimal('100.00'),
-            invoiceFeeBalance=Decimal('100.00'),
-            invoiceInterestBalance=Decimal('0.00'),
+            invoiceOutstandingBalance=Decimal("100.00"),
+            invoiceFeeBalance=Decimal("100.00"),
+            invoiceInterestBalance=Decimal("0.00"),
             fees=[
                 InvoiceFee(
                     feeObjectId=3,
                     feeGUID="00000000-0000-0000-0000-000000000000",
-                    businessAreaCode='asdf',
+                    businessAreaCode="asdf",
                     feeDate="2025-11-30",
                     description="Late Submission",
-                    baseAmount=Decimal('0'),
-                    taxTotal=Decimal('0'),
-                    adjustmentTotal=Decimal('0'),
-                    taxAdjustmentTotal=Decimal('0'),
-                    paymentBaseAmount=Decimal('0'),
-                    paymentTotal=Decimal('0'),
+                    baseAmount=Decimal("0"),
+                    taxTotal=Decimal("0"),
+                    adjustmentTotal=Decimal("0"),
+                    taxAdjustmentTotal=Decimal("0"),
+                    paymentBaseAmount=Decimal("0"),
+                    paymentTotal=Decimal("0"),
                     invoiceNumber="inv-002",
                     feeType="Bad Fee Type",
                 ),
@@ -258,59 +269,81 @@ class TestElicensingOperatorService:
 
         assert str(exc.value) == "Unknown fee type: Bad Fee Type for invoice inv-002"
 
-    def test_compliance_report_version_id_wrapper_stale_data(self, mock_refresh_invoice):
+    def test_compliance_report_version_id_wrapper_stale_data(
+        self, mock_refresh_invoice
+    ):
         invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(days=3)
+            "compliance.tests.utils.elicensing_invoice",
+            last_refreshed=timezone.now() - timedelta(days=3),
         )
-        obligation = make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=invoice)
+        obligation = make_recipe(
+            "compliance.tests.utils.compliance_obligation", elicensing_invoice=invoice
+        )
         mock_refresh_invoice.side_effect = ValueError("Failed to parse API response")
         returned_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
-        assert returned_data.data_is_fresh == False  # noqa: E712
+        assert returned_data.data_is_fresh == False
         assert returned_data.invoice == invoice
 
-    def test_compliance_report_version_id_wrapper_successful_refresh(self, mock_refresh_invoice):
+    def test_compliance_report_version_id_wrapper_successful_refresh(
+        self, mock_refresh_invoice
+    ):
         invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(days=3)
+            "compliance.tests.utils.elicensing_invoice",
+            last_refreshed=timezone.now() - timedelta(days=3),
         )
-        obligation = make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=invoice)
+        obligation = make_recipe(
+            "compliance.tests.utils.compliance_obligation", elicensing_invoice=invoice
+        )
         returned_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
         mock_refresh_invoice.assert_called_once()
-        assert returned_data.data_is_fresh == True  # noqa: E712
+        assert returned_data.data_is_fresh == True
         assert returned_data.invoice == invoice
 
-    def test_compliance_report_version_id_wrapper_skips_refresh(self, mock_refresh_invoice):
+    def test_compliance_report_version_id_wrapper_skips_refresh(
+        self, mock_refresh_invoice
+    ):
         invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(seconds=30)
+            "compliance.tests.utils.elicensing_invoice",
+            last_refreshed=timezone.now() - timedelta(seconds=30),
         )
-        obligation = make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=invoice)
+        obligation = make_recipe(
+            "compliance.tests.utils.compliance_obligation", elicensing_invoice=invoice
+        )
         returned_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
         mock_refresh_invoice.assert_not_called()
-        assert returned_data.data_is_fresh == True  # noqa: E712
+        assert returned_data.data_is_fresh == True
         assert returned_data.invoice == invoice
 
     def test_force_refresh_data(self, mock_refresh_invoice):
         invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(minutes=300)
+            "compliance.tests.utils.elicensing_invoice",
+            last_refreshed=timezone.now() - timedelta(minutes=300),
         )
-        obligation = make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=invoice)
+        obligation = make_recipe(
+            "compliance.tests.utils.compliance_obligation", elicensing_invoice=invoice
+        )
         returned_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id,
             force_refresh=True,  # should bypass last_refresh
         )
         mock_refresh_invoice.assert_called_once()
-        assert returned_data.data_is_fresh == True  # noqa: E712
+        assert returned_data.data_is_fresh == True
         # python
 
     def test_refresh_data_wrapper_by_compliance_report_version_id_obligation(self):
         # Create an obligation with an associated invoice
-        invoice = make_recipe('compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now())
-        obligation = make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=invoice)
+        invoice = make_recipe(
+            "compliance.tests.utils.elicensing_invoice", last_refreshed=timezone.now()
+        )
+        obligation = make_recipe(
+            "compliance.tests.utils.compliance_obligation", elicensing_invoice=invoice
+        )
         # Call with OBLIGATION type (default)
         result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id,
@@ -319,11 +352,13 @@ class TestElicensingOperatorService:
 
     def test_refresh_data_wrapper_by_compliance_report_version_id_penalty(self):
         # Create an obligation and a penalty, each with their own invoice
-        penalty_invoice = make_recipe('compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now())
-        obligation = make_recipe('compliance.tests.utils.compliance_obligation')
+        penalty_invoice = make_recipe(
+            "compliance.tests.utils.elicensing_invoice", last_refreshed=timezone.now()
+        )
+        obligation = make_recipe("compliance.tests.utils.compliance_obligation")
         # penalty
         make_recipe(
-            'compliance.tests.utils.compliance_penalty',
+            "compliance.tests.utils.compliance_penalty",
             compliance_obligation=obligation,
             elicensing_invoice=penalty_invoice,
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
@@ -337,38 +372,58 @@ class TestElicensingOperatorService:
 
     def test_wrapper_last_refreshed_metadata_fresh(mock_refresh_wrapper):
         # Arrange
-        invoice = make_recipe('compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now())
+        invoice = make_recipe(
+            "compliance.tests.utils.elicensing_invoice", last_refreshed=timezone.now()
+        )
 
         # Mocked wrapper result
-        mock_refresh_wrapper.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=invoice)
+        mock_refresh_wrapper.return_value = RefreshWrapperReturn(
+            data_is_fresh=True, invoice=invoice
+        )
 
         # Act
-        metadata = ElicensingDataRefreshService.get_last_refreshed_metadata(mock_refresh_wrapper.return_value)
+        metadata = ElicensingDataRefreshService.get_last_refreshed_metadata(
+            mock_refresh_wrapper.return_value
+        )
 
         # Assert
         assert metadata["data_is_fresh"] is True
-        assert metadata["last_refreshed_display"] == format_timestamp_en_ca(getattr(invoice, "last_refreshed", None))
+        assert metadata["last_refreshed_display"] == format_timestamp_en_ca(
+            getattr(invoice, "last_refreshed", None)
+        )
 
     def test_wrapper_last_refreshed_metadata_stale(mock_refresh_wrapper):
         # Arrange
-        invoice = make_recipe('compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now())
+        invoice = make_recipe(
+            "compliance.tests.utils.elicensing_invoice", last_refreshed=timezone.now()
+        )
 
         # Mocked wrapper result
-        mock_refresh_wrapper.return_value = RefreshWrapperReturn(data_is_fresh=False, invoice=invoice)
+        mock_refresh_wrapper.return_value = RefreshWrapperReturn(
+            data_is_fresh=False, invoice=invoice
+        )
 
         # Act
-        metadata = ElicensingDataRefreshService.get_last_refreshed_metadata(mock_refresh_wrapper.return_value)
+        metadata = ElicensingDataRefreshService.get_last_refreshed_metadata(
+            mock_refresh_wrapper.return_value
+        )
 
         # Assert
         assert metadata["data_is_fresh"] is False
-        assert metadata["last_refreshed_display"] == format_timestamp_en_ca(getattr(invoice, "last_refreshed", None))
+        assert metadata["last_refreshed_display"] == format_timestamp_en_ca(
+            getattr(invoice, "last_refreshed", None)
+        )
 
     def test_wrapper_last_refreshed_metadata_defaults(mock_refresh_wrapper):
         # Mocked wrapper result
-        mock_refresh_wrapper.return_value = RefreshWrapperReturn(data_is_fresh=None, invoice=None)
+        mock_refresh_wrapper.return_value = RefreshWrapperReturn(
+            data_is_fresh=None, invoice=None
+        )
 
         # Act
-        metadata = ElicensingDataRefreshService.get_last_refreshed_metadata(mock_refresh_wrapper.return_value)
+        metadata = ElicensingDataRefreshService.get_last_refreshed_metadata(
+            mock_refresh_wrapper.return_value
+        )
 
         # Assert
         assert metadata["data_is_fresh"] is False

@@ -1,23 +1,38 @@
 from decimal import Decimal
 from unittest.mock import MagicMock, patch
-import pytest
+
 import common.lib.pgtrigger as pgtrigger
+import pytest
+from compliance.models import (
+    ComplianceEarnedCredit,
+    ComplianceReportVersion,
+    ComplianceReportVersionManualHandling,
+)
+from compliance.service.supplementary_version_service.service import (
+    SupplementaryVersionService,
+)
+from compliance.tests.service.supplementary_version_service.utils import (
+    BaseSupplementaryVersionServiceTest,
+)
 from model_bakery import baker
-from compliance.models import ComplianceEarnedCredit, ComplianceReportVersion, ComplianceReportVersionManualHandling
-from compliance.service.supplementary_version_service.service import SupplementaryVersionService
-from compliance.tests.service.supplementary_version_service.utils import BaseSupplementaryVersionServiceTest
 
 pytestmark = pytest.mark.django_db(transaction=True)
 
 _SVC = "compliance.service.supplementary_version_service.service"
-_INC_OBL = "compliance.service.supplementary_version_service.increased_obligation_handler"
-_DEC_OBL = "compliance.service.supplementary_version_service.decreased_obligation_handler"
+_INC_OBL = (
+    "compliance.service.supplementary_version_service.increased_obligation_handler"
+)
+_DEC_OBL = (
+    "compliance.service.supplementary_version_service.decreased_obligation_handler"
+)
 _NO_CHG = "compliance.service.supplementary_version_service.no_change_handler"
 _INC_CRD = "compliance.service.supplementary_version_service.increased_credit_handler"
 _DEC_CRD = "compliance.service.supplementary_version_service.decreased_credit_handler"
 _NEW_CRD = "compliance.service.supplementary_version_service.new_earned_credits_handler"
 _MANUAL = "compliance.service.supplementary_version_service.manual_handler"
-_SUPERCEDE = "compliance.service.supplementary_version_service.supercede_version_handler"
+_SUPERCEDE = (
+    "compliance.service.supplementary_version_service.supercede_version_handler"
+)
 
 
 @pytest.fixture
@@ -86,29 +101,31 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_capture_sentry_exception,
     ):
         # Arrange
-        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+        with pgtrigger.ignore(
+            "reporting.ReportComplianceSummary:immutable_report_version"
+        ):
             self.previous_summary = baker.make_recipe(
-                'reporting.tests.utils.report_compliance_summary',
-                excess_emissions=Decimal('500'),
+                "reporting.tests.utils.report_compliance_summary",
+                excess_emissions=Decimal("500"),
                 credited_emissions=0,
                 report_version=self.report_version_1,
             )
             self.new_summary = baker.make_recipe(
-                'reporting.tests.utils.report_compliance_summary',
-                excess_emissions=Decimal('800'),
+                "reporting.tests.utils.report_compliance_summary",
+                excess_emissions=Decimal("800"),
                 credited_emissions=0,
                 report_version=self.report_version_2,
             )
 
         # Base compliance report/versions
         self.compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report',
+            "compliance.tests.utils.compliance_report",
             report=self.report,
             compliance_period_id=1,
         )
         # Previous CRV for the supplementary chain
         self.compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
+            "compliance.tests.utils.compliance_report_version",
             compliance_report=self.compliance_report,
             report_compliance_summary=self.previous_summary,
         )
@@ -116,7 +133,7 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         # Explicitly create a manual-handling record so that
         # ManualHandler.can_handle(previous_summary) will be true
         baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version_manual_handling',
+            "compliance.tests.utils.compliance_report_version_manual_handling",
             compliance_report_version=self.compliance_report_version,
             # optional: make the intent explicit
             handling_type=ComplianceReportVersionManualHandling.HandlingType.OBLIGATION,
@@ -159,29 +176,34 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_capture_sentry_exception,
     ):
         # Arrange
-        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+        with pgtrigger.ignore(
+            "reporting.ReportComplianceSummary:immutable_report_version"
+        ):
             self.previous_summary = baker.make_recipe(
-                'reporting.tests.utils.report_compliance_summary',
-                excess_emissions=Decimal('500'),
+                "reporting.tests.utils.report_compliance_summary",
+                excess_emissions=Decimal("500"),
                 credited_emissions=0,
                 report_version=self.report_version_1,
             )
         self.new_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary',
-            excess_emissions=Decimal('800'),
+            "reporting.tests.utils.report_compliance_summary",
+            excess_emissions=Decimal("800"),
             credited_emissions=0,
             report_version=self.report_version_2,
         )
         self.compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+            "compliance.tests.utils.compliance_report",
+            report=self.report,
+            compliance_period_id=1,
         )
         self.compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
+            "compliance.tests.utils.compliance_report_version",
             compliance_report=self.compliance_report,
             report_compliance_summary=self.previous_summary,
         )
         self.compliance_obligation = baker.make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=self.compliance_report_version
+            "compliance.tests.utils.compliance_obligation",
+            compliance_report_version=self.compliance_report_version,
         )
         mock_result = MagicMock(spec=ComplianceReportVersion)
         mock_increased_handler.return_value = mock_result
@@ -215,29 +237,34 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_capture_sentry_exception,
     ):
         # Arrange
-        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+        with pgtrigger.ignore(
+            "reporting.ReportComplianceSummary:immutable_report_version"
+        ):
             self.previous_summary = baker.make_recipe(
-                'reporting.tests.utils.report_compliance_summary',
-                excess_emissions=Decimal('800'),
+                "reporting.tests.utils.report_compliance_summary",
+                excess_emissions=Decimal("800"),
                 credited_emissions=0,
                 report_version=self.report_version_1,
             )
         self.new_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary',
-            excess_emissions=Decimal('500'),
+            "reporting.tests.utils.report_compliance_summary",
+            excess_emissions=Decimal("500"),
             credited_emissions=0,
             report_version=self.report_version_2,
         )
         self.compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+            "compliance.tests.utils.compliance_report",
+            report=self.report,
+            compliance_period_id=1,
         )
         self.compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
+            "compliance.tests.utils.compliance_report_version",
             compliance_report=self.compliance_report,
             report_compliance_summary=self.previous_summary,
         )
         self.compliance_obligation = baker.make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=self.compliance_report_version
+            "compliance.tests.utils.compliance_obligation",
+            compliance_report_version=self.compliance_report_version,
         )
         mock_result = MagicMock(spec=ComplianceReportVersion)
         mock_decreased_handler.return_value = mock_result
@@ -261,25 +288,29 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_decreased_credit_handler.assert_not_called()
         mock_capture_sentry_exception.assert_not_called()
 
-    @patch('compliance.service.supplementary_version_service.service.ExceptionHandler.capture_sentry_exception')
     @patch(
-        'compliance.service.supplementary_version_service.increased_obligation_handler.IncreasedObligationHandler.can_handle'
+        "compliance.service.supplementary_version_service.service.ExceptionHandler.capture_sentry_exception"
     )
     @patch(
-        'compliance.service.supplementary_version_service.decreased_obligation_handler.DecreasedObligationHandler.can_handle'
-    )
-    @patch('compliance.service.supplementary_version_service.no_change_handler.NoChangeHandler.can_handle')
-    @patch(
-        'compliance.service.supplementary_version_service.new_earned_credits_handler.NewEarnedCreditsHandler.can_handle'
+        "compliance.service.supplementary_version_service.increased_obligation_handler.IncreasedObligationHandler.can_handle"
     )
     @patch(
-        'compliance.service.supplementary_version_service.increased_credit_handler.IncreasedCreditHandler.can_handle'
+        "compliance.service.supplementary_version_service.decreased_obligation_handler.DecreasedObligationHandler.can_handle"
     )
     @patch(
-        'compliance.service.supplementary_version_service.decreased_credit_handler.DecreasedCreditHandler.can_handle'
+        "compliance.service.supplementary_version_service.no_change_handler.NoChangeHandler.can_handle"
     )
     @patch(
-        'compliance.service.supplementary_version_service.supercede_version_handler.SupercedeVersionHandler.can_handle'
+        "compliance.service.supplementary_version_service.new_earned_credits_handler.NewEarnedCreditsHandler.can_handle"
+    )
+    @patch(
+        "compliance.service.supplementary_version_service.increased_credit_handler.IncreasedCreditHandler.can_handle"
+    )
+    @patch(
+        "compliance.service.supplementary_version_service.decreased_credit_handler.DecreasedCreditHandler.can_handle"
+    )
+    @patch(
+        "compliance.service.supplementary_version_service.supercede_version_handler.SupercedeVersionHandler.can_handle"
     )
     def test_handle_supplementary_version_no_handler_found(
         self,
@@ -309,35 +340,39 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_increased_credit_can_handle.return_value = False
         mock_decreased_credit_can_handle.return_value = False
 
-        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+        with pgtrigger.ignore(
+            "reporting.ReportComplianceSummary:immutable_report_version"
+        ):
             self.previous_summary = baker.make_recipe(
-                'reporting.tests.utils.report_compliance_summary',
-                excess_emissions=Decimal('0'),
-                credited_emissions=Decimal('10'),
+                "reporting.tests.utils.report_compliance_summary",
+                excess_emissions=Decimal("0"),
+                credited_emissions=Decimal("10"),
                 report_version=self.report_version_1,
             )
         self.new_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary',
-            excess_emissions=Decimal('0'),
-            credited_emissions=Decimal('5'),
+            "reporting.tests.utils.report_compliance_summary",
+            excess_emissions=Decimal("0"),
+            credited_emissions=Decimal("5"),
             report_version=self.report_version_2,
         )
         self.compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+            "compliance.tests.utils.compliance_report",
+            report=self.report,
+            compliance_period_id=1,
         )
 
         self.compliance_report_version_1 = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
+            "compliance.tests.utils.compliance_report_version",
             compliance_report=self.compliance_report,
             report_compliance_summary=self.previous_summary,
         )
         baker.make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
+            "compliance.tests.utils.compliance_earned_credit",
             compliance_report_version=self.compliance_report_version_1,
             earned_credits_amount=500,
             issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED,
-            bccr_trading_name='Test Trading Name',
-            bccr_holding_account_id='123',
+            bccr_trading_name="Test Trading Name",
+            bccr_holding_account_id="123",
         )
 
         # Act
@@ -378,15 +413,19 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_logger,
     ):
         # Arrange
-        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+        with pgtrigger.ignore(
+            "reporting.ReportComplianceSummary:immutable_report_version"
+        ):
             self.previous_summary = baker.make_recipe(
-                'reporting.tests.utils.report_compliance_summary',
-                excess_emissions=Decimal('500'),
+                "reporting.tests.utils.report_compliance_summary",
+                excess_emissions=Decimal("500"),
                 credited_emissions=0,
                 report_version=self.report_version_1,
             )
         self.compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+            "compliance.tests.utils.compliance_report",
+            report=self.report,
+            compliance_period_id=1,
         )
 
         # Act

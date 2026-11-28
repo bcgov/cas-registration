@@ -1,10 +1,11 @@
 from datetime import timedelta
-from common.tests.utils.helpers import BaseTestCase
-from task_scheduler.models import ScheduledTask
-from model_bakery.baker import make_recipe
-from django.utils import timezone
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
+
+from common.tests.utils.helpers import BaseTestCase
+from django.utils import timezone
+from model_bakery.baker import make_recipe
+from task_scheduler.models import ScheduledTask
 
 
 class TestScheduledTask(BaseTestCase):
@@ -35,7 +36,9 @@ class TestScheduledTask(BaseTestCase):
             ("error_history", "error history", None, None),
         ]
 
-    def _test_schedule_time(self, schedule_type, hour, minute, verify_utc=True, **kwargs):
+    def _test_schedule_time(
+        self, schedule_type, hour, minute, verify_utc=True, **kwargs
+    ):
         """Helper method to test schedule with timezone conversion.
 
         Args:
@@ -98,23 +101,40 @@ class TestScheduledTask(BaseTestCase):
         self.assertAlmostEqual(time_diff, 2 * 60 * 60, delta=10)  # 10 seconds tolerance
 
         # Test daily schedule type
-        self._test_schedule_time(ScheduledTask.ScheduleType.DAILY, 10, 30, verify_utc=False)
+        self._test_schedule_time(
+            ScheduledTask.ScheduleType.DAILY, 10, 30, verify_utc=False
+        )
 
         # Test weekly schedule type
         next_run = self._test_schedule_time(
-            ScheduledTask.ScheduleType.WEEKLY, 9, 0, verify_utc=False, schedule_day_of_week=1
+            ScheduledTask.ScheduleType.WEEKLY,
+            9,
+            0,
+            verify_utc=False,
+            schedule_day_of_week=1,
         )  # Monday
-        self.assertEqual(next_run.astimezone(ZoneInfo("America/Vancouver")).weekday(), 1)
+        self.assertEqual(
+            next_run.astimezone(ZoneInfo("America/Vancouver")).weekday(), 1
+        )
 
         # Test monthly schedule type
         next_run = self._test_schedule_time(
-            ScheduledTask.ScheduleType.MONTHLY, 14, 45, verify_utc=False, schedule_day_of_month=15
+            ScheduledTask.ScheduleType.MONTHLY,
+            14,
+            45,
+            verify_utc=False,
+            schedule_day_of_month=15,
         )
         self.assertEqual(next_run.day, 15)
 
         # Test yearly schedule type
         next_run = self._test_schedule_time(
-            ScheduledTask.ScheduleType.YEARLY, 14, 45, verify_utc=False, schedule_day_of_month=15, schedule_month=6
+            ScheduledTask.ScheduleType.YEARLY,
+            14,
+            45,
+            verify_utc=False,
+            schedule_day_of_month=15,
+            schedule_month=6,
         )
         self.assertEqual(next_run.month, 6)  # June
         self.assertEqual(next_run.day, 15)
@@ -123,29 +143,49 @@ class TestScheduledTask(BaseTestCase):
         """Comprehensive test for timezone conversion functionality."""
 
         # Test Vancouver timezone (default)
-        with patch('task_scheduler.config.settings.TASK_SCHEDULER_CONFIG', {'timezone': 'America/Vancouver'}):
+        with patch(
+            "task_scheduler.config.settings.TASK_SCHEDULER_CONFIG",
+            {"timezone": "America/Vancouver"},
+        ):
             # Test basic daily schedule conversion
-            self._test_schedule_time(ScheduledTask.ScheduleType.DAILY, 14, 30, verify_utc=True)
+            self._test_schedule_time(
+                ScheduledTask.ScheduleType.DAILY, 14, 30, verify_utc=True
+            )
 
             # Test weekly schedule
             next_run = self._test_schedule_time(
-                ScheduledTask.ScheduleType.WEEKLY, 9, 15, verify_utc=True, schedule_day_of_week=2
+                ScheduledTask.ScheduleType.WEEKLY,
+                9,
+                15,
+                verify_utc=True,
+                schedule_day_of_week=2,
             )  # Tuesday
-            self.assertEqual(next_run.astimezone(ZoneInfo("America/Vancouver")).weekday(), 2)
+            self.assertEqual(
+                next_run.astimezone(ZoneInfo("America/Vancouver")).weekday(), 2
+            )
 
             # Test edge cases
-            self._test_schedule_time(ScheduledTask.ScheduleType.DAILY, 0, 0, verify_utc=True)  # midnight
-            self._test_schedule_time(ScheduledTask.ScheduleType.DAILY, 23, 59, verify_utc=True)  # late night
+            self._test_schedule_time(
+                ScheduledTask.ScheduleType.DAILY, 0, 0, verify_utc=True
+            )  # midnight
+            self._test_schedule_time(
+                ScheduledTask.ScheduleType.DAILY, 23, 59, verify_utc=True
+            )  # late night
 
             # Test future calculation caching
-            first_run = self._test_schedule_time(ScheduledTask.ScheduleType.DAILY, 8, 0, verify_utc=True)
+            first_run = self._test_schedule_time(
+                ScheduledTask.ScheduleType.DAILY, 8, 0, verify_utc=True
+            )
 
             # Second calculation should use stored UTC time if it's in the future
             second_run = self.test_object.calculate_next_run_time()
             self.assertEqual(first_run, second_run)
 
         # Test different timezone configuration
-        with patch('task_scheduler.config.settings.TASK_SCHEDULER_CONFIG', {'timezone': 'America/New_York'}):
+        with patch(
+            "task_scheduler.config.settings.TASK_SCHEDULER_CONFIG",
+            {"timezone": "America/New_York"},
+        ):
             self.test_object.schedule_type = ScheduledTask.ScheduleType.DAILY
             self.test_object.schedule_hour = 12
             self.test_object.schedule_minute = 0
@@ -162,7 +202,9 @@ class TestScheduledTask(BaseTestCase):
             self.assertIsNotNone(ny_time)
 
             # Verify the time is stored in UTC (should be different from local time due to timezone offset)
-            self.assertNotEqual(next_run.hour, 12)  # UTC should be different from local time
+            self.assertNotEqual(
+                next_run.hour, 12
+            )  # UTC should be different from local time
 
     def test_acquire_lock_success(self):
         assert self.test_object.acquire_lock() is True
@@ -178,7 +220,9 @@ class TestScheduledTask(BaseTestCase):
 
     def test_acquire_lock_expired_lock(self):
         # Set an expired lock
-        self.test_object.lock_acquired_at = timezone.now() - timedelta(minutes=70)  # Expired
+        self.test_object.lock_acquired_at = timezone.now() - timedelta(
+            minutes=70
+        )  # Expired
         self.test_object.save()
 
         # Should be able to acquire new lock

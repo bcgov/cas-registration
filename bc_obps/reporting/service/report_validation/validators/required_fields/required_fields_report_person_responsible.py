@@ -14,7 +14,6 @@ from reporting.service.report_validation.validators.required_fields.types import
 )
 from reporting.service.reporting_flow_service import ReportingFlow
 
-
 TAGS = [ValidationTags.REPORT_VALIDATION]
 
 
@@ -26,12 +25,24 @@ class RequiredFieldsPersonResponsibleValidator(BaseRequiredFieldsValidator):
         {"field": "first_name", "label": "First name", "field_type": "scalar"},
         {"field": "last_name", "label": "Last name", "field_type": "scalar"},
         {"field": "email", "label": "Business email address", "field_type": "scalar"},
-        {"field": "phone_number", "label": "Business telephone number", "field_type": "scalar"},
-        {"field": "street_address", "label": "Business mailing address", "field_type": "scalar"},
+        {
+            "field": "phone_number",
+            "label": "Business telephone number",
+            "field_type": "scalar",
+        },
+        {
+            "field": "street_address",
+            "label": "Business mailing address",
+            "field_type": "scalar",
+        },
         {"field": "municipality", "label": "Municipality", "field_type": "scalar"},
         {"field": "province", "label": "Province", "field_type": "scalar"},
         {"field": "postal_code", "label": "Postal code", "field_type": "scalar"},
-        {"field": "business_role", "label": "Job title / position", "field_type": "scalar"},
+        {
+            "field": "business_role",
+            "label": "Job title / position",
+            "field_type": "scalar",
+        },
     ]
 
     @classmethod

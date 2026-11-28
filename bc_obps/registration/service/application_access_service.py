@@ -1,21 +1,26 @@
-from typing import Dict, Optional
 from uuid import UUID
-from common.exceptions import UserError
-from registration.enums.enums import AccessRequestStates, AccessRequestTypes
-from registration.emails import send_operator_access_request_email
-from common.service.email.email_service import EmailService
-from registration.models import UserOperator
-from registration.service.data_access_service.operator_service import OperatorDataAccessService
-from registration.service.data_access_service.user_operator_service import UserOperatorDataAccessService
-from registration.service.data_access_service.user_service import UserDataAccessService
 
+from common.exceptions import UserError
+from common.service.email.email_service import EmailService
+from registration.emails import send_operator_access_request_email
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes
+from registration.models import UserOperator
+from registration.service.data_access_service.operator_service import (
+    OperatorDataAccessService,
+)
+from registration.service.data_access_service.user_operator_service import (
+    UserOperatorDataAccessService,
+)
+from registration.service.data_access_service.user_service import UserDataAccessService
 
 email_service = EmailService()
 
 
 class ApplicationAccessService:
     @classmethod
-    def is_user_eligible_to_request_access(cls, operator_id: UUID, user_guid: UUID) -> Optional[bool]:
+    def is_user_eligible_to_request_access(
+        cls, operator_id: UUID, user_guid: UUID
+    ) -> bool | None:
         """
         Check if the business_guid of a user who is requesting access to an operator matches the business_guid of the operator's admin
 
@@ -26,8 +31,12 @@ class ApplicationAccessService:
         Returns:
             True or raises an exception.
         """
-        operators_business_bceid = OperatorDataAccessService.get_operators_business_guid(operator_id)
-        users_business_bceid = UserDataAccessService.get_by_guid(user_guid).business_guid
+        operators_business_bceid = (
+            OperatorDataAccessService.get_operators_business_guid(operator_id)
+        )
+        users_business_bceid = UserDataAccessService.get_by_guid(
+            user_guid
+        ).business_guid
 
         if operators_business_bceid != users_business_bceid:
             raise UserError(
@@ -41,7 +50,7 @@ class ApplicationAccessService:
         cls,
         operator_id: UUID,
         user_guid: UUID,
-    ) -> Optional[bool]:
+    ) -> bool | None:
         """
         Check if a user is eligible to request admin access to an operator.
 
@@ -52,14 +61,18 @@ class ApplicationAccessService:
         Returns:
             True or raises an exception.
         """
-        approved_admins = UserOperatorDataAccessService.get_admin_users(operator_id, UserOperator.Statuses.APPROVED)
+        approved_admins = UserOperatorDataAccessService.get_admin_users(
+            operator_id, UserOperator.Statuses.APPROVED
+        )
         if approved_admins.filter(user_guid=user_guid).exists():
             raise UserError("You are already an admin for this Operator.")
         if len(approved_admins) > 0:
             raise UserError("This Operator already has an admin user.")
         # User already has a pending request for this operator
         # NOTE: This is a bit of a weird case, but it's possible for a user to have a pending request for an operator and if we show the UserOperator request form, they could submit another request and end up with two
-        pending_admins = UserOperatorDataAccessService.get_admin_users(operator_id, UserOperator.Statuses.PENDING)
+        pending_admins = UserOperatorDataAccessService.get_admin_users(
+            operator_id, UserOperator.Statuses.PENDING
+        )
 
         if pending_admins.filter(user_guid=user_guid).exists():
             raise UserError("You already have a pending request for this Operator.")
@@ -67,10 +80,16 @@ class ApplicationAccessService:
         return True
 
     @classmethod
-    def request_access(cls, operator_id: UUID, user_guid: UUID) -> Dict[str, UUID]:
-        if ApplicationAccessService.is_user_eligible_to_request_access(operator_id, user_guid):
+    def request_access(cls, operator_id: UUID, user_guid: UUID) -> dict[str, UUID]:
+        if ApplicationAccessService.is_user_eligible_to_request_access(
+            operator_id, user_guid
+        ):
             # Making a draft UserOperator instance if one doesn't exist
-            user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
+            user_operator, created = (
+                UserOperatorDataAccessService.get_or_create_user_operator(
+                    user_guid, operator_id
+                )
+            )
             if created:
                 send_operator_access_request_email(
                     AccessRequestStates.CONFIRMATION,
@@ -80,13 +99,24 @@ class ApplicationAccessService:
                     user_operator.user.email,
                 )
 
-        return {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
+        return {
+            "user_operator_id": user_operator.id,
+            "operator_id": user_operator.operator.id,
+        }
 
     @classmethod
-    def request_admin_access(cls, operator_id: UUID, user_guid: UUID) -> Dict[str, UUID]:
-        if ApplicationAccessService.is_user_eligible_to_request_admin_access(operator_id, user_guid):
+    def request_admin_access(
+        cls, operator_id: UUID, user_guid: UUID
+    ) -> dict[str, UUID]:
+        if ApplicationAccessService.is_user_eligible_to_request_admin_access(
+            operator_id, user_guid
+        ):
             # Making a draft UserOperator instance if one doesn't exist
-            user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
+            user_operator, created = (
+                UserOperatorDataAccessService.get_or_create_user_operator(
+                    user_guid, operator_id
+                )
+            )
             if created:
                 send_operator_access_request_email(
                     AccessRequestStates.CONFIRMATION,
@@ -95,4 +125,7 @@ class ApplicationAccessService:
                     user_operator.user.get_full_name(),
                     user_operator.user.email,
                 )
-        return {"user_operator_id": user_operator.id, "operator_id": user_operator.operator.id}
+        return {
+            "user_operator_id": user_operator.id,
+            "operator_id": user_operator.operator.id,
+        }

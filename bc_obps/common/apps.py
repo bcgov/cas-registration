@@ -1,6 +1,6 @@
-from django.db.models.signals import pre_migrate
 from django.apps import AppConfig
 from django.db import connection
+from django.db.models.signals import pre_migrate
 
 
 def create_common_schema(sender, app_config, **kwargs):
@@ -9,8 +9,8 @@ def create_common_schema(sender, app_config, **kwargs):
 
 
 class CommonConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'common'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "common"
 
     def ready(self):
         pre_migrate.connect(create_common_schema, sender=self)

@@ -1,9 +1,9 @@
 import pytest
 from reporting.service.review_changes_service.report_review_changes_service import (
     ReportReviewChangesService,
+    _get_field_display_title,
     _is_false_positive_product_change,
     _normalize_products,
-    _get_field_display_title,
 )
 
 pytestmark = pytest.mark.django_db
@@ -58,14 +58,25 @@ class TestGetFieldDisplayTitle:
 class TestNormalizeProducts:
     def test_normalizes_products_by_name_and_allocated_quantity(self):
         products = [
-            {"product_name": "Product B", "allocated_quantity": 50, "report_product_id": 2},
-            {"product_name": "Product A", "allocated_quantity": 100, "report_product_id": 1},
+            {
+                "product_name": "Product B",
+                "allocated_quantity": 50,
+                "report_product_id": 2,
+            },
+            {
+                "product_name": "Product A",
+                "allocated_quantity": 100,
+                "report_product_id": 1,
+            },
         ]
         result = _normalize_products(products)
         assert result == [("Product A", 100), ("Product B", 50)]
 
     def test_returns_none_for_malformed_product(self):
-        products = [{"product_name": "Product A", "allocated_quantity": 100}, "invalid-product"]
+        products = [
+            {"product_name": "Product A", "allocated_quantity": 100},
+            "invalid-product",
+        ]
         assert _normalize_products(products) is None
 
 
@@ -73,10 +84,22 @@ class TestIsFalsePositiveProductChange:
     def test_returns_true_when_product_allocations_are_equivalent(self):
         change = {
             "old_value": {
-                "products": [{"product_name": "Product A", "allocated_quantity": 100, "report_product_id": 1}]
+                "products": [
+                    {
+                        "product_name": "Product A",
+                        "allocated_quantity": 100,
+                        "report_product_id": 1,
+                    }
+                ]
             },
             "new_value": {
-                "products": [{"product_name": "Product A", "allocated_quantity": 100, "report_product_id": 2}]
+                "products": [
+                    {
+                        "product_name": "Product A",
+                        "allocated_quantity": 100,
+                        "report_product_id": 2,
+                    }
+                ]
             },
         }
         assert _is_false_positive_product_change(change) is True
@@ -85,14 +108,30 @@ class TestIsFalsePositiveProductChange:
         change = {
             "old_value": {
                 "products": [
-                    {"product_name": "Product A", "allocated_quantity": 100, "report_product_id": 1},
-                    {"product_name": "Product B", "allocated_quantity": 50, "report_product_id": 2},
+                    {
+                        "product_name": "Product A",
+                        "allocated_quantity": 100,
+                        "report_product_id": 1,
+                    },
+                    {
+                        "product_name": "Product B",
+                        "allocated_quantity": 50,
+                        "report_product_id": 2,
+                    },
                 ]
             },
             "new_value": {
                 "products": [
-                    {"product_name": "Product B", "allocated_quantity": 50, "report_product_id": 22},
-                    {"product_name": "Product A", "allocated_quantity": 100, "report_product_id": 11},
+                    {
+                        "product_name": "Product B",
+                        "allocated_quantity": 50,
+                        "report_product_id": 22,
+                    },
+                    {
+                        "product_name": "Product A",
+                        "allocated_quantity": 100,
+                        "report_product_id": 11,
+                    },
                 ]
             },
         }
@@ -100,16 +139,24 @@ class TestIsFalsePositiveProductChange:
 
     def test_returns_false_when_allocated_quantity_changed(self):
         change = {
-            "old_value": {"products": [{"product_name": "Product A", "allocated_quantity": 100}]},
-            "new_value": {"products": [{"product_name": "Product A", "allocated_quantity": 200}]},
+            "old_value": {
+                "products": [{"product_name": "Product A", "allocated_quantity": 100}]
+            },
+            "new_value": {
+                "products": [{"product_name": "Product A", "allocated_quantity": 200}]
+            },
         }
 
         assert _is_false_positive_product_change(change) is False
 
     def test_returns_false_when_product_name_changed(self):
         change = {
-            "old_value": {"products": [{"product_name": "Product A", "allocated_quantity": 100}]},
-            "new_value": {"products": [{"product_name": "Product B", "allocated_quantity": 100}]},
+            "old_value": {
+                "products": [{"product_name": "Product A", "allocated_quantity": 100}]
+            },
+            "new_value": {
+                "products": [{"product_name": "Product B", "allocated_quantity": 100}]
+            },
         }
 
         assert _is_false_positive_product_change(change) is False
@@ -131,7 +178,6 @@ class TestReportReviewChangesService:
         mock_diff_sections,
         mock_fix_facility_uuid_in_path,
     ):
-
         prev = {"total_emissions": 500, "status": "draft"}
         curr = {"total_emissions": 750, "status": "submitted"}
 

@@ -1,22 +1,23 @@
 from unittest.mock import patch
-from django.test import SimpleTestCase, override_settings, Client
-from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
-from registration.utils import custom_reverse_lazy
-from compliance.dataclass import BCCRAccountResponseDetails
+
 from common.exceptions import UserError
 from common.tests.utils.helpers import assert_error_response
+from compliance.dataclass import BCCRAccountResponseDetails
+from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
+from django.test import Client, SimpleTestCase, override_settings
+from registration.utils import custom_reverse_lazy
 
 # Constants
 VALID_ACCOUNT_ID = "123456789012345"
 COMPLIANCE_REPORT_VERSION_ID = 1
-BCCR_SERVICE_PATH = (
-    "compliance.service.bc_carbon_registry.account_service.BCCarbonRegistryAccountService.get_account_details"
-)
-VALIDATE_PERMISSION_PATH = 'common.permissions.validate_all'
+BCCR_SERVICE_PATH = "compliance.service.bc_carbon_registry.account_service.BCCarbonRegistryAccountService.get_account_details"
+VALIDATE_PERMISSION_PATH = "common.permissions.validate_all"
 
 
 @override_settings(MIDDLEWARE=[])  # Disable middleware to prevent database queries
-class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid database access
+class TestAccountIdEndpoint(
+    SimpleTestCase
+):  # Use SimpleTestCase to avoid database access
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -26,7 +27,10 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
     def _get_endpoint_url(account_id, compliance_report_version_id):
         return custom_reverse_lazy(
             "get_bccr_account_details",
-            kwargs={"account_id": account_id, "compliance_report_version_id": compliance_report_version_id},
+            kwargs={
+                "account_id": account_id,
+                "compliance_report_version_id": compliance_report_version_id,
+            },
         )
 
     @patch(BCCR_SERVICE_PATH)
@@ -41,22 +45,31 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
             trading_name="Test Account Inc.",
         )
         # Act
-        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID))
+        response = self.client.get(
+            self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID)
+        )
 
         # Assert
         mock_service.assert_called_once_with(account_id=VALID_ACCOUNT_ID)
         assert response.status_code == 200
-        assert response.json() == {"bccr_trading_name": "Test Account Inc.", "has_remote_bccr_errors": False}
+        assert response.json() == {
+            "bccr_trading_name": "Test Account Inc.",
+            "has_remote_bccr_errors": False,
+        }
 
     @patch(VALIDATE_PERMISSION_PATH)
     def test_invalid_account_id_format(self, mock_permission):
         # Arrange
         mock_permission.return_value = True
         # Act
-        response = self.client.get(self._get_endpoint_url("12345", COMPLIANCE_REPORT_VERSION_ID))
+        response = self.client.get(
+            self._get_endpoint_url("12345", COMPLIANCE_REPORT_VERSION_ID)
+        )
         # Assert
         assert response.status_code == 422
-        assert "Account Id: String should match pattern" in response.json().get("message")
+        assert "Account Id: String should match pattern" in response.json().get(
+            "message"
+        )
 
     @patch(BCCR_SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
@@ -65,10 +78,15 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
         mock_permission.return_value = True
         mock_service.return_value = None
         # Act
-        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID))
+        response = self.client.get(
+            self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID)
+        )
         # Assert
         assert response.status_code == 200
-        assert response.json() == {"bccr_trading_name": None, "has_remote_bccr_errors": False}
+        assert response.json() == {
+            "bccr_trading_name": None,
+            "has_remote_bccr_errors": False,
+        }
 
     @patch(BCCR_SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
@@ -77,7 +95,9 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
         mock_permission.return_value = True
         mock_service.side_effect = BCCarbonRegistryError("Service error")
         # Act
-        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID))
+        response = self.client.get(
+            self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID)
+        )
         # Assert
         assert response.status_code == 200
 
@@ -88,7 +108,9 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
 
     @patch(BCCR_SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
-    def test_account_details_with_null_type_of_account_holder(self, mock_permission, mock_service):
+    def test_account_details_with_null_type_of_account_holder(
+        self, mock_permission, mock_service
+    ):
         # Arrange - Test schema change where type_of_account_holder can be null
         mock_permission.return_value = True
         mock_service.return_value = BCCRAccountResponseDetails(
@@ -98,7 +120,9 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
             trading_name="Test Account Inc.",
         )
         # Act
-        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID))
+        response = self.client.get(
+            self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID)
+        )
 
         # Assert
         mock_service.assert_called_once_with(account_id=VALID_ACCOUNT_ID)
@@ -110,7 +134,9 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
 
     @patch(BCCR_SERVICE_PATH)
     @patch(VALIDATE_PERMISSION_PATH)
-    def test_account_type_validation_error_wrong_type(self, mock_permission, mock_service):
+    def test_account_type_validation_error_wrong_type(
+        self, mock_permission, mock_service
+    ):
         # Arrange - Account exists but has wrong account type (not Operator of Regulated Operation)
         mock_permission.return_value = True
         mock_service.side_effect = UserError(
@@ -118,7 +144,9 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
         )
 
         # Act
-        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID))
+        response = self.client.get(
+            self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID)
+        )
 
         # Assert
         message = "Account exists but does not match the required account type. Expected account type ID: 11, found: 14"

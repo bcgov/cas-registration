@@ -1,15 +1,16 @@
 import json
 import logging
-from typing import Callable
+from collections.abc import Callable
 from uuid import UUID
+
 from common.permissions import authorize, compose_auth
 from django.http import HttpRequest
 from registration.models.user_operator import UserOperator
-from reporting.models.report import Report
-from reporting.models.report_version import ReportVersion
 from registration.service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineService,
 )
+from reporting.models.report import Report
+from reporting.models.report_version import ReportVersion
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,9 @@ def is_access_granted(user_operator: UserOperator | None) -> bool:
 
 
 def get_operator_from_version_id(version_id: str) -> UUID | None:
-    report_version = ReportVersion.objects.select_related("report").filter(pk=version_id).first()
+    report_version = (
+        ReportVersion.objects.select_related("report").filter(pk=version_id).first()
+    )
     if not report_version:
         logger.warning("No report version found.")
         return None
@@ -44,7 +47,9 @@ def get_operator_from_report_id(report_id: str) -> UUID | None:
 
 
 def _validate_operator_ownership_in_url(
-    request: HttpRequest, id_param: str, resolve_operator_id: Callable[[str], UUID | None]
+    request: HttpRequest,
+    id_param: str,
+    resolve_operator_id: Callable[[str], UUID | None],
 ) -> bool:
     # Generic helper to validate operator ownership from URL parameters.
     # Requires a function to get the operator from the URL parameter.
@@ -69,12 +74,20 @@ def _validate_operator_ownership_in_url(
     return is_access_granted(user_operator)
 
 
-def _validate_version_ownership_in_url(request: HttpRequest, version_id_param: str) -> bool:
-    return _validate_operator_ownership_in_url(request, version_id_param, get_operator_from_version_id)
+def _validate_version_ownership_in_url(
+    request: HttpRequest, version_id_param: str
+) -> bool:
+    return _validate_operator_ownership_in_url(
+        request, version_id_param, get_operator_from_version_id
+    )
 
 
-def _validate_report_ownership_in_url(request: HttpRequest, report_id_param: str) -> bool:
-    return _validate_operator_ownership_in_url(request, report_id_param, get_operator_from_report_id)
+def _validate_report_ownership_in_url(
+    request: HttpRequest, report_id_param: str
+) -> bool:
+    return _validate_operator_ownership_in_url(
+        request, report_id_param, get_operator_from_report_id
+    )
 
 
 def _validate_operation_ownership(request: HttpRequest) -> bool:
@@ -140,12 +153,19 @@ def check_operation_ownership() -> Callable[[HttpRequest], bool]:
     return validate_func
 
 
-approved_industry_user_report_version_composite_auth: Callable[[HttpRequest], bool] = compose_auth(
-    authorize("approved_industry_user"), check_version_ownership_in_url("version_id")
+approved_industry_user_report_version_composite_auth: Callable[[HttpRequest], bool] = (
+    compose_auth(
+        authorize("approved_industry_user"),
+        check_version_ownership_in_url("version_id"),
+    )
 )
-approved_authorized_roles_report_version_composite_auth: Callable[[HttpRequest], bool] = compose_auth(
+approved_authorized_roles_report_version_composite_auth: Callable[
+    [HttpRequest], bool
+] = compose_auth(
     authorize("approved_authorized_roles"), check_version_ownership_in_url("version_id")
 )
-approved_industry_user_report_composite_auth: Callable[[HttpRequest], bool] = compose_auth(
-    authorize("approved_industry_user"), check_report_ownership_in_url("report_id")
+approved_industry_user_report_composite_auth: Callable[[HttpRequest], bool] = (
+    compose_auth(
+        authorize("approved_industry_user"), check_report_ownership_in_url("report_id")
+    )
 )

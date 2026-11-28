@@ -1,7 +1,8 @@
 from datetime import date, datetime
-from django.utils import timezone
 from decimal import Decimal
+
 from django.test import TestCase
+from django.utils import timezone
 from model_bakery.baker import make_recipe
 from reporting.models.naics_regulatory_value import NaicsRegulatoryValue
 from reporting.models.report_version import ReportVersion
@@ -58,7 +59,9 @@ class TestRegulatoryValues(TestCase):
         assert regulatory_values_2.initial_compliance_period == 2024
         assert regulatory_values_2.compliance_period == 2025
 
-    def test_get_product_regulatory_values_override_returns_null_object_if_no_override(self):
+    def test_get_product_regulatory_values_override_returns_null_object_if_no_override(
+        self,
+    ):
         report_version = make_recipe(
             "reporting.tests.utils.report_version",
             report__reporting_year_id=2024,
@@ -70,13 +73,17 @@ class TestRegulatoryValues(TestCase):
         )
         report_product = make_recipe("registration.tests.utils.regulated_product")
 
-        overrides = get_product_regulatory_values_override(report_version, report_product.id)
+        overrides = get_product_regulatory_values_override(
+            report_version, report_product.id
+        )
 
         assert overrides.reduction_factor_override is None
         assert overrides.tightening_rate_override is None
 
     def test_get_product_regulatory_values_override_returns_overridden_values(self):
-        product = make_recipe("registration.tests.utils.regulated_product", name='Test Product')
+        product = make_recipe(
+            "registration.tests.utils.regulated_product", name="Test Product"
+        )
         override = make_recipe(
             "reporting.tests.utils.naics_regulatory_override",
             regulated_product=product,
@@ -95,23 +102,33 @@ class TestRegulatoryValues(TestCase):
         )
         overrides = get_product_regulatory_values_override(report_version, product.id)
 
-        assert overrides == RegulatoryValuesOverride(Decimal("9.9900"), Decimal("9.0000"))
+        assert overrides == RegulatoryValuesOverride(
+            Decimal("9.9900"), Decimal("9.0000")
+        )
 
-    def test_get_product_regulatory_values_override_returns_overridden_values_if_dates_dont_match(self):
+    def test_get_product_regulatory_values_override_returns_overridden_values_if_dates_dont_match(
+        self,
+    ):
         # Overlapping is not enough
         # The Naics override needs to apply through the entire reporting window
         report_version = make_recipe(
             "reporting.tests.utils.report_version",
             report__reporting_year__reporting_year=2100,
-            report__reporting_year__reporting_window_start=timezone.make_aware(datetime(2101, 3, 19)),
-            report__reporting_year__reporting_window_end=timezone.make_aware(datetime(2101, 3, 22)),
+            report__reporting_year__reporting_window_start=timezone.make_aware(
+                datetime(2101, 3, 19)
+            ),
+            report__reporting_year__reporting_window_end=timezone.make_aware(
+                datetime(2101, 3, 22)
+            ),
         )
         make_recipe(
             "reporting.tests.utils.report_operation",
             report_version=report_version,
             naics_code_id=1,  # 211110 Oil and gas extraction
         )
-        product = make_recipe("registration.tests.utils.regulated_product", name='Test Product')
+        product = make_recipe(
+            "registration.tests.utils.regulated_product", name="Test Product"
+        )
         make_recipe(
             "reporting.tests.utils.naics_regulatory_override",
             regulated_product=product,
@@ -128,7 +145,9 @@ class TestRegulatoryValues(TestCase):
     def test_admin_naics_code_does_not_override_reports_naics_code(self):
         # The report's regulatory values should be determined by the NAICS code associated with the report operation, not by the NAICS code associated with the operation in admin
         OIL_GAS_NAICS_CODE_ID = 1  # 211110 Oil and gas extraction
-        BASIC_CHEM_NAICS_CODE_ID = 22  # 325189 All other basic inorganic chemical manufacturing
+        BASIC_CHEM_NAICS_CODE_ID = (
+            22  # 325189 All other basic inorganic chemical manufacturing
+        )
         operation = make_recipe(
             "registration.tests.utils.operation",
             naics_code_id=OIL_GAS_NAICS_CODE_ID,
@@ -163,6 +182,15 @@ class TestRegulatoryValues(TestCase):
             valid_to__gte=report_version.report.reporting_year.reporting_window_end,
         )
 
-        assert regulatory_values_from_service.reduction_factor == oil_gas_regulatory_values.reduction_factor
-        assert regulatory_values_from_service.tightening_rate == oil_gas_regulatory_values.tightening_rate
-        assert regulatory_values_from_service.reduction_factor != basic_chem_regulatory_values.reduction_factor
+        assert (
+            regulatory_values_from_service.reduction_factor
+            == oil_gas_regulatory_values.reduction_factor
+        )
+        assert (
+            regulatory_values_from_service.tightening_rate
+            == oil_gas_regulatory_values.tightening_rate
+        )
+        assert (
+            regulatory_values_from_service.reduction_factor
+            != basic_chem_regulatory_values.reduction_factor
+        )

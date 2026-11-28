@@ -1,14 +1,14 @@
 from django.test import TestCase
+from model_bakery.baker import make, make_recipe
 from registration.models import Activity
+from reporting.models.fuel_type import FuelType
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_source_type import ReportSourceType
 from reporting.models.source_type import SourceType
-from reporting.models.fuel_type import FuelType
 from reporting.service.report_activity_save_service import ReportActivitySaveService
 from reporting.tests.service.test_report_activity_save_service.infrastructure import (
     TestInfrastructure,
 )
-from model_bakery.baker import make_recipe, make
 
 
 class TestSaveReportEmission(TestCase):
@@ -20,7 +20,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='gsc_excluding_line_tracing').id
+            activity_id=Activity.objects.get(slug="gsc_excluding_line_tracing").id
         )
         report_source_type = make(
             ReportSourceType,
@@ -66,7 +66,9 @@ class TestSaveReportEmission(TestCase):
             == "Stationary fuel combustion emissions"
         )
         assert (
-            return_value.emission_categories.get(category_type="fuel_excluded").category_name
+            return_value.emission_categories.get(
+                category_type="fuel_excluded"
+            ).category_name
             == "CO2 emissions from excluded woody biomass"
         )
 
@@ -78,7 +80,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='gsc_excluding_line_tracing').id
+            activity_id=Activity.objects.get(slug="gsc_excluding_line_tracing").id
         )
         report_source_type = make(
             ReportSourceType,
@@ -124,7 +126,9 @@ class TestSaveReportEmission(TestCase):
             == "Stationary fuel combustion emissions"
         )
         assert (
-            return_value.emission_categories.get(category_type="fuel_excluded").category_name
+            return_value.emission_categories.get(
+                category_type="fuel_excluded"
+            ).category_name
             == "CO2 emissions from excluded woody biomass"
         )
 
@@ -157,7 +161,9 @@ class TestSaveReportEmission(TestCase):
             == "Stationary fuel combustion emissions"
         )
         assert (
-            updated_value.emission_categories.get(category_type="fuel_excluded").category_name
+            updated_value.emission_categories.get(
+                category_type="fuel_excluded"
+            ).category_name
             == "Other emissions from excluded biomass"
         )
 
@@ -169,7 +175,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='petrochemical_production').id
+            activity_id=Activity.objects.get(slug="petrochemical_production").id
         )
         report_source_type = make(
             ReportSourceType,
@@ -201,7 +207,10 @@ class TestSaveReportEmission(TestCase):
         )
 
         assert len(return_value.emission_categories.all()) == 1
-        assert return_value.emission_categories.get(category_type="basic").category_name == "Flaring emissions"
+        assert (
+            return_value.emission_categories.get(category_type="basic").category_name
+            == "Flaring emissions"
+        )
 
     def test_fugitive_category(self):
         test_infrastructure = TestInfrastructure.build()
@@ -211,7 +220,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='aluminum_production').id
+            activity_id=Activity.objects.get(slug="aluminum_production").id
         )
         report_source_type = make(
             ReportSourceType,
@@ -243,7 +252,10 @@ class TestSaveReportEmission(TestCase):
         )
 
         assert len(return_value.emission_categories.all()) == 1
-        assert return_value.emission_categories.get(category_type="basic").category_name == "Fugitive emissions"
+        assert (
+            return_value.emission_categories.get(category_type="basic").category_name
+            == "Fugitive emissions"
+        )
 
     def test_industrial_process_category(self):
         test_infrastructure = TestInfrastructure.build()
@@ -253,7 +265,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='copper_nickel_refining').id
+            activity_id=Activity.objects.get(slug="copper_nickel_refining").id
         )
         report_source_type = make(
             ReportSourceType,
@@ -286,7 +298,8 @@ class TestSaveReportEmission(TestCase):
 
         assert len(return_value.emission_categories.all()) == 1
         assert (
-            return_value.emission_categories.get(category_type="basic").category_name == "Industrial process emissions"
+            return_value.emission_categories.get(category_type="basic").category_name
+            == "Industrial process emissions"
         )
 
     def test_onsite_transportation_category(self):
@@ -297,7 +310,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='fuel_combustion_mobile').id
+            activity_id=Activity.objects.get(slug="fuel_combustion_mobile").id
         )
         report_source_type = make(
             ReportSourceType,
@@ -342,7 +355,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='og_extraction_other_than_ncnp').id
+            activity_id=Activity.objects.get(slug="og_extraction_other_than_ncnp").id
         )
         report_source_type = make(
             ReportSourceType,
@@ -374,7 +387,10 @@ class TestSaveReportEmission(TestCase):
         )
 
         assert len(return_value.emission_categories.all()) == 1
-        assert return_value.emission_categories.get(category_type="basic").category_name == "Venting emissions — useful"
+        assert (
+            return_value.emission_categories.get(category_type="basic").category_name
+            == "Venting emissions — useful"
+        )
 
     def test_venting_non_useful_category(self):
         test_infrastructure = TestInfrastructure.build()
@@ -384,7 +400,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='petrochemical_production').id
+            activity_id=Activity.objects.get(slug="petrochemical_production").id
         )
         report_source_type = make(
             ReportSourceType,
@@ -429,7 +445,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='gsc_other_than_non_compression').id
+            activity_id=Activity.objects.get(slug="gsc_other_than_non_compression").id
         )
         report_source_type = make(
             ReportSourceType,
@@ -461,7 +477,10 @@ class TestSaveReportEmission(TestCase):
         )
 
         assert len(return_value.emission_categories.all()) == 1
-        assert return_value.emission_categories.get(category_type="basic").category_name == "Emissions from waste"
+        assert (
+            return_value.emission_categories.get(category_type="basic").category_name
+            == "Emissions from waste"
+        )
 
     def test_wastewater_category(self):
         test_infrastructure = TestInfrastructure.build()
@@ -471,7 +490,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='petroleum_refining').id
+            activity_id=Activity.objects.get(slug="petroleum_refining").id
         )
         report_source_type = make(
             ReportSourceType,
@@ -503,7 +522,10 @@ class TestSaveReportEmission(TestCase):
         )
 
         assert len(return_value.emission_categories.all()) == 1
-        assert return_value.emission_categories.get(category_type="basic").category_name == "Emissions from wastewater"
+        assert (
+            return_value.emission_categories.get(category_type="basic").category_name
+            == "Emissions from wastewater"
+        )
 
     def test_pulp_and_paper_exception(self):
         pulping_source_type_id = 49
@@ -514,7 +536,7 @@ class TestSaveReportEmission(TestCase):
             has_fuel=True,
         )
         report_activity = test_infrastructure.make_report_activity(
-            activity_id=Activity.objects.get(slug='pulp_and_paper').id
+            activity_id=Activity.objects.get(slug="pulp_and_paper").id
         )
         report_source_type = make(
             ReportSourceType,
@@ -543,13 +565,15 @@ class TestSaveReportEmission(TestCase):
                 "emission": 1,
                 "methodology": {
                     "methodology": "Replacement Methodology",
-                    'description': 'test description',
-                    'isWoodyBiomass': True,
+                    "description": "test description",
+                    "isWoodyBiomass": True,
                 },
             },
         )
         assert len(return_value.emission_categories.all()) == 2
         assert (
-            return_value.emission_categories.get(category_type="fuel_excluded").category_name
+            return_value.emission_categories.get(
+                category_type="fuel_excluded"
+            ).category_name
             == "CO2 emissions from excluded woody biomass"
         )

@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from .base_program_configuration_test import BaseProgramConfigurationTest
 
 

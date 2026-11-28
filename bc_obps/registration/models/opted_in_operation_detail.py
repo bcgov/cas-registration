@@ -1,9 +1,11 @@
-from django.db import models
 from common.enums import Schemas
+from django.db import models
 from registration.enums.enums import RegistrationTableNames
 from registration.models import TimeStampedModel
+from registration.models.rls_configs.opted_in_operation_detail import (
+    Rls as OptedInOperationDetailRls,
+)
 from simple_history.models import HistoricalRecords
-from registration.models.rls_configs.opted_in_operation_detail import Rls as OptedInOperationDetailRls
 
 
 class OptedInOperationDetail(TimeStampedModel):
@@ -13,7 +15,9 @@ class OptedInOperationDetail(TimeStampedModel):
         db_comment="Does this operation have emissions that are attributable for the purposes of section 3 of the Act?",
     )
     meets_electricity_import_operation_criteria = models.BooleanField(
-        blank=True, null=True, db_comment="Is this operation an electricity import operation?"
+        blank=True,
+        null=True,
+        db_comment="Is this operation an electricity import operation?",
     )
     meets_entire_operation_requirements = models.BooleanField(
         blank=True,
@@ -58,7 +62,9 @@ class OptedInOperationDetail(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
-        db_table_comment = "Table containing details about operations that have opted in"
+        db_table_comment = (
+            "Table containing details about operations that have opted in"
+        )
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.OPTED_IN_OPERATION_DETAIL.value}'
 
     Rls = OptedInOperationDetailRls

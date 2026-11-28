@@ -1,23 +1,30 @@
 from datetime import date
 from decimal import Decimal
 from unittest.mock import patch
+
 import pytest
-from model_bakery import baker
 from compliance.dataclass import RefreshWrapperReturn
-from compliance.models import ComplianceObligation, CompliancePenalty, ComplianceReportVersion
+from compliance.models import (
+    ComplianceObligation,
+    CompliancePenalty,
+    ComplianceReportVersion,
+)
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
+from model_bakery import baker
 
 pytestmark = pytest.mark.django_db
 
 REFRESH_WRAPPER_PATH = (
-    'compliance.service.elicensing.elicensing_data_refresh_service.'
-    'ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
+    "compliance.service.elicensing.elicensing_data_refresh_service."
+    "ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
 )
 
 
 class TestGetAccruingPenaltyData:
     def setup_method(self):
-        self.compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
+        self.compliance_report_version = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version"
+        )
         self.invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
             due_date=date(2025, 7, 30),
@@ -38,18 +45,22 @@ class TestGetAccruingPenaltyData:
         )
 
     def _mock_refresh(self, mock_refresh_data):
-        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=self.invoice)
+        mock_refresh_data.return_value = RefreshWrapperReturn(
+            data_is_fresh=True, invoice=self.invoice
+        )
 
     @patch(REFRESH_WRAPPER_PATH)
     def test_returns_accruing_automatic_overdue_penalty(self, mock_refresh_data):
         self._mock_refresh(mock_refresh_data)
 
-        result = PenaltyCalculationService.get_accruing_penalty_data(self.compliance_report_version.id)
+        result = PenaltyCalculationService.get_accruing_penalty_data(
+            self.compliance_report_version.id
+        )
 
-        assert result["automatic_overdue_penalty_amount"] > Decimal('0.00')
-        assert result["faa_interest"] == Decimal('1000.00')
+        assert result["automatic_overdue_penalty_amount"] > Decimal("0.00")
+        assert result["faa_interest"] == Decimal("1000.00")
         # Not a late supplementary report, so no GGEAPAR interest is accruing
-        assert result["ggeapar_interest_amount"] == Decimal('0.00')
+        assert result["ggeapar_interest_amount"] == Decimal("0.00")
 
     @patch(REFRESH_WRAPPER_PATH)
     def test_returns_zeros_when_penalty_not_accruing(self, mock_refresh_data):
@@ -57,12 +68,14 @@ class TestGetAccruingPenaltyData:
         self.obligation.penalty_status = ComplianceObligation.PenaltyStatus.NONE
         self.obligation.save()
 
-        result = PenaltyCalculationService.get_accruing_penalty_data(self.compliance_report_version.id)
+        result = PenaltyCalculationService.get_accruing_penalty_data(
+            self.compliance_report_version.id
+        )
 
-        assert result["automatic_overdue_penalty_amount"] == Decimal('0.00')
-        assert result["ggeapar_interest_amount"] == Decimal('0.00')
+        assert result["automatic_overdue_penalty_amount"] == Decimal("0.00")
+        assert result["ggeapar_interest_amount"] == Decimal("0.00")
         # FAA interest is still reported so the page can display it
-        assert result["faa_interest"] == Decimal('1000.00')
+        assert result["faa_interest"] == Decimal("1000.00")
 
     @patch(REFRESH_WRAPPER_PATH)
     def test_returns_zero_faa_interest_when_none_accrued(self, mock_refresh_data):
@@ -70,12 +83,16 @@ class TestGetAccruingPenaltyData:
         self.invoice.save()
         self._mock_refresh(mock_refresh_data)
 
-        result = PenaltyCalculationService.get_accruing_penalty_data(self.compliance_report_version.id)
+        result = PenaltyCalculationService.get_accruing_penalty_data(
+            self.compliance_report_version.id
+        )
 
-        assert result["faa_interest"] == Decimal('0.00')
+        assert result["faa_interest"] == Decimal("0.00")
 
     @patch(REFRESH_WRAPPER_PATH)
-    def test_returns_ggeapar_interest_for_late_supplementary_report(self, mock_refresh_data):
+    def test_returns_ggeapar_interest_for_late_supplementary_report(
+        self, mock_refresh_data
+    ):
         self._mock_refresh(mock_refresh_data)
         baker.make_recipe(
             "compliance.tests.utils.elicensing_interest_rate",
@@ -86,9 +103,11 @@ class TestGetAccruingPenaltyData:
         self.compliance_report_version.is_supplementary = True
         self.compliance_report_version.save()
 
-        result = PenaltyCalculationService.get_accruing_penalty_data(self.compliance_report_version.id)
+        result = PenaltyCalculationService.get_accruing_penalty_data(
+            self.compliance_report_version.id
+        )
 
-        assert result["ggeapar_interest_amount"] > Decimal('0.00')
+        assert result["ggeapar_interest_amount"] > Decimal("0.00")
 
     @patch(REFRESH_WRAPPER_PATH)
     def test_still_reports_penalty_once_it_has_maxed_out(self, mock_refresh_data):
@@ -109,12 +128,16 @@ class TestGetAccruingPenaltyData:
             penalty_amount=Decimal("2500000.00"),
         )
 
-        result = PenaltyCalculationService.get_accruing_penalty_data(self.compliance_report_version.id)
+        result = PenaltyCalculationService.get_accruing_penalty_data(
+            self.compliance_report_version.id
+        )
 
         assert result["automatic_overdue_penalty_amount"] == Decimal("2500000.00")
 
     @patch(REFRESH_WRAPPER_PATH)
-    def test_ggeapar_interest_keeps_accruing_after_the_penalty_maxes_out(self, mock_refresh_data):
+    def test_ggeapar_interest_keeps_accruing_after_the_penalty_maxes_out(
+        self, mock_refresh_data
+    ):
         self._mock_refresh(mock_refresh_data)
         baker.make_recipe(
             "compliance.tests.utils.elicensing_interest_rate",
@@ -133,14 +156,20 @@ class TestGetAccruingPenaltyData:
             penalty_amount=Decimal("3000000.00"),
         )
 
-        result = PenaltyCalculationService.get_accruing_penalty_data(self.compliance_report_version.id)
+        result = PenaltyCalculationService.get_accruing_penalty_data(
+            self.compliance_report_version.id
+        )
 
         assert result["ggeapar_interest_amount"] > Decimal("0.00")
 
     @patch(REFRESH_WRAPPER_PATH)
-    def test_does_not_report_penalty_once_the_obligation_is_met(self, mock_refresh_data):
+    def test_does_not_report_penalty_once_the_obligation_is_met(
+        self, mock_refresh_data
+    ):
         self._mock_refresh(mock_refresh_data)
-        self.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        self.compliance_report_version.status = (
+            ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
         self.compliance_report_version.save()
         self.obligation.penalty_status = ComplianceObligation.PenaltyStatus.NOT_PAID
         self.obligation.save(update_fields=["penalty_status"])
@@ -151,6 +180,8 @@ class TestGetAccruingPenaltyData:
             penalty_amount=Decimal("3000000.00"),
         )
 
-        result = PenaltyCalculationService.get_accruing_penalty_data(self.compliance_report_version.id)
+        result = PenaltyCalculationService.get_accruing_penalty_data(
+            self.compliance_report_version.id
+        )
 
         assert result["automatic_overdue_penalty_amount"] == Decimal("0.00")

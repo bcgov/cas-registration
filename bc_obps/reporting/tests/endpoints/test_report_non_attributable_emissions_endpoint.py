@@ -1,14 +1,17 @@
-from model_bakery.baker import make
-from model_bakery.baker import make_recipe
+from model_bakery.baker import make, make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from reporting.models import ReportNonAttributableEmissions, EmissionCategory, GasType
-from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
+from reporting.models import EmissionCategory, GasType, ReportNonAttributableEmissions
+from reporting.tests.utils.report_access_validation import (
+    assert_report_version_ownership_is_validated,
+)
 
 
 class TestReportNonAttributableEndpoints(CommonTestSetup):
     def setup_method(self):
         report_version = make_recipe("reporting.tests.utils.report_version")
-        self.facility_report = make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
+        self.facility_report = make_recipe(
+            "reporting.tests.utils.facility_report", report_version=report_version
+        )
         self.endpoint_under_test = f"/api/reporting/report-version/{self.facility_report.report_version_id}/facilities/{self.facility_report.facility_id}/non-attributable"
 
         return super().setup_method()
@@ -35,7 +38,9 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
         record.save()
         record.gas_type.set([gas_type])
 
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test)
+        response = TestUtils.mock_get_with_auth_role(
+            self, "industry_user", self.endpoint_under_test
+        )
 
         assert response.status_code == 200
         assert response.json() == {
@@ -61,7 +66,9 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
         )
         payload = {
             "emissions_exceeded": False,
-            "activities": [{"gas_type": []}],  # incomplete item — should be cleared by schema
+            "activities": [
+                {"gas_type": []}
+            ],  # incomplete item — should be cleared by schema
         }
         response = TestUtils.mock_post_with_auth_role(
             self, "industry_user", "application/json", payload, self.endpoint_under_test
@@ -108,5 +115,9 @@ class TestReportNonAttributableEndpoints(CommonTestSetup):
         assert response.status_code == 422
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_report_non_attributable_by_version_id", facility_id="uuid")
-        assert_report_version_ownership_is_validated("save_report", method="post", facility_id="uuid")
+        assert_report_version_ownership_is_validated(
+            "get_report_non_attributable_by_version_id", facility_id="uuid"
+        )
+        assert_report_version_ownership_is_validated(
+            "save_report", method="post", facility_id="uuid"
+        )

@@ -1,10 +1,14 @@
 import logging
 import uuid
-from compliance.service.elicensing.elicensing_api_client import ClientCreationRequest, ELicensingAPIClient
+
+from compliance.models.elicensing_client_operator import ElicensingClientOperator
+from compliance.service.elicensing.elicensing_api_client import (
+    ClientCreationRequest,
+    ELicensingAPIClient,
+)
+from django.core.exceptions import MultipleObjectsReturned
 from django.db import transaction
 from registration.models.operator import Operator
-from compliance.models.elicensing_client_operator import ElicensingClientOperator
-from django.core.exceptions import MultipleObjectsReturned
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +49,8 @@ class ElicensingOperatorService:
                 {
                     "addressLine1": address.street_address or "",
                     "addressLine2": "",  # The Address model doesn't have additional_information field
-                    "city": address.municipality or "",  # Using municipality instead of city
+                    "city": address.municipality
+                    or "",  # Using municipality instead of city
                     "stateProvince": address.province or "",
                     "postalCode": address.postal_code or "",
                     "country": "Canada",  # Default to Canada as Address model doesn't have country
@@ -58,7 +63,8 @@ class ElicensingOperatorService:
                 {
                     "addressLine1": address.street_address or "",
                     "addressLine2": "",  # The Address model doesn't have additional_information field
-                    "city": address.municipality or "",  # Using municipality instead of city
+                    "city": address.municipality
+                    or "",  # Using municipality instead of city
                     "stateProvince": address.province or "",
                     "postalCode": address.postal_code or "",
                     "country": "Canada",  # Default to Canada as Address model doesn't have country
@@ -86,7 +92,9 @@ class ElicensingOperatorService:
 
     @classmethod
     @transaction.atomic
-    def sync_client_with_elicensing(cls, operator_id: uuid.UUID) -> ElicensingClientOperator:
+    def sync_client_with_elicensing(
+        cls, operator_id: uuid.UUID
+    ) -> ElicensingClientOperator:
         """
         Syncs an operator with eLicensing by creating a client.
         If a client already exists, returns the existing record.
@@ -107,7 +115,9 @@ class ElicensingOperatorService:
         # Check if a client already exists for this operator
         # existing_record = ElicensingClientOperator.managed_objects.get_one_or_none(operator_id=operator_id)
         try:
-            existing_record = ElicensingClientOperator.objects.get(operator_id=operator_id)
+            existing_record = ElicensingClientOperator.objects.get(
+                operator_id=operator_id
+            )
         except ElicensingClientOperator.DoesNotExist:
             existing_record = None
         except MultipleObjectsReturned:
@@ -130,5 +140,7 @@ class ElicensingOperatorService:
             operator=operator,
         )
 
-        logger.info(f"Successfully synced operator {operator_id} with eLicensing as client {response.clientObjectId}")
+        logger.info(
+            f"Successfully synced operator {operator_id} with eLicensing as client {response.clientObjectId}"
+        )
         return client_record

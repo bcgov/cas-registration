@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from .base_program_configuration_test import BaseProgramConfigurationTest
 
 
@@ -15,32 +16,32 @@ class ElectricityGeneration2024Test(BaseProgramConfigurationTest, TestCase):
                     "Replacement Methodology": 1,
                     "CEMS": 0,
                     "Measured CC and MW": 3,
-                    'Default HHV/Default EF': 2,
-                    'Default EF': 1,
-                    'Measured HHV/Default EF': 2,
-                    'Measured Steam/Default EF': 3,
-                    'Measured CC': 1,
-                    'Measured Steam/Measured EF': 2,
+                    "Default HHV/Default EF": 2,
+                    "Default EF": 1,
+                    "Measured HHV/Default EF": 2,
+                    "Measured Steam/Default EF": 3,
+                    "Measured CC": 1,
+                    "Measured Steam/Measured EF": 2,
                 },
-                'CH4': {
-                    'Default HHV/Default EF': 2,
-                    'Default EF': 1,
-                    'Measured HHV/Default EF': 2,
-                    'Measured EF': 1,
-                    'Measured Steam/Default EF': 3,
-                    'Heat Input/Default EF': 2,
-                    'Alternative Parameter Measurement Methodology': 1,
-                    'Replacement Methodology': 1,
+                "CH4": {
+                    "Default HHV/Default EF": 2,
+                    "Default EF": 1,
+                    "Measured HHV/Default EF": 2,
+                    "Measured EF": 1,
+                    "Measured Steam/Default EF": 3,
+                    "Heat Input/Default EF": 2,
+                    "Alternative Parameter Measurement Methodology": 1,
+                    "Replacement Methodology": 1,
                 },
-                'N2O': {
-                    'Default HHV/Default EF': 2,
-                    'Default EF': 1,
-                    'Measured HHV/Default EF': 2,
-                    'Measured EF': 1,
-                    'Measured Steam/Default EF': 3,
-                    'Heat Input/Default EF': 2,
-                    'Alternative Parameter Measurement Methodology': 1,
-                    'Replacement Methodology': 1,
+                "N2O": {
+                    "Default HHV/Default EF": 2,
+                    "Default EF": 1,
+                    "Measured HHV/Default EF": 2,
+                    "Measured EF": 1,
+                    "Measured Steam/Default EF": 3,
+                    "Heat Input/Default EF": 2,
+                    "Alternative Parameter Measurement Methodology": 1,
+                    "Replacement Methodology": 1,
                 },
             },
             "Acid gas scrubbers and acid gas reagents": {

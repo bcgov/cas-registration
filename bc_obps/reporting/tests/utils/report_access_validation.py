@@ -29,11 +29,15 @@ def assert_report_version_ownership_is_validated(
 ):
     with (
         patch("common.permissions.check_permission_for_role") as mock_check_permissions,
-        patch("reporting.api.permissions._validate_version_ownership_in_url") as mock_validate_version_ownership,
+        patch(
+            "reporting.api.permissions._validate_version_ownership_in_url"
+        ) as mock_validate_version_ownership,
     ):
         mock_check_permissions.return_value = True
 
-        endpoint = custom_reverse_lazy(api_function_name, kwargs={version_id_param_name: 1234, **kwargs})
+        endpoint = custom_reverse_lazy(
+            api_function_name, kwargs={version_id_param_name: 1234, **kwargs}
+        )
         call_endpoint(client, method, endpoint, role)
 
         mock_validate_version_ownership.assert_called_once()

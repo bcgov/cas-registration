@@ -1,34 +1,38 @@
 from unittest.mock import patch
-from django.test import TestCase
-from model_bakery.baker import make_recipe, make
+
 import pytest
+from django.test import TestCase
+from model_bakery.baker import make, make_recipe
 from reporting.models import (
-    ReportOperation,
     FuelType,
-    ReportFuel,
-    ReportMethodology,
-    Methodology,
     GasType,
+    Methodology,
+    ReportFuel,
     ReportingField,
+    ReportMethodology,
+    ReportOperation,
 )
 from reporting.service.report_validation.report_validation_error import (
-    ReportValidationError,
-    Severity,
-    ReportValidationErrorKey,
     ErrorContext,
+    ReportValidationError,
+    ReportValidationErrorKey,
+    Severity,
 )
 from reporting.service.report_validation.validators.report_data_by_fuel_type_validator import (
     validate,
 )
-from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
+from reporting.tests.service.test_report_activity_save_service.infrastructure import (
+    TestInfrastructure,
+)
 
-BASE_PATH = "reporting.service.report_validation.validators.report_data_by_fuel_type_validator"
+BASE_PATH = (
+    "reporting.service.report_validation.validators.report_data_by_fuel_type_validator"
+)
 GET_REPORTING_FIELD_DISPLAY_NAME_PATH = f"{BASE_PATH}.get_reporting_field_display_name"
 
 
 @pytest.mark.django_db
 class TestReportDataByFueltypeValidator(TestCase):
-
     def setUp(self):
         # Arrange: sets up the report elements necessary to allocate emissions
         self.test_infrastructure = TestInfrastructure.build()
@@ -58,7 +62,7 @@ class TestReportDataByFueltypeValidator(TestCase):
             "reporting.tests.utils.report_fuel",
             report_source_type=report_source_type,
             report_version=self.test_infrastructure.report_version,
-            fuel_type=FuelType.objects.get(name='Diesel'),
+            fuel_type=FuelType.objects.get(name="Diesel"),
             json_data={"annualFuelAmount": 1500},
             report_unit=None,
         )
@@ -67,24 +71,25 @@ class TestReportDataByFueltypeValidator(TestCase):
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=self.test_infrastructure.report_version,
-            gas_type=GasType.objects.get(chemical_formula='CO2'),
+            gas_type=GasType.objects.get(chemical_formula="CO2"),
             json_data={"equivalentEmission": 10},
         )
         self.report_methodology = make_recipe(
             "reporting.tests.utils.report_methodology",
-            methodology=Methodology.objects.get(name='Default EF'),
+            methodology=Methodology.objects.get(name="Default EF"),
             report_emission=report_emission,
             report_version=self.test_infrastructure.report_version,
             json_data={"unitFuelCo2DefaultEf": 2000},
         )
 
     def test_no_errors_when_values_within_expected_bounds(self):
-
         result = validate(self.test_infrastructure.report_version)
         assert result == {}
 
     @patch(GET_REPORTING_FIELD_DISPLAY_NAME_PATH)
-    def test_errors_when_fuel_amount_above_expected_bound(self, mock_reporting_field_display_name):
+    def test_errors_when_fuel_amount_above_expected_bound(
+        self, mock_reporting_field_display_name
+    ):
         mock_reporting_field_display_name.return_value = "Annual Fuel Amount"
         ReportFuel.objects.update(json_data={"annualFuelAmount": 250000})
         report_fuel = ReportFuel.objects.first()
@@ -111,7 +116,9 @@ class TestReportDataByFueltypeValidator(TestCase):
         }
 
     @patch(GET_REPORTING_FIELD_DISPLAY_NAME_PATH)
-    def test_errors_when_fuel_amount_below_expected_bound(self, mock_reporting_field_display_name):
+    def test_errors_when_fuel_amount_below_expected_bound(
+        self, mock_reporting_field_display_name
+    ):
         mock_reporting_field_display_name.return_value = "Annual Fuel Amount"
         ReportFuel.objects.update(json_data={"annualFuelAmount": -15000})
         report_fuel = ReportFuel.objects.first()
@@ -159,9 +166,13 @@ class TestReportDataByFueltypeValidator(TestCase):
                     fuel_type_name=report_methodology.report_emission.report_fuel.fuel_type.name,
                     gas_type_name=report_methodology.report_emission.gas_type.chemical_formula,
                     methodology_name=report_methodology.methodology.name,
-                    reporting_field=ReportingField.objects.get(slug='unitFuelCo2DefaultEf').field_display_title,
+                    reporting_field=ReportingField.objects.get(
+                        slug="unitFuelCo2DefaultEf"
+                    ).field_display_title,
                     expected_range="1000.0000 - 5000.0000",
-                    user_input=str(report_methodology.json_data["unitFuelCo2DefaultEf"]),
+                    user_input=str(
+                        report_methodology.json_data["unitFuelCo2DefaultEf"]
+                    ),
                 ),
             )
         }
@@ -188,9 +199,13 @@ class TestReportDataByFueltypeValidator(TestCase):
                     fuel_type_name=report_methodology.report_emission.report_fuel.fuel_type.name,
                     gas_type_name=report_methodology.report_emission.gas_type.chemical_formula,
                     methodology_name=report_methodology.methodology.name,
-                    reporting_field=ReportingField.objects.get(slug='unitFuelCo2DefaultEf').field_display_title,
+                    reporting_field=ReportingField.objects.get(
+                        slug="unitFuelCo2DefaultEf"
+                    ).field_display_title,
                     expected_range="1000.0000 - 5000.0000",
-                    user_input=str(report_methodology.json_data["unitFuelCo2DefaultEf"]),
+                    user_input=str(
+                        report_methodology.json_data["unitFuelCo2DefaultEf"]
+                    ),
                 ),
             )
         }

@@ -1,29 +1,35 @@
-from datetime import datetime
-import pytest
+from datetime import datetime, timedelta
 from decimal import Decimal
-from datetime import timedelta
 from unittest.mock import patch
-from django.utils import timezone
-from model_bakery import baker
+
+import pytest
+from common.lib import pgtrigger
+from compliance.models import (
+    ComplianceObligation,
+    CompliancePenalty,
+    ComplianceReportVersion,
+)
 from compliance.service.automated_process.compliance_handlers import (
-    PenaltyPaidHandler,
-    PenaltyAccruingHandler,
+    ComplianceHandlerManager,
+    InterestPaidHandler,
     MaxPenaltyHandler,
     ObligationPaidHandler,
-    InterestPaidHandler,
-    ComplianceHandlerManager,
+    PenaltyAccruingHandler,
+    PenaltyPaidHandler,
 )
-from compliance.models import ComplianceObligation, ComplianceReportVersion, CompliancePenalty
 from compliance.service.penalty_calculation_service import CalculatedPenaltyData
 from compliance.tests.utils.compliance_test_helper import ComplianceTestHelper
-from common.lib import pgtrigger
+from django.utils import timezone
+from model_bakery import baker
 
 pytestmark = pytest.mark.django_db
 
 
 class TestPenaltyPaidHandler:
     def setup_method(self):
-        self.compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
+        self.compliance_report_version = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version"
+        )
         self.obligation = baker.make_recipe(
             "compliance.tests.utils.compliance_obligation",
             compliance_report_version=self.compliance_report_version,
@@ -75,27 +81,43 @@ class TestPenaltyPaidHandler:
         result = self.handler.can_handle(self.invoice)
         assert result is False
 
-    @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
-    @patch('compliance.tasks.retryable_send_notice_of_penalty_paid_email')
-    def test_handle_updates_penalty_status(self, mock_retryable_send_notice_of_penalty_paid_email, mock_update_status):
+    @patch(
+        "compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status"
+    )
+    @patch("compliance.tasks.retryable_send_notice_of_penalty_paid_email")
+    def test_handle_updates_penalty_status(
+        self, mock_retryable_send_notice_of_penalty_paid_email, mock_update_status
+    ):
         self.handler.handle(self.invoice)
 
-        mock_update_status.assert_called_once_with(self.obligation.pk, ComplianceObligation.PenaltyStatus.PAID)
-        mock_retryable_send_notice_of_penalty_paid_email.execute.assert_called_once_with(self.obligation.id)
+        mock_update_status.assert_called_once_with(
+            self.obligation.pk, ComplianceObligation.PenaltyStatus.PAID
+        )
+        mock_retryable_send_notice_of_penalty_paid_email.execute.assert_called_once_with(
+            self.obligation.id
+        )
 
-    @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
-    @patch('compliance.tasks.retryable_send_notice_of_penalty_paid_email')
-    def test_handle_skips_if_already_paid(self, mock_retryable_send_notice_of_penalty_paid_email, mock_update_status):
+    @patch(
+        "compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status"
+    )
+    @patch("compliance.tasks.retryable_send_notice_of_penalty_paid_email")
+    def test_handle_skips_if_already_paid(
+        self, mock_retryable_send_notice_of_penalty_paid_email, mock_update_status
+    ):
         self.obligation.penalty_status = ComplianceObligation.PenaltyStatus.PAID
         self.obligation.save()
 
         self.handler.handle(self.invoice)
 
         mock_update_status.assert_not_called()
-        mock_retryable_send_notice_of_penalty_paid_email.execute.assert_called_once_with(self.obligation.id)
+        mock_retryable_send_notice_of_penalty_paid_email.execute.assert_called_once_with(
+            self.obligation.id
+        )
 
-    @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
-    @patch('compliance.tasks.retryable_send_notice_of_penalty_paid_email')
+    @patch(
+        "compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status"
+    )
+    @patch("compliance.tasks.retryable_send_notice_of_penalty_paid_email")
     def test_handle_does_not_update_status_if_any_penalty_unpaid(
         self, mock_retryable_send_notice_of_penalty_paid_email, mock_update_status
     ):
@@ -112,10 +134,14 @@ class TestPenaltyPaidHandler:
         self.handler.handle(self.invoice)
 
         mock_update_status.assert_not_called()
-        mock_retryable_send_notice_of_penalty_paid_email.execute.assert_called_once_with(self.obligation.id)
+        mock_retryable_send_notice_of_penalty_paid_email.execute.assert_called_once_with(
+            self.obligation.id
+        )
 
-    @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
-    @patch('compliance.tasks.retryable_send_notice_of_penalty_paid_email')
+    @patch(
+        "compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status"
+    )
+    @patch("compliance.tasks.retryable_send_notice_of_penalty_paid_email")
     def test_handle_updates_status_when_all_penalties_paid_multiple(
         self, mock_retryable_send_notice_of_penalty_paid_email, mock_update_status
     ):
@@ -131,8 +157,12 @@ class TestPenaltyPaidHandler:
 
         self.handler.handle(self.invoice)
 
-        mock_update_status.assert_called_once_with(self.obligation.pk, ComplianceObligation.PenaltyStatus.PAID)
-        mock_retryable_send_notice_of_penalty_paid_email.execute.assert_called_once_with(self.obligation.id)
+        mock_update_status.assert_called_once_with(
+            self.obligation.pk, ComplianceObligation.PenaltyStatus.PAID
+        )
+        mock_retryable_send_notice_of_penalty_paid_email.execute.assert_called_once_with(
+            self.obligation.id
+        )
 
 
 class TestPenaltyAccruingHandler:
@@ -170,7 +200,9 @@ class TestPenaltyAccruingHandler:
         assert result is False
 
     def test_can_not_handle_obligation_met(self):
-        self.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        self.compliance_report_version.status = (
+            ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
         self.compliance_report_version.save()
 
         result = self.handler.can_handle(self.invoice)
@@ -179,7 +211,9 @@ class TestPenaltyAccruingHandler:
     def test_can_not_handle_not_overdue(self):
         self.invoice.due_date = timezone.now().date() + timedelta(days=1)
         self.invoice.save()
-        compliance_period = self.compliance_report_version.compliance_report.compliance_period
+        compliance_period = (
+            self.compliance_report_version.compliance_report.compliance_period
+        )
         compliance_period.compliance_deadline = self.invoice.due_date
         compliance_period.save()
 
@@ -193,12 +227,18 @@ class TestPenaltyAccruingHandler:
         result = self.handler.can_handle(self.invoice)
         assert result is False
 
-    @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
+    @patch(
+        "compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status"
+    )
     def test_handle_updates_penalty_status(self, mock_update_status):
         self.handler.handle(self.invoice)
-        mock_update_status.assert_called_once_with(self.obligation.pk, ComplianceObligation.PenaltyStatus.ACCRUING)
+        mock_update_status.assert_called_once_with(
+            self.obligation.pk, ComplianceObligation.PenaltyStatus.ACCRUING
+        )
 
-    @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
+    @patch(
+        "compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status"
+    )
     def test_handle_skips_if_already_accruing(self, mock_update_status):
         self.obligation.penalty_status = ComplianceObligation.PenaltyStatus.ACCRUING
         self.obligation.save()
@@ -212,7 +252,9 @@ class TestPenaltyAccruingHandler:
             "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.obligation,
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-            elicensing_invoice=baker.make_recipe("compliance.tests.utils.elicensing_invoice"),
+            elicensing_invoice=baker.make_recipe(
+                "compliance.tests.utils.elicensing_invoice"
+            ),
         )
 
         assert self.handler.can_handle(self.invoice) is False
@@ -235,18 +277,23 @@ class TestObligationPaidHandler:
             invoice_fee_balance=Decimal("0.00"),
             due_date=timezone.now().date() - timedelta(days=1),  # Past due
         )
-        compliance_period = self.compliance_report_version.compliance_report.compliance_period
+        compliance_period = (
+            self.compliance_report_version.compliance_report.compliance_period
+        )
         compliance_period.compliance_deadline = self.invoice.due_date
         compliance_period.save()
         self.line_item = baker.make_recipe(
-            "compliance.tests.utils.elicensing_line_item", elicensing_invoice=self.invoice
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=self.invoice,
         )
         self.payment = baker.make_recipe(
             "compliance.tests.utils.elicensing_payment",
             elicensing_line_item=self.line_item,
             received_date=self.invoice.due_date + timedelta(days=1),
         )
-        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
+        with pgtrigger.ignore(
+            "compliance.ComplianceObligation:set_updated_audit_columns"
+        ):
             self.obligation.elicensing_invoice = self.invoice
             self.obligation.created_at = timezone.now()
             self.obligation.save()
@@ -257,7 +304,9 @@ class TestObligationPaidHandler:
         assert result is True
 
     def test_can_not_handle_obligation_already_met(self):
-        self.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        self.compliance_report_version.status = (
+            ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
         self.compliance_report_version.save()
 
         result = self.handler.can_handle(self.invoice)
@@ -292,8 +341,8 @@ class TestObligationPaidHandler:
         result = self.handler.can_handle(self.invoice)
         assert result is False
 
-    @patch('compliance.tasks.retryable_create_penalty')
-    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    @patch("compliance.tasks.retryable_create_penalty")
+    @patch("compliance.tasks.retryable_notice_of_obligation_met_email")
     def test_handle_updates_compliance_status_and_creates_penalty_when_overdue(
         self,
         mock_retryable_notice_of_obligation_met_email,
@@ -303,16 +352,21 @@ class TestObligationPaidHandler:
         compliance_deadline = self.compliance_report_version.compliance_report.compliance_period.compliance_deadline
 
         self.compliance_report_version.refresh_from_db()
-        assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            self.compliance_report_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
         mock_create_penalty.execute.assert_called_once_with(
             obligation_id=self.obligation.id,
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             effective_deadline=compliance_deadline,
         )
-        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(
+            self.obligation.id
+        )
 
-    @patch('compliance.tasks.retryable_create_penalty')
-    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    @patch("compliance.tasks.retryable_create_penalty")
+    @patch("compliance.tasks.retryable_notice_of_obligation_met_email")
     def test_handle_sets_interest_not_paid_status_when_faa_interest_outstanding(
         self,
         mock_retryable_notice_of_obligation_met_email,
@@ -330,11 +384,13 @@ class TestObligationPaidHandler:
             self.compliance_report_version.status
             == ComplianceReportVersion.ComplianceStatus.OBLIGATION_MET_INTEREST_NOT_PAID
         )
-        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(
+            self.obligation.id
+        )
         mock_create_penalty.execute.assert_called_once()
 
-    @patch('compliance.tasks.retryable_create_penalty')
-    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    @patch("compliance.tasks.retryable_create_penalty")
+    @patch("compliance.tasks.retryable_notice_of_obligation_met_email")
     def test_handle_updates_compliance_status_but_does_not_create_penalty_when_not_overdue(
         self,
         mock_retryable_notice_of_obligation_met_email,
@@ -342,32 +398,43 @@ class TestObligationPaidHandler:
     ):
         self.invoice.due_date = timezone.now().date() + timedelta(days=1)
         self.invoice.save()
-        compliance_period = self.compliance_report_version.compliance_report.compliance_period
+        compliance_period = (
+            self.compliance_report_version.compliance_report.compliance_period
+        )
         compliance_period.compliance_deadline = self.invoice.due_date
         compliance_period.save()
 
         self.handler.handle(self.invoice)
 
         self.compliance_report_version.refresh_from_db()
-        assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            self.compliance_report_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
         mock_create_penalty.execute.assert_not_called()
-        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(
+            self.obligation.id
+        )
 
-    @patch('compliance.tasks.retryable_create_penalty')
-    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    @patch("compliance.tasks.retryable_create_penalty")
+    @patch("compliance.tasks.retryable_notice_of_obligation_met_email")
     def test_handle_creates_late_submission_penalty_when_supplementary_obligation_created_past_deadline(
         self,
         mock_retryable_notice_of_obligation_met_email,
         mock_create_penalty,
     ):
         self.compliance_report_version.is_supplementary = True
-        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
-            compliance_deadline = (
-                self.obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
-            )
+        with pgtrigger.ignore(
+            "compliance.ComplianceObligation:set_updated_audit_columns"
+        ):
+            compliance_deadline = self.obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
 
             deadline_datetime = timezone.make_aware(
-                datetime(compliance_deadline.year, compliance_deadline.month, compliance_deadline.day)
+                datetime(
+                    compliance_deadline.year,
+                    compliance_deadline.month,
+                    compliance_deadline.day,
+                )
             )
             self.compliance_report_version.is_supplementary = True
             self.obligation.created_at = deadline_datetime + timedelta(days=5)
@@ -383,20 +450,22 @@ class TestObligationPaidHandler:
             penalty_type=CompliancePenalty.PenaltyType.LATE_SUBMISSION,
             effective_deadline=compliance_deadline,
         )
-        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(
+            self.obligation.id
+        )
 
-    @patch('compliance.tasks.retryable_create_penalty')
-    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    @patch("compliance.tasks.retryable_create_penalty")
+    @patch("compliance.tasks.retryable_notice_of_obligation_met_email")
     def test_handle_does_not_create_late_submission_penalty_when_initial_obligation_created_past_deadline(
         self,
         mock_retryable_notice_of_obligation_met_email,
         mock_create_penalty,
     ):
         self.compliance_report_version.is_supplementary = False
-        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
-            deadline_date = (
-                self.obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
-            )
+        with pgtrigger.ignore(
+            "compliance.ComplianceObligation:set_updated_audit_columns"
+        ):
+            deadline_date = self.obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
             deadline_datetime = timezone.make_aware(
                 datetime(deadline_date.year, deadline_date.month, deadline_date.day)
             )
@@ -410,20 +479,22 @@ class TestObligationPaidHandler:
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             effective_deadline=deadline_date,
         )
-        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(
+            self.obligation.id
+        )
 
-    @patch('compliance.tasks.retryable_create_penalty')
-    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    @patch("compliance.tasks.retryable_create_penalty")
+    @patch("compliance.tasks.retryable_notice_of_obligation_met_email")
     def test_handle_does_not_create_late_submission_penalty_when_supplementary_obligation_created_before_deadline(
         self,
         mock_retryable_notice_of_obligation_met_email,
         mock_create_penalty,
     ):
         self.compliance_report_version.is_supplementary = True
-        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
-            deadline_date = (
-                self.obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
-            )
+        with pgtrigger.ignore(
+            "compliance.ComplianceObligation:set_updated_audit_columns"
+        ):
+            deadline_date = self.obligation.compliance_report_version.compliance_report.compliance_period.compliance_deadline
             deadline_datetime = timezone.make_aware(
                 datetime(deadline_date.year, deadline_date.month, deadline_date.day)
             )
@@ -437,10 +508,12 @@ class TestObligationPaidHandler:
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             effective_deadline=deadline_date,
         )
-        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(
+            self.obligation.id
+        )
 
-    @patch('compliance.tasks.retryable_create_penalty')
-    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    @patch("compliance.tasks.retryable_create_penalty")
+    @patch("compliance.tasks.retryable_notice_of_obligation_met_email")
     def test_handle_updates_compliance_status_but_does_not_create_penalty_when_payment_received_on_time(
         self,
         mock_retryable_notice_of_obligation_met_email,
@@ -453,12 +526,17 @@ class TestObligationPaidHandler:
         self.handler.handle(self.invoice)
 
         self.compliance_report_version.refresh_from_db()
-        assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            self.compliance_report_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
         mock_create_penalty.execute.assert_not_called()
-        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(
+            self.obligation.id
+        )
 
-    @patch('compliance.tasks.retryable_create_penalty')
-    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    @patch("compliance.tasks.retryable_create_penalty")
+    @patch("compliance.tasks.retryable_notice_of_obligation_met_email")
     def test_handle_does_not_create_a_second_penalty_when_one_already_maxed_out(
         self,
         mock_retryable_notice_of_obligation_met_email,
@@ -468,13 +546,18 @@ class TestObligationPaidHandler:
             "compliance.tests.utils.compliance_penalty",
             compliance_obligation=self.obligation,
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-            elicensing_invoice=baker.make_recipe("compliance.tests.utils.elicensing_invoice"),
+            elicensing_invoice=baker.make_recipe(
+                "compliance.tests.utils.elicensing_invoice"
+            ),
         )
 
         self.handler.handle(self.invoice)
 
         self.compliance_report_version.refresh_from_db()
-        assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            self.compliance_report_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
         mock_create_penalty.execute.assert_not_called()
 
 
@@ -495,7 +578,9 @@ class TestInterestPaidHandler:
             invoice_fee_balance=Decimal("0.00"),
             invoice_interest_balance=Decimal("0.00"),
         )
-        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
+        with pgtrigger.ignore(
+            "compliance.ComplianceObligation:set_updated_audit_columns"
+        ):
             self.obligation.elicensing_invoice = self.invoice
             self.obligation.save()
         self.handler = InterestPaidHandler()
@@ -513,7 +598,9 @@ class TestInterestPaidHandler:
         assert result is False
 
     def test_can_not_handle_when_status_is_not_interest_not_paid(self):
-        self.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        self.compliance_report_version.status = (
+            ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
         self.compliance_report_version.save()
 
         result = self.handler.can_handle(self.invoice)
@@ -533,7 +620,10 @@ class TestInterestPaidHandler:
         self.handler.handle(self.invoice)
 
         self.compliance_report_version.refresh_from_db()
-        assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            self.compliance_report_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
 
 
 class TestComplianceHandlerManager:
@@ -549,13 +639,15 @@ class TestComplianceHandlerManager:
             penalty_status=ComplianceObligation.PenaltyStatus.NOT_PAID,
         )
 
-        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
+        with pgtrigger.ignore(
+            "compliance.ComplianceObligation:set_updated_audit_columns"
+        ):
             self.obligation.created_at = timezone.now()
             self.obligation.save()
 
     def _spy_on(self, handler_type):
         handler = next(h for h in self.manager.handlers if isinstance(h, handler_type))
-        return patch.object(handler, 'handle', wraps=handler.handle)
+        return patch.object(handler, "handle", wraps=handler.handle)
 
     def test_initialization(self):
         assert len(self.manager.handlers) == 5
@@ -578,11 +670,16 @@ class TestComplianceHandlerManager:
         compliance_period.save()
         # Mock the handle methods of all handlers
         with (
-            patch.object(self.manager.handlers[0], 'handle') as mock_penalty_paid_handle,
-            patch.object(self.manager.handlers[1], 'handle') as mock_penalty_accruing_handle,
-            patch.object(self.manager.handlers[2], 'handle') as mock_obligation_paid_handle,
+            patch.object(
+                self.manager.handlers[0], "handle"
+            ) as mock_penalty_paid_handle,
+            patch.object(
+                self.manager.handlers[1], "handle"
+            ) as mock_penalty_accruing_handle,
+            patch.object(
+                self.manager.handlers[2], "handle"
+            ) as mock_obligation_paid_handle,
         ):
-
             self.manager.process_compliance_updates(invoice)
 
             # Verify that none of the handlers' handle methods were called
@@ -590,8 +687,12 @@ class TestComplianceHandlerManager:
             mock_penalty_accruing_handle.assert_not_called()
             mock_obligation_paid_handle.assert_not_called()
 
-    @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status')
-    def test_process_compliance_updates_penalty_accruing_handler_matches(self, mock_update_status):
+    @patch(
+        "compliance.service.compliance_obligation_service.ComplianceObligationService.update_penalty_status"
+    )
+    def test_process_compliance_updates_penalty_accruing_handler_matches(
+        self, mock_update_status
+    ):
         invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
             compliance_obligation=self.obligation,
@@ -601,15 +702,22 @@ class TestComplianceHandlerManager:
 
         # Spy on all handlers to verify which ones are called
         with (
-            patch.object(self.manager.handlers[0], 'handle', wraps=self.manager.handlers[0].handle) as spy_penalty_paid,
             patch.object(
-                self.manager.handlers[1], 'handle', wraps=self.manager.handlers[1].handle
+                self.manager.handlers[0],
+                "handle",
+                wraps=self.manager.handlers[0].handle,
+            ) as spy_penalty_paid,
+            patch.object(
+                self.manager.handlers[1],
+                "handle",
+                wraps=self.manager.handlers[1].handle,
             ) as spy_penalty_accruing,
             patch.object(
-                self.manager.handlers[2], 'handle', wraps=self.manager.handlers[2].handle
+                self.manager.handlers[2],
+                "handle",
+                wraps=self.manager.handlers[2].handle,
             ) as spy_obligation_paid,
         ):
-
             self.manager.process_compliance_updates(invoice)
 
             # Verify only PenaltyAccruingHandler's handle method was called
@@ -618,10 +726,14 @@ class TestComplianceHandlerManager:
             spy_obligation_paid.assert_not_called()
 
         # Verify the service was called as expected
-        mock_update_status.assert_called_once_with(self.obligation.pk, ComplianceObligation.PenaltyStatus.ACCRUING)
+        mock_update_status.assert_called_once_with(
+            self.obligation.pk, ComplianceObligation.PenaltyStatus.ACCRUING
+        )
 
-    @patch('compliance.tasks.retryable_create_penalty')
-    def test_process_compliance_updates_obligation_paid_handler_matches(self, mock_create_penalty):
+    @patch("compliance.tasks.retryable_create_penalty")
+    def test_process_compliance_updates_obligation_paid_handler_matches(
+        self, mock_create_penalty
+    ):
         invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
             compliance_obligation=self.obligation,
@@ -632,7 +744,9 @@ class TestComplianceHandlerManager:
         compliance_period = invoice.compliance_obligation.compliance_report_version.compliance_report.compliance_period
         compliance_period.compliance_deadline = invoice.due_date
         compliance_period.save()
-        line_item = baker.make_recipe("compliance.tests.utils.elicensing_line_item", elicensing_invoice=invoice)
+        line_item = baker.make_recipe(
+            "compliance.tests.utils.elicensing_line_item", elicensing_invoice=invoice
+        )
         baker.make_recipe(
             "compliance.tests.utils.elicensing_payment",
             elicensing_line_item=line_item,
@@ -646,7 +760,6 @@ class TestComplianceHandlerManager:
             self._spy_on(MaxPenaltyHandler) as spy_max_penalty,
             self._spy_on(ObligationPaidHandler) as spy_obligation_paid,
         ):
-
             self.manager.process_compliance_updates(invoice)
 
             # Verify only ObligationPaidHandler's handle method was called
@@ -657,7 +770,10 @@ class TestComplianceHandlerManager:
 
         # Verify compliance status was updated
         self.compliance_report_version.refresh_from_db()
-        assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            self.compliance_report_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
 
         # Verify penalty creation service was called
         mock_create_penalty.execute.assert_called_once_with(
@@ -666,8 +782,8 @@ class TestComplianceHandlerManager:
             effective_deadline=compliance_period.compliance_deadline,
         )
 
-    @patch('compliance.tasks.retryable_create_penalty')
-    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    @patch("compliance.tasks.retryable_create_penalty")
+    @patch("compliance.tasks.retryable_notice_of_obligation_met_email")
     def test_process_compliance_updates_interest_paid_handler_matches(
         self, mock_retryable_notice_of_obligation_met_email, mock_create_penalty
     ):
@@ -692,7 +808,6 @@ class TestComplianceHandlerManager:
             self._spy_on(ObligationPaidHandler) as spy_obligation_paid,
             self._spy_on(InterestPaidHandler) as spy_interest_paid,
         ):
-
             self.manager.process_compliance_updates(invoice)
 
             spy_penalty_paid.assert_not_called()
@@ -706,7 +821,10 @@ class TestComplianceHandlerManager:
         mock_create_penalty.execute.assert_not_called()
 
         self.compliance_report_version.refresh_from_db()
-        assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert (
+            self.compliance_report_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
 
 
 class TestMaxPenaltyHandler:
@@ -720,13 +838,19 @@ class TestMaxPenaltyHandler:
         self.invoice = test_data.invoice
 
         # The deadline has to be far enough in the past for a penalty to have had time to max out
-        self.compliance_period = self.compliance_report_version.compliance_report.compliance_period
-        self.compliance_period.compliance_deadline = timezone.now().date() - timedelta(days=400)
+        self.compliance_period = (
+            self.compliance_report_version.compliance_report.compliance_period
+        )
+        self.compliance_period.compliance_deadline = timezone.now().date() - timedelta(
+            days=400
+        )
         self.compliance_period.save()
         self.invoice.due_date = self.compliance_period.compliance_deadline
         self.invoice.save()
 
-        with pgtrigger.ignore("compliance.ComplianceObligation:set_updated_audit_columns"):
+        with pgtrigger.ignore(
+            "compliance.ComplianceObligation:set_updated_audit_columns"
+        ):
             self.obligation.penalty_status = ComplianceObligation.PenaltyStatus.ACCRUING
             self.obligation.fee_amount_dollars = Decimal("1000.00")
             self.obligation.created_at = timezone.now() - timedelta(days=400)
@@ -738,30 +862,36 @@ class TestMaxPenaltyHandler:
     def _capped_penalty_data(self, cap_reached_date):
         return CalculatedPenaltyData(
             penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
-            penalty_charge_rate=Decimal('0.38'),
+            penalty_charge_rate=Decimal("0.38"),
             days_late=366,
-            accumulated_penalty=Decimal('1500.00'),
-            accumulated_compounding=Decimal('1500.00'),
-            total_penalty=Decimal('3000.00'),
-            faa_interest=Decimal('0.00'),
-            total_amount=Decimal('3000.00'),
+            accumulated_penalty=Decimal("1500.00"),
+            accumulated_compounding=Decimal("1500.00"),
+            total_penalty=Decimal("3000.00"),
+            faa_interest=Decimal("0.00"),
+            total_amount=Decimal("3000.00"),
             daily_accumulated_list=[],
             cap_reached_date=cap_reached_date,
         )
 
-    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty')
+    @patch(
+        "compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty"
+    )
     def test_can_handle_when_penalty_has_maxed_out(self, mock_calculate):
         mock_calculate.return_value = self._capped_penalty_data(self.cap_date)
 
         assert self.handler.can_handle(self.invoice) is True
 
-    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty')
+    @patch(
+        "compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty"
+    )
     def test_can_not_handle_when_penalty_is_below_the_cap(self, mock_calculate):
         mock_calculate.return_value = self._capped_penalty_data(None)
 
         assert self.handler.can_handle(self.invoice) is False
 
-    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty')
+    @patch(
+        "compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty"
+    )
     def test_can_not_handle_when_penalty_already_exists(self, mock_calculate):
         mock_calculate.return_value = self._capped_penalty_data(self.cap_date)
         baker.make_recipe(
@@ -773,15 +903,21 @@ class TestMaxPenaltyHandler:
         assert self.handler.can_handle(self.invoice) is False
         mock_calculate.assert_not_called()
 
-    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty')
+    @patch(
+        "compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty"
+    )
     def test_can_not_handle_when_obligation_is_met(self, mock_calculate):
-        self.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        self.compliance_report_version.status = (
+            ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
         self.compliance_report_version.save()
 
         assert self.handler.can_handle(self.invoice) is False
         mock_calculate.assert_not_called()
 
-    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty')
+    @patch(
+        "compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty"
+    )
     def test_can_not_handle_when_penalty_is_not_accruing(self, mock_calculate):
         self.obligation.penalty_status = ComplianceObligation.PenaltyStatus.NONE
         self.obligation.save()
@@ -790,7 +926,9 @@ class TestMaxPenaltyHandler:
         assert self.handler.can_handle(self.invoice) is False
         mock_calculate.assert_not_called()
 
-    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty')
+    @patch(
+        "compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty"
+    )
     def test_can_not_handle_when_fee_balance_is_paid(self, mock_calculate):
         self.invoice.invoice_fee_balance = Decimal("0.00")
         self.invoice.save()
@@ -798,9 +936,13 @@ class TestMaxPenaltyHandler:
         assert self.handler.can_handle(self.invoice) is False
         mock_calculate.assert_not_called()
 
-    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty')
+    @patch(
+        "compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty"
+    )
     def test_can_not_handle_before_the_deadline(self, mock_calculate):
-        self.compliance_period.compliance_deadline = timezone.now().date() + timedelta(days=1)
+        self.compliance_period.compliance_deadline = timezone.now().date() + timedelta(
+            days=1
+        )
         self.compliance_period.save()
 
         assert self.handler.can_handle(self.invoice) is False
@@ -819,9 +961,13 @@ class TestMaxPenaltyHandler:
 
         assert self.handler.can_handle(penalty_invoice) is False
 
-    @patch('compliance.tasks.retryable_create_penalty')
-    @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty')
-    def test_handle_creates_penalty_accruing_up_to_the_cap_date(self, mock_calculate, mock_create_penalty):
+    @patch("compliance.tasks.retryable_create_penalty")
+    @patch(
+        "compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty"
+    )
+    def test_handle_creates_penalty_accruing_up_to_the_cap_date(
+        self, mock_calculate, mock_create_penalty
+    ):
         mock_calculate.return_value = self._capped_penalty_data(self.cap_date)
 
         self.handler.can_handle(self.invoice)

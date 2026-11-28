@@ -1,3 +1,5 @@
+import pytest
+from model_bakery.baker import make_recipe
 from model_bakery.utils import seq
 from registration.models.regulated_product import RegulatedProduct
 from reporting.models.emission_category import EmissionCategory
@@ -6,14 +8,13 @@ from reporting.service.report_validation.report_validation_error import (
     ReportValidationErrorKey,
     Severity,
 )
-from reporting.service.report_validation.validators import report_emission_allocation_other_excluded_category
-from model_bakery.baker import make_recipe
-import pytest
+from reporting.service.report_validation.validators import (
+    report_emission_allocation_other_excluded_category,
+)
 
 
 @pytest.mark.django_db
 class TestReportAllocationOtherExcludedCategoryValidator:
-
     def setup_method(self):
         self.validator_under_test = report_emission_allocation_other_excluded_category
 
@@ -42,12 +43,17 @@ class TestReportAllocationOtherExcludedCategoryValidator:
             _quantity=3,
         )
 
-    def assert_error(self, errors: dict[str, ReportValidationError], category: EmissionCategory) -> None:
-        error = errors[f"og_np_nc_allocation_mismatch_{self.facility_report.facility_id}_{category.category_name}"]
+    def assert_error(
+        self, errors: dict[str, ReportValidationError], category: EmissionCategory
+    ) -> None:
+        error = errors[
+            f"og_np_nc_allocation_mismatch_{self.facility_report.facility_id}_{category.category_name}"
+        ]
         assert error.key == ReportValidationErrorKey.OG_NP_NC_ALLOCATION_MISMATCH
         assert error.severity == Severity.WARNING
         assert (
-            error.message == f"For the emission category '{category.category_name}', emissions allocated to "
+            error.message
+            == f"For the emission category '{category.category_name}', emissions allocated to "
             "unregulated products exceed the emissions reported under the 'other_excluded' category."
         )
         assert error.context.facility_id == self.facility_report.facility_id
@@ -111,7 +117,6 @@ class TestReportAllocationOtherExcludedCategoryValidator:
         assert self.validator_under_test.validate(self.report_version) == {}
 
     def test_fails_with_one_category_properly_allocated_and_one_not(self):
-
         make_recipe(
             "reporting.tests.utils.report_emission",
             report_version=self.report_version,
