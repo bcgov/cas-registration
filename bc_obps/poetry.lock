@@ -1199,14 +1199,14 @@ python-stdnum = ">=2.2"
 
 [[package]]
 name = "django-ninja"
-version = "1.7.3"
+version = "1.8.0"
 description = "Django Ninja - Fast Django REST framework"
 optional = false
 python-versions = ">=3.7"
 groups = ["main"]
 files = [
-    {file = "django_ninja-1.7.3-py3-none-any.whl", hash = "sha256:5e3c2dcead83a2512ea772dbc435ca51632cf46bf3be1523bac41e5bb394891c"},
-    {file = "django_ninja-1.7.3.tar.gz", hash = "sha256:8a73ecccaa86639202427e81667b8fca6dfc250d2b6e5108369688029a4cb593"},
+    {file = "django_ninja-1.8.0-py3-none-any.whl", hash = "sha256:132f37a36ac5ec9569fdc141da6984c1806bdd08af36f855980fab6cdcb10038"},
+    {file = "django_ninja-1.8.0.tar.gz", hash = "sha256:0f043a1aebd2c45e2a124a83e5bd0961491b18cdf81ea57c6abd80607b2c6ef8"},
 ]
 
 [package.dependencies]
@@ -3708,4 +3708,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.1"
 python-versions = "~3.15"
-content-hash = "1451e0e3f75b4af9003ff2b2f25bb8cd245497e822501544db75e3f7023d6252"
+content-hash = "6c83040782351a4bcc8d33d9030f51363d1c9c35ad88e415cf0d17bbb634ec91"
