@@ -23,7 +23,7 @@ django-localflavor = "^5.1"
 django-simple-history = "^3.13.0"
 gunicorn = "^23.0.0"
 sentry-sdk = {extras = ["django"], version = "^2.66.1"}
-dj-database-url = "^2.1.0"
+dj-database-url = "^3.0.0"
 django-pgtrigger = "^4.17.0"
 weasyprint = "^70.0"
 jsonschema = "^4.23.0"
