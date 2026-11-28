@@ -1115,19 +1115,18 @@ test = ["pytest (>=9.2.0,<9.3.0)", "pytest-benchmark (>=5.3.1,<5.4.0)", "pytest-
 
 [[package]]
 name = "dj-database-url"
-version = "2.3.0"
+version = "3.1.2"
 description = "Use Database URLs in your Django Application."
 optional = false
-python-versions = "*"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "dj_database_url-2.3.0-py3-none-any.whl", hash = "sha256:bb0d414ba0ac5cd62773ec7f86f8cc378a9dbb00a80884c2fc08cc570452521e"},
-    {file = "dj_database_url-2.3.0.tar.gz", hash = "sha256:ae52e8e634186b57e5a45e445da5dc407a819c2ceed8a53d1fac004cc5288787"},
+    {file = "dj_database_url-3.1.2-py3-none-any.whl", hash = "sha256:544e015fee3efa5127a1eb1cca465f4ace578265b3671fe61d0ed7dbafb5ec8a"},
+    {file = "dj_database_url-3.1.2.tar.gz", hash = "sha256:63c20e4bbaa51690dfd4c8d189521f6bf6bc9da9fcdb23d95d2ee8ee87f9ec62"},
 ]
 
 [package.dependencies]
-Django = ">=4.2"
-typing_extensions = ">=3.10.0.0"
+django = ">=4.2"
 
 [[package]]
 name = "django"
@@ -3708,4 +3707,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.1"
 python-versions = "~3.15"
-content-hash = "1451e0e3f75b4af9003ff2b2f25bb8cd245497e822501544db75e3f7023d6252"
+content-hash = "6bed48fe54462d6ee5e74183e7b12e8794bc99306f9b2f41a8120a3fed9f7225"
