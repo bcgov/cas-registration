@@ -14,7 +14,7 @@ python-dotenv = "^1.2.2"
 django-ninja = "~1.7.0"
 psycopg = "^3.3.6"
 psycopg-binary = "^3.3.6"
-django-phonenumber-field = "^8.5.0"
+django-phonenumber-field = "^9.0.0"
 django-phonenumbers = "^1.0.1"
 django-storages = {extras = ["google"], version = "^1.14.6"}
 whitenoise = "^6.5.0"
